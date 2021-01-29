@@ -2,7 +2,7 @@
 """
 Created on Fri Jan 29 11:59:27 2021
 
-@author: LeoEiji
+@author: Leonardo Eiji Tamayose & Guilherme Ferrari Fortino 
 """
 
 import numpy as np
