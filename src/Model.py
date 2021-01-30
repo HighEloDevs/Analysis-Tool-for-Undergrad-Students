@@ -26,6 +26,9 @@ class Model():
         self.coef       = list()
         self.params     = Parameters()
         
+    def __str__(self):
+        return self.report_fit
+        
     def load_data(self, data_path):
         """ Loads the data from a given path """
         
@@ -72,17 +75,33 @@ class Model():
     def _set_model(self):
         """ Creates the new model """
         self.model = ExpressionModel(self.exp_model)
+        self.coef = list()
+        self.params = Parameters()
         for i in self.model.param_names:
             self.coef.append(i)            
             self.params.add(i, value=1)
         
+    def fit(self):
+        self.result = self.model.fit(data=self.data["y"].to_numpy(), x=self.data["x"].to_numpy(),
+                                     params=self.params, scale_covar = False,
+                                     weights = 1/self.data["sy"].to_numpy())
+        
+    def _set_report(self):
+        self.report_fit += "Ajuste: y = %s\nParâmetros\n"%self.exp_model
+        for i in range(len(self.coef)):
+            self.report_fit += "%s: %f +/- %f\n"%(self.coef[i], self.result.values[self.coef[i]],
+                                                      np.sqrt(self.result.covar[i][i]))
+        self.report_fit += "\nNúmero de graus de liberdade = %d"%(len(self.data["x"]) - len(self.coef))
+        self.report_fit += "\n                        Chi² = %f"%self.result.chisqr
+        self.report_fit += "\nMatriz de covariância:\n" + str(self.result.covar)
 
     def plot_data(self, figsize = None, dpi = 120, size = 1, lw = 1, mstyle = '.', color = 'blue'):
         """ Scatter the data """
         fig = plt.figure(figsize = figsize, dpi = dpi)
-        plt.scatter(x = self.data["x"], y = self.data["y"], s = size, c = color, marker = mstyle,
-                    linewidths = 1)
-        plt.errorbar(x = self.data["x"], y = self.data["y"], yerr=self.data["sy"], xerr = self.data["sx"],
+        plt.scatter(x = self.data["x"].to_numpy(), y = self.data["y"].to_numpy(), s = size,
+                    c = color, marker = mstyle, linewidths = 1)
+        plt.errorbar(x = self.data["x"].to_numpy(), y = self.data["y"].to_numpy(),
+                     yerr=self.data["sy"].to_numpy(), xerr = self.data["sx"].to_numpy(),
                      fmt = 'ko', ecolor = 'black', capsize = 2, ms = size, elinewidth = 1)
         fig.show()
         
