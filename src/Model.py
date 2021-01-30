@@ -85,6 +85,7 @@ class Model():
         self.result = self.model.fit(data=self.data["y"].to_numpy(), x=self.data["x"].to_numpy(),
                                      params=self.params, scale_covar = False,
                                      weights = 1/self.data["sy"].to_numpy())
+        self._set_report()
         
     def _set_report(self):
         self.report_fit += "Ajuste: y = %s\nParâmetros\n"%self.exp_model
