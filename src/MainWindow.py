@@ -12,7 +12,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 import pandas as pd
-from src.teste_classe import Model
+from src.Model import Model
 from src.Panels import Panels
 
 # Parameters
@@ -120,9 +120,12 @@ class MainWindow(QMainWindow):
         self.aFile = filename[0]
         
         # Reading it
-        with open(filename[0], 'r') as f:
-            file_text = f.read()
-            return file_text
+        try:
+            with open(filename[0], 'r') as f:
+                file_text = f.read()
+                return file_text
+        except:
+            pass
         
     def saveFile(self):
         # If you didn't open any file, save as

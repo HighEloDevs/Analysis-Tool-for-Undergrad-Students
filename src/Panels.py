@@ -12,7 +12,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 import pandas as pd
-from src.teste_classe import Model
+from src.Model import Model
 
 # Parameters
 WINDOW_WIDTH = 1500
