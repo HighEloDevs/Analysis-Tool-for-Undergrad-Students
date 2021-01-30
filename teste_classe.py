@@ -2,7 +2,7 @@
 """
 Created on Fri Jan 29 17:10:06 2021
 
-@author: guilh
+@author: Leonardo Eiji Tamayose & Guilherme Ferrari Fortino 
 
 Model Class
 
