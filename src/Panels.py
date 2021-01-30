@@ -124,6 +124,42 @@ class Panels(QWidget):
         self.Middle.resize(int(WINDOW_WIDTH / 3), WINDOW_HEIGHT-20)
         self.Middle.setFrameShape(QFrame.StyledPanel)
         
+        # Middle panel layout
+        MiddleLayout = QVBoxLayout()
+        
+        # Initialize tab screen
+        self.MiddleTabs = QTabWidget()
+        self.MiddleTabs.resize(300,200)
+        
+        self.tabPropriedades = QWidget()
+        self.tabX = QWidget()
+        self.tabY = QWidget()
+        
+        # Adding tabs
+        self.MiddleTabs.addTab(self.tabPropriedades,"Propriedades")
+        self.MiddleTabs.addTab(self.tabX,"Eixo X")
+        self.MiddleTabs.addTab(self.tabY,"Eixo Y")
+        
+        # Create first tab
+        self.tabPropriedades.layout = QVBoxLayout(self)
+        self.pushButton1 = QPushButton("PyQt5 button")
+        self.tabPropriedades.layout.addWidget(self.pushButton1)
+        self.tabPropriedades.setLayout(self.tabPropriedades.layout)
+        
+        test = QWidget()
+        testLayout = QFormLayout(test)
+        
+        PlotButton = QPushButton("Plot")
+        
+        testLayout.addRow(PlotButton)
+
+        
+        MiddleLayout.addWidget(self.MiddleTabs)
+        MiddleLayout.addWidget(test)
+        
+        self.Middle.setLayout(MiddleLayout)
+        
+        
     def RightPanel(self):
         self.Right = QFrame(self)
         self.Right.move(1000, 0)
