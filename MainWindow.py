@@ -8,8 +8,6 @@ app = QApplication(sys.argv)
 
 class MainWindow(QMainWindow):
     
-    EXIT_CODE_REBOOT = -12345678
-    
     def __init__(self):
         super(MainWindow, self).__init__()
         
@@ -21,6 +19,8 @@ class MainWindow(QMainWindow):
         
         # Actual file name
         self.aFile = None
+        
+        self.setAcceptDrops(True)
         
         # Initializing UI
         self.initUI()
@@ -125,6 +125,18 @@ class MainWindow(QMainWindow):
         text = "teste"
         file.write(text)
         file.close()
+
+    def dragEnterEvent(self, event):
+        if event.mimeData().hasUrls():
+            event.accept()
+        else:
+            event.ignore()
+
+    def dropEvent(self, event):
+        files = [u.toLocalFile() for u in event.mimeData().urls()]
+        for f in files:
+          # Saving the actual filename
+          self.aFile = f
 
 def main():
     win = MainWindow()
