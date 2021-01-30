@@ -1,9 +1,15 @@
 import sys
-from PyQt5 import QtWidgets, QtCore
-from PyQt5.QtWidgets import QApplication, QMainWindow, QAction, qApp
+import os
+from PyQt5 import QtWidgets, QtCore, QtGui
+from PyQt5.QtWidgets import QApplication, QMainWindow, QAction, qApp, QFileDialog
 from PyQt5.QtGui import QIcon
 
+app = QApplication(sys.argv)
+
 class MainWindow(QMainWindow):
+    
+    EXIT_CODE_REBOOT = -12345678
+    
     def __init__(self):
         super(MainWindow, self).__init__()
         
@@ -13,11 +19,24 @@ class MainWindow(QMainWindow):
         self.setAnimated(True)
         self.setTabShape(QtWidgets.QTabWidget.Rounded)
         
+        # Actual file name
+        self.aFile = None
+        
         # Initializing UI
         self.initUI()
         
     def initUI(self):
         
+        self.createMenu()
+        
+        self.retranslateUi()
+        QtCore.QMetaObject.connectSlotsByName(self)
+        
+    def retranslateUi(self):
+        _translate = QtCore.QCoreApplication.translate
+        self.menuArquivo.setTitle(_translate("MainWindow", "Arquivo"))
+    
+    def createMenu(self):
         # Creating menu bar
         self.menubar = QtWidgets.QMenuBar(self)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 22))
@@ -40,34 +59,74 @@ class MainWindow(QMainWindow):
         self.actionNovoArquivo = QtWidgets.QAction(self)
         self.actionNovoArquivo.setObjectName("NovoArquivo")
         self.menuArquivo.addAction(self.actionNovoArquivo)
-        
-        self.label = QtWidgets.QLabel(self)
-        self.label.setText("Teste")
-        self.label.move(500, 450)
-        
-        self.button = QtWidgets.QPushButton(self)
-        self.button.setText("CLICA")
-        self.button.move(200, 200)
-        self.button.clicked.connect(self.click)
-        
-        self.retranslateUi()
-        QtCore.QMetaObject.connectSlotsByName(self)
-        
-    def retranslateUi(self):
-        _translate = QtCore.QCoreApplication.translate
-        self.menuArquivo.setTitle(_translate("MainWindow", "Arquivo"))
-        
         self.actionNovoArquivo.setText("Novo Arquivo")
+        self.actionNovoArquivo.setShortcut("CTRL+N")
+        self.actionNovoArquivo.triggered.connect(self.newFile)
         
-    def click(self):
-        self.label.setText("<font color=red>PINTO DO MURILLO TEM 50CM</font>")
-        self.resize()
+        # "Abrir Arquivo"
+        self.actionAbrirArquivo = QtWidgets.QAction(self)
+        self.actionAbrirArquivo.setObjectName("AbrirArquivo")
+        self.menuArquivo.addAction(self.actionAbrirArquivo)
+        self.actionAbrirArquivo.setText("Abrir Arquivo")
+        self.actionAbrirArquivo.setShortcut("CTRL+O")
+        self.actionAbrirArquivo.triggered.connect(self.loadFile)
         
-    def resize(self):
-        self.label.adjustSize()
+        # "Salvar Arquivo"
+        self.actionSalvarArquivo = QtWidgets.QAction(self)
+        self.actionSalvarArquivo.setObjectName("SalvarArquivo")
+        self.menuArquivo.addAction(self.actionSalvarArquivo)
+        self.actionSalvarArquivo.setText("Salvar")
+        self.actionSalvarArquivo.setShortcut("CTRL+S")
+        self.actionSalvarArquivo.triggered.connect(self.saveFile)
+        
+        # "Salvar Arquivo Como"
+        self.actionSalvarArquivoComo = QtWidgets.QAction(self)
+        self.actionSalvarArquivoComo.setObjectName("SalvarArquivoComo")
+        self.menuArquivo.addAction(self.actionSalvarArquivoComo)
+        self.actionSalvarArquivoComo.setText("Salvar como...")
+        self.actionSalvarArquivoComo.setShortcut("CTRL+Shift+S")
+        self.actionSalvarArquivoComo.triggered.connect(self.saveFileAs)
+        
+    def newFile(self):
+        # Saving before closing the window
+        self.saveFile()
+        
+        # Closing window and reopening
+        app.closeAllWindows()
+        self.win = MainWindow()
+        self.win.show()
+        
+    def loadFile(self):
+        # Getting file name
+        filename = QFileDialog.getOpenFileName(self, 'Open File', os.getenv('HOME'))
+        
+        # Saving the actual filename
+        self.aFile = filename[0]
+        
+        # Reading it
+        with open(filename[0], 'r') as f:
+            file_text = f.read()
+            return file_text
+        
+    def saveFile(self):
+        # If you didn't open any file, save as
+        if self.aFile == None: 
+            self.saveFileAs()
+        # Else save in the opened file
+        else:
+            file = open(self.aFile,'w')
+            text = "teste"
+            file.write(text)
+            file.close()
+        
+    def saveFileAs(self):
+        filename = QFileDialog.getSaveFileName(self, 'Save File', os.getenv('HOME'))
+        file = open(filename[0],'w')
+        text = "teste"
+        file.write(text)
+        file.close()
 
 def main():
-    app = QApplication(sys.argv)
     win = MainWindow()
     win.show()
     sys.exit(app.exec_())
