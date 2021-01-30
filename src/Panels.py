@@ -21,7 +21,7 @@ WINDOW_HEIGHT = 600
 class Panels(QWidget):
 
     def __init__(self):
-        super(Panels, self).__init__()
+        super().__init__()
         
         # Fit class
         self.Model = Model()
@@ -79,6 +79,7 @@ class Panels(QWidget):
         
         # Creating table
         self.tableData = QTableWidget()
+        self.tableData.setEditTriggers(QAbstractItemView.NoEditTriggers)
         
         # set row count
         self.tableData.setRowCount(0)
@@ -102,15 +103,6 @@ class Panels(QWidget):
         # Adding "Carregar dados" button
         InputAreaLayout.addRow(QLabel("Nome do Trabalho:"), self.nomeArquivo)
         InputAreaLayout.addRow(UploadButton, self.textUpload)
-        
-# =============================================================================
-#         InputAreaLayout.addRow(QLabel("Título:"), self.titulo)
-#         InputAreaLayout.addRow(QLabel("Eixo X:"), self.eixox)
-#         InputAreaLayout.addRow(QLabel("Eixo Y:"), self.eixoy)
-#         InputAreaLayout.addRow(QLabel("Expressão:"), self.expressao)
-#         InputAreaLayout.addRow(UpdateButton)
-#         InputAreaLayout.addRow(tableWidget)
-# =============================================================================
 
         LeftLayout.addWidget(self.InputArea)
         LeftLayout.addWidget(self.tableData)
@@ -121,7 +113,7 @@ class Panels(QWidget):
     def MiddlePanel(self):
         self.Middle = QFrame(self)
         self.Middle.move(500, 0)
-        self.Middle.resize(int(WINDOW_WIDTH / 3), WINDOW_HEIGHT-20)
+        self.Middle.resize(400, WINDOW_HEIGHT-20)
         self.Middle.setFrameShape(QFrame.StyledPanel)
         
         # Middle panel layout
@@ -129,22 +121,78 @@ class Panels(QWidget):
         
         # Initialize tab screen
         self.MiddleTabs = QTabWidget()
-        self.MiddleTabs.resize(300,200)
+        self.MiddleTabs.resize(300,100)
         
-        self.tabPropriedades = QWidget()
-        self.tabX = QWidget()
-        self.tabY = QWidget()
+        tabFuncao = QWidget()
+        tabPropriedades = QWidget()
+        tabX = QWidget()
+        tabY = QWidget()
         
         # Adding tabs
-        self.MiddleTabs.addTab(self.tabPropriedades,"Propriedades")
-        self.MiddleTabs.addTab(self.tabX,"Eixo X")
-        self.MiddleTabs.addTab(self.tabY,"Eixo Y")
+        self.MiddleTabs.addTab(tabFuncao,"Função de Ajuste")
+        self.MiddleTabs.addTab(tabX,"Eixo X")
+        self.MiddleTabs.addTab(tabY,"Eixo Y")
+        self.MiddleTabs.addTab(tabPropriedades,"Propriedades do Gráfico")
         
-        # Create first tab
-        self.tabPropriedades.layout = QVBoxLayout(self)
-        self.pushButton1 = QPushButton("PyQt5 button")
-        self.tabPropriedades.layout.addWidget(self.pushButton1)
-        self.tabPropriedades.setLayout(self.tabPropriedades.layout)
+        ####################### Tab "Função de Ajuste" #######################
+        
+        self.FuncaoLineEdit = QLineEdit()
+        self.buttonAplicarFuncao = QPushButton("Aplicar Função")
+        self.buttonAplicarFuncao.clicked.connect(self.ApplyFunction)
+        
+        tabFuncaoLayout = QFormLayout()
+        tabFuncaoLayout.addRow(QLabel("Expressão | y(x) = "), self.FuncaoLineEdit)
+        tabFuncaoLayout.addRow(self.buttonAplicarFuncao)
+        
+        # Creating table for the coeficients
+        self.tableCoef = QTableWidget()
+        self.tableCoef.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        self.tableCoef.setFixedHeight(150)
+        self.tableCoef.setRowCount(4)
+        self.tableCoef.setColumnCount(3)
+        self.tableCoef.setHorizontalHeaderLabels(['Parâmetros', 'Valores', 'Incertezas'])
+        self.tableCoef.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
+        self.tableCoef.horizontalHeader().setSectionResizeMode(0, QtWidgets.QHeaderView.Stretch)
+        self.tableCoef.horizontalHeader().setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
+        self.tableCoef.horizontalHeader().setSectionResizeMode(2, QtWidgets.QHeaderView.Stretch)
+        
+        # Creting table for the fit's infos
+        self.tableInfo = QTableWidget()
+        self.tableInfo.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        self.tableInfo.setFixedHeight(300)
+        self.tableInfo.setRowCount(8)
+        self.tableInfo.setColumnCount(2)
+        self.tableInfo.setHorizontalHeaderLabels(['Teste', 'Valores'])
+        self.tableInfo.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
+        self.tableInfo.horizontalHeader().setSectionResizeMode(0, QtWidgets.QHeaderView.Stretch)
+        self.tableInfo.horizontalHeader().setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
+        
+        # Adding table to the middle panel
+        tabFuncaoLayout.addRow(self.tableCoef)
+        tabFuncaoLayout.addRow(self.tableInfo)
+        
+        # Setting layout for the "Função de Ajuste" tab
+        tabFuncao.setLayout(tabFuncaoLayout)
+        
+        ######################### Tab "Propriedades" #########################
+        
+        tabPropriedadesLayout = QFormLayout()
+        tabPropriedades.layout = tabPropriedadesLayout
+        
+        SymbolWidget = QWidget()
+        SymbolWidgetLayout = QHBoxLayout()
+        SymbolWidgetLayout.addWidget(QLabel("Símbolo"))
+        SymbolWidgetLayout.addWidget(QComboBox())
+        SymbolWidgetLayout.addWidget(QComboBox())
+        SymbolWidgetLayout.addWidget(QComboBox())
+        SymbolWidget.setLayout(SymbolWidgetLayout)
+        
+        pushButton1 = QCheckBox()
+        tabPropriedadesLayout.addRow(SymbolWidget)
+        
+        tabPropriedades.setLayout(tabPropriedades.layout)
+        
+        ######################################################################
         
         test = QWidget()
         testLayout = QFormLayout(test)
@@ -153,7 +201,6 @@ class Panels(QWidget):
         
         testLayout.addRow(PlotButton)
 
-        
         MiddleLayout.addWidget(self.MiddleTabs)
         MiddleLayout.addWidget(test)
         
@@ -162,8 +209,8 @@ class Panels(QWidget):
         
     def RightPanel(self):
         self.Right = QFrame(self)
-        self.Right.move(1000, 0)
-        self.Right.resize(int(WINDOW_WIDTH / 3), WINDOW_HEIGHT-20)
+        self.Right.move(900, 0)
+        self.Right.resize(600, WINDOW_HEIGHT-20)
         self.Right.setFrameShape(QFrame.StyledPanel)
 
     def Upload(self):
@@ -197,3 +244,40 @@ class Panels(QWidget):
             self.tableData.setItem(i, 3, QTableWidgetItem(str(sy)))
             
             self.tableData.resizeRowsToContents()
+            
+    def ApplyFunction(self):
+        # Instance
+        coefs = []
+        
+        # Getting Expression
+        expr = self.FuncaoLineEdit.text()
+        
+        # Setting Model
+        self.Model.set_expression(expr)
+        
+        # Getting Coeficients
+        coefs = self.Model.get_coefficients()
+        
+        if len(coefs) >= 4:
+            self.tableCoef.setRowCount(0)
+        
+            for i in range(0, len(coefs)):
+                rowPosition = self.tableCoef.rowCount()     
+                self.tableCoef.insertRow(rowPosition) #insert new row   
+                self.tableCoef.setItem(i, 0, QTableWidgetItem(coefs[i]))
+        else:
+            for i in range(0, len(coefs)):
+                self.tableCoef.setItem(i, 0, QTableWidgetItem(coefs[i]))
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
