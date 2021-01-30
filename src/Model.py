@@ -24,7 +24,7 @@ class Model():
         self.report_fit = ""
         self.result     = None
         self.coef       = list()
-        self.params     = Parameters
+        self.params     = Parameters()
         
     def load_data(self, data_path):
         """ Loads the data from a given path """
