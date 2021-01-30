@@ -58,6 +58,15 @@ class Model():
 # =============================================================================
         self.exp_model = exp
 
+    def plot_data(self, figsize = None, dpi = 120, size = 1, lw = 1, mstyle = '.', color = 'blue'):
+        fig = plt.figure(figsize = figsize, dpi = dpi)
+        plt.scatter(x = self.data["x"], y = self.data["y"], s = size, c = color, marker = mstyle,
+                    linewidths = 1)
+        plt.errorbar(x = self.data["x"], y = self.data["y"], yerr=self.data["sy"], xerr = self.data["sx"],
+                     fmt = 'ko', ecolor = 'black', capsize = 2, ms = size, elinewidth = 1)
+        fig.show()
+
+
     #def fit(self):
         
         
