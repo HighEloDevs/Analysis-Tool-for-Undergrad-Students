@@ -95,7 +95,7 @@ class Model():
         
     def _set_param_values(self):
         self.dict.clear()
-        for i in range(self.coef):
+        for i in range(len(self.coef)):
             self.dict.update({self.coef[i]: [self.result.values[self.coef[i]], np.sqrt(self.result.covar[i][i])]})
         
     def _set_report(self):
