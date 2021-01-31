@@ -25,6 +25,7 @@ class Model():
         self.result     = None
         self.coef       = list()
         self.params     = Parameters()
+        self.dict       = dict()
         
     def __str__(self):
         return self.report_fit
@@ -85,16 +86,27 @@ class Model():
         self.result = self.model.fit(data=self.data["y"].to_numpy(), x=self.data["x"].to_numpy(),
                                      params=self.params, scale_covar = False,
                                      weights = 1/self.data["sy"].to_numpy())
+        self._set_param_values()
         self._set_report()
         
+    def get_params(self):
+        ''' Return a dict with parameters as keys and returns a list with [value, uncertainty] '''
+        return self.dict
+        
+    def _set_param_values(self):
+        self.dict.clear()
+        for i in range(self.coef):
+            self.dict.update({self.coef[i]: [self.result.values[self.coef[i]], np.sqrt(self.result.covar[i][i])]})
+        
     def _set_report(self):
-        self.report_fit += "Ajuste: y = %s\nParâmetros\n"%self.exp_model
+        self.report_fit = ""
+        self.report_fit += "\nAjuste: y = %s\nParâmetros\n"%self.exp_model
         for i in range(len(self.coef)):
             self.report_fit += "%s: %f +/- %f\n"%(self.coef[i], self.result.values[self.coef[i]],
                                                       np.sqrt(self.result.covar[i][i]))
         self.report_fit += "\nNúmero de graus de liberdade = %d"%(len(self.data["x"]) - len(self.coef))
         self.report_fit += "\n                        Chi² = %f"%self.result.chisqr
-        self.report_fit += "\nMatriz de covariância:\n" + str(self.result.covar)
+        self.report_fit += "\nMatriz de covariância:\n" + str(self.result.covar) + "\n\n"
 
     def plot_data(self, figsize = None, dpi = 120, size = 1, lw = 1, mstyle = '.', color = 'blue'):
         """ Scatter the data """
@@ -107,6 +119,7 @@ class Model():
         fig.show()
         
     def get_coefficients(self):
+        ''' Deprecated function '''
         return self.coef 
         
 
