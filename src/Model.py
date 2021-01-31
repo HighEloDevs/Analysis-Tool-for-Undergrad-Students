@@ -101,11 +101,8 @@ class Model():
     def _set_report(self):
         self.report_fit = ""
         self.report_fit += "\nAjuste: y = %s\nParâmetros\n"%self.exp_model
-        for i in range(len(self.coef)):
-            self.report_fit += "%s: %f +/- %f\n"%(self.coef[i], self.result.values[self.coef[i]],
-                                                      np.sqrt(self.result.covar[i][i]))
-        self.report_fit += "\nNúmero de graus de liberdade = %d"%(len(self.data["x"]) - len(self.coef))
-        self.report_fit += "\n                        Chi² = %f"%self.result.chisqr
+        self.report_fit += "\nNGL  = %d"%(len(self.data["x"]) - len(self.coef))
+        self.report_fit += "\nChi² = %f"%self.result.chisqr
         self.report_fit += "\nMatriz de covariância:\n" + str(self.result.covar) + "\n\n"
 
     def plot_data(self, figsize = None, dpi = 120, size = 1, lw = 1, mstyle = '.', color = 'blue'):
