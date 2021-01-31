@@ -5,18 +5,9 @@ Created on Fri Jan 29 11:59:27 2021
 @author: Leonardo Eiji Tamayose & Guilherme Ferrari Fortino 
 """
 
-# =============================================================================
-# import numpy as np
-# import matplotlib.pyplot as plt
-# from lmfit.models import ExpressionModel
-# from lmfit import Parameters
-# =============================================================================
-
 import sys
 from src.MainWindow import MainWindow
 from PyQt5.QtWidgets import QApplication
-from PyQt5.QtGui import *
-from PyQt5 import QtWidgets, QtGui, QtCore
 import qdarkstyle
 
 

@@ -127,12 +127,14 @@ class Panels(QWidget):
         tabPropriedades = QWidget()
         tabX = QWidget()
         tabY = QWidget()
+        tabExemplos = QWidget()
         
         # Adding tabs
         self.MiddleTabs.addTab(tabFuncao,"Função de Ajuste")
         self.MiddleTabs.addTab(tabX,"Eixo X")
         self.MiddleTabs.addTab(tabY,"Eixo Y")
         self.MiddleTabs.addTab(tabPropriedades,"Propriedades do Gráfico")
+        self.MiddleTabs.addTab(tabExemplos,"Exemplos")
         
         ####################### Tab "Função de Ajuste" #######################
         
@@ -156,23 +158,33 @@ class Panels(QWidget):
         self.tableCoef.horizontalHeader().setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
         self.tableCoef.horizontalHeader().setSectionResizeMode(2, QtWidgets.QHeaderView.Stretch)
         
-        # Creting table for the fit's infos
-        self.tableInfo = QTableWidget()
-        self.tableInfo.setEditTriggers(QAbstractItemView.NoEditTriggers)
-        self.tableInfo.setFixedHeight(300)
-        self.tableInfo.setRowCount(8)
-        self.tableInfo.setColumnCount(2)
-        self.tableInfo.setHorizontalHeaderLabels(['Teste', 'Valores'])
-        self.tableInfo.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
-        self.tableInfo.horizontalHeader().setSectionResizeMode(0, QtWidgets.QHeaderView.Stretch)
-        self.tableInfo.horizontalHeader().setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
+        self.infos = QLabel("")
+        self.infos.setTextInteractionFlags(Qt.TextSelectableByMouse)
+        self.infos.setFont(QFont('Times font', 11))
+        
+# =============================================================================
+#         # Creting table for the fit's infos
+#         self.tableInfo = QTableWidget()
+#         self.tableInfo.setEditTriggers(QAbstractItemView.NoEditTriggers)
+#         self.tableInfo.setFixedHeight(300)
+#         self.tableInfo.setRowCount(8)
+#         self.tableInfo.setColumnCount(2)
+#         self.tableInfo.setHorizontalHeaderLabels(['Teste', 'Valores'])
+#         self.tableInfo.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
+#         self.tableInfo.horizontalHeader().setSectionResizeMode(0, QtWidgets.QHeaderView.Stretch)
+#         self.tableInfo.horizontalHeader().setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
+# =============================================================================
         
         # Adding table to the middle panel
         tabFuncaoLayout.addRow(self.tableCoef)
-        tabFuncaoLayout.addRow(self.tableInfo)
+        tabFuncaoLayout.addRow(self.infos)
+# =============================================================================
+#         tabFuncaoLayout.addRow(self.tableInfo)
+# =============================================================================
         
         # Setting layout for the "Função de Ajuste" tab
         tabFuncao.setLayout(tabFuncaoLayout)
+        ######################################################################
         
         ######################### Tab "Propriedades" #########################
         
@@ -194,10 +206,27 @@ class Panels(QWidget):
         
         ######################################################################
         
+        ########################### Tab "Exemplos" ###########################
+        
+        tabExemplosLayout = QVBoxLayout()               # The Vertical Box that contains the Horizontal Boxes of  labels and buttons
+        
+        textExemplos = QLabel("""
+ETpofepofeope
+dspfedgg
+                              """)
+
+        tabExemplosLayout.addWidget(textExemplos)
+
+        
+        tabExemplos.setLayout(tabExemplosLayout)
+        
+        ######################################################################
+        
         test = QWidget()
         testLayout = QFormLayout(test)
         
         PlotButton = QPushButton("Plot")
+        PlotButton.clicked.connect(self.Plot)
         
         testLayout.addRow(PlotButton)
 
@@ -205,7 +234,6 @@ class Panels(QWidget):
         MiddleLayout.addWidget(test)
         
         self.Middle.setLayout(MiddleLayout)
-        
         
     def RightPanel(self):
         self.Right = QFrame(self)
@@ -269,9 +297,17 @@ class Panels(QWidget):
             for i in range(0, len(coefs)):
                 self.tableCoef.setItem(i, 0, QTableWidgetItem(coefs[i]))
         
+    def Plot(self):
+        self.Model.fit()
+        self.infos.setText(str(self.Model))
         
+        coefs = self.Model.get_params()
+        keys = list(coefs.keys())
         
-        
+        for i in range(len(keys)):
+            
+            self.tableCoef.setItem(i, 1, QTableWidgetItem(f"{coefs[keys[i]][0]:.5E}"))
+            self.tableCoef.setItem(i, 2, QTableWidgetItem(f"{coefs[keys[i]][1]:.5E}"))
         
         
         
