@@ -35,12 +35,14 @@ class Panels(QWidget):
         self.dataFile = "Sem dados carregados"
         self.textUpload.setText(self.dataFile)
         
-        # Setting up UI
-        self.initUI()
+        # ComboBoxes for the tableData
+        self.ComboBoxes = []
         
         # Argument to clear the image
-        
         self.scatter = None
+        
+        # Setting up UI
+        self.initUI()
         
     def initUI(self):
         # Main Layout
@@ -64,6 +66,8 @@ class Panels(QWidget):
         
         # Some Splitter's properties
         Splitter.setHandleWidth(2)
+        Splitter.setCollapsible(0, False)
+        Splitter.setCollapsible(1, False)
         
         # Adding Splitter to the main layout
         self.mainLayout.addWidget(Splitter)
@@ -78,7 +82,7 @@ class Panels(QWidget):
     def LeftPanel(self):
         # Creating left panel
         self.Left = QFrame(self)
-        self.Left.setMinimumWidth(300)
+        self.Left.setMinimumWidth(400)
         self.Left.setFrameShape(QFrame.StyledPanel)
         
         # Left panel layout
@@ -98,15 +102,27 @@ class Panels(QWidget):
         self.tableData = QTableWidget()
         self.tableData.setEditTriggers(QAbstractItemView.NoEditTriggers)
         
-        # set row count
-        self.tableData.setRowCount(0)
+        # Removing Headers
+        self.tableData.horizontalHeader().hide()
+        self.tableData.verticalHeader().hide()
         
-        # set column count
+        # Set row count
+        self.tableData.setRowCount(1)
+        
+        # Set column count
         self.tableData.setColumnCount(4)
         
-        # Renaming columns
-        columnLabels = ["x", "sx", "y", "sy"]
-        self.tableData.setHorizontalHeaderLabels(columnLabels)
+        # Creating the ComboBoxes
+        for i in range(4):
+            item = QComboBox()
+            item.addItems(["x", "sx", "y", "sy"])
+            item.setEditable(True)
+            item.lineEdit().setAlignment(QtCore.Qt.AlignHCenter)
+            self.ComboBoxes.append(item)
+        
+        # Adding ComboBoxes to the table
+        for i in range(4):
+            self.tableData.setCellWidget(0, i, self.ComboBoxes[i])
         
         # Adjusting rows and columns
         self.tableData.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
@@ -274,17 +290,13 @@ dspfedgg
         
         self.Model.load_data(self.dataFile)
         
-        self.tableData.setRowCount(0)
+        self.tableData.setRowCount(len(self.Model.data['x']) + 1)
         
         for i in range(0, len(self.Model.data)):
             x = self.Model.data['x'][i]
             sx = self.Model.data['sx'][i]
             y = self.Model.data['y'][i]
             sy = self.Model.data['sy'][i]
-            
-            rowPosition = self.tableData.rowCount()
-            
-            self.tableData.insertRow(rowPosition) #insert new row
             
             itemx = QTableWidgetItem(str(x))
             itemx.setTextAlignment(QtCore.Qt.AlignCenter)
@@ -298,10 +310,10 @@ dspfedgg
             itemsy = QTableWidgetItem(str(sy))
             itemsy.setTextAlignment(QtCore.Qt.AlignCenter)
             
-            self.tableData.setItem(i, 0, itemx)
-            self.tableData.setItem(i, 1, itemsx)
-            self.tableData.setItem(i, 2, itemy)
-            self.tableData.setItem(i, 3, itemsy)
+            self.tableData.setItem(i + 1, 0, itemx)
+            self.tableData.setItem(i + 1, 1, itemsx)
+            self.tableData.setItem(i + 1, 2, itemy)
+            self.tableData.setItem(i + 1, 3, itemsy)
             
             self.tableData.resizeRowsToContents()
         
