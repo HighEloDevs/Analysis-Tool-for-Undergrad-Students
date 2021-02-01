@@ -7,17 +7,19 @@ Created on Fri Jan 29 11:59:27 2021
 
 import sys
 import os
+import ctypes
+
 from PyQt5 import QtWidgets, QtCore, QtGui
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
-import pandas as pd
+
 from src.Model import Model
 from src.Panels import Panels
 
 # Parameters
 WINDOW_WIDTH = 1500
-WINDOW_HEIGHT = 600
+WINDOW_HEIGHT = 700
 
 app = QApplication(sys.argv)
 
@@ -45,6 +47,10 @@ class MainWindow(QMainWindow):
         self.setAnimated(True)
         self.setTabShape(QtWidgets.QTabWidget.Rounded)
         self.setWindowIcon(QtGui.QIcon(scriptDir + os.path.sep + 'Análise.png')) 
+        app.setWindowIcon(QtGui.QIcon(scriptDir + os.path.sep + 'Análise.png'))
+        
+        myappid = 'mycompany.myproduct.subproduct.version' # arbitrary string
+        ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
         
         # Setting up central widget
         self.CentralWidget = Panels() 
