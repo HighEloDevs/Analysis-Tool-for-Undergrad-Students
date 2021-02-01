@@ -38,6 +38,10 @@ class Panels(QWidget):
         # Setting up UI
         self.initUI()
         
+        # Argument to clear the image
+        
+        self.scatter = None
+        
     def initUI(self):
         # Main Layout
         self.mainLayout = QHBoxLayout(self)
@@ -330,12 +334,16 @@ dspfedgg
                 self.tableCoef.setItem(i, 0, item)
                 
         self.Model.fit()
-        self.infos.setText(str(self.Model))   
-        
+        self.infos.setText(str(self.Model))
+        if self.scatter is not None:
+            self.scatter.remove()
+            self.canvas.axes.cla()
         x, y, sy, sx = self.Model.get_data()
         #self.canvas.axes.scatter(x, y, s = 2, c = "blue", marker = '.',  linewidths = 1)
-        self.canvas.axes.errorbar(x, y, yerr=sy, xerr=sx, fmt = 'bo',
-                                  ecolor = 'black', capsize = 2, ms = 2, elinewidth = 0.5)
+        self.scatter = self.canvas.axes.errorbar(x, y, yerr=sy, xerr=sx, fmt = 'bo',
+                                  ecolor = 'black', capsize = 2, ms = 0, elinewidth = 0.5)
+        px, py =self.Model.get_predict()
+        self.canvas.axes.plot(px, py, lw = 1, c = 'red')
         self.canvas.fig.canvas.draw()
         self.canvas.fig.canvas.flush_events()
         

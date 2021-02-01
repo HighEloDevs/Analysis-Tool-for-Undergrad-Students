@@ -88,7 +88,7 @@ class Model():
             self.params.add(i, value=1)
         
     def fit(self):
-        self.result = self.model.fit(data=self.data["y"].to_numpy(), x=self.data["x"].to_numpy(),
+        self.result = self.model.fit(data=self.data["y"].to_numpy(), x = self.data["x"].to_numpy(),
                                      params=self.params, scale_covar = False,
                                      weights = 1/self.data["sy"].to_numpy())
         self._set_param_values()
@@ -101,11 +101,12 @@ class Model():
     def _set_param_values(self):
         self.dict.clear()
         for i in range(len(self.coef)):
+            self.params.add(self.coef[i], self.result.values[self.coef[i]])
             self.dict.update({self.coef[i]: [self.result.values[self.coef[i]], np.sqrt(self.result.covar[i][i])]})
         
     def _set_report(self):
         self.report_fit = ""
-        self.report_fit += "\nAjuste: y = %s\nParâmetros\n"%self.exp_model
+        self.report_fit += "\nAjuste: y = %s\n"%self.exp_model
         self.report_fit += "\nNGL  = %d"%(len(self.data["x"]) - len(self.coef))
         self.report_fit += "\nChi² = %f"%self.result.chisqr
         self.report_fit += "\nMatriz de covariância:\n" + str(self.result.covar) + "\n\n"
@@ -133,6 +134,7 @@ class Model():
         return self.data["x"].to_numpy(), self.data["y"].to_numpy(), self.data["sy"].to_numpy(), self.data["sx"].to_numpy()
         
     def get_predict(self):
-        return self.result.eval(self.data["x"].to_numpy())
+        x = self.data["x"].to_numpy()
+        return x, self.result.eval(x = self.data["x"].to_numpy())
         
         

@@ -14,8 +14,8 @@ from matplotlib.backend_tools import ToolBase
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 
 class Canvas(FigureCanvas):
-    def __init__(self, parent=None, width=7, height=7, dpi=1000):
-        self.fig = plt.Figure(figsize=(width, height), dpi=dpi)
+    def __init__(self, parent=None, width=7, height=7, dpi=600):
+        self.fig  = plt.Figure(figsize=(width, height), dpi=dpi)
         self.axes = self.fig.add_subplot(111)                
         super().__init__(self.fig)
         
