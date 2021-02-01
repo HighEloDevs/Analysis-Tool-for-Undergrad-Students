@@ -115,10 +115,14 @@ class Panels(QWidget):
         # Creating the ComboBoxes
         for i in range(4):
             item = QComboBox()
-            item.addItems(["x", "sx", "y", "sy"])
             item.setEditable(True)
             item.lineEdit().setAlignment(QtCore.Qt.AlignHCenter)
             self.ComboBoxes.append(item)
+        
+        self.ComboBoxes[0].addItems(["x", "y", "sy", "sx"])
+        self.ComboBoxes[1].addItems(["y", "sy", "sx", "x"])
+        self.ComboBoxes[2].addItems(["sy", "sx", "x", "y"])
+        self.ComboBoxes[3].addItems(["sx", "x", "y", "sy"])
         
         # Adding ComboBoxes to the table
         for i in range(4):
@@ -329,6 +333,23 @@ dspfedgg
         
         # Getting Coeficients
         coefs = self.Model.get_coefficients()
+        
+        flags = [0]*6
+        flags[0] = self.ComboBoxes[0].currentText() == self.ComboBoxes[1].currentText()
+        flags[1] = self.ComboBoxes[0].currentText() == self.ComboBoxes[2].currentText()
+        flags[2] = self.ComboBoxes[0].currentText() == self.ComboBoxes[3].currentText()
+        flags[3] = self.ComboBoxes[1].currentText() == self.ComboBoxes[2].currentText()
+        flags[4] = self.ComboBoxes[1].currentText() == self.ComboBoxes[3].currentText()
+        flags[5] = self.ComboBoxes[2].currentText() == self.ComboBoxes[3].currentText()
+        
+        if True in flags:
+            msg = QMessageBox()
+            msg.setIcon(QMessageBox.Critical)
+            msg.setText("Error")
+            msg.setInformativeText('More information')
+            msg.setWindowTitle("Error")
+            msg.exec_()
+            
         
         if len(coefs) >= 4:
             self.tableCoef.setRowCount(0)
