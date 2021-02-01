@@ -11,9 +11,13 @@ from PyQt5 import QtWidgets, QtCore, QtGui
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
-import pandas as pd
 from src.Model import Model
+from src.PltWidget import Canvas, MyToolbar
 
+import matplotlib.pyplot as plt
+plt.rcParams['toolbar'] = 'toolmanager'
+import numpy as np
+from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 # Parameters
 WINDOW_WIDTH = 1500
 WINDOW_HEIGHT = 600
@@ -31,37 +35,42 @@ class Panels(QWidget):
         self.dataFile = "Sem dados carregados"
         self.textUpload.setText(self.dataFile)
         
-        # Setting UI
+        # Setting up UI
         self.initUI()
         
-	
     def initUI(self):
-        
-        # Principal Layout
-        hbox = QHBoxLayout(self)
-        self.principalLayout = QHBoxLayout(self)
+        # Main Layout
+        self.mainLayout = QHBoxLayout(self)
         
         # Setting up three main panels
         self.LeftPanel()
         self.MiddlePanel()
         self.RightPanel()
         
-        # Adding panels to the principal layout
-        self.principalLayout.addWidget(self.Left)
-        self.principalLayout.addWidget(self.Middle)
-        self.principalLayout.addWidget(self.Right)
+        # Creating Splitter and adding the panels
+        Splitter = QSplitter(QtCore.Qt.Horizontal)
+        Splitter.addWidget(self.Left)
+        Splitter.addWidget(self.Middle)
+        Splitter.addWidget(self.Right)
         
-        # Setting layout as main widget
-        self.setLayout(self.principalLayout)
+        # Setting Strech Factor
+        Splitter.setStretchFactor(0, 1)
+        Splitter.setStretchFactor(1, 2)
+        Splitter.setStretchFactor(2, 3)
         
-        # Style
-        QApplication.setStyle(QStyleFactory.create('Fusion'))
+        # Some Splitter's properties
+        Splitter.setHandleWidth(2)
+        
+        # Adding Splitter to the main layout
+        self.mainLayout.addWidget(Splitter)
+        
+        # Setting mainLayout as main widget
+        self.setLayout(self.mainLayout)
         
     def LeftPanel(self):
         # Creating left panel
         self.Left = QFrame(self)
-        self.Left.move(0, 0)
-        self.Left.resize(int(WINDOW_WIDTH / 3), WINDOW_HEIGHT-20)
+        self.Left.setMinimumWidth(150)
         self.Left.setFrameShape(QFrame.StyledPanel)
         
         # Left panel layout
@@ -112,8 +121,7 @@ class Panels(QWidget):
         
     def MiddlePanel(self):
         self.Middle = QFrame(self)
-        self.Middle.move(500, 0)
-        self.Middle.resize(400, WINDOW_HEIGHT-20)
+        self.Middle.setMinimumWidth(400)
         self.Middle.setFrameShape(QFrame.StyledPanel)
         
         # Middle panel layout
@@ -237,10 +245,27 @@ dspfedgg
         
     def RightPanel(self):
         self.Right = QFrame(self)
-        self.Right.move(900, 0)
         self.Right.resize(600, WINDOW_HEIGHT-20)
         self.Right.setFrameShape(QFrame.StyledPanel)
-
+        
+        # Right panel layout
+        RightPanelLayout = QVBoxLayout()
+        
+        self.canvas = Canvas(self, width=7, height=7, dpi=200)
+        x = np.linspace(0, 10, 200)
+        self.canvas.axes.plot(np.sin(x), x)
+        
+        # toolbar = NavigationToolbar(self.canvas, self)
+        toolbar = MyToolbar(self.canvas, self)
+        print(toolbar.toolitems[-1])
+        teste = QPushButton("teste")
+        toolbar.addWidget(teste)
+        
+        RightPanelLayout.addWidget(toolbar)
+        RightPanelLayout.addWidget(self.canvas)
+    
+        self.Right.setLayout(RightPanelLayout)
+        
     def Upload(self):
         # Getting file name
         filename = QFileDialog.getOpenFileName(self, 'Open File', os.getenv('HOME'), filter="Text files (*.txt);;Excel files (*.csv)")

@@ -11,6 +11,7 @@ from PyQt5.QtWidgets import QApplication
 import qdarkstyle
 
 
+
 def main():
     # Initializing App
     app = QApplication(sys.argv)

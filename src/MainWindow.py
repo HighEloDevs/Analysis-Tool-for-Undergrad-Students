@@ -26,17 +26,6 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
         
-        # Main window properties
-        self.setWindowTitle("Analysis Tool for Undergrad Students | ATUS")
-        self.setFixedSize(WINDOW_WIDTH, WINDOW_HEIGHT)
-        self.setAnimated(True)
-        self.setTabShape(QtWidgets.QTabWidget.Rounded)
-        self.setWindowIcon(QtGui.QIcon('KAIBARINDO.PNG')) 
-        
-        # Setting up central widget
-        self.CentralWidget = Panels() 
-        self.setCentralWidget(self.CentralWidget) 
-        
         # Actual file name
         self.aFile = None
         
@@ -47,10 +36,24 @@ class MainWindow(QMainWindow):
         self.initUI()
         
     def initUI(self):
-            
-        self.createMenu()
+        # Path
+        scriptDir = os.path.dirname(os.path.realpath(__file__))
         
-        self.retranslateUi()
+        # Main window properties
+        self.setWindowTitle("Analysis Tool for Undergrad Students | ATUS")
+        self.setGeometry(200, 200, WINDOW_WIDTH, WINDOW_HEIGHT)
+        self.setAnimated(True)
+        self.setTabShape(QtWidgets.QTabWidget.Rounded)
+        self.setWindowIcon(QtGui.QIcon(scriptDir + os.path.sep + 'Análise.png')) 
+        
+        # Setting up central widget
+        self.CentralWidget = Panels() 
+        self.setCentralWidget(self.CentralWidget) 
+        
+        # Creating Menu    
+        # self.createMenu()
+        # self.retranslateUi()
+        
         QtCore.QMetaObject.connectSlotsByName(self)
         
     def retranslateUi(self):
