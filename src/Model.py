@@ -134,12 +134,9 @@ class Model():
         return self.data["x"].to_numpy(), self.data["y"].to_numpy(), self.data["sy"].to_numpy(), self.data["sx"].to_numpy()
         
     def get_predict(self):
-        # x = self.data["x"].to_numpy()
         x_min = self.data['x'].min()
         x_max = self.data['x'].max()
-        
-        x_plot = np.linspace(x_min - 20, x_max + 20, 1000)
+        x_plot = np.linspace(x_min, x_max, 2)
         return x_plot, self.result.eval(x = x_plot)
-            # x = self.data["x"].to_numpy())
         
         
