@@ -243,8 +243,7 @@ dspfedgg
         RightPanelLayout = QVBoxLayout()
         
         self.canvas = Canvas(self, width=7, height=7, dpi=200)
-        x = np.linspace(0, 10, 200)
-        self.canvas.axes.plot(np.sin(x), x)
+        #self.canvas.axes.scatter()
         
         # toolbar = NavigationToolbar(self.canvas, self)
         toolbar = MyToolbar(self.canvas, self)
@@ -331,7 +330,14 @@ dspfedgg
                 self.tableCoef.setItem(i, 0, item)
                 
         self.Model.fit()
-        self.infos.setText(str(self.Model))        
+        self.infos.setText(str(self.Model))   
+        
+        x, y, sy, sx = self.Model.get_data()
+        #self.canvas.axes.scatter(x, y, s = 2, c = "blue", marker = '.',  linewidths = 1)
+        self.canvas.axes.errorbar(x, y, yerr=sy, xerr=sx, fmt = 'bo',
+                                  ecolor = 'black', capsize = 2, ms = 2, elinewidth = 0.5)
+        self.canvas.fig.canvas.draw()
+        self.canvas.fig.canvas.flush_events()
         
         coefs = self.Model.get_params()
         keys = list(coefs.keys())
@@ -344,6 +350,7 @@ dspfedgg
             item2 = QTableWidgetItem(f"{coefs[keys[i]][1]:.5E}")
             item2.setTextAlignment(QtCore.Qt.AlignCenter)
             self.tableCoef.setItem(i, 2, item2)
+        
         
         
         

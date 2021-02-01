@@ -26,6 +26,7 @@ class Model():
         self.coef       = list()
         self.params     = Parameters()
         self.dict       = dict()
+        self.mode       = 0
         
     def __str__(self):
         return self.report_fit
@@ -36,18 +37,22 @@ class Model():
         # Janela que seleciona dados -> path
         
         # Making data frame and renaming columns
-        df = pd.read_csv(data_path, sep='\t', header=None).dropna()
+        df = pd.read_csv(data_path, sep='\t', header=None, dtype = str).dropna()
         # Making sure dot is a decimal separator
-        try:
-            df = df.applymap(lambda x: x.replace(',', '.')).astype(float)
-        except:
-            pass
+        for i in df.columns:
+            df[i] = [x.replace(',', '.') for x in df[i]]
+            df[i] = df[i].astype(float)
+            
+        self.mode = len(df.columns) - 2
         
         # Naming columns
-        try:
-            df.columns=['x', 'sx', 'y', 'sy']
-        except:
-            df.columns=['x', 'y']
+        
+        if self.mode == 0:
+            df["sy"] = [1]*len(df[0])
+            df["sx"] = [1]*len(df[0])
+        elif self.mode == 1:
+            df["sx"] = [1]*len(df[0])
+        df.columns= ['x', 'y', 'sy', 'sx']
             
         self.data = deepcopy(df)
         
@@ -118,8 +123,16 @@ class Model():
     def get_coefficients(self):
         ''' Deprecated function '''
         return self.coef 
+    
+    def get_data(self, *args):
+        ''' Return data arrays based on mode attribute '''
+        if self.mode == 0:
+            return self.data["x"].to_numpy(), self.data["y"].to_numpy()
+        elif self.mode == 1:
+            return self.data["x"].to_numpy(), self.data["y"].to_numpy(), self.data["sy"].to_numpy()
+        return self.data["x"].to_numpy(), self.data["y"].to_numpy(), self.data["sy"].to_numpy(), self.data["sx"].to_numpy()
         
-
-    #def fit(self):
+    def get_predict(self):
+        return self.result.eval(self.data["x"].to_numpy())
         
         
