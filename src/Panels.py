@@ -307,14 +307,40 @@ dspfedgg
         # Right panel layout
         RightPanelLayout = QVBoxLayout()
         
-        self.canvas = Canvas(self, width=7, height=7, dpi=200)
-        #self.canvas.axes.scatter()
+        # Initialize tab screen
+        self.RightTabs = QTabWidget()
+        
+        tabNormal = QWidget()
+        tabResiduos = QWidget()
+        
+        # Adding tabs
+        self.RightTabs.addTab(tabNormal,"Gráfico sem resíduos")
+        self.RightTabs.addTab(tabResiduos,"Gráfico com resíduos")
+        
+        # Creating canvas
+        self.canvas1 = Canvas(self, width=7, height=7, dpi=200)
+        self.canvas2 = Canvas(self, width=7, height=7, dpi=200)
         
         # toolbar = NavigationToolbar(self.canvas, self)
-        toolbar = MyToolbar(self.canvas, self)
+        toolbar1 = MyToolbar(self.canvas1, self)
+        toolbar2 = MyToolbar(self.canvas2, self)
         
-        RightPanelLayout.addWidget(toolbar)
-        RightPanelLayout.addWidget(self.canvas)
+        # Tab "Gráfico sem resíduos"
+        tabNormalLayout = QVBoxLayout()
+        tabNormalLayout.addWidget(toolbar1)
+        tabNormalLayout.addWidget(self.canvas1)
+        tabNormal.setLayout(tabNormalLayout)
+        
+        # Tab "Gráfico com resíduos"
+        tabResiduosLayout = QVBoxLayout()
+        tabResiduosLayout.addWidget(toolbar2)
+        tabResiduosLayout.addWidget(self.canvas2)
+        tabResiduos.setLayout(tabResiduosLayout)
+        
+        RightPanelLayout.addWidget(self.RightTabs)
+        
+        # RightPanelLayout.addWidget(toolbar)
+        # RightPanelLayout.addWidget(self.canvas)
     
         self.Right.setLayout(RightPanelLayout)
         
@@ -424,15 +450,15 @@ dspfedgg
             self.infos.setText(str(self.Model))
             if self.scatter is not None:
                 self.scatter.remove()
-                self.canvas.axes.cla()
+                self.canvas1.axes.cla()
             x, y, sy, sx = self.Model.get_data()
-            #self.canvas.axes.scatter(x, y, s = 2, c = "blue", marker = '.',  linewidths = 1)
-            self.scatter = self.canvas.axes.errorbar(x, y, yerr=sy, xerr=sx, fmt = 'bo',
+            #self.canvas1.axes.scatter(x, y, s = 2, c = "blue", marker = '.',  linewidths = 1)
+            self.scatter = self.canvas1.axes.errorbar(x, y, yerr=sy, xerr=sx, fmt = 'bo',
                                       ecolor = 'black', capsize = 2, ms = 0, elinewidth = 0.5)
             px, py =self.Model.get_predict()
-            self.canvas.axes.plot(px, py, lw = 1, c = 'red')
-            self.canvas.fig.canvas.draw()
-            self.canvas.fig.canvas.flush_events()
+            self.canvas1.axes.plot(px, py, lw = 1, c = 'red')
+            self.canvas1.fig.canvas.draw()
+            self.canvas1.fig.canvas.flush_events()
             
             coefs = self.Model.get_params()
             keys = list(coefs.keys())
