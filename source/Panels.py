@@ -11,8 +11,10 @@ from PyQt5 import QtWidgets, QtCore, QtGui
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
-from src.Model import Model
-from src.PltWidget import Canvas, Canvas2, MyToolbar
+
+from source.Model import Model
+from source.PltWidget import Canvas, Canvas2, MyToolbar
+from source.SideMenu import SideMenu
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -59,12 +61,46 @@ class Panels(QWidget):
         
     def initUI(self):
         # Main Layout
-        self.mainLayout = QHBoxLayout(self)
+        self.mainLayout = QVBoxLayout(self)
+        
+        # Top Frame
+        self.Top_Frame = QFrame()
+        self.Top_Frame.setContentsMargins(0, 0, 0, 0)
+        self.Top_Frame.setFixedHeight(100)
+        # self.Top_Frame.setStyleSheet("background-color: rgb(36, 36, 36);") 
+        
+        # Top Frame layout
+        self.Top_FrameLayout = QHBoxLayout()
+        self.Top_Frame.setLayout(self.Top_FrameLayout)
+        
+        # Content Layout
+        self.ContentLayout = QHBoxLayout(self)
+        self.ContentLayout.setContentsMargins(0, 0, 0, 0)
         
         # Setting up three main panels
         self.LeftPanel()
         self.MiddlePanel()
         self.RightPanel()
+        
+        # Creating side menu
+        self.SideMenu = SideMenu()
+        self.ContentLayout.addWidget(self.SideMenu)
+        
+        # Toggle button
+        ToggleButtonWidget = QWidget()
+        ToggleButtonWidgetLayout = QVBoxLayout()
+        ToggleButtonWidgetLayout.setGeometry(QRect(0, 0, 10, 10))
+        # ToggleButtonWidgetLayout.setAlignment(QtCore.Qt.AlignLeft)
+        
+        self.ToggleButton = QPushButton("Teste")
+        self.ToggleButton.clicked.connect(self.SideMenu.doAnim)
+        self.ToggleButton.setStyleSheet(u"color: rgb(255, 255, 255);\n""border: 0px solid;")
+        
+        ToggleButtonWidgetLayout.addWidget(self.ToggleButton)
+        ToggleButtonWidget.setLayout(ToggleButtonWidgetLayout)
+        
+        self.Top_FrameLayout.addWidget(ToggleButtonWidget)
+        
         
         # Creating Splitter and adding the panels
         Splitter = QSplitter(QtCore.Qt.Horizontal)
@@ -82,10 +118,16 @@ class Panels(QWidget):
         Splitter.setCollapsible(0, False)
         Splitter.setCollapsible(1, False)
         
-        # Adding Splitter to the main layout
-        self.mainLayout.addWidget(Splitter)
+        # Adding Top_Frame to main Layout
+        self.mainLayout.addWidget(self.Top_Frame)
         
-        # Setting mainLayout as main widget
+        # Adding Splitter to the content layout
+        self.ContentLayout.addWidget(Splitter)
+        
+        # Adding content layout to main Layout
+        self.mainLayout.addLayout(self.ContentLayout)
+        
+        # Setting MainLayout as main widget
         self.setLayout(self.mainLayout)
         
 # =============================================================================
@@ -171,6 +213,7 @@ class Panels(QWidget):
         
         # Middle panel layout
         MiddleLayout = QVBoxLayout()
+        # MiddleLayout.setContentsMargins(0, 0, 0, 0)
         
         # Initialize tab screen
         self.MiddleTabs = QTabWidget()

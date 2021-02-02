@@ -14,13 +14,18 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 
-from src.Model import Model
-from src.Panels import Panels
+from source.Model import Model
+from source.Panels import Panels
+from source.SideMenu import SideMenu
+
+from fbs_runtime.application_context.PyQt5 import ApplicationContext
 
 # Parameters
 WINDOW_WIDTH = 1500
 WINDOW_HEIGHT = 700
 
+# appctxt = ApplicationContext()
+# appctxt.app = QApplication(sys.argv)
 app = QApplication(sys.argv)
 
 class MainWindow(QMainWindow):
@@ -49,7 +54,7 @@ class MainWindow(QMainWindow):
         self.setWindowIcon(QtGui.QIcon(scriptDir + os.path.sep + 'Análise.png')) 
         app.setWindowIcon(QtGui.QIcon(scriptDir + os.path.sep + 'Análise.png'))
         
-        myappid = 'mycompany.myproduct.subproduct.version' # arbitrary string
+        myappid = 'Analysis Tool for Undergrad Students' # arbitrary string
         ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
         
         # Setting up central widget
