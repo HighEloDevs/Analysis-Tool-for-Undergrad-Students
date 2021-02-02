@@ -16,7 +16,17 @@ from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as Navigatio
 class Canvas(FigureCanvas):
     def __init__(self, parent=None, width=7, height=7, dpi=600):
         self.fig  = plt.Figure(figsize=(width, height), dpi=dpi)
+        plt.grid(False)
         self.axes = self.fig.add_subplot(111)                
+        super().__init__(self.fig)
+        
+class Canvas2(FigureCanvas):
+    def __init__(self, parent=None, width=7, height=7, dpi=600):
+        self.fig = plt.Figure(figsize=(width, height), dpi=dpi)
+        plt.grid(False)
+        self.ax1, self.ax2 = self.fig.subplots(2, 1, sharex=True,
+                                                      gridspec_kw={'height_ratios': [3, 1.0]})
+        self.fig.subplots_adjust(left = None, bottom = None, right = None, top = None, wspace = None, hspace = 0)           
         super().__init__(self.fig)
         
 class MyToolbar(NavigationToolbar):

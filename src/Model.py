@@ -32,17 +32,11 @@ class Model():
         return self.report_fit
         
     def load_data(self, data_path):
-        """ Loads the data from a given path """
-        
-        # Janela que seleciona dados -> path
-        
-        # Making data frame and renaming columns
+        """ Loads the data from a given path. """
         df = pd.read_csv(data_path, sep='\t', header=None, dtype = str).dropna()
-        # Making sure dot is a decimal separator
         for i in df.columns:
             df[i] = [x.replace(',', '.') for x in df[i]]
             df[i] = df[i].astype(float)
-            
         self.mode = len(df.columns) - 2
         
         # Naming columns
@@ -57,19 +51,19 @@ class Model():
         self.data = deepcopy(df)
         
     def set_x_axis(self, name = ""):
-        """ Set new x label to the graph """
+        """ Set new x label to the graph. """
         self.eixos[0] = [name]
     
     def set_y_axis(self, name = ""):
-        """ Set new y label to the graph """
+        """ Set new y label to the graph. """
         self.eixos[1] = [name]
 
     def set_title(self, name = ""):
-        """ Set new title to the graph """
+        """ Set new title to the graph. """
         self.eixos[2] = [name]
         
     def set_expression(self, exp = ""):
-        """ Set new expression to model"""
+        """ Set new expression to model. """
 # =============================================================================
 #         if type(exp) != str:
 #             print("Expression is not a string. Setting to default")
@@ -79,7 +73,7 @@ class Model():
         self._set_model()
         
     def _set_model(self):
-        """ Creates the new model """
+        """ Creates the new model. """
         self.model = ExpressionModel(self.exp_model)
         self.coef = list()
         self.params = Parameters()
@@ -95,7 +89,7 @@ class Model():
         self._set_report()
         
     def get_params(self):
-        ''' Return a dict with parameters as keys and returns a list with [value, uncertainty] '''
+        ''' Return a dict with parameters as keys and returns a list with [value, uncertainty]. '''
         return self.dict
         
     def _set_param_values(self):
@@ -112,7 +106,7 @@ class Model():
         self.report_fit += "\nMatriz de covariância:\n" + str(self.result.covar) + "\n\n"
 
     def plot_data(self, figsize = None, dpi = 120, size = 1, lw = 1, mstyle = '.', color = 'blue'):
-        """ Scatter the data """
+        """ Scatter the data. """
         fig = plt.figure(figsize = figsize, dpi = dpi)
         plt.scatter(x = self.data["x"].to_numpy(), y = self.data["y"].to_numpy(), s = size,
                     c = color, marker = mstyle, linewidths = 1)
@@ -122,11 +116,11 @@ class Model():
         fig.show()
         
     def get_coefficients(self):
-        ''' Deprecated function '''
+        ''' Deprecated function. '''
         return self.coef 
     
     def get_data(self, *args):
-        ''' Return data arrays based on mode attribute '''
+        ''' Return data arrays based on mode attribute. '''
         if self.mode == 0:
             return self.data["x"].to_numpy(), self.data["y"].to_numpy()
         elif self.mode == 1:
@@ -134,9 +128,14 @@ class Model():
         return self.data["x"].to_numpy(), self.data["y"].to_numpy(), self.data["sy"].to_numpy(), self.data["sx"].to_numpy()
         
     def get_predict(self):
+        ''' Return two points to form the adjusted function. '''
         x_min = self.data['x'].min()
         x_max = self.data['x'].max()
         x_plot = np.linspace(x_min, x_max, 2)
         return x_plot, self.result.eval(x = x_plot)
+    
+    def get_residuals(self):
+        ''' Return residuals from adjust. '''
+        return self.data["y"].to_numpy() - self.result.eval(x = self.data["x"].to_numpy())
         
         

@@ -12,7 +12,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from src.Model import Model
-from src.PltWidget import Canvas, MyToolbar
+from src.PltWidget import Canvas, Canvas2, MyToolbar
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -39,7 +39,8 @@ class Panels(QWidget):
         self.ComboBoxes = []
         
         # Argument to clear the image
-        self.scatter = None
+        self.scatter1 = None
+        self.scatter2 = None
         
         # Params for the graph
         self.PontoCor = ""
@@ -50,7 +51,7 @@ class Panels(QWidget):
         self.tEixox = ""
         self.tEixoy = ""
         
-        self.Grade = False
+        self.Grade    = False
         self.Residuos = False
         
         # Setting up UI
@@ -319,7 +320,7 @@ dspfedgg
         
         # Creating canvas
         self.canvas1 = Canvas(self, width=7, height=7, dpi=200)
-        self.canvas2 = Canvas(self, width=7, height=7, dpi=200)
+        self.canvas2 = Canvas2(self, width=7, height=7, dpi=200)
         
         # toolbar = NavigationToolbar(self.canvas, self)
         toolbar1 = MyToolbar(self.canvas1, self)
@@ -440,7 +441,11 @@ dspfedgg
             self.Residuos = self.qResiduos.isChecked()
             
             self.PontoCor = self.qPontoCor.currentText()
-            self.PontoTamanho = self.qPontoTamanho.currentText()
+            if self.qPontoTamanho.currentText() != "":
+                try:
+                    self.PontoTamanho = float(self.qPontoTamanho.currentText())
+                except:
+                    self.PontoTamanho = 1.0
             self.PontoSimbolo = self.qPontoSimbolo.currentText()
                     
             columns = [self.ComboBoxes[i].currentText() for i in range(4)]
@@ -448,17 +453,46 @@ dspfedgg
             
             self.Model.fit()
             self.infos.setText(str(self.Model))
-            if self.scatter is not None:
-                self.scatter.remove()
+            if self.scatter1 is not None:
+                self.scatter1.remove()
                 self.canvas1.axes.cla()
             x, y, sy, sx = self.Model.get_data()
             #self.canvas1.axes.scatter(x, y, s = 2, c = "blue", marker = '.',  linewidths = 1)
-            self.scatter = self.canvas1.axes.errorbar(x, y, yerr=sy, xerr=sx, fmt = 'bo',
-                                      ecolor = 'black', capsize = 2, ms = 0, elinewidth = 0.5)
+            self.scatter1 = self.canvas1.axes.errorbar(x, y, yerr=sy, xerr=sx, fmt = 'bo',
+                                      ecolor = 'black', capsize = 0, ms = self.PontoTamanho, elinewidth = 0.5)
+            self.canvas1.axes.set(ylabel = self.tEixoy, xlabel = self.tEixox)
+            self.canvas1.axes.set_title(self.Titulo)
             px, py =self.Model.get_predict()
             self.canvas1.axes.plot(px, py, lw = 1, c = 'red')
+            if self.Grade:
+                self.canvas1.axes.grid(True)
+                self.canvas2.ax1.grid(True)
+                self.canvas2.ax2.grid(True)
+            else:
+                self.canvas1.axes.grid(False)
+                self.canvas2.ax1.grid(False)
+                self.canvas2.ax2.grid(False)
+            
+            if self.Residuos:
+                if self.scatter2 is not None:
+                    self.scatter2.remove()
+                    self.canvas2.ax1.cla()
+                    self.canvas2.ax2.cla()
+                self.canvas2.ax1.set(ylabel = self.tEixoy)
+                self.canvas2.ax2.set(xlabel = self.tEixox)
+                self.canvas2.ax1.set_title(self.Titulo)
+                self.scatter2 = self.canvas2.ax1.errorbar(x, y, yerr=sy, xerr=sx, fmt = 'bo',
+                                      ecolor = 'black', capsize = 0, ms = self.PontoTamanho, elinewidth = 0.5)
+                y_r = self.Model.get_residuals()
+                self.canvas2.ax2.errorbar(x, y_r, yerr=sy, xerr = sx, fmt = 'b.',
+                                      ecolor = 'black', capsize = 0, ms = self.PontoTamanho, elinewidth = 0.5)
+                self.canvas2.ax1.plot(px, py, lw = 1, c = 'red')
+            
+            
             self.canvas1.fig.canvas.draw()
             self.canvas1.fig.canvas.flush_events()
+            self.canvas2.fig.canvas.draw()
+            self.canvas2.fig.canvas.flush_events()
             
             coefs = self.Model.get_params()
             keys = list(coefs.keys())
