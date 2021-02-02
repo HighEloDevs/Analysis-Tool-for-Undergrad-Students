@@ -209,19 +209,48 @@ class Panels(QWidget):
 #         Tab "Propriedades"
 # =============================================================================
         
+        # Combo Boxes
+        self.PontoCor = QComboBox()
+        self.PontoTamanho = QComboBox()
+        self.PontoSimbolo = QComboBox()
+        
+        # Check Marks
+        self.Grade = QCheckBox()
+        self.Residuos = QCheckBox()
+        
+        # Lines Edit
+        self.Titulo = QLineEdit()
+        self.tEixox = QLineEdit()
+        self.tEixoy = QLineEdit()
+
         tabPropriedadesLayout = QFormLayout()
         tabPropriedades.layout = tabPropriedadesLayout
         
         SymbolWidget = QWidget()
         SymbolWidgetLayout = QHBoxLayout()
         SymbolWidgetLayout.addWidget(QLabel("Símbolo"))
-        SymbolWidgetLayout.addWidget(QComboBox())
-        SymbolWidgetLayout.addWidget(QComboBox())
-        SymbolWidgetLayout.addWidget(QComboBox())
+        SymbolWidgetLayout.addWidget(self.PontoCor)
+        SymbolWidgetLayout.addWidget(self.PontoTamanho)
+        SymbolWidgetLayout.addWidget(self.PontoSimbolo)
         SymbolWidget.setLayout(SymbolWidgetLayout)
-        
-        pushButton1 = QCheckBox()
         tabPropriedadesLayout.addRow(SymbolWidget)
+        
+        TitulosWidget = QWidget()
+        TitulosLayout = QFormLayout()
+        TitulosLayout.addRow(QLabel("Título"), self.Titulo)
+        TitulosLayout.addRow(QLabel("Eixo X"), self.tEixox)
+        TitulosLayout.addRow(QLabel("Eixo Y"), self.tEixoy)
+        TitulosWidget.setLayout(TitulosLayout)
+        tabPropriedadesLayout.addRow(TitulosWidget)
+        
+        ChecksWidget = QWidget()
+        ChecksWidgetLayout = QHBoxLayout()
+        ChecksWidgetLayout.addWidget(QLabel("Grade:"))
+        ChecksWidgetLayout.addWidget(self.Grade)
+        ChecksWidgetLayout.addWidget(QLabel("Resíduos:"))
+        ChecksWidgetLayout.addWidget(self.Residuos)
+        ChecksWidget.setLayout(ChecksWidgetLayout)
+        tabPropriedadesLayout.addRow(ChecksWidget)
         
         tabPropriedades.setLayout(tabPropriedades.layout)
         
@@ -315,9 +344,9 @@ dspfedgg
             itemsy.setTextAlignment(QtCore.Qt.AlignCenter)
             
             self.tableData.setItem(i + 1, 0, itemx)
-            self.tableData.setItem(i + 1, 1, itemsx)
-            self.tableData.setItem(i + 1, 2, itemy)
-            self.tableData.setItem(i + 1, 3, itemsy)
+            self.tableData.setItem(i + 1, 1, itemy)
+            self.tableData.setItem(i + 1, 2, itemsy)
+            self.tableData.setItem(i + 1, 3, itemsx)
             
             self.tableData.resizeRowsToContents()
         
@@ -345,52 +374,53 @@ dspfedgg
         if True in flags:
             msg = QMessageBox()
             msg.setIcon(QMessageBox.Critical)
-            msg.setText("Error")
-            msg.setInformativeText('More information')
+            msg.setText("Colunas com nomes iguais! Verifique a tabela de dados.")
             msg.setWindowTitle("Error")
             msg.exec_()
-            
-        
-        if len(coefs) >= 4:
-            self.tableCoef.setRowCount(0)
-        
-            for i in range(0, len(coefs)):
-                rowPosition = self.tableCoef.rowCount()     
-                self.tableCoef.insertRow(rowPosition) 
-                item = QTableWidgetItem(coefs[i])
-                item.setTextAlignment(QtCore.Qt.AlignCenter)
-                self.tableCoef.setItem(i, 0, item)
         else:
-            for i in range(0, len(coefs)):
-                item = QTableWidgetItem(coefs[i])
-                item.setTextAlignment(QtCore.Qt.AlignCenter)
-                self.tableCoef.setItem(i, 0, item)
-                
-        self.Model.fit()
-        self.infos.setText(str(self.Model))
-        if self.scatter is not None:
-            self.scatter.remove()
-            self.canvas.axes.cla()
-        x, y, sy, sx = self.Model.get_data()
-        #self.canvas.axes.scatter(x, y, s = 2, c = "blue", marker = '.',  linewidths = 1)
-        self.scatter = self.canvas.axes.errorbar(x, y, yerr=sy, xerr=sx, fmt = 'bo',
-                                  ecolor = 'black', capsize = 2, ms = 0, elinewidth = 0.5)
-        px, py =self.Model.get_predict()
-        self.canvas.axes.plot(px, py, lw = 1, c = 'red')
-        self.canvas.fig.canvas.draw()
-        self.canvas.fig.canvas.flush_events()
-        
-        coefs = self.Model.get_params()
-        keys = list(coefs.keys())
-        
-        for i in range(len(keys)):
-            item1 = QTableWidgetItem(f"{coefs[keys[i]][0]:.5E}")
-            item1.setTextAlignment(QtCore.Qt.AlignCenter)
-            self.tableCoef.setItem(i, 1, item1)
+            if len(coefs) >= 4:
+                self.tableCoef.setRowCount(0)
             
-            item2 = QTableWidgetItem(f"{coefs[keys[i]][1]:.5E}")
-            item2.setTextAlignment(QtCore.Qt.AlignCenter)
-            self.tableCoef.setItem(i, 2, item2)
+                for i in range(0, len(coefs)):
+                    rowPosition = self.tableCoef.rowCount()     
+                    self.tableCoef.insertRow(rowPosition) 
+                    item = QTableWidgetItem(coefs[i])
+                    item.setTextAlignment(QtCore.Qt.AlignCenter)
+                    self.tableCoef.setItem(i, 0, item)
+            else:
+                for i in range(0, len(coefs)):
+                    item = QTableWidgetItem(coefs[i])
+                    item.setTextAlignment(QtCore.Qt.AlignCenter)
+                    self.tableCoef.setItem(i, 0, item)
+                    
+            columns = [self.ComboBoxes[i].currentText() for i in range(4)]
+            self.Model.data.columns = columns
+            
+            self.Model.fit()
+            self.infos.setText(str(self.Model))
+            if self.scatter is not None:
+                self.scatter.remove()
+                self.canvas.axes.cla()
+            x, y, sy, sx = self.Model.get_data()
+            #self.canvas.axes.scatter(x, y, s = 2, c = "blue", marker = '.',  linewidths = 1)
+            self.scatter = self.canvas.axes.errorbar(x, y, yerr=sy, xerr=sx, fmt = 'bo',
+                                      ecolor = 'black', capsize = 2, ms = 0, elinewidth = 0.5)
+            px, py =self.Model.get_predict()
+            self.canvas.axes.plot(px, py, lw = 1, c = 'red')
+            self.canvas.fig.canvas.draw()
+            self.canvas.fig.canvas.flush_events()
+            
+            coefs = self.Model.get_params()
+            keys = list(coefs.keys())
+            
+            for i in range(len(keys)):
+                item1 = QTableWidgetItem(f"{coefs[keys[i]][0]:.5E}")
+                item1.setTextAlignment(QtCore.Qt.AlignCenter)
+                self.tableCoef.setItem(i, 1, item1)
+                
+                item2 = QTableWidgetItem(f"{coefs[keys[i]][1]:.5E}")
+                item2.setTextAlignment(QtCore.Qt.AlignCenter)
+                self.tableCoef.setItem(i, 2, item2)
         
         
         
