@@ -41,6 +41,18 @@ class Panels(QWidget):
         # Argument to clear the image
         self.scatter = None
         
+        # Params for the graph
+        self.PontoCor = ""
+        self.PontoSimbolo = ""
+        self.PontoTamanho = 1
+        
+        self.Titulo = ""
+        self.tEixox = ""
+        self.tEixoy = ""
+        
+        self.Grade = False
+        self.Residuos = False
+        
         # Setting up UI
         self.initUI()
         
@@ -210,18 +222,18 @@ class Panels(QWidget):
 # =============================================================================
         
         # Combo Boxes
-        self.PontoCor = QComboBox()
-        self.PontoTamanho = QComboBox()
-        self.PontoSimbolo = QComboBox()
+        self.qPontoCor = QComboBox()
+        self.qPontoTamanho = QComboBox()
+        self.qPontoSimbolo = QComboBox()
         
         # Check Marks
-        self.Grade = QCheckBox()
-        self.Residuos = QCheckBox()
+        self.qGrade = QCheckBox()
+        self.qResiduos = QCheckBox()
         
         # Lines Edit
-        self.Titulo = QLineEdit()
-        self.tEixox = QLineEdit()
-        self.tEixoy = QLineEdit()
+        self.qTitulo = QLineEdit()
+        self.qtEixox = QLineEdit()
+        self.qtEixoy = QLineEdit()
 
         tabPropriedadesLayout = QFormLayout()
         tabPropriedades.layout = tabPropriedadesLayout
@@ -229,26 +241,26 @@ class Panels(QWidget):
         SymbolWidget = QWidget()
         SymbolWidgetLayout = QHBoxLayout()
         SymbolWidgetLayout.addWidget(QLabel("Símbolo"))
-        SymbolWidgetLayout.addWidget(self.PontoCor)
-        SymbolWidgetLayout.addWidget(self.PontoTamanho)
-        SymbolWidgetLayout.addWidget(self.PontoSimbolo)
+        SymbolWidgetLayout.addWidget(self.qPontoCor)
+        SymbolWidgetLayout.addWidget(self.qPontoTamanho)
+        SymbolWidgetLayout.addWidget(self.qPontoSimbolo)
         SymbolWidget.setLayout(SymbolWidgetLayout)
         tabPropriedadesLayout.addRow(SymbolWidget)
         
         TitulosWidget = QWidget()
         TitulosLayout = QFormLayout()
-        TitulosLayout.addRow(QLabel("Título"), self.Titulo)
-        TitulosLayout.addRow(QLabel("Eixo X"), self.tEixox)
-        TitulosLayout.addRow(QLabel("Eixo Y"), self.tEixoy)
+        TitulosLayout.addRow(QLabel("Título"), self.qTitulo)
+        TitulosLayout.addRow(QLabel("Eixo X"), self.qtEixox)
+        TitulosLayout.addRow(QLabel("Eixo Y"), self.qtEixoy)
         TitulosWidget.setLayout(TitulosLayout)
         tabPropriedadesLayout.addRow(TitulosWidget)
         
         ChecksWidget = QWidget()
         ChecksWidgetLayout = QHBoxLayout()
         ChecksWidgetLayout.addWidget(QLabel("Grade:"))
-        ChecksWidgetLayout.addWidget(self.Grade)
+        ChecksWidgetLayout.addWidget(self.qGrade)
         ChecksWidgetLayout.addWidget(QLabel("Resíduos:"))
-        ChecksWidgetLayout.addWidget(self.Residuos)
+        ChecksWidgetLayout.addWidget(self.qResiduos)
         ChecksWidget.setLayout(ChecksWidgetLayout)
         tabPropriedadesLayout.addRow(ChecksWidget)
         
@@ -392,6 +404,18 @@ dspfedgg
                     item = QTableWidgetItem(coefs[i])
                     item.setTextAlignment(QtCore.Qt.AlignCenter)
                     self.tableCoef.setItem(i, 0, item)
+                    
+            # Getting data from "Propriedades do gráfico"
+            self.Titulo = self.qTitulo.text()
+            self.tEixox = self.qtEixox.text()
+            self.tEixoy = self.qtEixoy.text()
+            
+            self.Grade = self.qGrade.isChecked()
+            self.Residuos = self.qResiduos.isChecked()
+            
+            self.PontoCor = self.qPontoCor.currentText()
+            self.PontoTamanho = self.qPontoTamanho.currentText()
+            self.PontoSimbolo = self.qPontoSimbolo.currentText()
                     
             columns = [self.ComboBoxes[i].currentText() for i in range(4)]
             self.Model.data.columns = columns
