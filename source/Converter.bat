@@ -1,0 +1,1 @@
+python -m PyQt5.uic.pyuic -x MainWindow.ui -o MainWindow2.py
