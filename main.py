@@ -4,12 +4,21 @@ import os
 from pathlib import Path
 from matplotlib_backend_qtquick.qt_compat import QtGui, QtQml, QtCore
 from matplotlib_backend_qtquick.backend_qtquickagg import FigureCanvasQtQuickAgg
-from PySide2.QtCore import QObject, Slot, Signal
+from PySide2.QtCore import QObject, Slot, Signal, QUrl
 from src.MatPlotLib import DisplayBridge
 
 class MainWindow(QObject):
     def __init__(self):
         QObject.__init__(self)
+
+    @Slot(str)
+    def openFile(self, filePath):
+        file = open(QUrl(filePath).toLocalFile())
+        text = file.read()
+        file.close()
+
+        print(text)
+
 
 if __name__ == "__main__":
     QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
@@ -34,7 +43,7 @@ if __name__ == "__main__":
 
     # Creating 'link' between front-end and back-end
     engine.rootContext().setContextProperty("backend", main)
-
+    
     # Loading QML files
     engine.load(os.path.join(os.path.dirname(__file__), "qml/main.qml"))
 

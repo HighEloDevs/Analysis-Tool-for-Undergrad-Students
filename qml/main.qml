@@ -17,7 +17,6 @@ Window {
     visible: true
     color: "#00000000"
     property alias labelRightInfoText: labelRightInfo.text
-    title: qsTr("Hello World")
 
     // Removing Title Bar
     flags: Qt.Window | Qt.FramelessWindowHint

@@ -3,11 +3,13 @@ import QtQuick.Controls 2.12
 import Qt.labs.qmlmodels 1.0
 import QtQuick.Window 2.12
 import QtQuick.Layouts 1.12
+import QtQuick.Dialogs 1.0
 
 import "../widgets"
 import "../controls"
 
 import Backend 1.0
+
 
 Item {
     property alias backBtnWidth: backBtn.width
@@ -135,6 +137,21 @@ Item {
                     font.pointSize: 10
                     font.bold: false
                     anchors.topMargin: 10
+
+                    FileDialog{
+                        id: fileOpen
+                        title: "Escolha o arquivo com seus dados"
+                        folder: shortcuts.home
+                        selectMultiple: false
+                        nameFilters: ["Arquivos de Texto (*.txt)"]
+                        onAccepted:{
+
+                        }
+                    }
+
+                    onClicked:{
+                        fileOpen.open()
+                    }
 
                     QtObject{
                         id: func
@@ -419,6 +436,11 @@ Item {
             }
 
         }
+
+        Connections{
+            target: backend
+        }
+
     }
 }
 
@@ -427,6 +449,6 @@ Item {
 
 /*##^##
 Designer {
-    D{i:0;autoSize:true;formeditorZoom:0.75;height:800;width:1500}
+    D{i:0;autoSize:true;height:480;width:640}
 }
 ##^##*/
