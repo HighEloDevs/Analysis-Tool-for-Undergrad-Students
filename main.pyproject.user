@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by QtCreator 4.14.0, 2021-02-05T17:49:15. -->
+<!-- Written by QtCreator 4.14.0, 2021-02-08T14:24:23. -->
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
@@ -128,7 +128,7 @@
     <value type="int" key="Analyzer.Perf.StackSize">4096</value>
     <value type="bool" key="Analyzer.QmlProfiler.AggregateTraces">false</value>
     <value type="bool" key="Analyzer.QmlProfiler.FlushEnabled">false</value>
-    <value type="uint" key="Analyzer.QmlProfiler.FlushInterval">0</value>
+    <value type="uint" key="Analyzer.QmlProfiler.FlushInterval">1000</value>
     <value type="QString" key="Analyzer.QmlProfiler.LastTraceFile"></value>
     <value type="bool" key="Analyzer.QmlProfiler.Settings.UseGlobalSettings">true</value>
     <valuelist type="QVariantList" key="Analyzer.Valgrind.AddedSuppressionFiles"/>
@@ -169,16 +169,16 @@
     <valuelist type="QVariantList" key="CustomOutputParsers"/>
     <value type="int" key="PE.EnvironmentAspect.Base">2</value>
     <valuelist type="QVariantList" key="PE.EnvironmentAspect.Changes"/>
-    <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName">main</value>
-    <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">PythonEditor.RunConfiguration.C:/Users/leoei/OneDrive/Documents/QtCreator - Projetos/Projeto_01/main.py</value>
-    <value type="QString" key="ProjectExplorer.RunConfiguration.BuildKey">C:/Users/leoei/OneDrive/Documents/QtCreator - Projetos/Projeto_01/main.py</value>
+    <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName">main2</value>
+    <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">PythonEditor.RunConfiguration.C:/Users/leoei/OneDrive/Documents/GitHub/Analysis-Tool-for-Undergrad-Students---ATUS/main.py</value>
+    <value type="QString" key="ProjectExplorer.RunConfiguration.BuildKey">C:/Users/leoei/OneDrive/Documents/GitHub/Analysis-Tool-for-Undergrad-Students---ATUS/main.py</value>
     <value type="QString" key="PythonEditor.RunConfiguation.Interpreter">{da266a02-7321-4a8a-876a-f143d6483386}</value>
-    <value type="QString" key="PythonEditor.RunConfiguation.Script">C:\Users\leoei\OneDrive\Documents\QtCreator - Projetos\Projeto_01\main.py</value>
+    <value type="QString" key="PythonEditor.RunConfiguation.Script">C:\Users\leoei\OneDrive\Documents\GitHub\Analysis-Tool-for-Undergrad-Students---ATUS\main.py</value>
     <value type="bool" key="RunConfiguration.UseCppDebugger">false</value>
-    <value type="bool" key="RunConfiguration.UseCppDebuggerAuto">false</value>
+    <value type="bool" key="RunConfiguration.UseCppDebuggerAuto">true</value>
     <value type="bool" key="RunConfiguration.UseQmlDebugger">false</value>
-    <value type="bool" key="RunConfiguration.UseQmlDebuggerAuto">false</value>
-    <value type="QString" key="RunConfiguration.WorkingDirectory.default">C:/Users/leoei/OneDrive/Documents/QtCreator - Projetos/Projeto_01</value>
+    <value type="bool" key="RunConfiguration.UseQmlDebuggerAuto">true</value>
+    <value type="QString" key="RunConfiguration.WorkingDirectory.default">C:/Users/leoei/OneDrive/Documents/GitHub/Analysis-Tool-for-Undergrad-Students---ATUS</value>
    </valuemap>
    <value type="int" key="ProjectExplorer.Target.RunConfigurationCount">1</value>
   </valuemap>

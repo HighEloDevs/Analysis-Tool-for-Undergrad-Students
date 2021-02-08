@@ -1,14 +1,16 @@
-import QtQuick 2.15
-import QtQuick.Controls 2.15
+import QtQuick 2.12
+import QtQuick.Controls 2.12
 import Qt.labs.qmlmodels 1.0
-import "../controls"
+import QtQuick.Window 2.12
+import QtQuick.Layouts 1.12
+
 import "../widgets"
+import "../controls"
+
+import Backend 1.0
 
 Item {
-    id: teste
-    width: 1308
-    height: 693
-
+    property alias backBtnWidth: backBtn.width
     QtObject{
         id: internal
 
@@ -255,7 +257,7 @@ Item {
             anchors.topMargin: 10
 
             Rectangle {
-                id: rectangle4
+                id: footer
                 y: 258
                 height: 20
                 color: "#34334a"
@@ -265,13 +267,166 @@ Item {
                 anchors.rightMargin: 0
                 anchors.leftMargin: 0
                 anchors.bottomMargin: 0
+
+                TextInput {
+                id: location
+                readOnly: true
+                text: displayBridge.coordinates
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.left: parent.left
+                anchors.leftMargin: 10
+                color: "#ffffff"
+                }
             }
+
+            Rectangle {
+                id: toolBar
+                height: 60
+                color: "#34334a"
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.top: parent.top
+                anchors.rightMargin: 0
+                anchors.leftMargin: 0
+                anchors.topMargin: 0
+
+                TabButton{
+                    id: backBtn
+                    y: 0
+                    width: toolBar.width/6
+                    text: "Voltar"
+                    anchors.left: homeBtn.right
+                    btnColorDefault: "#34334a"
+                    anchors.leftMargin: 0
+
+                    onClicked: {
+                    displayBridge.back();
+                    }   
+
+                }
+
+                TabButton{
+                    id: homeBtn
+                    y: 0
+                    width: toolBar.width/6
+                    text: "Resetar"
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.left: parent.left
+                    btnColorDefault: "#34334a"
+                    anchors.leftMargin: 0
+
+                    onClicked: {
+                    displayBridge.home();
+                    }
+
+                }
+
+                TabButton {
+                    id: fowardBtn
+                    y: 0
+                    width: toolBar.width/6
+                    text: "Avançar"
+                    anchors.left: backBtn.right
+                    btnColorDefault: "#34334a"
+                    anchors.leftMargin: 0
+
+                    onClicked: {
+                    displayBridge.forward();
+                    }
+                }
+
+                TabButton {
+                    id: panBtn
+                    y: 0
+                    width: toolBar.width/6
+                    text: "Mover"
+                    anchors.left: fowardBtn.right
+                    btnColorDefault: "#34334a"
+                    anchors.leftMargin: 0
+                    checkable: true
+                    isActiveMenu: false
+
+                    onClicked: {
+                    if (zoomBtn.checked) {
+                        zoomBtn.checked = false;
+                        zoomBtn.isActiveMenu = false;
+                    }
+                    displayBridge.pan();
+                    panBtn.isActiveMenu = true;
+                    }
+
+                }
+
+                TabButton {
+                    id: zoomBtn
+                    y: 0
+                    width: toolBar.width/6
+                    text: "Zoom"
+                    anchors.left: panBtn.right
+                    btnColorDefault: "#34334a"
+                    anchors.leftMargin: 0
+                    checkable: true
+                    isActiveMenu: false
+
+                    onClicked: {
+                    if (panBtn.checked) {
+                        // toggle pan off
+                        panBtn.checked = false;
+                        panBtn.isActiveMenu = false;
+                    }
+                    zoomBtn.isActiveMenu = true;
+                    displayBridge.zoom();
+                    }
+                }
+
+                TabButton {
+                    id: saveBtn
+                    y: 0
+                    width: toolBar.width/6
+                    text: "Salvar"
+                    anchors.left: zoomBtn.right
+                    btnColorDefault: "#34334a"
+                    anchors.leftMargin: 0
+                    checkable: true
+                    isActiveMenu: false
+
+                    onClicked: {
+                        
+                    }
+                }
+            }
+
+            Rectangle {
+                id: bg_canvas
+                color: "#ffffff"
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.top: toolBar.bottom
+                anchors.bottom: footer.top
+                anchors.rightMargin: 0
+                anchors.leftMargin: 0
+                anchors.bottomMargin: 0
+                anchors.topMargin: 0
+
+                FigureCanvas {
+                      id: mplView
+                      objectName : "canvasPlot"
+                      dpi_ratio: Screen.devicePixelRatio
+                      anchors.fill: parent
+                      anchors.bottom: rectangle4.top
+                      anchors.top: toolBar.bottom
+                  }
+            }
+
         }
     }
 }
 
+
+
+
 /*##^##
 Designer {
-    D{i:0;formeditorZoom:1.1}D{i:7}D{i:8}D{i:6}D{i:15}D{i:9}D{i:16}
+    D{i:0;autoSize:true;formeditorZoom:0.75;height:800;width:1500}
 }
 ##^##*/

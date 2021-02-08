@@ -5,8 +5,6 @@ import QtGraphicalEffects 1.15
 
 import "controls"
 import "widgets"
-import "pages"
-
 
 Window {
     id: mainWindow
@@ -83,7 +81,7 @@ Window {
         }
     }
 
-    Rectangle {
+    Rectangle {        
         id: bg
         color: "#2c313c"
         border.color: "#353b48"
