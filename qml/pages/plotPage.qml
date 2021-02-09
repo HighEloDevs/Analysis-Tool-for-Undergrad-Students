@@ -3,7 +3,7 @@ import QtQuick.Controls 2.12
 import Qt.labs.qmlmodels 1.0
 import QtQuick.Window 2.12
 import QtQuick.Layouts 1.12
-import QtQuick.Dialogs 1.0
+import QtQuick.Dialogs 1.3
 
 import "../widgets"
 import "../controls"
@@ -12,6 +12,16 @@ import Backend 1.0
 
 
 Item {
+
+    Connections{
+        target: funcs
+
+        function onFillDataTable(x, y, sy, sx, fileName){
+            label_fileName.text = fileName
+            tableDataModel.appendRow({"X": x, "Y": y, "Sigma Y": sy, "Sigma X": sx})
+        }
+    }
+
     property alias backBtnWidth: backBtn.width
     QtObject{
         id: internal
@@ -26,14 +36,6 @@ Item {
                             "Sigma X": "Sigma X",
                         }
                     ]
-        }
-
-        function appendTableData(x, y, sy, sx){
-            tableDataModel.appendRow({"X": x, "Y": y, "Sigma Y": sy, "Sigma X": sx})
-        }
-
-        function appendParamData(a, b){
-
         }
     }
 
@@ -130,7 +132,6 @@ Item {
                     id: btnUpload
                     width: 90
                     height: 25
-                    text: qsTr("Plot")
                     anchors.verticalCenter: parent.verticalCenter
                     anchors.left: parent.left
                     anchors.leftMargin: 10
@@ -145,10 +146,10 @@ Item {
                         selectMultiple: false
                         nameFilters: ["Arquivos de Texto (*.txt)"]
                         onAccepted:{
-
+                            internal.clearTableData()
+                            funcs.loadData(fileOpen.fileUrl)
                         }
                     }
-
                     onClicked:{
                         fileOpen.open()
                     }
@@ -184,7 +185,7 @@ Item {
                 }
 
                 Label {
-                    id: label1
+                    id: label_fileName
                     y: 12
                     color: "#ffffff"
                     text: qsTr("Dados não selecionados")
@@ -407,8 +408,19 @@ Item {
                     checkable: true
                     isActiveMenu: false
 
-                    onClicked: {
-                        
+                    onClicked:{
+                        fileSaver.open()
+                    }
+
+                    FileDialog{
+                        id: fileSaver
+                        title: "Escolha um local para salvar a figura"
+                        folder: shortcuts.home
+                        selectExisting: false
+                        nameFilters: ["Arquivos de imagem (*.png)"]
+                        onAccepted: {
+                            funcs.savePlot(fileSaver.fileUrl)
+                        }
                     }
                 }
             }
@@ -430,23 +442,12 @@ Item {
                       objectName : "canvasPlot"
                       dpi_ratio: Screen.devicePixelRatio
                       anchors.fill: parent
-                      anchors.bottom: rectangle4.top
-                      anchors.top: toolBar.bottom
-                  }
+                }
             }
 
         }
-
-        Connections{
-            target: backend
-        }
-
     }
 }
-
-
-
-
 /*##^##
 Designer {
     D{i:0;autoSize:true;height:480;width:640}

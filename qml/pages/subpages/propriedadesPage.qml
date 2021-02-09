@@ -2,6 +2,15 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 
 Item {
+
+    Connections{
+        target: funcs
+
+        function onSignalPropPage(){
+            funcs.loadOptions(titulo.text, eixox.text, eixoy.text, switchResiduos.position, switchGrade.position)
+        }
+    }
+
     Rectangle {
         id: rectangle
         width: 372

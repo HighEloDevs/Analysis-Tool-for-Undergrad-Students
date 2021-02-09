@@ -1,3 +1,13 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Fri Jan 29 17:10:06 2021
+
+@author: Leonardo Eiji Tamayose & Guilherme Ferrari Fortino 
+
+MatPlotLib Class
+
+"""
+
 from matplotlib_backend_qtquick.backend_qtquick import NavigationToolbar2QtQuick
 from matplotlib_backend_qtquick.qt_compat import QtGui, QtQml, QtCore
 import numpy as np
@@ -10,11 +20,15 @@ class DisplayBridge(QtCore.QObject):
     def __init__(self, parent=None):
         super().__init__(parent)
 
-        # The figure and toolbar
+        # The figure, canvas, toolbar and axes
         self.figure = None
+        self.canvas = None
         self.toolbar = None
+        self.axes = None
+        self.ax1 = None
+        self.ax2 = None
 
-        # this is used to display the coordinates of the mouse in the window
+        # This is used to display the coordinates of the mouse in the window
         self._coordinates = ""
 
     def updateWithCanvas(self, canvas):
@@ -22,19 +36,73 @@ class DisplayBridge(QtCore.QObject):
         """
         self.figure = canvas.figure
         self.toolbar = NavigationToolbar2QtQuick(canvas=canvas)
-
-        # make a small plot
         self.axes = self.figure.add_subplot(111)
-        self.axes.grid(True)
+        self.canvas = canvas
+        self.axes.grid(False)
 
-        x = np.linspace(0, 2*np.pi, 100)
-        y = np.sin(x)
+        canvas.draw_idle()
 
-        # self.axes.plot(x, y)
-        # canvas.draw_idle()
-
-        # connect for displaying the coordinates
+        # Connect for displaying the coordinates
         self.figure.canvas.mpl_connect('motion_notify_event', self.on_motion)
+
+    def Plot(self, model, residuals, grid):
+        # Clearing the current plot
+        try:
+            self.axes.remove()
+        except:
+            pass
+        try:
+            self.ax1.remove()
+            self.ax2.remove()
+        except:
+            pass
+
+        # Getting data
+        x, y, sy, sx = model.get_data()
+
+        # Fitting expression to data
+        model.fit()
+
+        # Getting fitted data
+        px, py = model.get_predict()
+        y_r = model.get_residuals()
+
+
+        # Plotting
+        if residuals:
+            self.ax1, self.ax2 = self.figure.subplots(2, 1, sharex=True, gridspec_kw={'height_ratios': [3, 1.0]})
+            self.figure.subplots_adjust(left = None, bottom = None, right = None, top = None, wspace = None, hspace = 0) 
+
+            if grid:
+                self.ax1.grid(True)
+                self.ax2.grid(True)
+
+            # Making Plots
+            self.ax1.plot(px, py, lw = 1, c = 'red')
+            self.ax2.errorbar(x, y_r, yerr=sy, xerr = sx, fmt = 'b.', ecolor = 'black', capsize = 0, ms = 3, elinewidth = 0.5)
+            self.ax1.errorbar(x, y, yerr=sy, xerr=sx, fmt = 'bo', ecolor = 'black', capsize = 0, ms = 3, elinewidth = 0.5)
+
+            # Setting titles
+            self.ax1.set_title(str(model.eixos[2][0]))
+            self.ax1.set(ylabel = str(model.eixos[1][0]))
+            self.ax2.set(xlabel = str(model.eixos[0][0]))
+
+        else:
+            self.axes = self.figure.add_subplot(111)
+
+            if grid:
+                self.axes.grid(True)
+
+            # Making Plots
+            self.axes.plot(px, py, lw = 1, c = 'red')
+            self.axes.errorbar(x, y, yerr=sy, xerr=sx, fmt = 'bo', ecolor = 'black', capsize = 0, ms = 3, elinewidth = 0.5)
+
+            # Setting titles
+            self.axes.set_title(str(model.eixos[2][0]))
+            self.axes.set(ylabel = str(model.eixos[1][0]))
+            self.axes.set(xlabel = str(model.eixos[0][0]))
+
+        self.canvas.draw_idle()
  
     # define the coordinates property
     # (I have had problems using the @QtCore.Property directy in the past)

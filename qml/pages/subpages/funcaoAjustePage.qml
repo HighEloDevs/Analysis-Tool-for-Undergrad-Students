@@ -8,9 +8,31 @@ Item {
     width: 366
     height: 598
 
+    Connections{
+        target: funcs
+        function onFillParamsTable(param, value, uncertainty){
+            tableParamsModel.appendRow({"Parâmetros" : param, "Valor": value, "Incerteza" : uncertainty})
+        }
+
+        function onWriteInfos(expr){
+            infos.text = expr
+        }
+    }
+
     // Functions
-    function appendParamsTable(a, b){
-        tableParams.append("2", "2")
+    QtObject{
+        id: internal1
+
+        function clearTableParams(){
+            tableParamsModel.clear()
+            tableParamsModel.rows = [
+                        {
+                            "Parâmetros": "Parâmetros",
+                            "Valor": "Valor",
+                            "Incerteza": "Incerteza",
+                        }
+                    ]
+        }
     }
 
     Rectangle {
@@ -45,7 +67,7 @@ Item {
             }
 
             TextField {
-                id: textField
+                id: expression
                 text: ""
                 anchors.left: label.right
                 anchors.right: parent.right
@@ -90,14 +112,16 @@ Item {
 
                 model: TableModel {
 
-                    id: tableDataModel
+                    id: tableParamsModel
 
                     TableModelColumn { display: "Parâmetros" }
+                    TableModelColumn { display: "Valor" }
                     TableModelColumn { display: "Incerteza" }
 
                     rows: [
                         {
                             "Parâmetros": "Parâmetros",
+                            "Valor": "Valor",
                             "Incerteza": "Incerteza",
                         }
                     ]
@@ -105,7 +129,7 @@ Item {
 
                 delegate: Rectangle {
                     height: 200
-                    implicitWidth: tableParams.width/2
+                    implicitWidth: tableParams.width/3
                     implicitHeight: 20
                     border.width: 1
 
@@ -138,15 +162,14 @@ Item {
             }
 
             TextEdit {
-                id: textEdit
+                id: infos
                 color: "#ffffff"
-                text: "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\np, li { white-space: pre-wrap; }\n</style></head><body style=\" font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;\">\n<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:14pt;\">| 23 32 | | 32 32 | </span></p></body></html>"
+                text: ""
                 anchors.fill: parent
-                font.pointSize: 20
+                font.pointSize: 10
                 activeFocusOnPress: false
                 cursorVisible: false
                 readOnly: true
-                textFormat: Text.RichText
             }
 
         }
@@ -164,6 +187,11 @@ Item {
             anchors.topMargin: 10
             anchors.rightMargin: 10
             anchors.leftMargin: 10
+
+            onClicked:{
+                internal1.clearTableParams()
+                funcs.loadExpression(expression.text, p0.text)
+            }
 
             QtObject{
                 id: internal
@@ -221,7 +249,7 @@ Item {
             }
 
             TextField {
-                id: textField1
+                id: p0
                 anchors.left: label1.right
                 anchors.right: parent.right
                 anchors.top: parent.top
