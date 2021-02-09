@@ -65,7 +65,7 @@ class Model():
         """ Set new title to the graph. """
         self.eixos[2] = [name]
         
-    def set_expression(self, exp = ""):
+    def set_expression(self, exp = "", p0 = None):
         """ Set new expression to model. """
 # =============================================================================
 #         if type(exp) != str:
@@ -74,16 +74,22 @@ class Model():
 # =============================================================================
         self.exp_model = exp
         if exp != "":
-            self._set_model()
+            self._set_model(p0)
         
-    def _set_model(self):
+    def _set_model(self, p0 = None):
         """ Creates the new model. """
         self.model = ExpressionModel(self.exp_model)
         self.coef = list()
         self.params = Parameters()
-        for i in self.model.param_names:
-            self.coef.append(i)            
-            self.params.add(i, value=1)
+        parametros = None
+        if p0 is not None:
+            parametros = p0.split(",")
+        for i, j in zip(self.model.param_names, range(len(self.model.param_names))):
+            self.coef.append(i)
+            try:            
+                self.params.add(i, value = float(parametros[j]))
+            except:
+                self.params.add(i, value = 1)
         
     def fit(self):
         self.result = self.model.fit(data=self.data["y"].to_numpy(), x = self.data["x"].to_numpy(),
