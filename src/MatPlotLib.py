@@ -57,53 +57,73 @@ class DisplayBridge(QtCore.QObject):
         except:
             pass
 
-        # Getting data
-        x, y, sy, sx = model.get_data()
+        if model.has_data:
+            if model.isvalid:
 
-        # Fitting expression to data
-        model.fit()
+                # Getting data
+                x, y, sy, sx = model.get_data()
 
-        # Getting fitted data
-        px, py = model.get_predict()
-        y_r = model.get_residuals()
+                # Fitting expression to data
+                model.fit()
+
+                # Getting fitted data
+                px, py = model.get_predict()
+                y_r = model.get_residuals()
 
 
-        # Plotting
-        if residuals:
-            self.ax1, self.ax2 = self.figure.subplots(2, 1, sharex=True, gridspec_kw={'height_ratios': [3, 1.0]})
-            self.figure.subplots_adjust(left = None, bottom = None, right = None, top = None, wspace = None, hspace = 0) 
+                # Plotting
+                if residuals:
+                    self.ax1, self.ax2 = self.figure.subplots(2, 1, sharex=True, gridspec_kw={'height_ratios': [3, 1.0]})
+                    self.figure.subplots_adjust(left = None, bottom = None, right = None, top = None, wspace = None, hspace = 0) 
 
-            if grid:
-                self.ax1.grid(True)
-                self.ax2.grid(True)
+                    if grid:
+                        self.ax1.grid(True)
+                        self.ax2.grid(True)
 
-            # Making Plots
-            self.ax1.plot(px, py, lw = 1, c = 'red')
-            self.ax2.errorbar(x, y_r, yerr=sy, xerr = sx, fmt = 'b.', ecolor = 'black', capsize = 0, ms = 3, elinewidth = 0.5)
-            self.ax1.errorbar(x, y, yerr=sy, xerr=sx, fmt = 'bo', ecolor = 'black', capsize = 0, ms = 3, elinewidth = 0.5)
+                    # Making Plots
+                    self.ax1.plot(px, py, lw = 1, c = 'red')
+                    self.ax2.errorbar(x, y_r, yerr=sy, xerr = sx, fmt = 'b.', ecolor = 'black', capsize = 0, ms = 3, elinewidth = 0.5)
+                    self.ax1.errorbar(x, y, yerr=sy, xerr=sx, fmt = 'bo', ecolor = 'black', capsize = 0, ms = 3, elinewidth = 0.5)
 
-            # Setting titles
-            self.ax1.set_title(str(model.eixos[2][0]))
-            self.ax1.set(ylabel = str(model.eixos[1][0]))
-            self.ax2.set(xlabel = str(model.eixos[0][0]))
+                    # Setting titles
+                    self.ax1.set_title(str(model.eixos[2][0]))
+                    self.ax1.set(ylabel = str(model.eixos[1][0]))
+                    self.ax2.set(xlabel = str(model.eixos[0][0]))
 
-        else:
-            self.axes = self.figure.add_subplot(111)
+                else:
+                    self.axes = self.figure.add_subplot(111)
 
-            if grid:
-                self.axes.grid(True)
+                    if grid:
+                        self.axes.grid(True)
 
-            # Making Plots
-            self.axes.plot(px, py, lw = 1, c = 'red')
-            self.axes.errorbar(x, y, yerr=sy, xerr=sx, fmt = 'bo', ecolor = 'black', capsize = 0, ms = 3, elinewidth = 0.5)
+                    # Making Plots
+                    self.axes.plot(px, py, lw = 1, c = 'red')
+                    self.axes.errorbar(x, y, yerr=sy, xerr=sx, fmt = 'bo', ecolor = 'black', capsize = 0, ms = 3, elinewidth = 0.5)
 
-            # Setting titles
-            self.axes.set_title(str(model.eixos[2][0]))
-            self.axes.set(ylabel = str(model.eixos[1][0]))
-            self.axes.set(xlabel = str(model.eixos[0][0]))
+                    # Setting titles
+                    self.axes.set_title(str(model.eixos[2][0]))
+                    self.axes.set(ylabel = str(model.eixos[1][0]))
+                    self.axes.set(xlabel = str(model.eixos[0][0]))
+            else:
+                self.axes = self.figure.add_subplot(111)
+
+                if grid:
+                    self.axes.grid(True)
+
+                # Making Plots
+                self.axes.plot(px, py, lw = 1, c = 'red')
+                self.axes.errorbar(x, y, yerr=sy, xerr=sx, fmt = 'bo', ecolor = 'black', capsize = 0, ms = 3, elinewidth = 0.5)
+
+                # Setting titles
+                self.axes.set_title(str(model.eixos[2][0]))
+                self.axes.set(ylabel = str(model.eixos[1][0]))
+                self.axes.set(xlabel = str(model.eixos[0][0]))
 
         self.canvas.draw_idle()
  
+    def PlotScatter(self, model, residuals, grid):
+
+
     # define the coordinates property
     # (I have had problems using the @QtCore.Property directy in the past)
     def getCoordinates(self):

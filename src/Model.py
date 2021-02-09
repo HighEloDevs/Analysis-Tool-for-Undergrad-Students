@@ -27,6 +27,8 @@ class Model():
         self.params     = Parameters()
         self.dict       = dict()
         self.mode       = 0
+        self.has_data   = False
+        self.isvalid    = False
         
     def __str__(self):
         return self.report_fit
@@ -48,7 +50,8 @@ class Model():
             df["sx"] = [1]*len(df[0])
         df.columns= ['x', 'y', 'sy', 'sx']
             
-        self.data = deepcopy(df)
+        self.data     = deepcopy(df)
+        self.has_data = True
         
     def set_x_axis(self, name = ""):
         """ Set new x label to the graph. """
@@ -104,6 +107,7 @@ class Model():
         self.report_fit += "\nNGL  = %d"%(len(self.data["x"]) - len(self.coef))
         self.report_fit += "\nChi² = %f"%self.result.chisqr
         self.report_fit += "\nMatriz de covariância:\n" + str(self.result.covar) + "\n\n"
+        self.isvalid     = True
 
     def plot_data(self, figsize = None, dpi = 120, size = 1, lw = 1, mstyle = '.', color = 'blue'):
         """ Scatter the data. """
@@ -131,7 +135,7 @@ class Model():
         ''' Return two points to form the adjusted function. '''
         x_min = self.data['x'].min()
         x_max = self.data['x'].max()
-        x_plot = np.linspace(x_min, x_max, 2)
+        x_plot = np.linspace(x_min, x_max, len(self.data['x']))
         return x_plot, self.result.eval(x = x_plot)
     
     def get_residuals(self):
