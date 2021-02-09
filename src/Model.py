@@ -73,7 +73,8 @@ class Model():
 #             return None
 # =============================================================================
         self.exp_model = exp
-        self._set_model()
+        if exp != "":
+            self._set_model()
         
     def _set_model(self):
         """ Creates the new model. """

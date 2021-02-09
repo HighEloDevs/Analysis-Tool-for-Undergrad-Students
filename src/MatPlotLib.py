@@ -58,13 +58,17 @@ class DisplayBridge(QtCore.QObject):
             pass
 
         if model.has_data:
+
+            # Fitting expression to data
+            try:
+                model.fit()
+            except:
+                pass
+
             if model.isvalid:
 
                 # Getting data
                 x, y, sy, sx = model.get_data()
-
-                # Fitting expression to data
-                model.fit()
 
                 # Getting fitted data
                 px, py = model.get_predict()
@@ -97,9 +101,10 @@ class DisplayBridge(QtCore.QObject):
                         self.axes.grid(True)
                     
                     x, y, sy, sx = model.get_data()
+                    px, py = model.get_predict()
                     
                     # Making Plots
-                    #self.axes.plot(px, py, lw = 1, c = 'red')
+                    self.axes.plot(px, py, lw = 1, c = 'red')
                     self.axes.errorbar(x, y, yerr=sy, xerr=sx, fmt = 'bo', ecolor = 'black', capsize = 0, ms = 3, elinewidth = 0.5)
 
                     # Setting titles
@@ -112,8 +117,10 @@ class DisplayBridge(QtCore.QObject):
                 if grid:
                     self.axes.grid(True)
 
+                x, y, sy, sx = model.get_data()
+
                 # Making Plots
-                self.axes.plot(px, py, lw = 1, c = 'red')
+                #self.axes.plot(px, py, lw = 1, c = 'red')
                 self.axes.errorbar(x, y, yerr=sy, xerr=sx, fmt = 'bo', ecolor = 'black', capsize = 0, ms = 3, elinewidth = 0.5)
 
                 # Setting titles
