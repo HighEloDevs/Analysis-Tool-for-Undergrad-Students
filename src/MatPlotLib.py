@@ -95,9 +95,11 @@ class DisplayBridge(QtCore.QObject):
 
                     if grid:
                         self.axes.grid(True)
-
+                    
+                    x, y, sy, sx = model.get_data()
+                    
                     # Making Plots
-                    self.axes.plot(px, py, lw = 1, c = 'red')
+                    #self.axes.plot(px, py, lw = 1, c = 'red')
                     self.axes.errorbar(x, y, yerr=sy, xerr=sx, fmt = 'bo', ecolor = 'black', capsize = 0, ms = 3, elinewidth = 0.5)
 
                     # Setting titles
@@ -122,6 +124,7 @@ class DisplayBridge(QtCore.QObject):
         self.canvas.draw_idle()
  
     def PlotScatter(self, model, residuals, grid):
+        pass
 
 
     # define the coordinates property
