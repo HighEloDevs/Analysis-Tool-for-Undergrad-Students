@@ -27,6 +27,7 @@ class Model():
         self.coef       = list()
         self.params     = Parameters()
         self.dict       = dict()
+        self.p0         = None
         self.mode       = 0
         self.has_data   = False
         self.isvalid    = False
@@ -65,6 +66,9 @@ class Model():
     def set_title(self, name = ""):
         """ Set new title to the graph. """
         self.eixos[2] = [name]
+
+    def set_p0(self, p0):
+        self.p0 = p0
         
     def set_expression(self, exp = ""):
         """ Set new expression to model. """
@@ -92,13 +96,13 @@ class Model():
     #         except:
     #             self.params.add(i, value = 1)
         
-    def fit(self, p0 = None):
+    def fit(self):
         self.model = ExpressionModel(self.exp_model)
 
         self.coef = [i for i in self.model.param_names]
 
         parametros = None
-        if p0 is not None:
+        if self.p0 is not None:
             parametros = p0.split(",")
 
         p0 = list()
