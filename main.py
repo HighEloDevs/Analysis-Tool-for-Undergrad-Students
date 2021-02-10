@@ -10,6 +10,8 @@ Main File
 import sys
 from pathlib import Path
 
+# from PySide2 import QtGui, QtQml, QtCore
+
 from matplotlib_backend_qtquick.qt_compat import QtGui, QtQml, QtCore
 from matplotlib_backend_qtquick.backend_qtquickagg import FigureCanvasQtQuickAgg
 from src.MatPlotLib import DisplayBridge
@@ -80,6 +82,12 @@ class Bridge(QtCore.QObject):
         """Gets the expression and set it up"""
         print("Expressão:", expression)
         print("Parâmetros Iniciais:", p0)
+
+        p0_tmp = list()
+        if p0 != '':
+            for i in p0.split(','):
+                p0_tmp.append(float(i))
+            self.model.set_p0(p0_tmp)
         
         self.model.set_expression(expression)
         self.signalPropPage.emit()
@@ -116,7 +124,6 @@ if __name__ == "__main__":
     # Loading QML files
     qmlFile = Path(Path.cwd(), Path(__file__).parent, "qml/main.qml")
     engine.load(QtCore.QUrl.fromLocalFile(str(qmlFile)))
-        # os.path.join(os.path.dirname(__file__), "qml/main.qml"))
 
     # Updating canvasPlot with the plot
     win = engine.rootObjects()[0]

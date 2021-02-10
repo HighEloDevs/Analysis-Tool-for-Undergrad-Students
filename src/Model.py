@@ -97,23 +97,20 @@ class Model():
     #             self.params.add(i, value = 1)
         
     def fit(self):
+        # Getting Model
         self.model = ExpressionModel(self.exp_model)
 
+        # Getting coefficients
         self.coef = [i for i in self.model.param_names]
+        
+        # If there's no p0, everything is set to 1.0
+        if self.p0 is None:
+            self.p0 = list()
+            for i in range(len(self.model.param_names)):
+                self.p0.append(1.0)
 
-        parametros = None
-        if self.p0 is not None:
-            parametros = p0.split(",")
-
-        p0 = list()
-        for i in range(len(self.model.param_names)):
-            try:
-                p0.append(float(parametros[i]))
-            except:
-                p0.append(1.0)
-
+        # Data
         x, y, sy, sx = self.get_data()
-
         data = RealData(x, y, sx=sx, sy=sy)
         
         def f(a, x):
@@ -122,7 +119,7 @@ class Model():
                 param.add(self.model.param_names[i], value=a[i])
             return self.model.eval(x=x, params=param)
         model = SciPyModel(f)
-        myodr = ODR(data, model, beta0 = p0)
+        myodr = ODR(data, model, beta0 = self.p0)
         self.result = myodr.run()
 
         # self.result = self.model.fit(data=self.data["y"].to_numpy(), x = self.data["x"].to_numpy(),
