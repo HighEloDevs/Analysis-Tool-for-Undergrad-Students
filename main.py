@@ -52,11 +52,11 @@ class Bridge(QtCore.QObject):
     @QtCore.Slot(str, str, str, int, int)
     def loadOptions(self, title, xaxis, yaxis, residuals, grid):
         """Gets the input options and set them to the model"""
-        print("Título:", title)
-        print('Eixo X:', xaxis)
-        print('Eixo Y:', yaxis)
-        print('Resíduos:', residuals)
-        print('Grade:', grid)
+        # print("Título:", title)
+        # print('Eixo X:', xaxis)
+        # print('Eixo Y:', yaxis)
+        # print('Resíduos:', residuals)
+        # print('Grade:', grid)
         
         self.model.set_title(title)
         self.model.set_x_axis(xaxis)

@@ -95,6 +95,8 @@ class Model():
     def fit(self, p0 = None):
         self.model = ExpressionModel(self.exp_model)
 
+        self.coef = [i for i in self.model.param_names]
+
         parametros = None
         if p0 is not None:
             parametros = p0.split(",")
@@ -116,7 +118,7 @@ class Model():
                 param.add(self.model.param_names[i], value=a[i])
             return self.model.eval(x=x, params=param)
         model = SciPyModel(f)
-        myodr = ODR(data, model, beta0 = [2, 0, 0])
+        myodr = ODR(data, model, beta0 = p0)
         self.result = myodr.run()
 
         # self.result = self.model.fit(data=self.data["y"].to_numpy(), x = self.data["x"].to_numpy(),
@@ -134,7 +136,7 @@ class Model():
         for i in range(len(self.coef)):
             self.params.add(self.coef[i], self.result.beta[i])
             self.dict.update({self.coef[i]: [self.result.beta[i], np.sqrt(self.result.cov_beta[i, i])]})
-        
+                
     def _set_report(self):
         self.report_fit = ""
         self.report_fit += "\nAjuste: y = %s\n"%self.exp_model
@@ -170,7 +172,6 @@ class Model():
         x_min = self.data['x'].min()
         x_max = self.data['x'].max()
         x_plot = np.linspace(x_min, x_max, len(self.data['x']))
-        print(self.model.eval(x = x_plot, params = self.params))
         return x_plot, self.model.eval(x = x_plot, params = self.params)
     
     def get_residuals(self):
