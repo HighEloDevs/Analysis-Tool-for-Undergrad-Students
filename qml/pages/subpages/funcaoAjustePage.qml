@@ -9,7 +9,7 @@ Item {
     height: 598
 
     Connections{
-        target: funcs
+        target: funcsAjustePage
         function onFillParamsTable(param, value, uncertainty){
             tableParamsModel.appendRow({"Parâmetros" : param, "Valor": value, "Incerteza" : uncertainty})
         }
@@ -171,6 +171,7 @@ Item {
                 activeFocusOnPress: false
                 cursorVisible: false
                 readOnly: true
+                selectByMouse: true
             }
 
         }
@@ -191,7 +192,7 @@ Item {
 
             onClicked:{
                 internal1.clearTableParams()
-                funcs.loadExpression(expression.text, p0.text)
+                funcsAjustePage.loadExpression(expression.text, p0.text)
             }
 
             QtObject{

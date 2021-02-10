@@ -7,9 +7,8 @@ Created on Fri Jan 29 17:10:06 2021
 Main File
 
 """
-
 import sys
-import os
+from pathlib import Path
 
 from matplotlib_backend_qtquick.qt_compat import QtGui, QtQml, QtCore
 from matplotlib_backend_qtquick.backend_qtquickagg import FigureCanvasQtQuickAgg
@@ -52,11 +51,11 @@ class Bridge(QtCore.QObject):
     @QtCore.Slot(str, str, str, int, int)
     def loadOptions(self, title, xaxis, yaxis, residuals, grid):
         """Gets the input options and set them to the model"""
-        # print("Título:", title)
-        # print('Eixo X:', xaxis)
-        # print('Eixo Y:', yaxis)
-        # print('Resíduos:', residuals)
-        # print('Grade:', grid)
+        print("Título:", title)
+        print('Eixo X:', xaxis)
+        print('Eixo Y:', yaxis)
+        print('Resíduos:', residuals)
+        print('Grade:', grid)
         
         self.model.set_title(title)
         self.model.set_x_axis(xaxis)
@@ -91,8 +90,11 @@ class Bridge(QtCore.QObject):
         displayBridge.figure.savefig(QtCore.QUrl(save_path).toLocalFile(), dpi = 400)
 
 if __name__ == "__main__":
+    # Matplotlib stuff
+    QtQml.qmlRegisterType(FigureCanvasQtQuickAgg, "Backend", 1, 0, "FigureCanvas")
     QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
 
+    # Setting up app
     app = QtGui.QGuiApplication(sys.argv)
     app.setOrganizationName("High Elo Jogos")
     app.setOrganizationDomain("https://www.instagram.com/guiiiferrari/")
@@ -106,14 +108,15 @@ if __name__ == "__main__":
     context = engine.rootContext()
     context.setContextProperty("displayBridge", displayBridge)
 
-    # Matplotlib stuff
-    QtQml.qmlRegisterType(FigureCanvasQtQuickAgg, "Backend", 1, 0, "FigureCanvas")
-
     # Creating 'link' between front-end and back-end
-    engine.rootContext().setContextProperty("funcs", bridge)
+    engine.rootContext().setContextProperty("funcsPlotPage", bridge)
+    engine.rootContext().setContextProperty("funcsPropPage", bridge)
+    engine.rootContext().setContextProperty("funcsAjustePage", bridge)
     
     # Loading QML files
-    engine.load(os.path.join(os.path.dirname(__file__), "qml/main.qml"))
+    qmlFile = Path(Path.cwd(), Path(__file__).parent, "qml/main.qml")
+    engine.load(QtCore.QUrl.fromLocalFile(str(qmlFile)))
+        # os.path.join(os.path.dirname(__file__), "qml/main.qml"))
 
     # Updating canvasPlot with the plot
     win = engine.rootObjects()[0]
@@ -125,3 +128,4 @@ if __name__ == "__main__":
 
     # Starting program
     sys.exit(app.exec_())
+    

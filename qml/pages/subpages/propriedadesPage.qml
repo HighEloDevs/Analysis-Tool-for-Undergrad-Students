@@ -4,10 +4,10 @@ import QtQuick.Controls 2.15
 Item {
 
     Connections{
-        target: funcs
+        target: funcsPropPage
 
         function onSignalPropPage(){
-            funcs.loadOptions(titulo.text, eixox.text, eixoy.text, switchResiduos.position, switchGrade.position)
+            funcsPropPage.loadOptions(titulo.text, eixox.text, eixoy.text, switchResiduos.position, switchGrade.position)
         }
     }
 
@@ -180,8 +180,6 @@ Item {
                 anchors.left: tamanho.right
                 anchors.leftMargin: 10
             }
-
-
         }
 
         Rectangle {

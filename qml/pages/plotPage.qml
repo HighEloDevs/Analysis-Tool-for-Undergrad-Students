@@ -14,7 +14,7 @@ import Backend 1.0
 Item {
 
     Connections{
-        target: funcs
+        target: funcsPlotPage
 
         function onFillDataTable(x, y, sy, sx, fileName){
             label_fileName.text = fileName
@@ -147,7 +147,7 @@ Item {
                         nameFilters: ["Arquivos de Texto (*.txt)"]
                         onAccepted:{
                             internal.clearTableData()
-                            funcs.loadData(fileOpen.fileUrl)
+                            funcsPlotPage.loadData(fileOpen.fileUrl)
                         }
                     }
                     onClicked:{
@@ -419,7 +419,7 @@ Item {
                         selectExisting: false
                         nameFilters: ["Arquivos de imagem (*.png)"]
                         onAccepted: {
-                            funcs.savePlot(fileSaver.fileUrl)
+                            funcsPlotPage.savePlot(fileSaver.fileUrl)
                         }
                     }
                 }
