@@ -14,6 +14,7 @@ import pandas as pd
 from copy import deepcopy
 from lmfit.models import ExpressionModel
 from lmfit import Parameters
+from scipy.odr import ODR, Model, Data, RealData
 
 class Model():
     def __init__(self):
@@ -65,7 +66,7 @@ class Model():
         """ Set new title to the graph. """
         self.eixos[2] = [name]
         
-    def set_expression(self, exp = "", p0 = None):
+    def set_expression(self, exp = ""):
         """ Set new expression to model. """
 # =============================================================================
 #         if type(exp) != str:
@@ -73,28 +74,58 @@ class Model():
 #             return None
 # =============================================================================
         self.exp_model = exp
-        if exp != "":
-            self._set_model(p0)
+        # if exp != "":
+        #     self._set_model(p0)
         
-    def _set_model(self, p0 = None):
-        """ Creates the new model. """
+    # def _set_model(self, p0 = None):
+    #     """ Creates the new model. """
+    #     self.model = ExpressionModel(self.exp_model)
+    #     self.coef = list()
+    #     self.params = Parameters()
+    #     parametros = None
+    #     if p0 is not None:
+    #         parametros = p0.split(",")
+    #     for i, j in zip(self.model.param_names, range(len(self.model.param_names))):
+    #         self.coef.append(i)
+    #         try:            
+    #             self.params.add(i, value = float(parametros[j]))
+    #         except:
+    #             self.params.add(i, value = 1)
+        
+    def fit(self, p0 = None):
         self.model = ExpressionModel(self.exp_model)
-        self.coef = list()
-        self.params = Parameters()
+
         parametros = None
         if p0 is not None:
             parametros = p0.split(",")
-        for i, j in zip(self.model.param_names, range(len(self.model.param_names))):
-            self.coef.append(i)
-            try:            
-                self.params.add(i, value = float(parametros[j]))
+
+        p0 = list()
+        for i in range(len(self.model.param_names)):
+            try:
+                p0.append(float(parametros[i]))
             except:
-                self.params.add(i, value = 1)
+                p0.append(1.0)
+
+        x, y, sy, sx = self.get_data()
+
+        data = RealData(x, y, sx=sx, sy=sy)
         
-    def fit(self):
-        self.result = self.model.fit(data=self.data["y"].to_numpy(), x = self.data["x"].to_numpy(),
-                                     params=self.params, scale_covar = False,
-                                     weights = 1/self.data["sy"].to_numpy())
+        def f(a, x):
+            param = Parameters()
+            for i in range(len(a)):
+                param.add(self.model.param_names[i], value=a[i])
+            return self.model.eval(x=x, params=param)
+        print("Ok 1")
+        print(data)
+        MODELO = Model(f)
+        myodr = ODR(data, MODELO, beta0 = [1, 1])
+        print("Ok 3")
+        self.result = myodr.run()
+        print("Ok 2")
+
+        # self.result = self.model.fit(data=self.data["y"].to_numpy(), x = self.data["x"].to_numpy(),
+        #                              params=self.params, scale_covar = False,
+        #                              weights = 1/self.data["sy"].to_numpy())
         self._set_param_values()
         self._set_report()
         
@@ -105,16 +136,17 @@ class Model():
     def _set_param_values(self):
         self.dict.clear()
         for i in range(len(self.coef)):
-            self.params.add(self.coef[i], self.result.values[self.coef[i]])
-            self.dict.update({self.coef[i]: [self.result.values[self.coef[i]], np.sqrt(self.result.covar[i][i])]})
+            self.params.add(self.coef[i], self.result.beta[i])
+            self.dict.update({self.coef[i]: [self.result.beta[i], np.sqrt(self.result.cov_beta[i, i])]})
         
     def _set_report(self):
         self.report_fit = ""
         self.report_fit += "\nAjuste: y = %s\n"%self.exp_model
         self.report_fit += "\nNGL  = %d"%(len(self.data["x"]) - len(self.coef))
-        self.report_fit += "\nChi² = %f"%self.result.chisqr
-        self.report_fit += "\nMatriz de covariância:\n" + str(self.result.covar) + "\n\n"
+        self.report_fit += "\nChi² = %f"%self.result.sum_square
+        self.report_fit += "\nMatriz de covariância:\n" + str(self.result.cov_beta) + "\n\n"
         self.isvalid     = True
+        print("passou")
 
     def plot_data(self, figsize = None, dpi = 120, size = 1, lw = 1, mstyle = '.', color = 'blue'):
         """ Scatter the data. """
@@ -143,7 +175,8 @@ class Model():
         x_min = self.data['x'].min()
         x_max = self.data['x'].max()
         x_plot = np.linspace(x_min, x_max, len(self.data['x']))
-        return x_plot, self.result.eval(x = x_plot)
+        print(self.model.eval(x = x_plot, params = self.params))
+        return x_plot, self.model.eval(x = x_plot, params = self.params)
     
     def get_residuals(self):
         ''' Return residuals from adjust. '''
