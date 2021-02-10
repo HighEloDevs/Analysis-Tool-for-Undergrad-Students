@@ -24,7 +24,7 @@ class Bridge(QtCore.QObject):
     model = Model() 
 
     # Signal fillDataTable
-    fillDataTable = QtCore.Signal(float, float, float, float, str)
+    fillDataTable = QtCore.Signal(str, str, str, str, str)
 
     # Signal fillParamsTable
     fillParamsTable = QtCore.Signal(str, str, str)
@@ -46,7 +46,7 @@ class Bridge(QtCore.QObject):
         fileName = QtCore.QUrl(file_path).toLocalFile().split('/')[-1]
         for i in range(len(x)):
             print(float(x[i]), y[i], sy[i], sx[i])
-            self.fillDataTable.emit(float(x[i]), float(y[i]), float(sy[i]), float(sx[i]), fileName)
+            self.fillDataTable.emit("{:.2g}".format(x[i]), "{:.2g}".format(y[i]), "{:.2g}".format(sy[i]), "{:.2g}".format(sx[i]), fileName)
         print("Model: Data Loaded")
 
     @QtCore.Slot(str, str, str, int, int)

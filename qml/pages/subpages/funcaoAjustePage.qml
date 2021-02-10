@@ -78,6 +78,7 @@ Item {
                 anchors.bottomMargin: 10
                 anchors.leftMargin: 5
                 placeholderText: qsTr("")
+                selectByMouse: true
             }
         }
 
@@ -259,6 +260,7 @@ Item {
                 placeholderText: qsTr("")
                 anchors.rightMargin: 10
                 anchors.bottomMargin: 10
+                selectByMouse: true
             }
         }
     }

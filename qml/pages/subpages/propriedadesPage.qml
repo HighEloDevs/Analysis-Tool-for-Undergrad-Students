@@ -55,6 +55,7 @@ Item {
                 anchors.rightMargin: 10
                 anchors.leftMargin: 10
                 placeholderText: qsTr("")
+                selectByMouse: true
             }
         }
 
@@ -89,6 +90,7 @@ Item {
                 anchors.leftMargin: 10
                 placeholderText: qsTr("")
                 anchors.rightMargin: 10
+                selectByMouse: true
             }
             anchors.rightMargin: 0
         }
@@ -123,6 +125,7 @@ Item {
                 anchors.leftMargin: 10
                 placeholderText: qsTr("")
                 anchors.rightMargin: 10
+                selectByMouse: true
             }
             anchors.rightMargin: 0
         }

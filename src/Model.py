@@ -14,7 +14,7 @@ import pandas as pd
 from copy import deepcopy
 from lmfit.models import ExpressionModel
 from lmfit import Parameters
-from scipy.odr import ODR, Model, Data, RealData
+from scipy.odr import ODR, Model as SciPyModel, Data, RealData
 
 class Model():
     def __init__(self):
@@ -115,13 +115,9 @@ class Model():
             for i in range(len(a)):
                 param.add(self.model.param_names[i], value=a[i])
             return self.model.eval(x=x, params=param)
-        print("Ok 1")
-        print(data)
-        MODELO = Model(f)
-        myodr = ODR(data, MODELO, beta0 = [1, 1])
-        print("Ok 3")
+        model = SciPyModel(f)
+        myodr = ODR(data, model, beta0 = [2, 0, 0])
         self.result = myodr.run()
-        print("Ok 2")
 
         # self.result = self.model.fit(data=self.data["y"].to_numpy(), x = self.data["x"].to_numpy(),
         #                              params=self.params, scale_covar = False,
@@ -146,7 +142,6 @@ class Model():
         self.report_fit += "\nChi² = %f"%self.result.sum_square
         self.report_fit += "\nMatriz de covariância:\n" + str(self.result.cov_beta) + "\n\n"
         self.isvalid     = True
-        print("passou")
 
     def plot_data(self, figsize = None, dpi = 120, size = 1, lw = 1, mstyle = '.', color = 'blue'):
         """ Scatter the data. """
@@ -180,6 +175,6 @@ class Model():
     
     def get_residuals(self):
         ''' Return residuals from adjust. '''
-        return self.data["y"].to_numpy() - self.result.eval(x = self.data["x"].to_numpy())
+        return self.data["y"].to_numpy() - self.model.eval(x = self.data["x"].to_numpy())
         
         
