@@ -437,17 +437,19 @@ Item {
                 anchors.bottomMargin: 0
                 anchors.topMargin: 0
 
-                FigureCanvas {
-                      id: mplView
-                      objectName : "canvasPlot"
-                      dpi_ratio: Screen.devicePixelRatio
-                      anchors.fill: parent
-                }
+               FigureCanvas {
+                     id: mplView
+                     objectName : "canvasPlot"
+                     dpi_ratio: Screen.devicePixelRatio
+                     anchors.fill: parent
+               }
             }
 
         }
     }
 }
+
+
 /*##^##
 Designer {
     D{i:0;autoSize:true;height:480;width:640}

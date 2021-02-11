@@ -10,18 +10,18 @@ Main File
 import sys
 from pathlib import Path
 
-# from PySide2 import QtGui, QtQml, QtCore
+from PySide2 import QtGui, QtQml, QtCore
 
-from matplotlib_backend_qtquick.qt_compat import QtGui, QtQml, QtCore
+# from matplotlib_backend_qtquick.qt_compat import QtGui, QtQml, QtCore
 from matplotlib_backend_qtquick.backend_qtquickagg import FigureCanvasQtQuickAgg
 from src.MatPlotLib import DisplayBridge
 from src.Model import Model
 
-# Instantate the display bridge || Global variable, fuck the world
+# Instantiating the display bridge || Global variable, fuck the world
 displayBridge = DisplayBridge()
 
 class Bridge(QtCore.QObject):
-    # Instatiating the fit class
+    # Instantiating the fit class
     model = Model() 
 
     # Signal fillDataTable
@@ -39,29 +39,47 @@ class Bridge(QtCore.QObject):
     @QtCore.Slot(str)
     def loadData(self, file_path):
         """Gets the path to data's file and fills the data's table"""
-        print(file_path)
         self.model.load_data(QtCore.QUrl(file_path).toLocalFile())
         x, y, sy, sx = self.model.get_data()        
 
         # Getting file's name
         fileName = QtCore.QUrl(file_path).toLocalFile().split('/')[-1]
         for i in range(len(x)):
-            print(float(x[i]), y[i], sy[i], sx[i])
             self.fillDataTable.emit("{:.2g}".format(x[i]), "{:.2g}".format(y[i]), "{:.2g}".format(sy[i]), "{:.2g}".format(sx[i]), fileName)
-        print("Model: Data Loaded")
+        # print("Model: Data Loaded")
 
-    @QtCore.Slot(str, str, str, int, int)
-    def loadOptions(self, title, xaxis, yaxis, residuals, grid):
+    @QtCore.Slot(str, str, str, int, int, int, int, int, int, str, int, str, str, int, str)
+    def loadOptions(self, title, xaxis, yaxis, residuals, grid, sigma_x, sigma_y, log_x, log_y, symbol_color, symbol_size, symbol, curve_color, curve_thickness, curve_style):
         """Gets the input options and set them to the model"""
-        print("Título:", title)
-        print('Eixo X:', xaxis)
-        print('Eixo Y:', yaxis)
-        print('Resíduos:', residuals)
-        print('Grade:', grid)
+        # print("Título:", title)
+        # print('Eixo X:', xaxis)
+        # print('Eixo Y:', yaxis)
+        # print('Resíduos:', residuals)
+        # print('Grade:', grid)
         
+        curveStyles = {
+            'Sólido':'-',
+            'Tracejado':'--',
+            'Ponto-Tracejado':'-.'
+            }
+
+        symbols = {
+            'Círculo':'o',
+            'Triângulo':'^',
+            'Quadrado':'s',
+            'Pentagono':'p',
+            'Octagono':'8',
+            'Cruz':'P',
+            'Estrela':'*',
+            'Diamante':'d',
+            'Produto':'x'
+            }
+
+        # Setting style of the plot
         self.model.set_title(title)
         self.model.set_x_axis(xaxis)
         self.model.set_y_axis(yaxis)
+        displayBridge.setStyle(sigma_x, sigma_y, log_x, log_y, symbol_color, symbol_size, symbols[symbol], curve_color, curve_thickness, curveStyles[curve_style])
 
         # Making plot
         displayBridge.Plot(self.model, residuals, grid)
@@ -71,7 +89,6 @@ class Bridge(QtCore.QObject):
         keys = list(params.keys())
             
         for i in range(len(keys)):
-            # self.fillParamsTable.emit(keys[i], params[keys[i]][0], params[keys[i]][1])
             self.fillParamsTable.emit(keys[i], "{:.8g}".format(params[keys[i]][0]), "{:.8g}".format(params[keys[i]][1]))
 
         # Writing infos
@@ -80,8 +97,8 @@ class Bridge(QtCore.QObject):
     @QtCore.Slot(str, str)
     def loadExpression(self, expression, p0):
         """Gets the expression and set it up"""
-        print("Expressão:", expression)
-        print("Parâmetros Iniciais:", p0)
+        # print("Expressão:", expression)
+        # print("Parâmetros Iniciais:", p0)
 
         p0_tmp = list()
         if p0 != '':
@@ -104,7 +121,7 @@ if __name__ == "__main__":
 
     # Setting up app
     app = QtGui.QGuiApplication(sys.argv)
-    app.setOrganizationName("High Elo Jogos")
+    app.setOrganizationName("High Elo Devs")
     app.setOrganizationDomain("https://www.instagram.com/guiiiferrari/")
     app.setApplicationName("Analysis Tool for Undergrad Students")
     engine = QtQml.QQmlApplicationEngine()
@@ -131,8 +148,7 @@ if __name__ == "__main__":
     
     # Stopping program if PySide fails loading the file
     if not engine.rootObjects():
-        sys.exit(-1)
+        sys.exit(-1)    
 
     # Starting program
     sys.exit(app.exec_())
-    
