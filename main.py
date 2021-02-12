@@ -12,6 +12,7 @@ import os
 from pathlib import Path
 
 from PySide2 import QtGui, QtQml, QtCore
+from PySide2.QtQuick import QQuickView
 
 # from matplotlib_backend_qtquick.qt_compat import QtGui, QtQml, QtCore
 from matplotlib_backend_qtquick.backend_qtquickagg import FigureCanvasQtQuickAgg
@@ -57,17 +58,10 @@ class Bridge(QtCore.QObject):
         else:
             for i in range(len(x)):
                 self.fillDataTable.emit("{:.2g}".format(x[i]), "{:.2g}".format(y[i]), "", "", fileName)
-        # print("Model: Data Loaded")
 
     @QtCore.Slot(str, str, str, int, int, int, int, int, int, str, int, str, str, int, str)
     def loadOptions(self, title, xaxis, yaxis, residuals, grid, sigma_x, sigma_y, log_x, log_y, symbol_color, symbol_size, symbol, curve_color, curve_thickness, curve_style):
         """Gets the input options and set them to the model"""
-        # print("Título:", title)
-        # print('Eixo X:', xaxis)
-        # print('Eixo Y:', yaxis)
-        # print('Resíduos:', residuals)
-        # print('Grade:', grid)
-        
         curveStyles = {
             'Sólido':'-',
             'Tracejado':'--',
@@ -108,9 +102,7 @@ class Bridge(QtCore.QObject):
     @QtCore.Slot(str, str)
     def loadExpression(self, expression, p0):
         """Gets the expression and set it up"""
-        # print("Expressão:", expression)
-        # print("Parâmetros Iniciais:", p0)
-
+        # Setting up initial parameters
         p0_tmp = list()
         if p0 != '':
             # Anti-dummies system
@@ -127,7 +119,10 @@ class Bridge(QtCore.QObject):
         expression = expression.replace('arccos', 'acos')
         expression = expression.replace('sen', 'sin')
         
+        # Setting expression
         self.model.set_expression(expression)
+
+        # Emitting signal to load the options
         self.signalPropPage.emit()
 
     @QtCore.Slot(str)
@@ -161,8 +156,10 @@ if __name__ == "__main__":
     engine.rootContext().setContextProperty("funcsAjustePage", bridge)
     
     # Loading QML files
-    qmlFile = Path(Path.cwd(), Path(__file__).parent, "qml/main.qml")
-    engine.load(QtCore.QUrl.fromLocalFile(str(qmlFile)))
+    engine.clearComponentCache()
+    engine.startTimer(1000)
+    engine.trimComponentCache()
+    engine.load(QtCore.QUrl.fromLocalFile(os.path.join(os.path.dirname(__file__), "qml/main.qml")))
 
     # Updating canvasPlot with the plot
     win = engine.rootObjects()[0]

@@ -5,6 +5,7 @@ import QtGraphicalEffects 1.15
 
 import "controls"
 import "widgets"
+import QtQuick.Layouts 1.11
 
 Window {
     id: mainWindow
@@ -80,7 +81,7 @@ Window {
         }
     }
 
-    Rectangle {        
+    Rectangle {
         id: bg
         color: "#2c313c"
         border.color: "#353b48"
@@ -268,6 +269,160 @@ Window {
                     anchors.bottomMargin: 0
                     anchors.topMargin: 0
 
+                    ColumnLayout {
+                        id: layout_menu
+                        anchors.fill: parent
+
+                        LeftMenuButton {
+                            id: btnHome
+                            width: leftMenu.width
+                            text: qsTr("Início")
+                            clip: false
+                            isActiveMenu: true
+
+                            onClicked: {
+                                if(stackedPage != 0){
+                                    stackedPage = 0
+                                    btnHome.isActiveMenu = true
+                                    btnPlot.isActiveMenu = false
+                                    btnMultiPlot.isActiveMenu = false
+                                    btnExamples.isActiveMenu = false
+                                    btnInfos.isActiveMenu = false
+
+                                    pageHome.visible = true
+                                    pagePlot.visible = false
+                                    pageMultiPlot.visible = false
+                                    pageExamples.visible = false
+                                    pageInfos.visible = false
+
+                                    labelRightInfo.text = "| Início"
+                                }
+                            }
+                        }
+
+                        LeftMenuButton {
+                            id: btnPlot
+                            width: leftMenu.width
+                            text: qsTr("Ajuste")
+                            btnIconSource: "../images/svg_images/plot_icon.svg"
+                            isActiveMenu: false
+                            clip: false
+
+                            onClicked: {
+                                if(stackedPage != 1){
+                                    stackedPage = 1
+                                    btnHome.isActiveMenu = false
+                                    btnPlot.isActiveMenu = true
+                                    btnMultiPlot.isActiveMenu = false
+                                    btnExamples.isActiveMenu = false
+                                    btnInfos.isActiveMenu = false
+
+                                    pageHome.visible = false
+                                    pagePlot.visible = true
+                                    pageMultiPlot.visible = false
+                                    pageExamples.visible = false
+                                    pageInfos.visible = false
+
+                                    labelRightInfo.text = "| Ajuste"
+                                }
+                            }
+                        }
+
+                        LeftMenuButton {
+                            id: btnMultiPlot
+                            width: leftMenu.width
+                            text: qsTr("Vários Ajustes")
+                            btnIconSource: "../images/svg_images/multiplot_icon.svg"
+                            isActiveMenu: false
+                            clip: false
+
+                            onClicked: {
+                                if(stackedPage != 2){
+                                    stackedPage = 2
+                                    btnHome.isActiveMenu = false
+                                    btnPlot.isActiveMenu = false
+                                    btnMultiPlot.isActiveMenu = true
+                                    btnExamples.isActiveMenu = false
+                                    btnInfos.isActiveMenu = false
+
+                                    pageHome.visible = false
+                                    pagePlot.visible = false
+                                    pageMultiPlot.visible = true
+                                    pageExamples.visible = false
+                                    pageInfos.visible = false
+
+                                    labelRightInfo.text = "| Vários Ajustes"
+                                }
+                            }
+                        }
+
+                        LeftMenuButton {
+                            id: btnExamples
+                            btnIconSource: "../images/svg_images/examples_icon.svg"
+                            width: leftMenu.width
+                            text: qsTr("Exemplos")
+                            isActiveMenu: false
+                            clip: false
+
+                            onClicked: {
+                                if(stackedPage != 3){
+                                    stackedPage = 3
+                                    btnHome.isActiveMenu = false
+                                    btnPlot.isActiveMenu = false
+                                    btnMultiPlot.isActiveMenu = false
+                                    btnExamples.isActiveMenu = true
+                                    btnInfos.isActiveMenu = false
+
+                                    pageHome.visible = false
+                                    pagePlot.visible = false
+                                    pageMultiPlot.visible = false
+                                    pageExamples.visible = true
+                                    pageInfos.visible = false
+
+                                    labelRightInfo.text = "| Exemplos"
+                                }
+                            }
+                        }
+
+                        Rectangle {
+                            id: rectangle1
+                            width: 200
+                            height: 200
+                            color: "#00000000"
+                            Layout.fillHeight: true
+                        }
+
+                        LeftMenuButton {
+                            id: btnInfos
+                            width: leftMenu.width
+                            text: qsTr("Informações")
+                            btnIconSource: "../images/svg_images/info_icon.svg"
+                            isActiveMenu: false
+                            clip: false
+
+                            onClicked: {
+                                if(stackedPage != 4){
+                                    stackedPage = 4
+                                    btnHome.isActiveMenu = false
+                                    btnPlot.isActiveMenu = false
+                                    btnMultiPlot.isActiveMenu = false
+                                    btnExamples.isActiveMenu = false
+                                    btnInfos.isActiveMenu = true
+
+                                    pageHome.visible = false
+                                    pagePlot.visible = false
+                                    pageMultiPlot.visible = false
+                                    pageExamples.visible = false
+                                    pageInfos.visible = true
+
+                                    labelRightInfo.text = "| Informações"
+                                }
+                            }
+                        }
+
+
+                    }
+
                     PropertyAnimation{
                         id: animationMenu
                         target: leftMenu
@@ -283,118 +438,8 @@ Window {
                         anchors.fill: parent
                         anchors.bottomMargin: 0
                         spacing: 0
-
-                        LeftMenuButton {
-                            id: btnHome
-                            width: leftMenu.width
-                            text: qsTr("Início")
-                            clip: false
-                            isActiveMenu: true
-
-                            onClicked: {
-                                if(stackedPage != 0){
-                                    stackedPage = 0
-                                    btnHome.isActiveMenu = true
-                                    btnPlot.isActiveMenu = false
-                                    btnMultiPlot.isActiveMenu = false
-                                    btnInfos.isActiveMenu = false
-
-                                    pageHome.visible = true
-                                    pagePlot.visible = false
-                                    pageMultiPlot.visible = false
-                                    pageInfos.visible = false
-
-                                    labelRightInfo.text = "| Início"
-                                }
-                            }
-                        }
-
-                        LeftMenuButton {
-                            id: btnPlot
-                            x: 0
-                            y: 60
-                            width: leftMenu.width
-                            text: qsTr("Ajuste")
-                            btnIconSource: "../images/svg_images/plot_icon.svg"
-                            isActiveMenu: false
-                            clip: false
-
-                            onClicked: {
-                                if(stackedPage != 1){
-                                    stackedPage = 1
-                                    btnHome.isActiveMenu = false
-                                    btnPlot.isActiveMenu = true
-                                    btnMultiPlot.isActiveMenu = false
-                                    btnInfos.isActiveMenu = false
-
-                                    pageHome.visible = false
-                                    pagePlot.visible = true
-                                    pageMultiPlot.visible = false
-                                    pageInfos.visible = false
-
-                                    labelRightInfo.text = "| Ajuste"
-                                }
-                            }
-                        }
-
-                        LeftMenuButton {
-                            id: btnMultiPlot
-                            x: 0
-                            y: 120
-                            width: leftMenu.width
-                            text: qsTr("Vários Ajustes")
-                            btnIconSource: "../images/svg_images/multiplot_icon.svg"
-                            isActiveMenu: false
-                            clip: false
-
-                            onClicked: {
-                                if(stackedPage != 2){
-                                    stackedPage = 2
-                                    btnHome.isActiveMenu = false
-                                    btnPlot.isActiveMenu = false
-                                    btnMultiPlot.isActiveMenu = true
-                                    btnInfos.isActiveMenu = false
-
-                                    pageHome.visible = false
-                                    pagePlot.visible = false
-                                    pageMultiPlot.visible = true
-                                    pageInfos.visible = false
-
-                                    labelRightInfo.text = "| Vários Ajustes"
-                                }
-                            }
-                        }
                     }
 
-                    LeftMenuButton {
-                        id: btnInfos
-                        x: 0
-                        y: 658
-                        width: leftMenu.width
-                        text: qsTr("Informações")
-                        anchors.bottom: parent.bottom
-                        btnIconSource: "../images/svg_images/info_icon.svg"
-                        anchors.bottomMargin: 0
-                        isActiveMenu: false
-                        clip: false
-
-                        onClicked: {
-                            if(stackedPage != 3){
-                                stackedPage = 3
-                                btnHome.isActiveMenu = false
-                                btnPlot.isActiveMenu = false
-                                btnMultiPlot.isActiveMenu = false
-                                btnInfos.isActiveMenu = true
-
-                                pageHome.visible = false
-                                pagePlot.visible = false
-                                pageMultiPlot.visible = false
-                                pageInfos.visible = true
-
-                                labelRightInfo.text = "| Informações"
-                            }
-                        }
-                    }
                 }
 
                 Rectangle {
@@ -432,12 +477,19 @@ Window {
                     }
 
                     Loader{
+                        id: pageExamples
+                        anchors.fill: parent
+                        source: Qt.resolvedUrl("pages/examplesPage.qml")
+                        visible: false
+                    }
+
+                    Loader{
                         id: pageInfos
                         anchors.fill: parent
                         source: Qt.resolvedUrl("pages/infosPage.qml")
                         visible: false
                     }
-                    }
+                }
 
                 Rectangle {
                     id: rectangle
@@ -580,8 +632,4 @@ Window {
         z: 0
     }
 }
-/*##^##
-Designer {
-    D{i:0;formeditorZoom:0.5}
-}
-##^##*/
+
