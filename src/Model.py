@@ -95,12 +95,21 @@ class Model():
         
         # If there's no p0, everything is set to 1.0
 
-        self.p0 = None
+        pi = list()
 
         if self.p0 is None:
-            self.p0 = list()
             for i in range(len(self.model.param_names)):
-                self.p0.append(1.0)
+                pi.append(1.0)
+
+        else:
+            for i in range(len(self.model.param_names)):
+                try:
+                    pi.append(self.p0[i])
+                except:
+                    pi.append(1.0)
+
+
+
 
         # Data
         x, y, sy, sx = self.get_data()
@@ -123,7 +132,7 @@ class Model():
                 param.add(self.model.param_names[i], value=a[i])
             return self.model.eval(x=x, params=param)
         model = SciPyModel(f)
-        myodr = ODR(data, model, beta0 = self.p0)
+        myodr = ODR(data, model, beta0 = pi)
         self.result = myodr.run()
 
         # self.result = self.model.fit(data=self.data["y"].to_numpy(), x = self.data["x"].to_numpy(),
