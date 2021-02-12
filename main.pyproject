@@ -1,0 +1,3 @@
+{
+    "files": ["qml/pages/subpages/funcaoAjustePage.qml","qml/controls/TabButton.qml","qml/pages/homePage.qml","qml/pages/multiPlotPage.qml","qml/controls/LeftMenuButton.qml","qml/widgets/Tabs.qml","qml/pages/subpages/propriedadesPage.qml","qml/controls/TopBarButton.qml","qml/control/ToggleBtn","main.py","qml/pages/plotPage.qml","main.qml","qml/pages/infosPage.qml","qml/pages/subpages/exemplosPage.qml"]
+}
