@@ -31,6 +31,8 @@ class Model():
         self.mode       = 0
         self.has_data   = False
         self.isvalid    = False
+        self.has_sx     = True
+        self.has_sy     = True
         
     def __str__(self):
         return self.report_fit
@@ -42,14 +44,20 @@ class Model():
             df[i] = [x.replace(',', '.') for x in df[i]]
             df[i] = df[i].astype(float)
         self.mode = len(df.columns) - 2
-        
+
+        self.has_sx     = True
+        self.has_sy     = True
+
         # Naming columns
         
         if self.mode == 0:
             df["sy"] = [1]*len(df[0])
             df["sx"] = [1]*len(df[0])
+            self.has_sy = False
+            self.has_sx = False
         elif self.mode == 1:
             df["sx"] = [1]*len(df[0])
+            self.has_sx = False
         df.columns= ['x', 'y', 'sy', 'sx']
             
         self.data     = deepcopy(df)
@@ -72,31 +80,13 @@ class Model():
         
     def set_expression(self, exp = ""):
         """ Set new expression to model. """
-# =============================================================================
-#         if type(exp) != str:
-#             print("Expression is not a string. Setting to default")
-#             return None
-# =============================================================================
         self.exp_model = exp
-        # if exp != "":
-        #     self._set_model(p0)
         
-    # def _set_model(self, p0 = None):
-    #     """ Creates the new model. """
-    #     self.model = ExpressionModel(self.exp_model)
-    #     self.coef = list()
-    #     self.params = Parameters()
-    #     parametros = None
-    #     if p0 is not None:
-    #         parametros = p0.split(",")
-    #     for i, j in zip(self.model.param_names, range(len(self.model.param_names))):
-    #         self.coef.append(i)
-    #         try:            
-    #             self.params.add(i, value = float(parametros[j]))
-    #         except:
-    #             self.params.add(i, value = 1)
-        
-    def fit(self):
+    def fit(self, **kargs):
+
+        wsx = kargs.pop("wsx", True)
+        wsy = kargs.pop("wsy", True)
+
         # Getting Model
         self.model = ExpressionModel(self.exp_model)
 
@@ -104,6 +94,9 @@ class Model():
         self.coef = [i for i in self.model.param_names]
         
         # If there's no p0, everything is set to 1.0
+
+        self.p0 = None
+
         if self.p0 is None:
             self.p0 = list()
             for i in range(len(self.model.param_names)):
@@ -111,7 +104,18 @@ class Model():
 
         # Data
         x, y, sy, sx = self.get_data()
-        data = RealData(x, y, sx=sx, sy=sy)
+        data = None
+        if wsx == True and wsy == True:
+            data = RealData(x, y)
+        
+        elif wsx:
+            data = RealData(x, y, sy = sy)
+        
+        elif wsy:
+            data = RealData(x, y, sx = sx)
+
+        else:
+            data = RealData(x, y, sx = sx, sy = sy)
         
         def f(a, x):
             param = Parameters()
@@ -162,10 +166,10 @@ class Model():
     
     def get_data(self, *args):
         ''' Return data arrays based on mode attribute. '''
-        if self.mode == 0:
-            return self.data["x"].to_numpy(), self.data["y"].to_numpy()
-        elif self.mode == 1:
-            return self.data["x"].to_numpy(), self.data["y"].to_numpy(), self.data["sy"].to_numpy()
+        # if self.mode == 0:
+        #     return self.data["x"].to_numpy(), self.data["y"].to_numpy()
+        # elif self.mode == 1:
+        #     return self.data["x"].to_numpy(), self.data["y"].to_numpy(), self.data["sy"].to_numpy()
         return self.data["x"].to_numpy(), self.data["y"].to_numpy(), self.data["sy"].to_numpy(), self.data["sx"].to_numpy()
         
     def get_predict(self):

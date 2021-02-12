@@ -44,8 +44,18 @@ class Bridge(QtCore.QObject):
 
         # Getting file's name
         fileName = QtCore.QUrl(file_path).toLocalFile().split('/')[-1]
-        for i in range(len(x)):
-            self.fillDataTable.emit("{:.2g}".format(x[i]), "{:.2g}".format(y[i]), "{:.2g}".format(sy[i]), "{:.2g}".format(sx[i]), fileName)
+        if self.model.has_sx and self.model.has_sy:
+            for i in range(len(x)):
+                self.fillDataTable.emit("{:.2g}".format(x[i]), "{:.2g}".format(y[i]), "{:.2g}".format(sy[i]), "{:.2g}".format(sx[i]), fileName)
+        elif self.model.has_sx:
+            for i in range(len(x)):
+                self.fillDataTable.emit("{:.2g}".format(x[i]), "{:.2g}".format(y[i]), "", "{:.2g}".format(sx[i]), fileName)
+        elif self.model.has_sy:
+            for i in range(len(x)):
+                self.fillDataTable.emit("{:.2g}".format(x[i]), "{:.2g}".format(y[i]), "{:.2g}".format(sy[i]), "", fileName)
+        else:
+            for i in range(len(x)):
+                self.fillDataTable.emit("{:.2g}".format(x[i]), "{:.2g}".format(y[i]), "", "", fileName)
         # print("Model: Data Loaded")
 
     @QtCore.Slot(str, str, str, int, int, int, int, int, int, str, int, str, str, int, str)
