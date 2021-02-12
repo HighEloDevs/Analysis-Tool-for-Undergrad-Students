@@ -8,6 +8,7 @@ Main File
 
 """
 import sys
+import os
 from pathlib import Path
 
 from PySide2 import QtGui, QtQml, QtCore
@@ -112,9 +113,19 @@ class Bridge(QtCore.QObject):
 
         p0_tmp = list()
         if p0 != '':
+            # Anti-dummies system
+            p0 = p0.replace(';', ',')
+            p0 = p0.replace('/', ',')
             for i in p0.split(','):
                 p0_tmp.append(float(i))
             self.model.set_p0(p0_tmp)
+
+        # Anti-dummies system 2
+        expression = expression.replace('^', '**')
+        expression = expression.replace('arctan', 'atan')
+        expression = expression.replace('arcsin', 'asin')
+        expression = expression.replace('arccos', 'acos')
+        expression = expression.replace('sen', 'sin')
         
         self.model.set_expression(expression)
         self.signalPropPage.emit()
@@ -134,6 +145,7 @@ if __name__ == "__main__":
     app.setOrganizationName("High Elo Devs")
     app.setOrganizationDomain("https://www.instagram.com/guiiiferrari/")
     app.setApplicationName("Analysis Tool for Undergrad Students")
+    app.setWindowIcon(QtGui.QIcon(os.path.join(os.path.dirname(__file__), "images/main_icon/Análise.png")))
     engine = QtQml.QQmlApplicationEngine()
 
     # Creating bridge

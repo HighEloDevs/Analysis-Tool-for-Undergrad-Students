@@ -113,7 +113,7 @@ Item {
                     anchors.right: parent.right
                     anchors.rightMargin: 10
                     anchors.leftMargin: 10
-                    placeholderText: qsTr("Nome do projeto")
+                    placeholderText: qsTr("Ainda não implementado")
                 }
             }
 
