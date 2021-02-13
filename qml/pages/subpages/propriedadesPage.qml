@@ -34,8 +34,6 @@ Item {
             ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
             ScrollBar.vertical.policy: ScrollBar.AlwaysOn
 
-
-
             ColumnLayout {
                 id: columnLayout_bg
                 anchors.fill: parent
@@ -68,6 +66,12 @@ Item {
                         anchors.leftMargin: 10
                         placeholderText: qsTr("")
                         selectByMouse: true
+
+                        background: Rectangle{
+                            radius: 5
+                            border.color: titulo.focus ? '#55aaff':'#00000000'
+                            border.width: 2
+                        }
                     }
                 }
 
@@ -104,6 +108,12 @@ Item {
                             anchors.rightMargin: 10
                             selectByMouse: true
                             anchors.leftMargin: 10
+
+                            background: Rectangle{
+                                radius: 5
+                                border.color: eixox.focus ? '#55aaff':'#00000000'
+                                border.width: 2
+                            }
                         }
                         anchors.leftMargin: 0
                     }
@@ -151,6 +161,12 @@ Item {
                             anchors.leftMargin: 10
                             placeholderText: qsTr("")
                             selectByMouse: true
+
+                            background: Rectangle{
+                                radius: 5
+                                border.color: eixoy.focus ? '#55aaff':'#00000000'
+                                border.width: 2
+                            }
                         }
                     }
 
@@ -240,6 +256,16 @@ Item {
                     Layout.leftMargin: 10
                     Layout.fillWidth: true
                     title: qsTr("Propriedades dos pontos")
+
+                    background: Rectangle{
+                        radius: 10
+                        color: '#00000000'
+                        border.color: '#ffffff'
+
+                        y: groupBox_pontos.topPadding - groupBox_pontos.bottomPadding
+                        width: parent.width
+                        height: parent.height - groupBox_pontos.topPadding + groupBox_pontos.bottomPadding
+                    }
 
                     label: Label {
 //                        x: groupBox.leftPadding
@@ -421,6 +447,17 @@ Item {
                     title: qsTr("Propriedades da curva")
                     Layout.fillWidth: true
                     Layout.preferredHeight: 150
+
+                    background: Rectangle{
+                        radius: 10
+                        color: '#00000000'
+                        border.color: '#ffffff'
+
+                        y: groupBox_curva.topPadding - groupBox_curva.bottomPadding
+                        width: parent.width
+                        height: parent.height - groupBox_curva.topPadding + groupBox_curva.bottomPadding
+                    }
+
                     GridLayout {
                         id: gridLayout2
                         anchors.fill: parent

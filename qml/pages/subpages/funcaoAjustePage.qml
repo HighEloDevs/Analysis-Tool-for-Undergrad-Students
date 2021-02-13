@@ -1,8 +1,7 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import Qt.labs.qmlmodels 1.0
-import QtGraphicalEffects 1.15
-
+// import QtGraphicalEffects 1.15
 
 Item {
     width: 366
@@ -79,6 +78,12 @@ Item {
                 anchors.leftMargin: 5
                 placeholderText: qsTr("")
                 selectByMouse: true
+
+                background: Rectangle{
+                    radius: 5
+                    border.color: expression.focus ? '#55aaff':'#00000000'
+                    border.width: 2
+                }
             }
         }
 
@@ -92,11 +97,17 @@ Item {
             anchors.rightMargin: 10
             anchors.leftMargin: 10
 
+            background: Rectangle{
+                color: 'transparent'
+                radius: 10
+                border.color: '#ffffff'
+            }
+
             TableView {
                 id: tableParams
                 anchors.fill: parent
                 anchors.rightMargin: 5
-                interactive: false
+                interactive: true
                 columnSpacing: 1
                 rowSpacing: 0.8
                 clip: true
@@ -143,7 +154,7 @@ Item {
         }
 
         GroupBox {
-            id: groupBox
+            id: groupBox_params
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.top: frame.bottom
@@ -154,25 +165,49 @@ Item {
             anchors.topMargin: 10
             title: qsTr("Dados do Ajuste")
 
+            background: Rectangle{
+                radius: 10
+                color: '#00000000'
+                border.color: '#ffffff'
+
+                y: groupBox_params.topPadding - groupBox_params.bottomPadding
+                width: parent.width
+                height: parent.height - groupBox_params.topPadding + groupBox_params.bottomPadding
+            }
+
             label: Label {
-                x: groupBox.leftPadding
-                width: groupBox.availableWidth
-                text: groupBox.title
+                x: groupBox_params.leftPadding
+                width: groupBox_params.availableWidth
+                text: groupBox_params.title
                 color: "#ffffff"
                 elide: Text.ElideRight
             }
 
-            TextEdit {
-                id: infos
-                color: "#ffffff"
-                text: ""
+            ScrollView {
+                id: view
                 anchors.fill: parent
-                font.pointSize: 10
-                activeFocusOnPress: false
-                cursorVisible: false
-                readOnly: true
-                selectByMouse: true
+
+                TextArea {
+                    id: infos
+                    color: "#ffffff"
+                    text: ""
+                    font.pointSize: 10
+                    readOnly: true
+                    selectByMouse: true
+                }
             }
+
+            // Text {
+            //     id: infos
+            //     color: "#ffffff"
+            //     text: ""
+            //     anchors.fill: parent
+            //     font.pointSize: 10
+            //     // activeFocusOnPress: false
+            //     // cursorVisible: false
+            //     // readOnly: true
+            //     // selectByMouse: true
+            // }
 
         }
 
@@ -181,7 +216,7 @@ Item {
             text: qsTr("Plot")
             anchors.left: parent.left
             anchors.right: parent.right
-            anchors.top: groupBox.bottom
+            anchors.top: groupBox_params.bottom
             anchors.bottom: parent.bottom
             font.pointSize: 10
             font.bold: false
@@ -262,13 +297,24 @@ Item {
                 anchors.rightMargin: 10
                 anchors.bottomMargin: 10
                 selectByMouse: true
+
+                background: Rectangle{
+                    radius: 5
+                    border.color: p0.focus ? '#55aaff':'#00000000'
+                    border.width: 2
+                }
+
+
+
             }
         }
     }
 }
 
+
+
 /*##^##
 Designer {
-    D{i:0;height:720;width:600}D{i:15}
+    D{i:0;height:720;width:600}
 }
 ##^##*/

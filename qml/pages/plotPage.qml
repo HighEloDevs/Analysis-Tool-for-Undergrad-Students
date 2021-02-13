@@ -1,5 +1,5 @@
-import QtQuick 2.12
-import QtQuick.Controls 2.12
+import QtQuick 2.15
+import QtQuick.Controls 2.15
 import Qt.labs.qmlmodels 1.0
 import QtQuick.Window 2.12
 import QtQuick.Layouts 1.12
@@ -105,7 +105,7 @@ Item {
                 }
 
                 TextField {
-                    id: textField
+                    id: nomeProjeto
                     y: 19
                     height: 25
                     anchors.verticalCenter: parent.verticalCenter
@@ -114,6 +114,12 @@ Item {
                     anchors.rightMargin: 10
                     anchors.leftMargin: 10
                     placeholderText: qsTr("Ainda não implementado")
+
+                    background: Rectangle{
+                        radius: 5
+                        border.color: nomeProjeto.focus ? '#55aaff':'#00000000'
+                        border.width: 2
+                    }
                 }
             }
 
@@ -142,7 +148,7 @@ Item {
                     FileDialog{
                         id: fileOpen
                         title: "Escolha o arquivo com seus dados"
-                        folder: shortcuts.home
+                        folder: shortcuts.desktop
                         selectMultiple: false
                         nameFilters: ["Arquivos de Texto (*.txt)"]
                         onAccepted:{
@@ -209,11 +215,17 @@ Item {
                 anchors.topMargin: 10
                 anchors.bottomMargin: 10
 
+                background: Rectangle{
+                    color: 'transparent'
+                    border.color: '#ffffff'
+                    radius: 10
+                }
+
                 TableView {
                     id: tableDataView
                     anchors.fill: parent
                     anchors.rightMargin: 5
-                    interactive: false
+                    interactive: true
                     columnSpacing: 1
                     rowSpacing: 0.8
                     clip: true
@@ -221,7 +233,7 @@ Item {
 
                     ScrollBar.vertical: ScrollBar{
                         id: scrollBarTableData
-                        policy: ScrollBar.AlwaysOn
+                        policy: ScrollBar.AsNeeded
                         parent: tableDataView.parent
                         anchors.top: tableDataView.top
                         anchors.left: tableDataView.right
@@ -415,7 +427,7 @@ Item {
                     FileDialog{
                         id: fileSaver
                         title: "Escolha um local para salvar a figura"
-                        folder: shortcuts.home
+                        folder: shortcuts.desktop
                         selectExisting: false
                         nameFilters: ["Arquivos de imagem (*.png)"]
                         onAccepted: {
@@ -427,7 +439,6 @@ Item {
 
             Rectangle {
                 id: bg_canvas
-                color: "#ffffff"
                 anchors.left: parent.left
                 anchors.right: parent.right
                 anchors.top: toolBar.bottom
@@ -452,6 +463,6 @@ Item {
 
 /*##^##
 Designer {
-    D{i:0;autoSize:true;height:480;width:640}
+    D{i:0;autoSize:true;formeditorZoom:0.75;height:600;width:1500}
 }
 ##^##*/

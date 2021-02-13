@@ -272,6 +272,7 @@ Window {
                     ColumnLayout {
                         id: layout_menu
                         anchors.fill: parent
+                        clip: true
 
                         LeftMenuButton {
                             id: btnHome
@@ -436,6 +437,7 @@ Window {
                     Column {
                         id: columnMenus
                         anchors.fill: parent
+                        clip: true
                         anchors.bottomMargin: 0
                         spacing: 0
                     }
@@ -487,6 +489,7 @@ Window {
                         id: pageInfos
                         anchors.fill: parent
                         source: Qt.resolvedUrl("pages/infosPage.qml")
+                        clip: false
                         visible: false
                     }
                 }

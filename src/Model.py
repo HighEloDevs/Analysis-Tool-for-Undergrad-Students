@@ -108,9 +108,6 @@ class Model():
                 except:
                     pi.append(1.0)
 
-
-
-
         # Data
         x, y, sy, sx = self.get_data()
         data = None
