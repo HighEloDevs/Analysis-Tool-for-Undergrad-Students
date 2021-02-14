@@ -63,7 +63,7 @@ class DisplayBridge(QtCore.QObject):
 
             # Fitting expression to data, if there's any expression
             if model.exp_model != '':
-                model.fit(wsx = self.sigma_x, wsy = self.sigma_y)
+                model.fit(wsx = not self.sigma_x, wsy = not self.sigma_y)
                 
                 # Getting fitted data
                 px, py = model.get_predict()
@@ -92,7 +92,7 @@ class DisplayBridge(QtCore.QObject):
                     # Making Plots
                     self.ax1.plot(px, py, lw = self.curve_thickness, color = self.curve_color, ls = self.curve_style)
 
-                    if model.has_sx and model.has_sy:
+                    if model.mode == 2:
                         self.ax2.errorbar(x, y_r, yerr=sy, xerr = sx, ecolor = self.symbol_color, capsize = 0, elinewidth = 1, ms = self.symbol_size, marker = self.symbol, color = self.symbol_color, ls = 'none')
                         self.ax1.errorbar(x, y, yerr=sy, xerr=sx, ecolor = self.symbol_color, capsize = 0, elinewidth = 1, ms = self.symbol_size, marker = self.symbol, color = self.symbol_color, ls = 'none')
                     elif model.has_sx:
@@ -123,7 +123,7 @@ class DisplayBridge(QtCore.QObject):
                     # px, py = model.get_predict()
                     
                     # Making Plots
-                    if model.has_sx and model.has_sy:
+                    if model.mode == 2:
                         self.axes.plot(px, py, lw = self.curve_thickness, color = self.curve_color, ls = self.curve_style)
                         self.axes.errorbar(x, y, yerr=sy, xerr=sx, capsize = 0, elinewidth = 1, ecolor = self.symbol_color, ms = self.symbol_size, marker = self.symbol, color = self.symbol_color, ls = 'none')
                     elif model.has_sx:
@@ -140,34 +140,34 @@ class DisplayBridge(QtCore.QObject):
                     self.axes.set_title(str(model.eixos[2][0]))
                     self.axes.set(ylabel = str(model.eixos[1][0]))
                     self.axes.set(xlabel = str(model.eixos[0][0]))
-            # else:
-            #     self.axes = self.figure.add_subplot(111)
+            else:
+                self.axes = self.figure.add_subplot(111)
 
-            #     if grid:
-            #         self.axes.grid(True)
+                if grid:
+                    self.axes.grid(True)
 
-            #     if self.log_y:
-            #         self.axes.set_yscale('log')
-            #     if self.log_x:
-            #         self.axes.set_xscale('log')
+                if self.log_y:
+                    self.axes.set_yscale('log')
+                if self.log_x:
+                    self.axes.set_xscale('log')
 
-            #     x, y, sy, sx = model.get_data()
+                x, y, sy, sx = model.get_data()
 
-            #     # Making Plots
-            #     #self.axes.plot(px, py, lw = 1, c = 'red')
-            #     if model.has_sx and model.has_sy:
-            #         self.axes.errorbar(x, y, yerr=sy, xerr=sx, elinewidth = 1, ecolor = self.symbol_color, ms = self.symbol_size, marker = self.symbol, color = self.symbol_color, ls = 'none', capsize = 0)
-            #     elif model.has_sx:
-            #         self.axes.errorbar(x, y, xerr=sx, elinewidth = 1, ecolor = self.symbol_color, ms = self.symbol_size, marker = self.symbol, color = self.symbol_color, ls = 'none', capsize = 0)
-            #     elif model.has_sy:
-            #         self.axes.errorbar(x, y, yerr=sy, elinewidth = 1, ecolor = self.symbol_color, ms = self.symbol_size, marker = self.symbol, color = self.symbol_color, ls = 'none', capsize = 0)
-            #     else:
-            #         self.axes.errorbar(x, y, capsize = 0, elinewidth = 1, ecolor = self.symbol_color, ms = self.symbol_size, marker = self.symbol, color = self.symbol_color, ls = 'none')
+                # Making Plots
+                #self.axes.plot(px, py, lw = 1, c = 'red')
+                if model.has_sx and model.has_sy:
+                    self.axes.errorbar(x, y, yerr=sy, xerr=sx, elinewidth = 1, ecolor = self.symbol_color, ms = self.symbol_size, marker = self.symbol, color = self.symbol_color, ls = 'none', capsize = 0)
+                elif model.has_sx:
+                    self.axes.errorbar(x, y, xerr=sx, elinewidth = 1, ecolor = self.symbol_color, ms = self.symbol_size, marker = self.symbol, color = self.symbol_color, ls = 'none', capsize = 0)
+                elif model.has_sy:
+                    self.axes.errorbar(x, y, yerr=sy, elinewidth = 1, ecolor = self.symbol_color, ms = self.symbol_size, marker = self.symbol, color = self.symbol_color, ls = 'none', capsize = 0)
+                else:
+                    self.axes.errorbar(x, y, capsize = 0, elinewidth = 1, ecolor = self.symbol_color, ms = self.symbol_size, marker = self.symbol, color = self.symbol_color, ls = 'none')
 
-            #     # Setting titles
-            #     self.axes.set_title(str(model.eixos[2][0]))
-            #     self.axes.set(ylabel = str(model.eixos[1][0]))
-            #     self.axes.set(xlabel = str(model.eixos[0][0]))
+                # Setting titles
+                self.axes.set_title(str(model.eixos[2][0]))
+                self.axes.set(ylabel = str(model.eixos[1][0]))
+                self.axes.set(xlabel = str(model.eixos[0][0]))
 
         # Reseting parameters
         px, py, y_r = None, None, None
