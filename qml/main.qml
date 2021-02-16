@@ -287,12 +287,16 @@ Window {
                                     btnHome.isActiveMenu = true
                                     btnPlot.isActiveMenu = false
                                     btnMultiPlot.isActiveMenu = false
+                                    btnCalc.isActiveMenu = false
+                                    btnHist.isActiveMenu = false
                                     btnExamples.isActiveMenu = false
                                     btnInfos.isActiveMenu = false
 
                                     pageHome.visible = true
                                     pagePlot.visible = false
                                     pageMultiPlot.visible = false
+                                    pageCalculadora.visible = false
+                                    pageHistograma.visible = false
                                     pageExamples.visible = false
                                     pageInfos.visible = false
 
@@ -315,12 +319,16 @@ Window {
                                     btnHome.isActiveMenu = false
                                     btnPlot.isActiveMenu = true
                                     btnMultiPlot.isActiveMenu = false
+                                    btnCalc.isActiveMenu = false
+                                    btnHist.isActiveMenu = false
                                     btnExamples.isActiveMenu = false
                                     btnInfos.isActiveMenu = false
 
                                     pageHome.visible = false
                                     pagePlot.visible = true
                                     pageMultiPlot.visible = false
+                                    pageCalculadora.visible = false
+                                    pageHistograma.visible = false
                                     pageExamples.visible = false
                                     pageInfos.visible = false
 
@@ -343,16 +351,84 @@ Window {
                                     btnHome.isActiveMenu = false
                                     btnPlot.isActiveMenu = false
                                     btnMultiPlot.isActiveMenu = true
+                                    btnCalc.isActiveMenu = false
+                                    btnHist.isActiveMenu = false
                                     btnExamples.isActiveMenu = false
                                     btnInfos.isActiveMenu = false
 
                                     pageHome.visible = false
                                     pagePlot.visible = false
                                     pageMultiPlot.visible = true
+                                    pageCalculadora.visible = false
+                                    pageHistograma.visible = false
                                     pageExamples.visible = false
                                     pageInfos.visible = false
 
                                     labelRightInfo.text = "| Vários Ajustes"
+                                }
+                            }
+                        }
+
+                        LeftMenuButton {
+                            id: btnCalc
+                            width: leftMenu.width
+                            text: qsTr("Intervalos de confiança")
+                            clip: false
+                            btnIconSource: "../images/svg_images/calculator_icon.svg"
+                            isActiveMenu: false
+
+                            onClicked: {
+                                if(stackedPage != 3){
+                                    stackedPage = 3
+                                    btnHome.isActiveMenu = false
+                                    btnPlot.isActiveMenu = false
+                                    btnMultiPlot.isActiveMenu = false
+                                    btnCalc.isActiveMenu = true
+                                    btnHist.isActiveMenu = false
+                                    btnExamples.isActiveMenu = false
+                                    btnInfos.isActiveMenu = false
+
+                                    pageHome.visible = false
+                                    pagePlot.visible = false
+                                    pageMultiPlot.visible = false
+                                    pageCalculadora.visible = true
+                                    pageHistograma.visible = false
+                                    pageExamples.visible = false
+                                    pageInfos.visible = false
+
+                                    labelRightInfo.text = "| Calculadora de Intervalos de Confiança"
+                                }
+                            }
+                        }
+
+                        LeftMenuButton {
+                            id: btnHist
+                            width: leftMenu.width
+                            text: qsTr("Histogramas")
+                            clip: false
+                            btnIconSource: "../images/svg_images/histogram_icon.svg"
+                            isActiveMenu: false
+
+                            onClicked: {
+                                if(stackedPage != 4){
+                                    stackedPage = 4
+                                    btnHome.isActiveMenu = false
+                                    btnPlot.isActiveMenu = false
+                                    btnMultiPlot.isActiveMenu = false
+                                    btnCalc.isActiveMenu = false
+                                    btnHist.isActiveMenu = true
+                                    btnExamples.isActiveMenu = false
+                                    btnInfos.isActiveMenu = false
+
+                                    pageHome.visible = false
+                                    pagePlot.visible = false
+                                    pageMultiPlot.visible = false
+                                    pageCalculadora.visible = false
+                                    pageHistograma.visible = true
+                                    pageExamples.visible = false
+                                    pageInfos.visible = false
+
+                                    labelRightInfo.text = "| Histogramas"
                                 }
                             }
                         }
@@ -366,8 +442,8 @@ Window {
                             clip: false
 
                             onClicked: {
-                                if(stackedPage != 3){
-                                    stackedPage = 3
+                                if(stackedPage != 5){
+                                    stackedPage = 5
                                     btnHome.isActiveMenu = false
                                     btnPlot.isActiveMenu = false
                                     btnMultiPlot.isActiveMenu = false
@@ -402,17 +478,21 @@ Window {
                             clip: false
 
                             onClicked: {
-                                if(stackedPage != 4){
-                                    stackedPage = 4
+                                if(stackedPage != 6){
+                                    stackedPage = 6
                                     btnHome.isActiveMenu = false
                                     btnPlot.isActiveMenu = false
-                                    btnMultiPlot.isActiveMenu = false
+                                    btnMultiPlot.isActiveMenu = fa;se
+                                    btnCalc.isActiveMenu = false
+                                    btnHist.isActiveMenu = false
                                     btnExamples.isActiveMenu = false
                                     btnInfos.isActiveMenu = true
 
                                     pageHome.visible = false
                                     pagePlot.visible = false
                                     pageMultiPlot.visible = false
+                                    pageCalculadora.visible = false
+                                    pageHistograma.visible = false
                                     pageExamples.visible = false
                                     pageInfos.visible = true
 
@@ -420,6 +500,8 @@ Window {
                                 }
                             }
                         }
+
+
 
 
                     }
@@ -475,6 +557,20 @@ Window {
                         id: pageMultiPlot
                         anchors.fill: parent
                         source: Qt.resolvedUrl("pages/multiPlotPage.qml")
+                        visible: false
+                    }
+
+                    Loader{
+                        id: pageCalculadora
+                        anchors.fill: parent
+                        source: Qt.resolvedUrl("pages/calculadoraPage.qml")
+                        visible: false
+                    }
+
+                    Loader{
+                        id: pageHistograma
+                        anchors.fill: parent
+                        source: Qt.resolvedUrl("pages/histogramaPage.qml")
                         visible: false
                     }
 

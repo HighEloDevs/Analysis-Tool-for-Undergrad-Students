@@ -4,15 +4,6 @@ import QtQuick.Layouts 1.11
 import QtQuick.Dialogs 1.3
 
 Item {
-
-    Connections{
-        target: funcsPropPage
-
-        function onSignalPropPage(){
-            funcsPropPage.loadOptions(titulo.text, eixox.text, eixoy.text, switchResiduos.position, switchGrade.position, switch_sigmax.position, switch_sigmay.position, log_eixox.checkState, log_eixoy.checkState, rectColor.color, size.value, symbol.currentText, rectColor_curve.color, thickness.value, type_curve.currentText)
-        }
-    }
-
     Rectangle {
         id: rectangle
         width: 372
@@ -620,6 +611,14 @@ Item {
 
 
             }
+        }
+    }
+
+    Connections{
+        target: backend
+
+        function onSignalPropPage(){
+            backend.loadOptions(titulo.text, eixox.text, eixoy.text, switchResiduos.position, switchGrade.position, switch_sigmax.position, switch_sigmay.position, log_eixox.checkState, log_eixoy.checkState, rectColor.color, size.value, symbol.currentText, rectColor_curve.color, thickness.value, type_curve.currentText)
         }
     }
 

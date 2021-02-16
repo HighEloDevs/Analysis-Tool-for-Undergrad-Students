@@ -1,3 +1,3 @@
 {
-    "files": ["qml/pages/multiPlotPage.qml","qml/controls/TopBarButton.qml","main.qml","qml/controls/TabButton.qml","qml/control/ToggleBtn","qml/pages/subpages/exemplosPage.qml","qml/pages/infosPage.qml","qml/pages/subpages/funcaoAjustePage.qml","qml/pages/subpages/propriedadesPage.qml","qml/pages/homePage.qml","qml/pages/plotPage.qml","qml/controls/LeftMenuButton.qml","main.py","qml/widgets/Tabs.qml","qml/pages/examplesPage.qml"]
+    "files": ["qml/pages/infosPage.qml","qml/pages/examplesPage.qml","qml/pages/subpages/exemplosPage.qml","qml/pages/homePage.qml","main.qml","qml/controls/TopBarButton.qml","qml/pages/subpages/calculadoraPage.qml","main.py","qml/widgets/Tabs.qml","qml/pages/subpages/propriedadesPage.qml","qml/control/ToggleBtn","qml/pages/multiPlotPage.qml","qml/controls/TabButton.qml","qml/pages/subpages/funcaoAjustePage.qml","qml/pages/plotPage.qml","qml/controls/LeftMenuButton.qml","qml/pages/histogramaPage.qml"]
 }

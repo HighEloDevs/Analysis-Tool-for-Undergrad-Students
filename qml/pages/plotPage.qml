@@ -12,16 +12,6 @@ import Backend 1.0
 
 
 Item {
-
-    Connections{
-        target: funcsPlotPage
-
-        function onFillDataTable(x, y, sy, sx, fileName){
-            label_fileName.text = fileName
-            tableDataModel.appendRow({"X": x, "Y": y, "Sigma Y": sy, "Sigma X": sx})
-        }
-    }
-
     property alias backBtnWidth: backBtn.width
     QtObject{
         id: internal
@@ -153,7 +143,7 @@ Item {
                         nameFilters: ["Arquivos de Texto (*.txt)"]
                         onAccepted:{
                             internal.clearTableData()
-                            funcsPlotPage.loadData(fileOpen.fileUrl)
+                            backend.loadData(fileOpen.fileUrl)
                         }
                     }
                     onClicked:{
@@ -431,7 +421,7 @@ Item {
                         selectExisting: false
                         nameFilters: ["Arquivos de imagem (*.png)"]
                         onAccepted: {
-                            funcsPlotPage.savePlot(fileSaver.fileUrl)
+                            backend.savePlot(fileSaver.fileUrl)
                         }
                     }
                 }
@@ -458,6 +448,16 @@ Item {
 
         }
     }
+
+    Connections{
+        target: backend
+
+        function onFillDataTable(x, y, sy, sx, fileName){
+            label_fileName.text = fileName
+            tableDataModel.appendRow({"X": x, "Y": y, "Sigma Y": sy, "Sigma X": sx})
+        }
+    }
+
 }
 
 

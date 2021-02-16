@@ -1,22 +1,10 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import Qt.labs.qmlmodels 1.0
-// import QtGraphicalEffects 1.15
 
 Item {
     width: 366
     height: 598
-
-    Connections{
-        target: funcsAjustePage
-        function onFillParamsTable(param, value, uncertainty){
-            tableParamsModel.appendRow({"Parâmetros" : param, "Valor": value, "Incerteza" : uncertainty})
-        }
-
-        function onWriteInfos(expr){
-            infos.text = expr
-        }
-    }
 
     // Functions
     QtObject{
@@ -227,7 +215,7 @@ Item {
 
             onClicked:{
                 internal1.clearTableParams()
-                funcsAjustePage.loadExpression(expression.text, p0.text)
+                backend.loadExpression(expression.text, p0.text)
             }
 
             QtObject{
@@ -307,6 +295,17 @@ Item {
 
 
             }
+        }
+    }
+
+    Connections{
+        target: backend
+        function onFillParamsTable(param, value, uncertainty){
+            tableParamsModel.appendRow({"Parâmetros" : param, "Valor": value, "Incerteza" : uncertainty})
+        }
+
+        function onWriteInfos(expr){
+            infos.text = expr
         }
     }
 }

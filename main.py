@@ -9,12 +9,10 @@ Main File
 """
 import sys
 import os
-from pathlib import Path
 
 from PySide2 import QtGui, QtQml, QtCore
-from PySide2.QtQuick import QQuickView
+from PySide2.QtCore import Slot, Signal
 
-# from matplotlib_backend_qtquick.qt_compat import QtGui, QtQml, QtCore
 from matplotlib_backend_qtquick.backend_qtquickagg import FigureCanvasQtQuickAgg
 from src.MatPlotLib import DisplayBridge
 from src.Model import Model
@@ -27,16 +25,16 @@ class Bridge(QtCore.QObject):
     model = Model() 
 
     # Signal fillDataTable
-    fillDataTable = QtCore.Signal(str, str, str, str, str)
+    fillDataTable = QtCore.Signal(str, str, str, str, str, arguments=['x', 'y', 'sy', 'sx', 'filename'])
 
     # Signal fillParamsTable
-    fillParamsTable = QtCore.Signal(str, str, str)
+    fillParamsTable = QtCore.Signal(str, str, str, arguments=['param', 'value', 'uncertainty'])
 
     # Signal to Properties page
     signalPropPage = QtCore.Signal()
 
     # Signal to write infos
-    writeInfos = QtCore.Signal(str)
+    writeInfos = QtCore.Signal(str, arguments='expr')
 
     @QtCore.Slot(str)
     def loadData(self, file_path):
@@ -151,9 +149,7 @@ if __name__ == "__main__":
     context.setContextProperty("displayBridge", displayBridge)
 
     # Creating 'link' between front-end and back-end
-    engine.rootContext().setContextProperty("funcsPlotPage", bridge)
-    engine.rootContext().setContextProperty("funcsPropPage", bridge)
-    engine.rootContext().setContextProperty("funcsAjustePage", bridge)
+    context.setContextProperty("backend", bridge)
     
     # Loading QML files
     engine.clearComponentCache()
