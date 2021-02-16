@@ -185,33 +185,6 @@ Item {
                     Layout.fillWidth: true
 
                     Label {
-                        id: label7
-                        color: "#ffffff"
-                        text: qsTr("Incerteza em X")
-                        Layout.fillWidth: true
-                        Layout.leftMargin: 10
-                    }
-
-                    Switch {
-                        id: switch_sigmax
-                        checked: true
-                        Layout.fillWidth: true
-                    }
-
-                    Label {
-                        id: label8
-                        color: "#ffffff"
-                        text: qsTr("Incerteza em Y")
-                        Layout.fillWidth: true
-                    }
-
-                    Switch {
-                        id: switch_sigmay
-                        checked: true
-                        Layout.fillWidth: true
-                    }
-
-                    Label {
                         id: label4
                         color: "#ffffff"
                         text: qsTr("Resíduos")
@@ -618,7 +591,7 @@ Item {
         target: backend
 
         function onSignalPropPage(){
-            backend.loadOptions(titulo.text, eixox.text, eixoy.text, switchResiduos.position, switchGrade.position, switch_sigmax.position, switch_sigmay.position, log_eixox.checkState, log_eixoy.checkState, rectColor.color, size.value, symbol.currentText, rectColor_curve.color, thickness.value, type_curve.currentText)
+            backend.loadOptions(titulo.text, eixox.text, eixoy.text, switchResiduos.position, switchGrade.position, log_eixox.checkState, log_eixoy.checkState, rectColor.color, size.value, symbol.currentText, rectColor_curve.color, thickness.value, type_curve.currentText)
         }
     }
 
@@ -626,6 +599,6 @@ Item {
 
 /*##^##
 Designer {
-    D{i:0;autoSize:true;formeditorZoom:1.1;height:800;width:372}D{i:31}D{i:55}
+    D{i:0;autoSize:true;formeditorZoom:1.1;height:800;width:372}
 }
 ##^##*/

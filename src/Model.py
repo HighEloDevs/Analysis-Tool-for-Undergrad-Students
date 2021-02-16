@@ -114,6 +114,9 @@ class Model():
                 except:
                     pi.append(1.0)
 
+        # Clearing p0
+        self.p0 = None
+
         # Data
         x, y, sy, sx = self.get_data()
 
@@ -137,7 +140,7 @@ class Model():
 
         else:
             if wsx == True and wsy == True:
-                self.__fit_lm(x, y, pi)
+                self.__fit_lm(x, y, 1, pi)
                 self.__set_param_values_lm()
                 self.__set_report_lm()
             

@@ -182,6 +182,11 @@ Window {
                                          }
                     }
 
+                    MouseArea{
+                        anchors.fill: parent
+                        onDoubleClicked: internal.maximizeRestore()
+                    }
+
                     Image {
                         id: iconApp
                         width: 22

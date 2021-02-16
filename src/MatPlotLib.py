@@ -175,10 +175,8 @@ class DisplayBridge(QtCore.QObject):
 
         self.canvas.draw_idle()
 
-    def setStyle(self, sigma_x, sigma_y, log_x, log_y, symbol_color, symbol_size, symbol, curve_color, curve_thickness, curve_style):
+    def setStyle(self, log_x, log_y, symbol_color, symbol_size, symbol, curve_color, curve_thickness, curve_style):
         """Sets the style of the plot"""
-        self.sigma_x = bool(sigma_x)
-        self.sigma_y = bool(sigma_y)
         self.log_x = bool(log_x)
         self.log_y = bool(log_y)
         self.symbol_color = symbol_color
@@ -187,6 +185,11 @@ class DisplayBridge(QtCore.QObject):
         self.curve_color = curve_color
         self.curve_thickness = curve_thickness
         self.curve_style = curve_style
+    
+    def setSigma(self, wsx, wsy):
+        """Consider sigmas"""
+        self.sigma_x = bool(wsx)
+        self.sigma_y = bool(wsy)
 
     def getCoordinates(self):
         """Gets the cordinates in the plot"""

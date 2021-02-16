@@ -11,7 +11,7 @@ import sys
 import os
 
 from PySide2 import QtGui, QtQml, QtCore
-from PySide2.QtCore import Slot, Signal
+from PySide2.QtCore import Qt, Slot, Signal
 
 from matplotlib_backend_qtquick.backend_qtquickagg import FigureCanvasQtQuickAgg
 from src.MatPlotLib import DisplayBridge
@@ -25,18 +25,18 @@ class Bridge(QtCore.QObject):
     model = Model() 
 
     # Signal fillDataTable
-    fillDataTable = QtCore.Signal(str, str, str, str, str, arguments=['x', 'y', 'sy', 'sx', 'filename'])
+    fillDataTable = Signal(str, str, str, str, str, arguments=['x', 'y', 'sy', 'sx', 'filename'])
 
     # Signal fillParamsTable
-    fillParamsTable = QtCore.Signal(str, str, str, arguments=['param', 'value', 'uncertainty'])
+    fillParamsTable = Signal(str, str, str, arguments=['param', 'value', 'uncertainty'])
 
     # Signal to Properties page
-    signalPropPage = QtCore.Signal()
+    signalPropPage = Signal()
 
     # Signal to write infos
-    writeInfos = QtCore.Signal(str, arguments='expr')
+    writeInfos = Signal(str, arguments='expr')
 
-    @QtCore.Slot(str)
+    @Slot(str)
     def loadData(self, file_path):
         """Gets the path to data's file and fills the data's table"""
         self.model.load_data(QtCore.QUrl(file_path).toLocalFile())
@@ -57,8 +57,8 @@ class Bridge(QtCore.QObject):
             for i in range(len(x)):
                 self.fillDataTable.emit("{:.2g}".format(x[i]), "{:.2g}".format(y[i]), "", "", fileName)
 
-    @QtCore.Slot(str, str, str, int, int, int, int, int, int, str, int, str, str, int, str)
-    def loadOptions(self, title, xaxis, yaxis, residuals, grid, sigma_x, sigma_y, log_x, log_y, symbol_color, symbol_size, symbol, curve_color, curve_thickness, curve_style):
+    @Slot(str, str, str, int, int, int, int, str, int, str, str, int, str)
+    def loadOptions(self, title, xaxis, yaxis, residuals, grid, log_x, log_y, symbol_color, symbol_size, symbol, curve_color, curve_thickness, curve_style):
         """Gets the input options and set them to the model"""
         curveStyles = {
             'Sólido':'-',
@@ -82,7 +82,7 @@ class Bridge(QtCore.QObject):
         self.model.set_title(title)
         self.model.set_x_axis(xaxis)
         self.model.set_y_axis(yaxis)
-        displayBridge.setStyle(sigma_x, sigma_y, log_x, log_y, symbol_color, symbol_size, symbols[symbol], curve_color, curve_thickness, curveStyles[curve_style])
+        displayBridge.setStyle(log_x, log_y, symbol_color, symbol_size, symbols[symbol], curve_color, curve_thickness, curveStyles[curve_style])
 
         # Making plot
         displayBridge.Plot(self.model, residuals, grid)
@@ -97,9 +97,12 @@ class Bridge(QtCore.QObject):
         # Writing infos
         self.writeInfos.emit(self.model.report_fit)
     
-    @QtCore.Slot(str, str)
-    def loadExpression(self, expression, p0):
+    @Slot(str, str, int, int)
+    def loadExpression(self, expression, p0, wsx, wsy):
         """Gets the expression and set it up"""
+
+        displayBridge.setSigma(wsx, wsy)
+
         # Setting up initial parameters
         p0_tmp = list()
         if p0 != '':
@@ -123,7 +126,7 @@ class Bridge(QtCore.QObject):
         # Emitting signal to load the options
         self.signalPropPage.emit()
 
-    @QtCore.Slot(str)
+    @Slot(str)
     def savePlot(self, save_path):
         """Gets the path from input and save the actual plot"""
         displayBridge.figure.savefig(QtCore.QUrl(save_path).toLocalFile(), dpi = 400)
@@ -136,7 +139,7 @@ if __name__ == "__main__":
     # Setting up app
     app = QtGui.QGuiApplication(sys.argv)
     app.setOrganizationName("High Elo Devs")
-    app.setOrganizationDomain("https://www.instagram.com/guiiiferrari/")
+    app.setOrganizationDomain("https://github.com/leoeiji/Analysis-Tool-for-Undergrad-Students---ATUS")
     app.setApplicationName("Analysis Tool for Undergrad Students")
     app.setWindowIcon(QtGui.QIcon(os.path.join(os.path.dirname(__file__), "images/main_icon/Análise.png")))
     engine = QtQml.QQmlApplicationEngine()
@@ -152,9 +155,6 @@ if __name__ == "__main__":
     context.setContextProperty("backend", bridge)
     
     # Loading QML files
-    engine.clearComponentCache()
-    engine.startTimer(1000)
-    engine.trimComponentCache()
     engine.load(QtCore.QUrl.fromLocalFile(os.path.join(os.path.dirname(__file__), "qml/main.qml")))
 
     # Updating canvasPlot with the plot
