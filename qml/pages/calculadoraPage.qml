@@ -50,8 +50,15 @@ Item {
                     }
 
                     ComboBox {
-                        id: comboBox
+                        id: comboFunc
                         Layout.fillWidth: true
+
+                        model: ListModel {
+                                ListElement { text: "Chi²" }
+                                ListElement { text: "Chi² Reduzido" }
+                                ListElement { text: "Gaussiana" }
+                                ListElement { text: "Student" }
+                        }
                     }
 
                     Label {
@@ -62,8 +69,14 @@ Item {
                     }
 
                     ComboBox {
-                        id: comboBox1
+                        id: comboMethod
                         Layout.fillWidth: true
+
+                        model: ListModel {
+                                ListElement { text: "Simétrico de Dois Lados" }
+                                ListElement { text: "Apenas Limite Inferior" }
+                                ListElement { text: "Apenas Limite Superior" }
+                        }
                     }
 
                     Label {
@@ -103,7 +116,7 @@ Item {
                     }
 
                     TextField {
-                        id: media
+                        id: mean
                         Layout.fillWidth: true
                         placeholderText: qsTr("Ex.: 1.0, 3.2, 4")
                         selectByMouse: true
@@ -117,7 +130,7 @@ Item {
                     }
 
                     TextField {
-                        id: desvPad
+                        id: std
                         Layout.fillWidth: true
                         placeholderText: qsTr("Ex.: 1.0, 3.2, 4")
                         selectByMouse: true
@@ -161,6 +174,10 @@ Item {
                                 anchors.horizontalCenter: parent.horizontalCenter
                             }
                         }
+
+                        onClicked:{
+                            backend.calculator(comboFunc.currentText, comboMethod.currentText, nivelConfianca.text, ngl.text, mean.text, std.text)
+                        }
                     }
 
                     Rectangle {
@@ -171,6 +188,16 @@ Item {
                         Layout.columnSpan: 2
                         Layout.fillHeight: true
                         Layout.fillWidth: true
+
+                        Text{
+                            id:infos
+                            color: "#ffffff"
+                            text:'teste'
+                            anchors.fill: parent
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
+                            font.pointSize: 16
+                        }
                     }
                 }
             }
@@ -191,6 +218,14 @@ Item {
             }
 
 
+        }
+    }
+
+    Connections{
+        target: backend
+
+        function onWriteCalculator(expr){
+            infos.text = expr
         }
     }
 

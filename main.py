@@ -9,10 +9,8 @@ Main File
 """
 import sys
 import os
-
 from PySide2 import QtGui, QtQml, QtCore
 from PySide2.QtCore import Qt, Slot, Signal
-
 from matplotlib_backend_qtquick.backend_qtquickagg import FigureCanvasQtQuickAgg
 from src.MatPlotLib import DisplayBridge
 from src.Model import Model
@@ -37,6 +35,9 @@ class Bridge(QtCore.QObject):
 
     # Signal to write infos
     writeInfos = Signal(str, arguments='expr')
+    writeCalculator = Signal(str, arguments='expr')
+
+
 
     @Slot(str)
     def loadData(self, file_path):
@@ -132,6 +133,25 @@ class Bridge(QtCore.QObject):
     def savePlot(self, save_path):
         """Gets the path from input and save the actual plot"""
         displayBridge.figure.savefig(QtCore.QUrl(save_path).toLocalFile(), dpi = 400)
+
+    @Slot(str, str, str, str, str, str)
+    def calculator(self, function, opt1, nc, ngl, mean, std):
+        functionDict = {
+            'Chi²':0,
+            'Chi² Reduzido':1,
+            'Gaussiana':2,
+            'Student':3
+        }
+
+        methodDict = {
+            'Simétrico de Dois Lados':0,
+            'Apenas Limite Inferior':1,
+            'Apenas Limite Superior':2
+        }
+
+        print(functionDict[function], methodDict[opt1], nc, ngl, mean, std)
+        self.writeCalculator.emit('PINTO DO MURILLO TEM 50 CM')
+        
 
 if __name__ == "__main__":
     # Matplotlib stuff
