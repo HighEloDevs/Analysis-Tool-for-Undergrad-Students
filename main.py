@@ -16,9 +16,11 @@ from PySide2.QtCore import Qt, Slot, Signal
 from matplotlib_backend_qtquick.backend_qtquickagg import FigureCanvasQtQuickAgg
 from src.MatPlotLib import DisplayBridge
 from src.Model import Model
+from src.Calculators import CalculatorCanvas
 
 # Instantiating the display bridge || Global variable, fuck the world
 displayBridge = DisplayBridge()
+calculatorCanvas = CalculatorCanvas()
 
 class Bridge(QtCore.QObject):
     # Instantiating the fit class
@@ -133,7 +135,7 @@ class Bridge(QtCore.QObject):
 
 if __name__ == "__main__":
     # Matplotlib stuff
-    QtQml.qmlRegisterType(FigureCanvasQtQuickAgg, "Backend", 1, 0, "FigureCanvas")
+    QtQml.qmlRegisterType(FigureCanvasQtQuickAgg, "Canvas", 1, 0, "FigureCanvas")
     QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
 
     # Setting up app
@@ -160,6 +162,7 @@ if __name__ == "__main__":
     # Updating canvasPlot with the plot
     win = engine.rootObjects()[0]
     displayBridge.updateWithCanvas(win.findChild(QtCore.QObject, "canvasPlot"))
+    calculatorCanvas.updateWithCanvas(win.findChild(QtCore.QObject, "canvasCalculadora"))
     
     # Stopping program if PySide fails loading the file
     if not engine.rootObjects():

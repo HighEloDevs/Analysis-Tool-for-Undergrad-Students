@@ -452,12 +452,16 @@ Window {
                                     btnHome.isActiveMenu = false
                                     btnPlot.isActiveMenu = false
                                     btnMultiPlot.isActiveMenu = false
+                                    btnCalc.isActiveMenu = false
+                                    btnHist.isActiveMenu = false
                                     btnExamples.isActiveMenu = true
                                     btnInfos.isActiveMenu = false
 
                                     pageHome.visible = false
                                     pagePlot.visible = false
                                     pageMultiPlot.visible = false
+                                    pageCalculadora.visible = false
+                                    pageHistograma.visible = false
                                     pageExamples.visible = true
                                     pageInfos.visible = false
 
@@ -487,7 +491,7 @@ Window {
                                     stackedPage = 6
                                     btnHome.isActiveMenu = false
                                     btnPlot.isActiveMenu = false
-                                    btnMultiPlot.isActiveMenu = fa;se
+                                    btnMultiPlot.isActiveMenu = false
                                     btnCalc.isActiveMenu = false
                                     btnHist.isActiveMenu = false
                                     btnExamples.isActiveMenu = false

@@ -8,7 +8,7 @@ import QtQuick.Dialogs 1.3
 import "../widgets"
 import "../controls"
 
-import Backend 1.0
+import Canvas 1.0
 
 
 Item {

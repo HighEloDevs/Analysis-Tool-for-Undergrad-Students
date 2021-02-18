@@ -11,9 +11,9 @@ Item {
         TextArea {
             id: textEdit1
             color: "#ffffff"
-            text: "Histograma Page"
+            text: "Histogramas | Em Construção"
             anchors.fill: parent
-            font.pixelSize: 16
+            font.pixelSize: 26
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
             selectByMouse: true
