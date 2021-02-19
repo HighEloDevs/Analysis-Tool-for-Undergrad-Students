@@ -367,23 +367,15 @@ Item {
                                 implicitHeight: 20
                                 border.width: 1
 
-                                Text {
+                                TextArea {
                                     text: display
                                     anchors.centerIn: parent
+                                    readOnly: true
+                                    selectByMouse: true
                                 }
                             }
                         }
                     }
-
-
-
-
-
-
-
-
-
-
                 }
 
                 Rectangle {

@@ -211,9 +211,11 @@ Item {
                         implicitHeight: 20
                         border.width: 1
 
-                        Text {
+                        TextArea {
                             text: display
                             anchors.centerIn: parent
+                            readOnly: true
+                            selectByMouse: true
                         }
                     }
                 }
@@ -260,19 +262,6 @@ Item {
                         selectByMouse: true
                     }
                 }
-
-                // Text {
-                //     id: infos
-                //     color: "#ffffff"
-                //     text: ""
-                //     anchors.fill: parent
-                //     font.pointSize: 10
-                //     // activeFocusOnPress: false
-                //     // cursorVisible: false
-                //     // readOnly: true
-                //     // selectByMouse: true
-                // }
-
             }
 
             Button {
