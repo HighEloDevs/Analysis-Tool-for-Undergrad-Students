@@ -141,6 +141,7 @@ class DisplayBridge(QtCore.QObject):
                     self.axes.set(ylabel = str(model.eixos[1][0]))
                     self.axes.set(xlabel = str(model.eixos[0][0]))
             else:
+                self.clearAxis()
                 self.axes = self.figure.add_subplot(111)
 
                 if grid:

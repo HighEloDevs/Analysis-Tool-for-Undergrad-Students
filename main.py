@@ -78,7 +78,7 @@ class Bridge(QtCore.QObject):
             'Cruz':'P',
             'Estrela':'*',
             'Diamante':'d',
-            'Produto':'x'
+            'Produto':'X'
             }
 
         # Setting style of the plot
@@ -142,31 +142,38 @@ class Bridge(QtCore.QObject):
             'Gaussiana':2,
             'Student':3
         }
-
         methodDict = {
             'Simétrico de Dois Lados':0,
             'Apenas Limite Inferior':1,
             'Apenas Limite Superior':2
         }   
         try:
+            nc = nc.replace(',', '.')
             nc = float(nc)
         except:
             pass
         try:
+            ngl = ngl.replace(',', '.')
             ngl = float(ngl)
         except:
             pass
         try:
+            mean = mean.replace(',', '.')
             mean = float(mean)
         except:
             pass
         try:
+            std = std.replace(',', '.')
             std = float(std)
         except:
             pass
+
         s, x, y = interpreter_calculator(functionDict[function], methodDict[opt1], nc, ngl, mean, std)
         calculatorCanvas.Plot(x, y)
         self.writeCalculator.emit(s)
+
+    def SaveModel():
+        pass
         
 
 if __name__ == "__main__":

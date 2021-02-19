@@ -9,6 +9,10 @@ Item {
     width: 1408
     height: 690
     anchors.fill: parent
+
+    property color textDefaultColor: '#ffffff'
+    property color textDisabledColor: '#4e4f4e'
+
     Rectangle {
         id: bg
         color: "#40464c"
@@ -51,6 +55,7 @@ Item {
 
                     ComboBox {
                         id: comboFunc
+                        Layout.preferredHeight: 30
                         Layout.fillWidth: true
 
                         model: ListModel {
@@ -58,6 +63,30 @@ Item {
                                 ListElement { text: "Chi² Reduzido" }
                                 ListElement { text: "Gaussiana" }
                                 ListElement { text: "Student" }
+                        }
+
+                        onActivated: {
+                            if(comboFunc.currentText == "Chi²"){
+                                mean.enabled = false
+                                std.enabled = false
+                                nivelConfianca.enabled = true
+                                ngl.enabled = true
+                            } else if(comboFunc.currentText == 'Chi² Reduzido'){
+                                mean.enabled = false
+                                std.enabled = false
+                                nivelConfianca.enabled = true
+                                ngl.enabled = true
+                            } else if(comboFunc.currentText == "Gaussiana"){
+                                mean.enabled = true
+                                std.enabled = true
+                                nivelConfianca.enabled = true
+                                ngl.enabled = false
+                            } else if(comboFunc.currentText == "Student"){
+                                mean.enabled = true
+                                std.enabled = true
+                                nivelConfianca.enabled = true
+                                ngl.enabled = true
+                            }
                         }
                     }
 
@@ -70,6 +99,7 @@ Item {
 
                     ComboBox {
                         id: comboMethod
+                        Layout.preferredHeight: 30
                         Layout.fillWidth: true
 
                         model: ListModel {
@@ -77,6 +107,8 @@ Item {
                                 ListElement { text: "Apenas Limite Inferior" }
                                 ListElement { text: "Apenas Limite Superior" }
                         }
+
+                        
                     }
 
                     Label {
@@ -88,10 +120,17 @@ Item {
 
                     TextField {
                         id: nivelConfianca
+                        height: 30
                         text: ""
+                        Layout.preferredHeight: 30
                         Layout.fillWidth: true
                         placeholderText: qsTr("Ex.: 0.95, 0.90")
                         selectByMouse: true
+
+                        background: Rectangle{
+                            color: nivelConfianca.enabled? textDefaultColor : textDisabledColor
+                            radius: 10
+                        }
                     }
 
                     Label {
@@ -103,9 +142,16 @@ Item {
 
                     TextField {
                         id: ngl
+                        height: 30
+                        Layout.preferredHeight: 30
                         Layout.fillWidth: true
                         placeholderText: qsTr("Ex.: 30, 31, 32...")
                         selectByMouse: true
+
+                        background: Rectangle{
+                            color: ngl.enabled? textDefaultColor : textDisabledColor
+                            radius: 10
+                        }
                     }
 
                     Label {
@@ -117,9 +163,17 @@ Item {
 
                     TextField {
                         id: mean
+                        height: 30
+                        Layout.preferredHeight: 30
                         Layout.fillWidth: true
                         placeholderText: qsTr("Ex.: 1.0, 3.2, 4")
                         selectByMouse: true
+                        enabled: false
+
+                        background: Rectangle{
+                            color: mean.enabled? textDefaultColor : textDisabledColor
+                            radius: 10
+                        }
                     }
 
                     Label {
@@ -131,9 +185,16 @@ Item {
 
                     TextField {
                         id: std
+                        Layout.preferredHeight: 30
                         Layout.fillWidth: true
                         placeholderText: qsTr("Ex.: 1.0, 3.2, 4")
                         selectByMouse: true
+                        enabled: false
+
+                        background: Rectangle{
+                            color: std.enabled? textDefaultColor : textDisabledColor
+                            radius: 10
+                        }
                     }
 
                     Button {
@@ -189,14 +250,15 @@ Item {
                         Layout.fillHeight: true
                         Layout.fillWidth: true
 
-                        Text{
+                        TextArea{
                             id:infos
                             color: "#ffffff"
-                            text:'teste'
                             anchors.fill: parent
                             horizontalAlignment: Text.AlignHCenter
                             verticalAlignment: Text.AlignVCenter
                             font.pointSize: 16
+                            selectByMouse: true
+                            readOnly: true
                         }
                     }
                 }
@@ -210,11 +272,11 @@ Item {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
 
-                FigureCanvas {
-                     objectName : "canvasCalculadora"
-                     dpi_ratio: Screen.devicePixelRatio
-                     anchors.fill: parent
-               }
+               FigureCanvas {
+                    objectName : "canvasCalculadora"
+                    dpi_ratio: Screen.devicePixelRatio
+                    anchors.fill: parent
+              }
             }
 
 
@@ -234,3 +296,9 @@ Item {
 
 
 
+
+/*##^##
+Designer {
+    D{i:0;autoSize:true;height:480;width:640}
+}
+##^##*/

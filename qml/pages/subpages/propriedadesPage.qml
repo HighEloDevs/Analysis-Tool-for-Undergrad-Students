@@ -2,6 +2,7 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.11
 import QtQuick.Dialogs 1.3
+import QtGraphicalEffects 1.15
 
 Item {
     Rectangle {
@@ -275,6 +276,7 @@ Item {
                                 title: "Escolha uma cor para os pontos"
                                 onAccepted: {
                                     rectColor.color = colorDialog.color
+                                    iconOverlay.color = rectColor.color
                                 }
                             }
 
@@ -382,23 +384,40 @@ Item {
                             }
                         }
 
-                        Image {
-                            id: icons
-                            width: 100
-                            height: 100
-                            source: "../../../images/symbols/Círculo.png"
-                            fillMode: Image.PreserveAspectFit
-                            mirror: false
-                            mipmap: true
-                            autoTransform: false
-                            Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-                            asynchronous: false
-                            cache: true
-                            smooth: true
-                            Layout.preferredWidth: 20
-                            Layout.preferredHeight: 20
+                        Rectangle{
+                            width: 20
+                            height: 20
+                            color: '#00000000'
+                            Layout.fillWidth: true
                             Layout.fillHeight: false
-                            Layout.fillWidth: false
+                            Image {
+                                id: icons
+                                anchors.fill: parent
+                                source: "../../../images/symbols/Círculo.png"
+                                fillMode: Image.PreserveAspectFit
+                                mirror: false
+                                mipmap: true
+                                autoTransform: false
+                                Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+                                asynchronous: false
+                                cache: true
+                                smooth: true
+                                Layout.preferredWidth: 20
+                                Layout.preferredHeight: 20
+                                Layout.fillHeight: false
+                                Layout.fillWidth: false
+                            }
+
+                            ColorOverlay{
+                                id: iconOverlay
+                                anchors.fill: parent
+                                source: icons
+                                color: "#000000"
+                                anchors.verticalCenter: parent.verticalCenter
+                                antialiasing: true
+                                width: icons.width
+                                height: icons.height
+                            }
                         }
                     }
                 }

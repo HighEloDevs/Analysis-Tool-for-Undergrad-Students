@@ -51,7 +51,7 @@ def calc_chi2r_lim_sup(ngl, nc):
 
 def interpreter_calculator(f, opt, nc, ngl, mean, std):
     if f == 0:
-        x_plot = np.linspace(chi2.ppf(0.005, ngl), chi2.ppf(0.99, ngl), 350)
+        x_plot = np.linspace(chi2.ppf(0.005, ngl), chi2.ppf(0.999, ngl), 350)
         y_plot = chi2.pdf(x_plot, ngl)
         if opt == 0:
             result = calc_chi2_sim(ngl, nc)
@@ -65,7 +65,7 @@ def interpreter_calculator(f, opt, nc, ngl, mean, std):
         s      = "Limite inferior = -inf \n Limite superior = %f"%result
         return s, x_plot, y_plot
     elif f == 1:
-        x_plot = np.linspace(chi2.ppf(0.005, ngl), chi2.ppf(0.99, ngl), 350)
+        x_plot = np.linspace(chi2.ppf(0.005, ngl), chi2.ppf(0.999, ngl), 350)
         y_plot = chi2.pdf(x_plot, ngl)
         x_plot = x_plot/chi2.ppf(0.5, ngl)
         y_plot = y_plot/chi2.pdf(chi2.ppf(0.5, ngl), ngl)
@@ -81,20 +81,21 @@ def interpreter_calculator(f, opt, nc, ngl, mean, std):
         s      = "Limite inferior = -inf \n Limite superior = %f"%result
         return s, x_plot, y_plot
     elif f == 2:
-        x_plot = np.linspace(norm.ppf(0.005)*dp + mean, norm.ppf(0.99)*dp + mean, 350)
+        x_plot = np.linspace(norm.ppf(0.005) , norm.ppf(0.999), 350)
         y_plot = norm.pdf(x_plot)
+        x_plot = x_plot * std + mean
         if opt == 0:
-            result = calc_gauss_sim(media, std, nc)
+            result = calc_gauss_sim(mean, std, nc)
             s      = "Limite inferior = %f \n Limite superior  = %f"%(result[0], result[1])
             return s, x_plot, y_plot
         elif opt == 1:
-            result = calc_gauss_lim_inf(media, std, nc)
+            result = calc_gauss_lim_inf(mean, std, nc)
             s      = "Limite inferior = %f \n Limite superior = inf"%result
             return s, x_plot, y_plot
-        result = calc_gauss_lim_sup(media, std, nc)
+        result = calc_gauss_lim_sup(mean, std, nc)
         s      = "Limite inferior = -inf \n Limite superior = %f"%result
         return s, x_plot, y_plot
-    x_plot = np.linspace(t.ppf(0.005, df = ngl)*std + mean, t.ppf(0.99, df = ngl)*std + mean)
+    x_plot = np.linspace(t.ppf(0.005, df = ngl)*std + mean, t.ppf(0.999, df = ngl)*std + mean)
     y_plot = t.pdf(x_plot)
     if opt == 0:
         result = calc_t_sim(mean, std, ngl, nc)
@@ -129,8 +130,15 @@ class CalculatorCanvas(QtCore.QObject):
         self.figure = self.canvas.figure
         self.axes = self.figure.add_subplot(111)
         self.axes.grid(True)
-        canvas.draw_idle()
+        self.canvas.draw_idle()
 
     def Plot(self, x, y):
-        self.axes.set_title("P.D.F")
+        try:
+            self.axes.remove()
+        except:
+            pass
+        self.axes = self.figure.add_subplot(111)
+        self.axes.grid(True)
         self.axes.plot(x, y, lw = 1, c = 'red')
+        self.axes.set_title("P.D.F")
+        self.canvas.draw_idle()
