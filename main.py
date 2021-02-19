@@ -167,8 +167,8 @@ class Bridge(QtCore.QObject):
         except:
             pass
 
-        s, x, y = interpreter_calculator(functionDict[function], methodDict[opt1], nc, ngl, mean, std)
-        calculatorCanvas.Plot(x, y)
+        s, x, y, lim_inf, lim_sup = interpreter_calculator(functionDict[function], methodDict[opt1], nc, ngl, mean, std)
+        calculatorCanvas.Plot(x, y, lim_inf, lim_sup)
         self.writeCalculator.emit(s)
 
     def SaveModel():

@@ -50,64 +50,93 @@ def calc_chi2r_lim_sup(ngl, nc):
     return chi2.ppf(nc, ngl)/ngl
 
 def interpreter_calculator(f, opt, nc, ngl, mean, std):
+    ''' Return the plot string and the arrays for the graph plot.
+    '''
+    lim_inf = 0.008
+    lim_sup = 0.999
+    if nc > 0.99:
+        dif = (1 - nc)/2
+        lim_inf = dif
+        lim_sup = nc + dif
+    
     if f == 0:
-        x_plot = np.linspace(chi2.ppf(0.005, ngl), chi2.ppf(0.999, ngl), 350)
+        # If it's Chi²
+        x_plot = np.linspace(chi2.ppf(lim_inf, ngl), chi2.ppf(lim_sup, ngl), 350)
         y_plot = chi2.pdf(x_plot, ngl)
+
         if opt == 0:
             result = calc_chi2_sim(ngl, nc)
             s      = "Limite inferior = %f \n Limite superior  = %f"%(result[0], result[1])
-            return s, x_plot, y_plot
+            return s, x_plot, y_plot, (result[0], result[1])
+
         elif opt == 1:
             result = calc_chi2_lim_inf(ngl, nc)
             s      = "Limite inferior = %f \n Limite superior = inf"%result
-            return s, x_plot, y_plot 
+            return s, x_plot, y_plot, (result, -1) 
+
         result = calc_chi2_lim_sup(ngl, nc)
         s      = "Limite inferior = -inf \n Limite superior = %f"%result
-        return s, x_plot, y_plot
+        return s, x_plot, y_plot, (-1, result)
+
     elif f == 1:
-        x_plot = np.linspace(chi2.ppf(0.005, ngl), chi2.ppf(0.999, ngl), 350)
+        # If it's Red Chi²
+        x_plot = np.linspace(chi2.ppf(lim_inf, ngl), chi2.ppf(lim_sup, ngl), 350)
         y_plot = chi2.pdf(x_plot, ngl)
         x_plot = x_plot/chi2.ppf(0.5, ngl)
-        y_plot = y_plot/chi2.pdf(chi2.ppf(0.5, ngl), ngl)
+        y_plot = y_plot # /chi2.pdf(chi2.ppf(0.5, ngl), ngl)
+
         if opt == 0:
             result = calc_chi2r_sim(ngl, nc)
             s      = "Limite inferior = %f \n Limite superior  = %f"%(result[0], result[1])
-            return s, x_plot, y_plot
+            return s, x_plot, y_plot, (result[0], result[1])
+
         elif opt == 1:
             result = calc_chi2r_lim_inf(ngl, nc)
             s      = "Limite inferior = %f \n Limite superior = inf"%result
-            return s, x_plot, y_plot
+            return s, x_plot, y_plot, (result, -1) 
+
         result = calc_chi2r_lim_sup(ngl, nc)
         s      = "Limite inferior = -inf \n Limite superior = %f"%result
-        return s, x_plot, y_plot
+
+        return s, x_plot, y_plot, (-1, result)
+
     elif f == 2:
-        x_plot = np.linspace(norm.ppf(0.005) , norm.ppf(0.999), 350)
+        # If it's Gaussian
+        x_plot = np.linspace(norm.ppf(lim_inf) , norm.ppf(lim_sup), 350)
         y_plot = norm.pdf(x_plot)
         x_plot = x_plot * std + mean
+
         if opt == 0:
             result = calc_gauss_sim(mean, std, nc)
             s      = "Limite inferior = %f \n Limite superior  = %f"%(result[0], result[1])
-            return s, x_plot, y_plot
+            return s, x_plot, y_plot, (result[0], result[1])
+
         elif opt == 1:
             result = calc_gauss_lim_inf(mean, std, nc)
             s      = "Limite inferior = %f \n Limite superior = inf"%result
-            return s, x_plot, y_plot
+            return s, x_plot, y_plot, (result, -1) 
+
         result = calc_gauss_lim_sup(mean, std, nc)
         s      = "Limite inferior = -inf \n Limite superior = %f"%result
-        return s, x_plot, y_plot
-    x_plot = np.linspace(t.ppf(0.005, df = ngl)*std + mean, t.ppf(0.999, df = ngl)*std + mean)
+        return s, x_plot, y_plot, (-1, result)
+
+    # If it's Student:    
+    x_plot = np.linspace(t.ppf(lim_inf, df = ngl)*std + mean, t.ppf(lim_sup, df = ngl)*std + mean)
     y_plot = t.pdf(x_plot)
+
     if opt == 0:
         result = calc_t_sim(mean, std, ngl, nc)
         s      = "Limite inferior = %f \n Limite superior  = %f"%(result[0], result[1])
-        return s, x_plot, y_plot
+        return s, x_plot, y_plot, (result[0], result[1])
+    
     elif opt == 1:
             result = calc_t_lim_inf(mean, std, ngl, nc)
             s      = "Limite inferior = %f \n Limite superior = inf"%result
-            return s, x_plot, y_plot
+            return s, x_plot, y_plot, (result, -1) 
+
     result = calc_t_lim_sup(mean, std, ngl, nc)
     s      = "Limite inferior = -inf \n Limite superior = %f"%result
-    return s, x_plot, y_plot
+    return s, x_plot, y_plot, (-1, result)
 
 class CalculatorCanvas(QtCore.QObject):
     """ A bridge class to interact with the plot in python
@@ -132,11 +161,12 @@ class CalculatorCanvas(QtCore.QObject):
         self.axes.grid(True)
         self.canvas.draw_idle()
 
-    def Plot(self, x, y):
+    def Plot(self, x, y, inf, sup):
         try:
             self.axes.remove()
         except:
             pass
+        
         self.axes = self.figure.add_subplot(111)
         self.axes.grid(True)
         self.axes.plot(x, y, lw = 1, c = 'red')
