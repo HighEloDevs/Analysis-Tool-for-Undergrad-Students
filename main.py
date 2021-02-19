@@ -60,15 +60,14 @@ class Bridge(QtCore.QObject):
             for i in range(len(x)):
                 self.fillDataTable.emit("{:.2g}".format(x[i]), "{:.2g}".format(y[i]), "", "", fileName)
 
-    @Slot(str, str, str, int, int, int, int, str, int, str, str, int, str)
-    def loadOptions(self, title, xaxis, yaxis, residuals, grid, log_x, log_y, symbol_color, symbol_size, symbol, curve_color, curve_thickness, curve_style):
+    @Slot(str, str, str, int, int, int, int, str, int, str, str, int, str, int)
+    def loadOptions(self, title, xaxis, yaxis, residuals, grid, log_x, log_y, symbol_color, symbol_size, symbol, curve_color, curve_thickness, curve_style, legend):
         """Gets the input options and set them to the model"""
         curveStyles = {
             'Sólido':'-',
             'Tracejado':'--',
             'Ponto-Tracejado':'-.'
             }
-
         symbols = {
             'Círculo':'o',
             'Triângulo':'^',
@@ -85,7 +84,7 @@ class Bridge(QtCore.QObject):
         self.model.set_title(title)
         self.model.set_x_axis(xaxis)
         self.model.set_y_axis(yaxis)
-        displayBridge.setStyle(log_x, log_y, symbol_color, symbol_size, symbols[symbol], curve_color, curve_thickness, curveStyles[curve_style])
+        displayBridge.setStyle(log_x, log_y, symbol_color, symbol_size, symbols[symbol], curve_color, curve_thickness, curveStyles[curve_style], legend, self.model.exp_model.replace('**', '^'))
 
         # Making plot
         displayBridge.Plot(self.model, residuals, grid)

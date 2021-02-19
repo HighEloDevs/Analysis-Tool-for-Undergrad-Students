@@ -32,12 +32,14 @@ class DisplayBridge(QtCore.QObject):
         self.sigma_y = False
         self.log_x = False
         self.log_y = False
+        self.legend = False
         self.symbol_color = ''
         self.symbol_size = 3
         self.symbol = ''
         self.curve_color = ''
         self.curve_thickness = 2
         self.curve_style = ''
+        self.expression = ''
 
         # This is used to display the coordinates of the mouse in the window
         self._coordinates = ""
@@ -90,7 +92,10 @@ class DisplayBridge(QtCore.QObject):
                         self.ax1.set_xscale('log')
 
                     # Making Plots
-                    self.ax1.plot(px, py, lw = self.curve_thickness, color = self.curve_color, ls = self.curve_style)
+                    self.ax1.plot(px, py, lw = self.curve_thickness, color = self.curve_color, ls = self.curve_style, label = '${}$'.format(self.expression))
+
+                    if self.legend:
+                        self.ax1.legend(frameon=False)
 
                     if model.mode == 2:
                         self.ax2.errorbar(x, y_r, yerr=sy, xerr = sx, ecolor = self.symbol_color, capsize = 0, elinewidth = 1, ms = self.symbol_size, marker = self.symbol, color = self.symbol_color, ls = 'none')
@@ -119,22 +124,22 @@ class DisplayBridge(QtCore.QObject):
                     if self.log_x:
                         self.axes.set_xscale('log')
                     
-                    # x, y, sy, sx = model.get_data()
-                    # px, py = model.get_predict()
-                    
                     # Making Plots
                     if model.mode == 2:
-                        self.axes.plot(px, py, lw = self.curve_thickness, color = self.curve_color, ls = self.curve_style)
+                        self.axes.plot(px, py, lw = self.curve_thickness, color = self.curve_color, ls = self.curve_style, label = '${}$'.format(self.expression))
                         self.axes.errorbar(x, y, yerr=sy, xerr=sx, capsize = 0, elinewidth = 1, ecolor = self.symbol_color, ms = self.symbol_size, marker = self.symbol, color = self.symbol_color, ls = 'none')
                     elif model.has_sx:
-                        self.axes.plot(px, py, lw = self.curve_thickness, color = self.curve_color, ls = self.curve_style)
+                        self.axes.plot(px, py, lw = self.curve_thickness, color = self.curve_color, ls = self.curve_style, label = '${}$'.format(self.expression))
                         self.axes.errorbar(x, y, xerr=sx, capsize = 0, elinewidth = 1, ecolor = self.symbol_color, ms = self.symbol_size, marker = self.symbol, color = self.symbol_color, ls = 'none')
                     elif model.has_sy:
-                        self.axes.plot(px, py, lw = self.curve_thickness, color = self.curve_color, ls = self.curve_style)
+                        self.axes.plot(px, py, lw = self.curve_thickness, color = self.curve_color, ls = self.curve_style, label = '${}$'.format(self.expression))
                         self.axes.errorbar(x, y, yerr=sy, capsize = 0, elinewidth = 1, ecolor = self.symbol_color, ms = self.symbol_size, marker = self.symbol, color = self.symbol_color, ls = 'none')
                     else:
-                        self.axes.plot(px, py, lw = self.curve_thickness, color = self.curve_color, ls = self.curve_style)
+                        self.axes.plot(px, py, lw = self.curve_thickness, color = self.curve_color, ls = self.curve_style, label = '${}$'.format(self.expression))
                         self.axes.errorbar(x, y, capsize = 0, elinewidth = 1, ecolor = self.symbol_color, ms = self.symbol_size, marker = self.symbol, color = self.symbol_color, ls = 'none')
+                    
+                    if self.legend:
+                        self.axes.legend(frameon=False)
                     
                     # Setting titles
                     self.axes.set_title(str(model.eixos[2][0]))
@@ -146,7 +151,6 @@ class DisplayBridge(QtCore.QObject):
 
                 if grid:
                     self.axes.grid(True)
-
                 if self.log_y:
                     self.axes.set_yscale('log')
                 if self.log_x:
@@ -155,7 +159,6 @@ class DisplayBridge(QtCore.QObject):
                 x, y, sy, sx = model.get_data()
 
                 # Making Plots
-                #self.axes.plot(px, py, lw = 1, c = 'red')
                 if model.has_sx and model.has_sy:
                     self.axes.errorbar(x, y, yerr=sy, xerr=sx, elinewidth = 1, ecolor = self.symbol_color, ms = self.symbol_size, marker = self.symbol, color = self.symbol_color, ls = 'none', capsize = 0)
                 elif model.has_sx:
@@ -176,7 +179,7 @@ class DisplayBridge(QtCore.QObject):
 
         self.canvas.draw_idle()
 
-    def setStyle(self, log_x, log_y, symbol_color, symbol_size, symbol, curve_color, curve_thickness, curve_style):
+    def setStyle(self, log_x, log_y, symbol_color, symbol_size, symbol, curve_color, curve_thickness, curve_style, legend, expression):
         """Sets the style of the plot"""
         self.log_x = bool(log_x)
         self.log_y = bool(log_y)
@@ -186,6 +189,8 @@ class DisplayBridge(QtCore.QObject):
         self.curve_color = curve_color
         self.curve_thickness = curve_thickness
         self.curve_style = curve_style
+        self.legend = bool(legend)
+        self.expression = expression
     
     def setSigma(self, wsx, wsy):
         """Consider sigmas"""

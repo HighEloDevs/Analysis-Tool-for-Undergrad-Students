@@ -521,7 +521,7 @@ Window {
                         property: "width"
                         to: if(leftMenu.width == 70) return 200;
                             else return 70
-                        duration: 400
+                        duration: 200
                         easing.type: Easing.InOutQuint
                     }
 

@@ -181,8 +181,8 @@ Item {
                     id: gridLayout
                     width: 100
                     height: 80
-                    columns: 4
-                    rows: 2
+                    columns: 6
+                    rows: 1
                     Layout.fillWidth: true
 
                     Label {
@@ -207,6 +207,20 @@ Item {
 
                     Switch {
                         id: switchGrade
+                        Layout.fillWidth: true
+                    }
+
+                    Label {
+                        id: label7
+                        color: "#ffffff"
+                        text: qsTr("Legenda")
+                        horizontalAlignment: Text.AlignHCenter
+                        wrapMode: Text.NoWrap
+                        Layout.fillWidth: true
+                    }
+
+                    Switch {
+                        id: switchLegend
                         Layout.fillWidth: true
                     }
                 }
@@ -610,7 +624,7 @@ Item {
         target: backend
 
         function onSignalPropPage(){
-            backend.loadOptions(titulo.text, eixox.text, eixoy.text, switchResiduos.position, switchGrade.position, log_eixox.checkState, log_eixoy.checkState, rectColor.color, size.value, symbol.currentText, rectColor_curve.color, thickness.value, type_curve.currentText)
+            backend.loadOptions(titulo.text, eixox.text, eixoy.text, switchResiduos.position, switchGrade.position, log_eixox.checkState, log_eixoy.checkState, rectColor.color, size.value, symbol.currentText, rectColor_curve.color, thickness.value, type_curve.currentText, switchLegend.position)
         }
     }
 
@@ -618,6 +632,6 @@ Item {
 
 /*##^##
 Designer {
-    D{i:0;autoSize:true;formeditorZoom:1.1;height:800;width:372}
+    D{i:0;autoSize:true;height:480;width:640}
 }
 ##^##*/
