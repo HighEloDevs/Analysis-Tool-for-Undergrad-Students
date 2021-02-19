@@ -49,6 +49,65 @@ def calc_chi2r_lim_inf(ngl, nc):
 def calc_chi2r_lim_sup(ngl, nc):
     return chi2.ppf(nc, ngl)/ngl
 
+def interpreter_calculator(f, opt, nc, ngl, mean, std):
+    if f == 0:
+        x_plot = np.linspace(chi2.ppf(0.005, ngl), chi2.ppf(0.99, ngl), 350)
+        y_plot = chi2.pdf(x_plot, ngl)
+        if opt == 0:
+            result = calc_chi2_sim(ngl, nc)
+            s      = "Limite inferior = %f \n Limite superior  = %f"%(result[0], result[1])
+            return s, x_plot, y_plot
+        elif opt == 1:
+            result = calc_chi2_lim_inf(ngl, nc)
+            s      = "Limite inferior = %f \n Limite superior = inf"%result
+            return s, x_plot, y_plot 
+        result = calc_chi2_lim_sup(ngl, nc)
+        s      = "Limite inferior = -inf \n Limite superior = %f"%result
+        return s, x_plot, y_plot
+    elif f == 1:
+        x_plot = np.linspace(chi2.ppf(0.005, ngl), chi2.ppf(0.99, ngl), 350)
+        y_plot = chi2.pdf(x_plot, ngl)
+        x_plot = x_plot/chi2.ppf(0.5, ngl)
+        y_plot = y_plot/chi2.pdf(chi2.ppf(0.5, ngl), ngl)
+        if opt == 0:
+            result = calc_chi2r_sim(ngl, nc)
+            s      = "Limite inferior = %f \n Limite superior  = %f"%(result[0], result[1])
+            return s, x_plot, y_plot
+        elif opt == 1:
+            result = calc_chi2r_lim_inf(ngl, nc)
+            s      = "Limite inferior = %f \n Limite superior = inf"%result
+            return s, x_plot, y_plot
+        result = calc_chi2r_lim_sup(ngl, nc)
+        s      = "Limite inferior = -inf \n Limite superior = %f"%result
+        return s, x_plot, y_plot
+    elif f == 2:
+        x_plot = np.linspace(norm.ppf(0.005)*dp + mean, norm.ppf(0.99)*dp + mean, 350)
+        y_plot = norm.pdf(x_plot)
+        if opt == 0:
+            result = calc_gauss_sim(media, std, nc)
+            s      = "Limite inferior = %f \n Limite superior  = %f"%(result[0], result[1])
+            return s, x_plot, y_plot
+        elif opt == 1:
+            result = calc_gauss_lim_inf(media, std, nc)
+            s      = "Limite inferior = %f \n Limite superior = inf"%result
+            return s, x_plot, y_plot
+        result = calc_gauss_lim_sup(media, std, nc)
+        s      = "Limite inferior = -inf \n Limite superior = %f"%result
+        return s, x_plot, y_plot
+    x_plot = np.linspace(t.ppf(0.005, df = ngl)*std + mean, t.ppf(0.99, df = ngl)*std + mean)
+    y_plot = t.pdf(x_plot)
+    if opt == 0:
+        result = calc_t_sim(mean, std, ngl, nc)
+        s      = "Limite inferior = %f \n Limite superior  = %f"%(result[0], result[1])
+        return s, x_plot, y_plot
+    elif opt == 1:
+            result = calc_t_lim_inf(mean, std, ngl, nc)
+            s      = "Limite inferior = %f \n Limite superior = inf"%result
+            return s, x_plot, y_plot
+    result = calc_t_lim_sup(mean, std, ngl, nc)
+    s      = "Limite inferior = -inf \n Limite superior = %f"%result
+    return s, x_plot, y_plot
+
 class CalculatorCanvas(QtCore.QObject):
     """ A bridge class to interact with the plot in python
     """
@@ -56,12 +115,12 @@ class CalculatorCanvas(QtCore.QObject):
         super().__init__(parent)
 
         # The figure, canvas, toolbar and axes
-        self.figure = None
-        self.canvas = None
+        self.figure  = None
+        self.canvas  = None
         self.toolbar = None
-        self.axes = None
-        self.ax1 = ''
-        self.ax2 = ''
+        self.axes    = None
+        self.ax1     = None
+        self.ax2     = None
 
     def updateWithCanvas(self, canvas):
         """ initialize with the canvas for the figure
@@ -72,5 +131,6 @@ class CalculatorCanvas(QtCore.QObject):
         self.axes.grid(True)
         canvas.draw_idle()
 
-    def Plot(self):
-        pass
+    def Plot(self, x, y):
+        self.axes.set_title("P.D.F")
+        self.axes.plot(x, y, lw = 1, c = 'red')

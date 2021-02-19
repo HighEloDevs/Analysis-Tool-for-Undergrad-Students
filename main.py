@@ -14,7 +14,7 @@ from PySide2.QtCore import Qt, Slot, Signal
 from matplotlib_backend_qtquick.backend_qtquickagg import FigureCanvasQtQuickAgg
 from src.MatPlotLib import DisplayBridge
 from src.Model import Model
-from src.Calculators import CalculatorCanvas
+from src.Calculators import CalculatorCanvas, interpreter_calculator
 
 # Instantiating the display bridge || Global variable, fuck the world
 displayBridge = DisplayBridge()
@@ -147,10 +147,26 @@ class Bridge(QtCore.QObject):
             'Simétrico de Dois Lados':0,
             'Apenas Limite Inferior':1,
             'Apenas Limite Superior':2
-        }
-
-        print(functionDict[function], methodDict[opt1], nc, ngl, mean, std)
-        self.writeCalculator.emit('PINTO DO MURILLO TEM 50 CM')
+        }   
+        try:
+            nc = float(nc)
+        except:
+            pass
+        try:
+            ngl = float(ngl)
+        except:
+            pass
+        try:
+            mean = float(mean)
+        except:
+            pass
+        try:
+            std = float(std)
+        except:
+            pass
+        s, x, y = interpreter_calculator(functionDict[function], methodDict[opt1], nc, ngl, mean, std)
+        calculatorCanvas.Plot(x, y)
+        self.writeCalculator.emit(s)
         
 
 if __name__ == "__main__":
