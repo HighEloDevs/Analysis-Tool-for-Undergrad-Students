@@ -60,9 +60,9 @@ Item {
 
                         model: ListModel {
                                 ListElement { text: "Chi²" }
-                                ListElement { text: "Chi² Reduzido" }
-                                ListElement { text: "Gaussiana" }
-                                ListElement { text: "Student" }
+                                // ListElement { text: "Chi² Reduzido" }
+                                // ListElement { text: "Gaussiana" }
+                                // ListElement { text: "Student" }
                         }
 
                         onActivated: {
@@ -71,21 +71,21 @@ Item {
                                 std.enabled = false
                                 nivelConfianca.enabled = true
                                 ngl.enabled = true
-                            } else if(comboFunc.currentText == 'Chi² Reduzido'){
-                                mean.enabled = false
-                                std.enabled = false
-                                nivelConfianca.enabled = true
-                                ngl.enabled = true
-                            } else if(comboFunc.currentText == "Gaussiana"){
-                                mean.enabled = true
-                                std.enabled = true
-                                nivelConfianca.enabled = true
-                                ngl.enabled = false
-                            } else if(comboFunc.currentText == "Student"){
-                                mean.enabled = true
-                                std.enabled = true
-                                nivelConfianca.enabled = true
-                                ngl.enabled = true
+                            // } else if(comboFunc.currentText == 'Chi² Reduzido'){
+                            //     mean.enabled = false
+                            //     std.enabled = false
+                            //     nivelConfianca.enabled = true
+                            //     ngl.enabled = true
+                            // } else if(comboFunc.currentText == "Gaussiana"){
+                            //     mean.enabled = true
+                            //     std.enabled = true
+                            //     nivelConfianca.enabled = true
+                            //     ngl.enabled = false
+                            // } else if(comboFunc.currentText == "Student"){
+                            //     mean.enabled = true
+                            //     std.enabled = true
+                            //     nivelConfianca.enabled = true
+                            //     ngl.enabled = true
                             }
                         }
                     }
