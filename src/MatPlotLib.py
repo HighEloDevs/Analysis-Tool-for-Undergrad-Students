@@ -33,6 +33,8 @@ class DisplayBridge(QtCore.QObject):
         self.log_x = False
         self.log_y = False
         self.legend = False
+        self.grid = False
+        self.residuals = False
         self.symbol_color = ''
         self.symbol_size = 3
         self.symbol = ''
@@ -60,6 +62,9 @@ class DisplayBridge(QtCore.QObject):
     def Plot(self, model, residuals, grid):
         # Data Predicted by the model and residuals
         px, py, y_r = None, None, None
+
+        self.residuals = residuals
+        self.grid = grid
 
         if model.has_data:
 

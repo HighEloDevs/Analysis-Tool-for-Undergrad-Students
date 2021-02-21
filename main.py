@@ -7,6 +7,7 @@ Created on Fri Jan 29 17:10:06 2021
 Main File
 
 """
+from operator import mod
 import sys
 import os
 from PySide2 import QtGui, QtQml, QtCore
@@ -15,15 +16,16 @@ from matplotlib_backend_qtquick.backend_qtquickagg import FigureCanvasQtQuickAgg
 from src.MatPlotLib import DisplayBridge
 from src.Model import Model
 from src.Calculators import CalculatorCanvas, interpreter_calculator
+from src.ProjectManager import ProjectManager
 
 # Instantiating the display bridge || Global variable, fuck the world
 displayBridge = DisplayBridge()
 calculatorCanvas = CalculatorCanvas()
 
-class Bridge(QtCore.QObject):
-    # Instantiating the fit class
-    model = Model() 
+# Instantiating the fit class
+model = Model() 
 
+class Bridge(QtCore.QObject):
     # Signal fillDataTable
     fillDataTable = Signal(str, str, str, str, str, arguments=['x', 'y', 'sy', 'sx', 'filename'])
 
@@ -37,23 +39,21 @@ class Bridge(QtCore.QObject):
     writeInfos = Signal(str, arguments='expr')
     writeCalculator = Signal(str, arguments='expr')
 
-
-
     @Slot(str)
     def loadData(self, file_path):
         """Gets the path to data's file and fills the data's table"""
-        self.model.load_data(QtCore.QUrl(file_path).toLocalFile())
-        x, y, sy, sx = self.model.get_data()        
+        model.load_data(QtCore.QUrl(file_path).toLocalFile())
+        x, y, sy, sx = model.get_data()        
 
         # Getting file's name
         fileName = QtCore.QUrl(file_path).toLocalFile().split('/')[-1]
-        if self.model.has_sx and self.model.has_sy:
+        if model.has_sx and model.has_sy:
             for i in range(len(x)):
                 self.fillDataTable.emit("{:.2g}".format(x[i]), "{:.2g}".format(y[i]), "{:.2g}".format(sy[i]), "{:.2g}".format(sx[i]), fileName)
-        elif self.model.has_sx:
+        elif model.has_sx:
             for i in range(len(x)):
                 self.fillDataTable.emit("{:.2g}".format(x[i]), "{:.2g}".format(y[i]), "", "{:.2g}".format(sx[i]), fileName)
-        elif self.model.has_sy:
+        elif model.has_sy:
             for i in range(len(x)):
                 self.fillDataTable.emit("{:.2g}".format(x[i]), "{:.2g}".format(y[i]), "{:.2g}".format(sy[i]), "", fileName)
         else:
@@ -81,23 +81,23 @@ class Bridge(QtCore.QObject):
             }
 
         # Setting style of the plot
-        self.model.set_title(title)
-        self.model.set_x_axis(xaxis)
-        self.model.set_y_axis(yaxis)
-        displayBridge.setStyle(log_x, log_y, symbol_color, symbol_size, symbols[symbol], curve_color, curve_thickness, curveStyles[curve_style], legend, self.model.exp_model.replace('**', '^'))
+        model.set_title(title)
+        model.set_x_axis(xaxis)
+        model.set_y_axis(yaxis)
+        displayBridge.setStyle(log_x, log_y, symbol_color, symbol_size, symbols[symbol], curve_color, curve_thickness, curveStyles[curve_style], legend, model.exp_model.replace('**', '^'))
 
         # Making plot
-        displayBridge.Plot(self.model, residuals, grid)
+        displayBridge.Plot(model, residuals, grid)
 
         # Filling paramsTable
-        params = self.model.get_params()
+        params = model.get_params()
         keys = list(params.keys())
             
         for i in range(len(keys)):
             self.fillParamsTable.emit(keys[i], "{:.8g}".format(params[keys[i]][0]), "{:.8g}".format(params[keys[i]][1]))
 
         # Writing infos
-        self.writeInfos.emit(self.model.report_fit)
+        self.writeInfos.emit(model.report_fit)
     
     @Slot(str, str, int, int)
     def loadExpression(self, expression, p0, wsx, wsy):
@@ -113,7 +113,7 @@ class Bridge(QtCore.QObject):
             p0 = p0.replace('/', ',')
             for i in p0.split(','):
                 p0_tmp.append(float(i))
-            self.model.set_p0(p0_tmp)
+            model.set_p0(p0_tmp)
 
         # Anti-dummies system 2
         expression = expression.replace('^', '**')
@@ -123,7 +123,7 @@ class Bridge(QtCore.QObject):
         expression = expression.replace('sen', 'sin')
         
         # Setting expression
-        self.model.set_expression(expression)
+        model.set_expression(expression)
 
         # Emitting signal to load the options
         self.signalPropPage.emit()
@@ -171,14 +171,10 @@ class Bridge(QtCore.QObject):
         calculatorCanvas.Plot(x, y, x_area, y_area)
         self.writeCalculator.emit(s)
 
-    def SaveModel():
-        pass
-        
-
 if __name__ == "__main__":
     # Matplotlib stuff
     QtQml.qmlRegisterType(FigureCanvasQtQuickAgg, "Canvas", 1, 0, "FigureCanvas")
-    QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
+    # QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
 
     # Setting up app
     app = QtGui.QGuiApplication(sys.argv)
@@ -191,12 +187,14 @@ if __name__ == "__main__":
     # Creating bridge
     bridge = Bridge()
 
-    # Expose the Python object to QML
-    context = engine.rootContext()
-    context.setContextProperty("displayBridge", displayBridge)
+    # Project Manager
+    projectMngr = ProjectManager(displayBridge, model)
 
     # Creating 'link' between front-end and back-end
+    context = engine.rootContext()
+    context.setContextProperty("displayBridge", displayBridge)
     context.setContextProperty("backend", bridge)
+    context.setContextProperty("projectMngr", projectMngr)
     
     # Loading QML files
     engine.load(QtCore.QUrl.fromLocalFile(os.path.join(os.path.dirname(__file__), "qml/main.qml")))

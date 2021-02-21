@@ -91,6 +91,8 @@ Item {
                                 }
                             }
 
+                            onClicked: projectMngr.newProject()
+
                             QtObject {
                                 id: func1
                                 property var dynamicColor: if(btnNew.down){
@@ -108,11 +110,12 @@ Item {
                         }
 
                         Button {
-                            id: btnOpen
+                            id: btnLoadProject
                             width: 90
                             height: 25
                             Layout.preferredHeight: 25
                             Layout.preferredWidth: 55
+                            Layout.fillWidth: true
                             font.pointSize: 10
                             font.bold: false
                             contentItem: Item {
@@ -126,20 +129,34 @@ Item {
                                     verticalAlignment: Text.AlignVCenter
                                 }
                             }
+
+                            FileDialog{
+                                id: projectOpen
+                                title: "Escolha o projeto"
+                                folder: shortcuts.desktop
+                                selectMultiple: false
+                                nameFilters: ["Arquivos JSON (*.json)"]
+                                onAccepted:{
+                                    projectMngr.loadProject(projectOpen.fileUrl)
+                                }
+                            }
+
+                            onClicked: projectOpen.open()
+
                             QtObject {
                                 id: func2
-                                property var dynamicColor: if(btnOpen.down){
-                                                               btnOpen.down ? "#00a1f1" : "#34334a"
+                                property var dynamicColor: if(btnLoadProject.down){
+                                                               btnLoadProject.down ? "#00a1f1" : "#34334a"
                                                            } else {
-                                                               btnOpen.hovered ? "#23272E" : "#34334a"
+                                                               btnLoadProject.hovered ? "#23272E" : "#34334a"
                                                            }
                             }
+
                             background: Rectangle {
                                 id: btnbg2
                                 color: func2.dynamicColor
                                 radius: 10
                             }
-                            Layout.fillWidth: true
                         }
 
                         Button {
@@ -161,6 +178,9 @@ Item {
                                     verticalAlignment: Text.AlignVCenter
                                 }
                             }
+
+                            onClicked: projectMngr.save()
+
                             QtObject {
                                 id: func3
                                 property var dynamicColor: if(btnSave.down){
@@ -196,6 +216,22 @@ Item {
                                     verticalAlignment: Text.AlignVCenter
                                 }
                             }
+
+                            FileDialog{
+                                id: projectSaver
+                                title: "Escolha um local para salvar o projeto"
+                                folder: shortcuts.desktop
+                                selectExisting: false
+                                nameFilters: ["Arquivo JSON (*.json)"]
+                                onAccepted: {
+                                    projectMngr.saveAs(projectSaver.fileUrl)
+                                }
+                            }
+
+                            onClicked:{
+                                projectSaver.open()
+                            }
+                            
                             QtObject {
                                 id: func4
                                 property var dynamicColor: if(btnSaveAs.down){
@@ -396,6 +432,8 @@ Item {
 
             Tabs{
                 id: middleTabs
+                Layout.fillHeight: true
+                Layout.fillWidth: false
             }
 
             Rectangle {
@@ -576,11 +614,19 @@ Item {
         }
     }
 
+    Connections{
+        target: projectMngr
+
+        function onSaveAsSignal(){
+            projectSaver.open()
+        }
+    }
+
 }
 
 
 /*##^##
 Designer {
-    D{i:0;formeditorZoom:1.1}D{i:7}D{i:12}D{i:17}D{i:22}D{i:50}
+    D{i:0;formeditorZoom:1.1}
 }
 ##^##*/

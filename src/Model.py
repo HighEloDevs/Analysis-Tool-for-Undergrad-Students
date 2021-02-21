@@ -17,7 +17,10 @@ from lmfit import Parameters
 from scipy.odr import ODR, Model as SciPyModel, Data, RealData
 
 class Model():
+    """Class used for fit
+    """
     def __init__(self):
+        super().__init__()
         self.data       = None
         self.eixos      = [["Eixo x"], ["Eixo y"], ["Título"]]
         self.exp_model  = ""
@@ -61,6 +64,28 @@ class Model():
         df.columns= ['x', 'y', 'sy', 'sx']
             
         self.data     = deepcopy(df)
+        self.has_data = True
+
+    def load_data_json(self, df):
+        """ Loads the data """
+        self.data = df
+
+        self.mode = len(df.columns) - 2
+
+        self.has_sx     = True
+        self.has_sy     = True
+
+        # Naming columns
+        
+        if self.mode == 0:
+            df["sy"] = [1]*len(df[0])
+            df["sx"] = [1]*len(df[0])
+            self.has_sy = False
+            self.has_sx = False
+        elif self.mode == 1:
+            df["sx"] = [1]*len(df[0])
+            self.has_sx = False
+
         self.has_data = True
         
     def set_x_axis(self, name = ""):

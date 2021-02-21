@@ -56,7 +56,6 @@ Item {
 
                 TextField {
                     id: expression
-                    text: ""
                     anchors.left: label.right
                     anchors.right: parent.right
                     anchors.top: parent.top
@@ -65,7 +64,7 @@ Item {
                     anchors.topMargin: 10
                     anchors.bottomMargin: 10
                     anchors.leftMargin: 5
-                    placeholderText: qsTr("")
+                    placeholderText: qsTr("Ex.: a*x + b")
                     selectByMouse: true
 
                     background: Rectangle{
@@ -105,7 +104,7 @@ Item {
                     anchors.bottom: parent.bottom
                     anchors.leftMargin: 5
                     anchors.topMargin: 10
-                    placeholderText: qsTr("")
+                    placeholderText: qsTr("0, 1, 2, 3, 3.4, 4.33, ...")
                     anchors.rightMargin: 10
                     anchors.bottomMargin: 10
                     selectByMouse: true
@@ -332,6 +331,6 @@ Item {
 
 /*##^##
 Designer {
-    D{i:0;height:720;width:600}D{i:3}
+    D{i:0;height:720;width:600}
 }
 ##^##*/

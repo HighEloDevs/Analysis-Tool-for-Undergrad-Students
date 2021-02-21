@@ -56,7 +56,7 @@ Item {
                         anchors.right: parent.right
                         anchors.rightMargin: 10
                         anchors.leftMargin: 10
-                        placeholderText: qsTr("")
+                        placeholderText: qsTr("Título do Gráfico")
                         selectByMouse: true
 
                         background: Rectangle{
@@ -96,7 +96,7 @@ Item {
                             anchors.verticalCenter: parent.verticalCenter
                             anchors.left: label1.right
                             anchors.right: parent.right
-                            placeholderText: qsTr("")
+                            placeholderText: qsTr("Título de Eixo X")
                             anchors.rightMargin: 10
                             selectByMouse: true
                             anchors.leftMargin: 10
@@ -151,7 +151,7 @@ Item {
                             anchors.right: parent.right
                             anchors.rightMargin: 10
                             anchors.leftMargin: 10
-                            placeholderText: qsTr("")
+                            placeholderText: qsTr("Título do Eixo Y")
                             selectByMouse: true
 
                             background: Rectangle{
