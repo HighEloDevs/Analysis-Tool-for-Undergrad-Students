@@ -19,6 +19,15 @@ class ProjectManager(QtCore.QObject):
 
     # Some Signals
     saveAsSignal = QtCore.Signal()
+    fillFuncPage = QtCore.Signal(str, str, int, int, arguments=['expr', 'pi', 'sx', 'sy'])
+    fillPropPage = QtCore.Signal(str, str, int, str, int, int, int, int, str, int, str, str, int, str,
+                                arguments=['title', 'xaxis', 'log_x', 'yaxis', 'log_y', 'residuals', 'grid', 'legend', 'symbol_color', 'symbol_size', 'symbol_style', 'curve_color', 'curve_thickness', 'curve_style'])
+    fillDataTable = QtCore.Signal()
+    fillParamsTable = QtCore.Signal()
+    fillProjectName = QtCore.Signal(str, arguments=['projectName'])
+    clearTableData = QtCore.Signal()
+    clearTableParams = QtCore.Signal()
+    
 
     def __init__(self, displayBridge, model):
         super().__init__()
@@ -31,7 +40,28 @@ class ProjectManager(QtCore.QObject):
         self.projectName = ''
 
         # Dict for the options
-        self.opt = dict()
+        self.opt = {
+            'projectName' : '',
+            'expr' : '',
+            'p0' : '',
+            'xaxis' : '',
+            'yaxis' : '',
+            'title' : '',
+            'data' : None,
+            'wsx' : True,
+            'wsy' : True,
+            'log_x' : '',
+            'log_y' : '',
+            'legend' : '',
+            'symbol_color' : '',
+            'symbol_size' : 3,
+            'symbol' : '',
+            'curve_color' : '',
+            'curve_thickness' : 2,
+            'curve_style' : '',
+            'grid' : '',
+            'residuals' : ''
+        }   
         
     def __importOptions(self):
         '''Import all options from classes'''
@@ -39,10 +69,19 @@ class ProjectManager(QtCore.QObject):
             data = self.model.data.to_json()
         except:
             data = None
+
+        p0 = ''
+        try:
+            for i in self.model.p0:
+                p0 += '{},'.format(i)
+            p0 = p0[:-1]
+        except:
+            pass
+
         self.opt = {
-            'projectName' : '',
+            'projectName' : self.projectName,
             'expr' : self.model.exp_model,
-            'p0' : self.model.p0,
+            'p0' : p0,
             'xaxis' : self.model.eixos[0][0],
             'yaxis' : self.model.eixos[1][0],
             'title' : self.model.eixos[2][0],
@@ -72,16 +111,16 @@ class ProjectManager(QtCore.QObject):
             'yaxis' : '',
             'title' : '',
             'data' : None,
-            'wsx' : '',
-            'wsy' : '',
+            'wsx' : True,
+            'wsy' : True,
             'log_x' : '',
             'log_y' : '',
             'legend' : '',
             'symbol_color' : '',
-            'symbol_size' : '',
+            'symbol_size' : 3,
             'symbol' : '',
             'curve_color' : '',
-            'curve_thickness' : '',
+            'curve_thickness' : 2,
             'curve_style' : '',
             'grid' : '',
             'residuals' : ''
@@ -110,6 +149,23 @@ class ProjectManager(QtCore.QObject):
     @QtCore.Slot(str)
     def loadProject(self, path):
         """ Opens a json file with the options and sets everything up """
+        curveStyles = {
+            '-':'Sólido',
+            '--':'Tracejado',
+            '-.':'Ponto-Tracejado'
+            }
+        symbols = {
+            'o':'Círculo',
+            '^':'Triângulo',
+            's':'Quadrado',
+            'p':'Pentagono',
+            '8':'Octagono',
+            'P':'Cruz',
+            '*':'Estrela',
+            'd':'Diamante',
+            'X':'Produto'
+            }
+
         # Saving path
         self.path = QtCore.QUrl(path).toLocalFile()
         
@@ -121,6 +177,7 @@ class ProjectManager(QtCore.QObject):
         self.model.set_title(options['title'])
         self.model.set_x_axis(options['xaxis'])
         self.model.set_y_axis(options['yaxis'])
+        self.clearTableData.emit()
         self.model.load_data_json(pd.read_json(options['data']))
         self.displayBridge.setStyle(  
                     options['log_x'],
@@ -135,6 +192,58 @@ class ProjectManager(QtCore.QObject):
                     options['expr']
                     )
         self.displayBridge.Plot(self.model, options['residuals'], options['grid'])
+
+        # Setting all options to frontend
+        self.fillFuncPage.emit( options['expr'],
+                                options['p0'],
+                                options['wsx'],
+                                options['wsy'])
+                                
+        self.fillPropPage.emit( options['title'],
+                                options['xaxis'],
+                                options['log_x'],
+                                options['yaxis'],
+                                options['log_y'],
+                                options['residuals'],
+                                options['grid'],
+                                options['legend'],
+                                options['symbol_color'],
+                                options['symbol_size'],
+                                symbols[options['symbol']],
+                                options['curve_color'],
+                                options['curve_thickness'],
+                                curveStyles[options['curve_style']])
+
+        self.fillProjectName.emit(options['projectName'])
+
     @QtCore.Slot()
     def newProject(self):
-        print('new project')
+        self.fillFuncPage.emit( self.opt['expr'],
+                                self.opt['p0'],
+                                self.opt['wsx'],
+                                self.opt['wsy'])
+                                
+        self.fillPropPage.emit( self.opt['title'],
+                                self.opt['xaxis'],
+                                self.opt['log_x'],
+                                self.opt['yaxis'],
+                                self.opt['log_y'],
+                                self.opt['residuals'],
+                                self.opt['grid'],
+                                self.opt['legend'],
+                                self.opt['symbol_color'],
+                                self.opt['symbol_size'],
+                                'Círculo',
+                                self.opt['curve_color'],
+                                self.opt['curve_thickness'],
+                                'Sólido')
+        print(self.opt['p0'])
+        self.fillProjectName.emit(self.opt['projectName'])
+        self.clearTableData.emit()
+        self.clearTableParams.emit()
+        self.model.reset()
+        self.displayBridge.reset()
+
+    @QtCore.Slot(str)
+    def setProjectName(self, projectName):
+        self.projectName = projectName

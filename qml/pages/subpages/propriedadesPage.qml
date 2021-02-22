@@ -611,11 +611,6 @@ Item {
                     Layout.fillHeight: true
                     Layout.fillWidth: true
                 }
-
-
-
-
-
             }
         }
     }
@@ -625,6 +620,28 @@ Item {
 
         function onSignalPropPage(){
             backend.loadOptions(titulo.text, eixox.text, eixoy.text, switchResiduos.position, switchGrade.position, log_eixox.checkState, log_eixoy.checkState, rectColor.color, size.value, symbol.currentText, rectColor_curve.color, thickness.value, type_curve.currentText, switchLegend.position)
+        }
+    }
+
+    Connections{
+        target: projectMngr
+
+        function onFillPropPage(title, xaxis, log_x, yaxis, log_y, residuals, grid, legend, symbol_color, symbol_size, symbol_style, curve_color, curve_thickness, curve_style){
+                titulo.text = title
+                eixox.text = xaxis
+                eixoy.text = yaxis
+                switchResiduos.checked = residuals
+                switchGrade.checked = grid
+                log_eixox.checked = log_x
+                log_eixoy.checked = log_y
+                rectColor.color = symbol_color
+                size.value = symbol_size
+                symbol.currentIndex = symbol.find(symbol_style)
+                icons.source = "../../../images/symbols/" + symbol.currentText + ".png"
+                rectColor_curve.color = curve_color
+                thickness.value = curve_thickness
+                type_curve.currentIndex = type_curve.find(curve_style)
+                switchLegend.checked = legend
         }
     }
 

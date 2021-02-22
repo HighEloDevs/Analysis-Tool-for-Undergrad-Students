@@ -11,14 +11,21 @@ Model Class
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
+from PySide2 import QtCore
+from PySide2.QtCore import Slot, Signal
 from copy import deepcopy
 from lmfit.models import ExpressionModel
 from lmfit import Parameters
 from scipy.odr import ODR, Model as SciPyModel, Data, RealData
 
-class Model():
+class Model(QtCore.QObject):
     """Class used for fit
     """
+    # Signals
+    fillDataTable = Signal(str, str, str, str, str, arguments=['x', 'y', 'sy', 'sx', 'filename'])
+    fillParamsTable = Signal(str, str, str, arguments=['param', 'value', 'uncertainty'])
+    writeInfos = Signal(str, arguments='expr')
+
     def __init__(self):
         super().__init__()
         self.data       = None
@@ -47,12 +54,10 @@ class Model():
             df[i] = [x.replace(',', '.') for x in df[i]]
             df[i] = df[i].astype(float)
         self.mode = len(df.columns) - 2
-
         self.has_sx     = True
         self.has_sy     = True
 
         # Naming columns
-        
         if self.mode == 0:
             df["sy"] = [1]*len(df[0])
             df["sx"] = [1]*len(df[0])
@@ -62,21 +67,36 @@ class Model():
             df["sx"] = [1]*len(df[0])
             self.has_sx = False
         df.columns= ['x', 'y', 'sy', 'sx']
-            
         self.data     = deepcopy(df)
         self.has_data = True
+
+        x, y, sy, sx = self.get_data()  
+
+        fileName = data_path.split('/')[-1]
+        if self.has_sx and self.has_sy:
+            for i in range(len(x)):
+                self.fillDataTable.emit("{:.2g}".format(x[i]), "{:.2g}".format(y[i]), "{:.2g}".format(sy[i]), "{:.2g}".format(sx[i]), fileName)
+        elif self.has_sx:
+            for i in range(len(x)):
+                self.fillDataTable.emit("{:.2g}".format(x[i]), "{:.2g}".format(y[i]), "", "{:.2g}".format(sx[i]), fileName)
+        elif self.has_sy:
+            for i in range(len(x)):
+                self.fillDataTable.emit("{:.2g}".format(x[i]), "{:.2g}".format(y[i]), "{:.2g}".format(sy[i]), "", fileName)
+        else:
+            for i in range(len(x)):
+                self.fillDataTable.emit("{:.2g}".format(x[i]), "{:.2g}".format(y[i]), "", "", fileName)
 
     def load_data_json(self, df):
         """ Loads the data """
         self.data = df
-
         self.mode = len(df.columns) - 2
-
         self.has_sx     = True
         self.has_sy     = True
 
+        x, y, sy, sx = df['x'], df['y'], df['sy'], df['sx']
+        fileName = 'Dados Carregados do Projeto'
+
         # Naming columns
-        
         if self.mode == 0:
             df["sy"] = [1]*len(df[0])
             df["sx"] = [1]*len(df[0])
@@ -87,6 +107,19 @@ class Model():
             self.has_sx = False
 
         self.has_data = True
+
+        if self.has_sx and self.has_sy:
+            for i in range(len(x)):
+                self.fillDataTable.emit("{:.2g}".format(x[i]), "{:.2g}".format(y[i]), "{:.2g}".format(sy[i]), "{:.2g}".format(sx[i]), fileName)
+        elif self.has_sx:
+            for i in range(len(x)):
+                self.fillDataTable.emit("{:.2g}".format(x[i]), "{:.2g}".format(y[i]), "", "{:.2g}".format(sx[i]), fileName)
+        elif self.has_sy:
+            for i in range(len(x)):
+                self.fillDataTable.emit("{:.2g}".format(x[i]), "{:.2g}".format(y[i]), "{:.2g}".format(sy[i]), "", fileName)
+        else:
+            for i in range(len(x)):
+                self.fillDataTable.emit("{:.2g}".format(x[i]), "{:.2g}".format(y[i]), "", "", fileName)
         
     def set_x_axis(self, name = ""):
         """ Set new x label to the graph. """
@@ -140,7 +173,7 @@ class Model():
                     pi.append(1.0)
 
         # Clearing p0
-        self.p0 = None
+        # self.p0 = None
 
         # Data
         x, y, sy, sx = self.get_data()
@@ -185,6 +218,14 @@ class Model():
                 self.__fit_ODR(data, pi)
                 self.__set_param_values_ODR()
                 self.__set_report_ODR()
+
+            params = self.get_params()
+            keys = list(params.keys())
+            
+            for i in range(len(keys)):
+                self.fillParamsTable.emit(keys[i], "{:.8g}".format(params[keys[i]][0]), "{:.8g}".format(params[keys[i]][1]))
+
+            self.writeInfos.emit(self.report_fit)
 
     def __fit_ODR(self, data, pi):
         def f(a, x):
@@ -265,5 +306,22 @@ class Model():
     def get_residuals(self):
         ''' Return residuals from adjust. '''
         return self.data["y"].to_numpy() - self.model.eval(x = self.data["x"].to_numpy())
+
+    def reset(self):
+        self.data       = None
+        self.eixos      = [["Eixo x"], ["Eixo y"], ["Título"]]
+        self.exp_model  = ""
+        self.model      = None
+        self.report_fit = ""
+        self.result     = None
+        self.coef       = list()
+        self.params     = Parameters()
+        self.dict       = dict()
+        self.p0         = None
+        self.mode       = 0
+        self.has_data   = False
+        self.isvalid    = False
+        self.has_sx     = True
+        self.has_sy     = True
         
         

@@ -27,10 +27,10 @@ model = Model()
 
 class Bridge(QtCore.QObject):
     # Signal fillDataTable
-    fillDataTable = Signal(str, str, str, str, str, arguments=['x', 'y', 'sy', 'sx', 'filename'])
+    # fillDataTable = Signal(str, str, str, str, str, arguments=['x', 'y', 'sy', 'sx', 'filename'])
 
     # Signal fillParamsTable
-    fillParamsTable = Signal(str, str, str, arguments=['param', 'value', 'uncertainty'])
+    # fillParamsTable = Signal(str, str, str, arguments=['param', 'value', 'uncertainty'])
 
     # Signal to Properties page
     signalPropPage = Signal()
@@ -43,22 +43,22 @@ class Bridge(QtCore.QObject):
     def loadData(self, file_path):
         """Gets the path to data's file and fills the data's table"""
         model.load_data(QtCore.QUrl(file_path).toLocalFile())
-        x, y, sy, sx = model.get_data()        
+        # x, y, sy, sx = model.get_data()        
 
         # Getting file's name
-        fileName = QtCore.QUrl(file_path).toLocalFile().split('/')[-1]
-        if model.has_sx and model.has_sy:
-            for i in range(len(x)):
-                self.fillDataTable.emit("{:.2g}".format(x[i]), "{:.2g}".format(y[i]), "{:.2g}".format(sy[i]), "{:.2g}".format(sx[i]), fileName)
-        elif model.has_sx:
-            for i in range(len(x)):
-                self.fillDataTable.emit("{:.2g}".format(x[i]), "{:.2g}".format(y[i]), "", "{:.2g}".format(sx[i]), fileName)
-        elif model.has_sy:
-            for i in range(len(x)):
-                self.fillDataTable.emit("{:.2g}".format(x[i]), "{:.2g}".format(y[i]), "{:.2g}".format(sy[i]), "", fileName)
-        else:
-            for i in range(len(x)):
-                self.fillDataTable.emit("{:.2g}".format(x[i]), "{:.2g}".format(y[i]), "", "", fileName)
+        # fileName = QtCore.QUrl(file_path).toLocalFile().split('/')[-1]
+        # if model.has_sx and model.has_sy:
+        #     for i in range(len(x)):
+        #         self.fillDataTable.emit("{:.2g}".format(x[i]), "{:.2g}".format(y[i]), "{:.2g}".format(sy[i]), "{:.2g}".format(sx[i]), fileName)
+        # elif model.has_sx:
+        #     for i in range(len(x)):
+        #         self.fillDataTable.e it("{:.2g}".format(x[i]), "{:.2g}".format(y[i]), "", "{:.2g}".format(sx[i]), fileName)
+        # elif model.has_sy:
+        #     for i in range(len(x)):
+        #         self.fillDataTable.emit("{:.2g}".format(x[i]), "{:.2g}".format(y[i]), "{:.2g}".format(sy[i]), "", fileName)
+        # else:
+        #     for i in range(len(x)):
+        #         self.fillDataTable.emit("{:.2g}".format(x[i]), "{:.2g}".format(y[i]), "", "", fileName)
 
     @Slot(str, str, str, int, int, int, int, str, int, str, str, int, str, int)
     def loadOptions(self, title, xaxis, yaxis, residuals, grid, log_x, log_y, symbol_color, symbol_size, symbol, curve_color, curve_thickness, curve_style, legend):
@@ -90,14 +90,14 @@ class Bridge(QtCore.QObject):
         displayBridge.Plot(model, residuals, grid)
 
         # Filling paramsTable
-        params = model.get_params()
-        keys = list(params.keys())
+        # params = model.get_params()
+        # keys = list(params.keys())
             
-        for i in range(len(keys)):
-            self.fillParamsTable.emit(keys[i], "{:.8g}".format(params[keys[i]][0]), "{:.8g}".format(params[keys[i]][1]))
+        # for i in range(len(keys)):
+        #     self.fillParamsTable.emit(keys[i], "{:.8g}".format(params[keys[i]][0]), "{:.8g}".format(params[keys[i]][1]))
 
         # Writing infos
-        self.writeInfos.emit(model.report_fit)
+        # self.writeInfos.emit(model.report_fit)
     
     @Slot(str, str, int, int)
     def loadExpression(self, expression, p0, wsx, wsy):
@@ -194,6 +194,7 @@ if __name__ == "__main__":
     context = engine.rootContext()
     context.setContextProperty("displayBridge", displayBridge)
     context.setContextProperty("backend", bridge)
+    context.setContextProperty("model", model)
     context.setContextProperty("projectMngr", projectMngr)
     
     # Loading QML files

@@ -293,7 +293,7 @@ Window {
                                     btnPlot.isActiveMenu = false
                                     btnMultiPlot.isActiveMenu = false
                                     btnCalc.isActiveMenu = false
-                                    btnHist.isActiveMenu = false
+                                    // btnHist.isActiveMenu = false
                                     btnExamples.isActiveMenu = false
                                     btnInfos.isActiveMenu = false
 
@@ -325,7 +325,7 @@ Window {
                                     btnPlot.isActiveMenu = true
                                     btnMultiPlot.isActiveMenu = false
                                     btnCalc.isActiveMenu = false
-                                    btnHist.isActiveMenu = false
+                                    // btnHist.isActiveMenu = false
                                     btnExamples.isActiveMenu = false
                                     btnInfos.isActiveMenu = false
 
@@ -357,7 +357,7 @@ Window {
                                     btnPlot.isActiveMenu = false
                                     btnMultiPlot.isActiveMenu = true
                                     btnCalc.isActiveMenu = false
-                                    btnHist.isActiveMenu = false
+                                    // btnHist.isActiveMenu = false
                                     btnExamples.isActiveMenu = false
                                     btnInfos.isActiveMenu = false
 
@@ -389,7 +389,7 @@ Window {
                                     btnPlot.isActiveMenu = false
                                     btnMultiPlot.isActiveMenu = false
                                     btnCalc.isActiveMenu = true
-                                    btnHist.isActiveMenu = false
+                                    // btnHist.isActiveMenu = false
                                     btnExamples.isActiveMenu = false
                                     btnInfos.isActiveMenu = false
 
@@ -406,37 +406,37 @@ Window {
                             }
                         }
 
-                        LeftMenuButton {
-                            id: btnHist
-                            width: leftMenu.width
-                            text: qsTr("Histogramas")
-                            clip: false
-                            btnIconSource: "../images/svg_images/histogram_icon.svg"
-                            isActiveMenu: false
+                        // LeftMenuButton {
+                        //     id: btnHist
+                        //     width: leftMenu.width
+                        //     text: qsTr("Histogramas")
+                        //     clip: false
+                        //     btnIconSource: "../images/svg_images/histogram_icon.svg"
+                        //     isActiveMenu: false
 
-                            onClicked: {
-                                if(stackedPage != 4){
-                                    stackedPage = 4
-                                    btnHome.isActiveMenu = false
-                                    btnPlot.isActiveMenu = false
-                                    btnMultiPlot.isActiveMenu = false
-                                    btnCalc.isActiveMenu = false
-                                    btnHist.isActiveMenu = true
-                                    btnExamples.isActiveMenu = false
-                                    btnInfos.isActiveMenu = false
+                        //     onClicked: {
+                        //         if(stackedPage != 4){
+                        //             stackedPage = 4
+                        //             btnHome.isActiveMenu = false
+                        //             btnPlot.isActiveMenu = false
+                        //             btnMultiPlot.isActiveMenu = false
+                        //             btnCalc.isActiveMenu = false
+                        //             btnHist.isActiveMenu = true
+                        //             btnExamples.isActiveMenu = false
+                        //             btnInfos.isActiveMenu = false
 
-                                    pageHome.visible = false
-                                    pagePlot.visible = false
-                                    pageMultiPlot.visible = false
-                                    pageCalculadora.visible = false
-                                    pageHistograma.visible = true
-                                    pageExamples.visible = false
-                                    pageInfos.visible = false
+                        //             pageHome.visible = false
+                        //             pagePlot.visible = false
+                        //             pageMultiPlot.visible = false
+                        //             pageCalculadora.visible = false
+                        //             pageHistograma.visible = true
+                        //             pageExamples.visible = false
+                        //             pageInfos.visible = false
 
-                                    labelRightInfo.text = "| Histogramas"
-                                }
-                            }
-                        }
+                        //             labelRightInfo.text = "| Histogramas"
+                        //         }
+                        //     }
+                        // }
 
                         LeftMenuButton {
                             id: btnExamples
@@ -453,7 +453,7 @@ Window {
                                     btnPlot.isActiveMenu = false
                                     btnMultiPlot.isActiveMenu = false
                                     btnCalc.isActiveMenu = false
-                                    btnHist.isActiveMenu = false
+                                    // btnHist.isActiveMenu = false
                                     btnExamples.isActiveMenu = true
                                     btnInfos.isActiveMenu = false
 
@@ -493,7 +493,7 @@ Window {
                                     btnPlot.isActiveMenu = false
                                     btnMultiPlot.isActiveMenu = false
                                     btnCalc.isActiveMenu = false
-                                    btnHist.isActiveMenu = false
+                                    // btnHist.isActiveMenu = false
                                     btnExamples.isActiveMenu = false
                                     btnInfos.isActiveMenu = true
 
@@ -509,10 +509,6 @@ Window {
                                 }
                             }
                         }
-
-
-
-
                     }
 
                     PropertyAnimation{

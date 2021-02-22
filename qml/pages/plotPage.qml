@@ -179,7 +179,10 @@ Item {
                                 }
                             }
 
-                            onClicked: projectMngr.save()
+                            onClicked: {
+                                projectMngr.setProjectName(nomeProjeto.text)
+                                projectMngr.save()
+                            }
 
                             QtObject {
                                 id: func3
@@ -224,6 +227,7 @@ Item {
                                 selectExisting: false
                                 nameFilters: ["Arquivo JSON (*.json)"]
                                 onAccepted: {
+                                    projectMngr.setProjectName(nomeProjeto.text)
                                     projectMngr.saveAs(projectSaver.fileUrl)
                                 }
                             }
@@ -268,7 +272,7 @@ Item {
                             id: nomeProjeto
                             height: 25
                             Layout.fillWidth: true
-                            placeholderText: qsTr("Ainda não implementado")
+                            placeholderText: qsTr("Identificação do Projeto")
 
                             background: Rectangle{
                                 radius: 5
@@ -290,8 +294,8 @@ Item {
                             width: 90
                             height: 25
                             Layout.preferredHeight: 25
-                            Layout.preferredWidth: 55
-                            Layout.fillWidth: true
+                            Layout.preferredWidth: 90
+                            Layout.fillWidth: false
                             font.pointSize: 10
                             font.bold: false
 
@@ -608,6 +612,11 @@ Item {
     Connections{
         target: backend
 
+    }
+
+    Connections{
+        target: model
+
         function onFillDataTable(x, y, sy, sx, fileName){
             label_fileName.text = fileName
             tableDataModel.appendRow({"X": x, "Y": y, "Sigma Y": sy, "Sigma X": sx})
@@ -619,6 +628,22 @@ Item {
 
         function onSaveAsSignal(){
             projectSaver.open()
+        }
+
+        function onFillProjectName(projectName){
+            nomeProjeto.text = projectName
+        }
+
+        function onClearTableData(){
+            tableDataModel.clear()
+            tableDataModel.rows = [
+                        {
+                            "X": "X",
+                            "Y": "Y",
+                            "Sigma Y": "Sigma Y",
+                            "Sigma X": "Sigma X",
+                        }
+                    ]
         }
     }
 

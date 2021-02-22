@@ -104,7 +104,7 @@ Item {
                     anchors.bottom: parent.bottom
                     anchors.leftMargin: 5
                     anchors.topMargin: 10
-                    placeholderText: qsTr("0, 1, 2, 3, 3.4, 4.33, ...")
+                    placeholderText: qsTr("Ex.: 0, 1, 2, 3, 3.4, 4.33, ...")
                     anchors.rightMargin: 10
                     anchors.bottomMargin: 10
                     selectByMouse: true
@@ -316,12 +316,47 @@ Item {
 
     Connections{
         target: backend
+        // function onFillParamsTable(param, value, uncertainty){
+        //     tableParamsModel.appendRow({"Parâmetros" : param, "Valor": value, "Incerteza" : uncertainty})
+        // }
+
+        // function onWriteInfos(expr){
+        //     infos.text = expr
+        // }
+    }
+
+    Connections{
+        target: model
+
         function onFillParamsTable(param, value, uncertainty){
             tableParamsModel.appendRow({"Parâmetros" : param, "Valor": value, "Incerteza" : uncertainty})
         }
 
         function onWriteInfos(expr){
             infos.text = expr
+        }
+    }
+    
+    Connections{
+        target: projectMngr
+
+        function onFillFuncPage(expr, pi, sx, sy){
+            expression.text = expr
+            p0.text = pi
+            switch_sigmax.checked = sx
+            switch_sigmay.checked = sy
+        }
+
+        function onClearTableParams(){
+            tableParamsModel.clear()
+            tableParamsModel.rows = [
+                        {
+                            "Parâmetros": "Parâmetros",
+                            "Valor": "Valor",
+                            "Incerteza": "Incerteza",
+                        }
+                    ]
+            infos.text = ''
         }
     }
 

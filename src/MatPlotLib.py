@@ -222,6 +222,32 @@ class DisplayBridge(QtCore.QObject):
             self.ax2.remove()
         except:
             pass
+
+    def reset(self):
+        '''Resets the class'''
+        # The figure, canvas, toolbar and axes
+        self.clearAxis()
+        self.axes = self.figure.add_subplot(111)
+        self.canvas.draw_idle()
+
+        # Options
+        self.sigma_x = False
+        self.sigma_y = False
+        self.log_x = False
+        self.log_y = False
+        self.legend = False
+        self.grid = False
+        self.residuals = False
+        self.symbol_color = ''
+        self.symbol_size = 3
+        self.symbol = ''
+        self.curve_color = ''
+        self.curve_thickness = 2
+        self.curve_style = ''
+        self.expression = ''
+
+        # This is used to display the coordinates of the mouse in the window
+        self._coordinates = ""
     
     coordinates = QtCore.Property(str, getCoordinates, setCoordinates, notify=coordinatesChanged)
 
