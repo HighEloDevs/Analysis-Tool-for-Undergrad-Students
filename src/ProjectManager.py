@@ -178,7 +178,8 @@ class ProjectManager(QtCore.QObject):
         self.model.set_x_axis(options['xaxis'])
         self.model.set_y_axis(options['yaxis'])
         self.clearTableData.emit()
-        self.model.load_data_json(pd.read_json(options['data']))
+        if options['data'] != None:
+            self.model.load_data_json(pd.read_json(options['data']))
         self.displayBridge.setStyle(  
                     options['log_x'],
                     options['log_y'],
