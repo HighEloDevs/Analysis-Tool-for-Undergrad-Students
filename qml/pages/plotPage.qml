@@ -1,5 +1,5 @@
-import QtQuick 2.12
-import QtQuick.Controls 2.12
+import QtQuick 2.15
+import QtQuick.Controls 2.15
 import Qt.labs.qmlmodels 1.0
 import QtQuick.Window 2.12
 import QtQuick.Layouts 1.12
@@ -8,21 +8,13 @@ import QtQuick.Dialogs 1.3
 import "../widgets"
 import "../controls"
 
-import Backend 1.0
+import Canvas 1.0
 
 
 Item {
-
-    Connections{
-        target: funcsPlotPage
-
-        function onFillDataTable(x, y, sy, sx, fileName){
-            label_fileName.text = fileName
-            tableDataModel.appendRow({"X": x, "Y": y, "Sigma Y": sy, "Sigma X": sx})
-        }
-    }
-
     property alias backBtnWidth: backBtn.width
+    width: 1408
+    height: 693
     QtObject{
         id: internal
 
@@ -40,418 +32,626 @@ Item {
     }
 
     Rectangle {
-        id: rectangle
+        id: bg
         color: "#40464c"
         anchors.fill: parent
 
-        Tabs{
-            id: middleTabs
-            anchors.left: rectangle1.right
-            anchors.right: rectangle2.left
-            anchors.top: parent.top
-            anchors.bottom: parent.bottom
+        RowLayout {
+            id: bg_layout
+            anchors.fill: parent
             anchors.rightMargin: 10
             anchors.leftMargin: 10
             anchors.bottomMargin: 10
             anchors.topMargin: 10
-        }
-
-        Rectangle {
-            id: rectangle1
-            width: 298
-            color: "#565e66"
-            anchors.left: parent.left
-            anchors.top: parent.top
-            anchors.bottom: parent.bottom
-            anchors.leftMargin: 10
-            anchors.bottomMargin: 10
-            anchors.topMargin: 10
+            spacing: 10
 
             Rectangle {
-                id: rectangle3
-                y: 402
-                height: 20
-                color: "#34334a"
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.bottom: parent.bottom
-                anchors.rightMargin: 0
-                anchors.leftMargin: 0
-                anchors.bottomMargin: 0
-            }
+                id: leftPanel
+                width: 298
+                color: "#565e66"
+                Layout.fillHeight: true
 
-            Rectangle {
-                id: rectangle5
-                height: 35
-                color: "#00000000"
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.top: parent.top
-                anchors.rightMargin: 0
-                anchors.leftMargin: 0
-                anchors.topMargin: 10
-
-                Label {
-                    id: label
-                    y: 14
-                    width: 50
-                    color: "#ffffff"
-                    text: qsTr("Projeto")
-                    anchors.verticalCenter: parent.verticalCenter
+                ColumnLayout {
+                    id: leftPanel_layout
                     anchors.left: parent.left
-                    horizontalAlignment: Text.AlignHCenter
-                    verticalAlignment: Text.AlignVCenter
-                    anchors.leftMargin: 10
-                }
-
-                TextField {
-                    id: textField
-                    y: 19
-                    height: 25
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.left: label.right
                     anchors.right: parent.right
-                    anchors.rightMargin: 10
-                    anchors.leftMargin: 10
-                    placeholderText: qsTr("Ainda não implementado")
-                }
-            }
-
-            Rectangle {
-                id: rectangle6
-                height: 35
-                color: "#00000000"
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.top: rectangle5.bottom
-                anchors.rightMargin: 0
-                anchors.leftMargin: 0
-                anchors.topMargin: 0
-
-                Button {
-                    id: btnUpload
-                    width: 90
-                    height: 25
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.left: parent.left
-                    anchors.leftMargin: 10
-                    font.pointSize: 10
-                    font.bold: false
-                    anchors.topMargin: 10
-
-                    FileDialog{
-                        id: fileOpen
-                        title: "Escolha o arquivo com seus dados"
-                        folder: shortcuts.home
-                        selectMultiple: false
-                        nameFilters: ["Arquivos de Texto (*.txt)"]
-                        onAccepted:{
-                            internal.clearTableData()
-                            funcsPlotPage.loadData(fileOpen.fileUrl)
-                        }
-                    }
-                    onClicked:{
-                        fileOpen.open()
-                    }
-
-                    QtObject{
-                        id: func
-                        property var dynamicColor: if(btnUpload.down){
-                                                       btnUpload.down ? "#00a1f1" : "#34334a"
-                                                   } else {
-                                                       btnUpload.hovered ? "#23272E" : "#34334a"
-                                                   }
-
-                    }
-
-                    background: Rectangle{
-                        id: btnbg
-                        radius: 10
-                        color: func.dynamicColor
-                    }
-
-                    contentItem: Item{
-                        id: content
-                        anchors.fill: parent
-
-                        Text{
-                            color: "#ffffff"
-                            text: "Escolher Arquivo"
-                            anchors.fill: parent
-                            horizontalAlignment: Text.AlignHCenter
-                            verticalAlignment: Text.AlignVCenter
-                        }
-                    }
-                }
-
-                Label {
-                    id: label_fileName
-                    y: 12
-                    color: "#ffffff"
-                    text: qsTr("Dados não selecionados")
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.left: btnUpload.right
-                    anchors.right: parent.right
-                    verticalAlignment: Text.AlignVCenter
-                    anchors.leftMargin: 10
-                    anchors.rightMargin: 10
-                }
-            }
-
-            Frame {
-                id: frame
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.top: rectangle6.bottom
-                anchors.bottom: rectangle3.top
-                anchors.rightMargin: 10
-                anchors.leftMargin: 10
-                anchors.topMargin: 10
-                anchors.bottomMargin: 10
-
-                TableView {
-                    id: tableDataView
-                    anchors.fill: parent
+                    anchors.top: parent.top
+                    anchors.bottom: rectangle3.top
                     anchors.rightMargin: 5
-                    interactive: false
-                    columnSpacing: 1
-                    rowSpacing: 0.8
-                    clip: true
-                    boundsBehavior: Flickable.DragOverBounds
+                    anchors.leftMargin: 5
+                    anchors.bottomMargin: 5
+                    anchors.topMargin: 5
+                    spacing: 0
 
-                    ScrollBar.vertical: ScrollBar{
-                        id: scrollBarTableData
-                        policy: ScrollBar.AlwaysOn
-                        parent: tableDataView.parent
-                        anchors.top: tableDataView.top
-                        anchors.left: tableDataView.right
-                        anchors.bottom: tableDataView.bottom
-                    }
+                    RowLayout {
+                        id: saveBtns_layout
+                        width: 100
+                        height: 100
+                        Layout.preferredHeight: 35
+                        Layout.fillWidth: true
+                        Layout.fillHeight: false
 
-                    model: TableModel {
-
-                        id: tableDataModel
-
-                        TableModelColumn { display: "X" }
-                        TableModelColumn { display: "Y" }
-                        TableModelColumn { display: "Sigma Y" }
-                        TableModelColumn { display: "Sigma X" }
-
-                        rows: [
-                            {
-                                "X": "X",
-                                "Y": "Y",
-                                "Sigma Y": "Sigma Y",
-                                "Sigma X": "Sigma X",
+                        Button {
+                            id: btnNew
+                            width: 90
+                            height: 25
+                            Layout.preferredHeight: 25
+                            Layout.preferredWidth: 55
+                            font.pointSize: 10
+                            font.bold: false
+                            contentItem: Item {
+                                id: content1
+                                anchors.fill: parent
+                                Text {
+                                    color: "#ffffff"
+                                    text: "Novo Projeto"
+                                    anchors.fill: parent
+                                    horizontalAlignment: Text.AlignHCenter
+                                    verticalAlignment: Text.AlignVCenter
+                                }
                             }
-                        ]
+
+                            onClicked: projectMngr.newProject()
+
+                            QtObject {
+                                id: func1
+                                property var dynamicColor: if(btnNew.down){
+                                                               btnNew.down ? "#00a1f1" : "#34334a"
+                                                           } else {
+                                                               btnNew.hovered ? "#23272E" : "#34334a"
+                                                           }
+                            }
+                            background: Rectangle {
+                                id: btnbg1
+                                color: func1.dynamicColor
+                                radius: 10
+                            }
+                            Layout.fillWidth: true
+                        }
+
+                        Button {
+                            id: btnLoadProject
+                            width: 90
+                            height: 25
+                            Layout.preferredHeight: 25
+                            Layout.preferredWidth: 55
+                            Layout.fillWidth: true
+                            font.pointSize: 10
+                            font.bold: false
+                            contentItem: Item {
+                                id: content2
+                                anchors.fill: parent
+                                Text {
+                                    color: "#ffffff"
+                                    text: "Abrir"
+                                    anchors.fill: parent
+                                    horizontalAlignment: Text.AlignHCenter
+                                    verticalAlignment: Text.AlignVCenter
+                                }
+                            }
+
+                            FileDialog{
+                                id: projectOpen
+                                title: "Escolha o projeto"
+                                folder: shortcuts.desktop
+                                selectMultiple: false
+                                nameFilters: ["Arquivos JSON (*.json)"]
+                                onAccepted:{
+                                    projectMngr.loadProject(projectOpen.fileUrl)
+                                }
+                            }
+
+                            onClicked: projectOpen.open()
+
+                            QtObject {
+                                id: func2
+                                property var dynamicColor: if(btnLoadProject.down){
+                                                               btnLoadProject.down ? "#00a1f1" : "#34334a"
+                                                           } else {
+                                                               btnLoadProject.hovered ? "#23272E" : "#34334a"
+                                                           }
+                            }
+
+                            background: Rectangle {
+                                id: btnbg2
+                                color: func2.dynamicColor
+                                radius: 10
+                            }
+                        }
+
+                        Button {
+                            id: btnSave
+                            width: 90
+                            height: 25
+                            Layout.preferredHeight: 25
+                            Layout.preferredWidth: 55
+                            font.pointSize: 10
+                            font.bold: false
+                            contentItem: Item {
+                                id: content3
+                                anchors.fill: parent
+                                Text {
+                                    color: "#ffffff"
+                                    text: "Salvar"
+                                    anchors.fill: parent
+                                    horizontalAlignment: Text.AlignHCenter
+                                    verticalAlignment: Text.AlignVCenter
+                                }
+                            }
+
+                            onClicked: {
+                                projectMngr.setProjectName(nomeProjeto.text)
+                                projectMngr.save()
+                            }
+
+                            QtObject {
+                                id: func3
+                                property var dynamicColor: if(btnSave.down){
+                                                               btnSave.down ? "#00a1f1" : "#34334a"
+                                                           } else {
+                                                               btnSave.hovered ? "#23272E" : "#34334a"
+                                                           }
+                            }
+                            background: Rectangle {
+                                id: btnbg3
+                                color: func3.dynamicColor
+                                radius: 10
+                            }
+                            Layout.fillWidth: true
+                        }
+
+                        Button {
+                            id: btnSaveAs
+                            width: 90
+                            height: 25
+                            Layout.preferredHeight: 25
+                            Layout.preferredWidth: 55
+                            font.pointSize: 10
+                            font.bold: false
+                            contentItem: Item {
+                                id: content4
+                                anchors.fill: parent
+                                Text {
+                                    color: "#ffffff"
+                                    text: "Salvar Como"
+                                    anchors.fill: parent
+                                    horizontalAlignment: Text.AlignHCenter
+                                    verticalAlignment: Text.AlignVCenter
+                                }
+                            }
+
+                            FileDialog{
+                                id: projectSaver
+                                title: "Escolha um local para salvar o projeto"
+                                folder: shortcuts.desktop
+                                selectExisting: false
+                                nameFilters: ["Arquivo JSON (*.json)"]
+                                onAccepted: {
+                                    projectMngr.setProjectName(nomeProjeto.text)
+                                    projectMngr.saveAs(projectSaver.fileUrl)
+                                }
+                            }
+
+                            onClicked:{
+                                projectSaver.open()
+                            }
+                            
+                            QtObject {
+                                id: func4
+                                property var dynamicColor: if(btnSaveAs.down){
+                                                               btnSaveAs.down ? "#00a1f1" : "#34334a"
+                                                           } else {
+                                                               btnSaveAs.hovered ? "#23272E" : "#34334a"
+                                                           }
+                            }
+                            background: Rectangle {
+                                id: btnbg4
+                                color: func4.dynamicColor
+                                radius: 10
+                            }
+                            Layout.fillWidth: true
+                        }
                     }
 
-                    delegate: Rectangle {
-                        height: 200
-                        implicitWidth: tableDataView.width/4
-                        implicitHeight: 20
-                        border.width: 1
+                    RowLayout {
+                        id: projectName_layout
+                        width: 100
+                        height: 100
+                        Layout.preferredHeight: 35
+                        spacing: 10
+                        Layout.fillWidth: true
 
-                        Text {
-                            text: display
-                            anchors.centerIn: parent
+                        Label {
+                            id: label
+                            width: 50
+                            color: "#ffffff"
+                            text: qsTr("Projeto")
+                        }
+
+                        TextField {
+                            id: nomeProjeto
+                            height: 25
+                            Layout.fillWidth: true
+                            placeholderText: qsTr("Identificação do Projeto")
+
+                            background: Rectangle{
+                                radius: 5
+                                border.color: nomeProjeto.focus ? '#55aaff':'#00000000'
+                                border.width: 2
+                            }
+                        }
+                    }
+
+                    RowLayout {
+                        id: dataBtns_layout
+                        width: 100
+                        height: 100
+                        Layout.preferredHeight: 35
+                        Layout.fillWidth: true
+
+                        Button {
+                            id: btnUpload
+                            width: 90
+                            height: 25
+                            Layout.preferredHeight: 25
+                            Layout.preferredWidth: 90
+                            Layout.fillWidth: false
+                            font.pointSize: 10
+                            font.bold: false
+
+                            FileDialog{
+                                id: fileOpen
+                                title: "Escolha o arquivo com seus dados"
+                                folder: shortcuts.desktop
+                                selectMultiple: false
+                                nameFilters: ["Arquivos de Texto (*.txt)"]
+                                onAccepted:{
+                                    internal.clearTableData()
+                                    backend.loadData(fileOpen.fileUrl)
+                                }
+                            }
+                            onClicked:{
+                                fileOpen.open()
+                            }
+
+                            QtObject{
+                                id: func
+                                property var dynamicColor: if(btnUpload.down){
+                                                               btnUpload.down ? "#00a1f1" : "#34334a"
+                                                           } else {
+                                                               btnUpload.hovered ? "#23272E" : "#34334a"
+                                                           }
+
+                            }
+
+                            background: Rectangle{
+                                id: btnbg
+                                radius: 10
+                                color: func.dynamicColor
+                            }
+
+                            contentItem: Item{
+                                id: content
+                                anchors.fill: parent
+
+                                Text{
+                                    color: "#ffffff"
+                                    text: "Escolher Arquivo"
+                                    anchors.fill: parent
+                                    horizontalAlignment: Text.AlignHCenter
+                                    verticalAlignment: Text.AlignVCenter
+                                }
+                            }
+                        }
+
+                        Label {
+                            id: label_fileName
+                            color: "#ffffff"
+                            text: qsTr("Dados não selecionados")
+                            Layout.fillWidth: true
+                        }
+                    }
+
+                    Frame {
+                        id: frame
+                        Layout.fillHeight: true
+                        Layout.fillWidth: true
+
+                        background: Rectangle{
+                            color: 'transparent'
+                            border.color: '#ffffff'
+                            radius: 10
+                        }
+
+                        TableView {
+                            id: tableDataView
+                            anchors.fill: parent
+                            anchors.rightMargin: 5
+                            interactive: true
+                            columnSpacing: 1
+                            rowSpacing: 0.8
+                            clip: true
+                            boundsBehavior: Flickable.DragOverBounds
+
+                            ScrollBar.vertical: ScrollBar{
+                                id: scrollBarTableData
+                                policy: ScrollBar.AsNeeded
+                                parent: tableDataView.parent
+                                anchors.top: tableDataView.top
+                                anchors.left: tableDataView.right
+                                anchors.bottom: tableDataView.bottom
+                            }
+
+                            model: TableModel {
+
+                                id: tableDataModel
+
+                                TableModelColumn { display: "X" }
+                                TableModelColumn { display: "Y" }
+                                TableModelColumn { display: "Sigma Y" }
+                                TableModelColumn { display: "Sigma X" }
+
+                                rows: [
+                                    {
+                                        "X": "X",
+                                        "Y": "Y",
+                                        "Sigma Y": "Sigma Y",
+                                        "Sigma X": "Sigma X",
+                                    }
+                                ]
+                            }
+
+                            delegate: Rectangle {
+                                height: 200
+                                implicitWidth: tableDataView.width/4
+                                implicitHeight: 20
+                                border.width: 1
+
+                                TextArea {
+                                    text: display
+                                    anchors.centerIn: parent
+                                    readOnly: true
+                                    selectByMouse: true
+                                }
+                            }
                         }
                     }
                 }
-            }
-        }
 
-        Rectangle {
-            id: rectangle2
-            color: "#565e66"
-            anchors.left: parent.left
-            anchors.right: parent.right
-            anchors.top: parent.top
-            anchors.bottom: parent.bottom
-            anchors.leftMargin: 700
-            anchors.rightMargin: 10
-            anchors.bottomMargin: 10
-            anchors.topMargin: 10
-
-            Rectangle {
-                id: footer
-                y: 258
-                height: 20
-                color: "#34334a"
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.bottom: parent.bottom
-                anchors.rightMargin: 0
-                anchors.leftMargin: 0
-                anchors.bottomMargin: 0
-
-                TextInput {
-                id: location
-                readOnly: true
-                text: displayBridge.coordinates
-                anchors.verticalCenter: parent.verticalCenter
-                anchors.left: parent.left
-                anchors.leftMargin: 10
-                color: "#ffffff"
-                }
-            }
-
-            Rectangle {
-                id: toolBar
-                height: 60
-                color: "#34334a"
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.top: parent.top
-                anchors.rightMargin: 0
-                anchors.leftMargin: 0
-                anchors.topMargin: 0
-
-                TabButton{
-                    id: backBtn
-                    y: 0
-                    width: toolBar.width/6
-                    text: "Voltar"
-                    anchors.left: homeBtn.right
-                    btnColorDefault: "#34334a"
-                    anchors.leftMargin: 0
-
-                    onClicked: {
-                    displayBridge.back();
-                    }   
-
-                }
-
-                TabButton{
-                    id: homeBtn
-                    y: 0
-                    width: toolBar.width/6
-                    text: "Resetar"
-                    anchors.verticalCenter: parent.verticalCenter
+                Rectangle {
+                    id: rectangle3
+                    y: 648
+                    height: 20
+                    color: "#34334a"
                     anchors.left: parent.left
-                    btnColorDefault: "#34334a"
+                    anchors.right: parent.right
+                    anchors.bottom: parent.bottom
+                    anchors.rightMargin: 0
                     anchors.leftMargin: 0
-
-                    onClicked: {
-                    displayBridge.home();
-                    }
-
+                    anchors.bottomMargin: 0
+                    Layout.fillWidth: true
                 }
 
-                TabButton {
-                    id: fowardBtn
-                    y: 0
-                    width: toolBar.width/6
-                    text: "Avançar"
-                    anchors.left: backBtn.right
-                    btnColorDefault: "#34334a"
-                    anchors.leftMargin: 0
+            }
 
-                    onClicked: {
-                    displayBridge.forward();
-                    }
-                }
-
-                TabButton {
-                    id: panBtn
-                    y: 0
-                    width: toolBar.width/6
-                    text: "Mover"
-                    anchors.left: fowardBtn.right
-                    btnColorDefault: "#34334a"
-                    anchors.leftMargin: 0
-                    checkable: true
-                    isActiveMenu: false
-
-                    onClicked: {
-                    if (zoomBtn.checked) {
-                        zoomBtn.checked = false;
-                        zoomBtn.isActiveMenu = false;
-                    }
-                    displayBridge.pan();
-                    panBtn.isActiveMenu = true;
-                    }
-
-                }
-
-                TabButton {
-                    id: zoomBtn
-                    y: 0
-                    width: toolBar.width/6
-                    text: "Zoom"
-                    anchors.left: panBtn.right
-                    btnColorDefault: "#34334a"
-                    anchors.leftMargin: 0
-                    checkable: true
-                    isActiveMenu: false
-
-                    onClicked: {
-                    if (panBtn.checked) {
-                        // toggle pan off
-                        panBtn.checked = false;
-                        panBtn.isActiveMenu = false;
-                    }
-                    zoomBtn.isActiveMenu = true;
-                    displayBridge.zoom();
-                    }
-                }
-
-                TabButton {
-                    id: saveBtn
-                    y: 0
-                    width: toolBar.width/6
-                    text: "Salvar"
-                    anchors.left: zoomBtn.right
-                    btnColorDefault: "#34334a"
-                    anchors.leftMargin: 0
-                    checkable: true
-                    isActiveMenu: false
-
-                    onClicked:{
-                        fileSaver.open()
-                    }
-
-                    FileDialog{
-                        id: fileSaver
-                        title: "Escolha um local para salvar a figura"
-                        folder: shortcuts.home
-                        selectExisting: false
-                        nameFilters: ["Arquivos de imagem (*.png)"]
-                        onAccepted: {
-                            funcsPlotPage.savePlot(fileSaver.fileUrl)
-                        }
-                    }
-                }
+            Tabs{
+                id: middleTabs
+                Layout.fillHeight: true
+                Layout.fillWidth: false
             }
 
             Rectangle {
-                id: bg_canvas
-                color: "#ffffff"
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.top: toolBar.bottom
-                anchors.bottom: footer.top
-                anchors.rightMargin: 0
-                anchors.leftMargin: 0
-                anchors.bottomMargin: 0
-                anchors.topMargin: 0
+                id: rightPanel
+                color: "#565e66"
+                Layout.fillHeight: true
+                Layout.fillWidth: true
 
-               FigureCanvas {
-                     id: mplView
-                     objectName : "canvasPlot"
-                     dpi_ratio: Screen.devicePixelRatio
-                     anchors.fill: parent
-               }
+                ColumnLayout {
+                    id: rightPanel_layout
+                    anchors.fill: parent
+                    spacing: 0
+
+                    Rectangle {
+                        id: toolBar
+                        height: 60
+                        color: "#34334a"
+                        Layout.fillWidth: true
+
+                        TabButton{
+                            id: backBtn
+                            y: 0
+                            width: toolBar.width/6
+                            text: "Voltar"
+                            anchors.left: homeBtn.right
+                            btnColorDefault: "#34334a"
+                            anchors.leftMargin: 0
+
+                            onClicked: {
+                                displayBridge.back();
+                            }
+
+                        }
+
+                        TabButton{
+                            id: homeBtn
+                            y: 0
+                            width: toolBar.width/6
+                            text: "Resetar"
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.left: parent.left
+                            btnColorDefault: "#34334a"
+                            anchors.leftMargin: 0
+
+                            onClicked: {
+                                displayBridge.home();
+                            }
+
+                        }
+
+                        TabButton {
+                            id: fowardBtn
+                            y: 0
+                            width: toolBar.width/6
+                            text: "Avançar"
+                            anchors.left: backBtn.right
+                            btnColorDefault: "#34334a"
+                            anchors.leftMargin: 0
+
+                            onClicked: {
+                                displayBridge.forward();
+                            }
+                        }
+
+                        TabButton {
+                            id: panBtn
+                            y: 0
+                            width: toolBar.width/6
+                            text: "Mover"
+                            anchors.left: fowardBtn.right
+                            btnColorDefault: "#34334a"
+                            anchors.leftMargin: 0
+                            checkable: true
+                            isActiveMenu: false
+
+                            onClicked: {
+                                if (zoomBtn.checked) {
+                                    zoomBtn.checked = false;
+                                    zoomBtn.isActiveMenu = false;
+                                }
+                                displayBridge.pan();
+                                panBtn.isActiveMenu = true;
+                            }
+
+                        }
+
+                        TabButton {
+                            id: zoomBtn
+                            y: 0
+                            width: toolBar.width/6
+                            text: "Zoom"
+                            anchors.left: panBtn.right
+                            btnColorDefault: "#34334a"
+                            anchors.leftMargin: 0
+                            checkable: true
+                            isActiveMenu: false
+
+                            onClicked: {
+                                if (panBtn.checked) {
+                                    // toggle pan off
+                                    panBtn.checked = false;
+                                    panBtn.isActiveMenu = false;
+                                }
+                                zoomBtn.isActiveMenu = true;
+                                displayBridge.zoom();
+                            }
+                        }
+
+                        TabButton {
+                            id: saveBtn
+                            y: 0
+                            width: toolBar.width/6
+                            text: "Salvar"
+                            anchors.left: zoomBtn.right
+                            btnColorDefault: "#34334a"
+                            anchors.leftMargin: 0
+                            checkable: true
+                            isActiveMenu: false
+
+                            onClicked:{
+                                fileSaver.open()
+                            }
+
+                            FileDialog{
+                                id: fileSaver
+                                title: "Escolha um local para salvar a figura"
+                                folder: shortcuts.desktop
+                                selectExisting: false
+                                nameFilters: ["Arquivos de imagem (*.png)"]
+                                onAccepted: {
+                                    backend.savePlot(fileSaver.fileUrl)
+                                }
+                            }
+                        }
+                    }
+
+                    Rectangle {
+                        id: bg_canvas
+                        Layout.fillHeight: true
+                        Layout.fillWidth: true
+
+                           FigureCanvas {
+                                 id: mplView
+                                 objectName : "canvasPlot"
+                                 dpi_ratio: Screen.devicePixelRatio
+                                 anchors.fill: parent
+                           }
+                    }
+
+                    Rectangle {
+                        id: footer
+                        height: 20
+                        color: "#34334a"
+                        Layout.fillWidth: true
+
+                        TextInput {
+                            id: location
+                            readOnly: true
+                            text: displayBridge.coordinates
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.left: parent.left
+                            anchors.leftMargin: 10
+                            color: "#ffffff"
+                        }
+                    }
+                }
+
             }
-
         }
     }
+
+    Connections{
+        target: backend
+
+    }
+
+    Connections{
+        target: model
+
+        function onFillDataTable(x, y, sy, sx, fileName){
+            label_fileName.text = fileName
+            tableDataModel.appendRow({"X": x, "Y": y, "Sigma Y": sy, "Sigma X": sx})
+        }
+    }
+
+    Connections{
+        target: projectMngr
+
+        function onSaveAsSignal(){
+            projectSaver.open()
+        }
+
+        function onFillProjectName(projectName){
+            nomeProjeto.text = projectName
+        }
+
+        function onClearTableData(){
+            tableDataModel.clear()
+            tableDataModel.rows = [
+                        {
+                            "X": "X",
+                            "Y": "Y",
+                            "Sigma Y": "Sigma Y",
+                            "Sigma X": "Sigma X",
+                        }
+                    ]
+        }
+    }
+
 }
 
 
 /*##^##
 Designer {
-    D{i:0;autoSize:true;height:480;width:640}
+    D{i:0;formeditorZoom:1.1}
 }
 ##^##*/

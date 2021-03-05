@@ -2,17 +2,9 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.11
 import QtQuick.Dialogs 1.3
+import QtGraphicalEffects 1.15
 
 Item {
-
-    Connections{
-        target: funcsPropPage
-
-        function onSignalPropPage(){
-            funcsPropPage.loadOptions(titulo.text, eixox.text, eixoy.text, switchResiduos.position, switchGrade.position, switch_sigmax.position, switch_sigmay.position, log_eixox.checkState, log_eixoy.checkState, rectColor.color, size.value, symbol.currentText, rectColor_curve.color, thickness.value, type_curve.currentText)
-        }
-    }
-
     Rectangle {
         id: rectangle
         width: 372
@@ -33,8 +25,6 @@ Item {
 
             ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
             ScrollBar.vertical.policy: ScrollBar.AlwaysOn
-
-
 
             ColumnLayout {
                 id: columnLayout_bg
@@ -66,8 +56,14 @@ Item {
                         anchors.right: parent.right
                         anchors.rightMargin: 10
                         anchors.leftMargin: 10
-                        placeholderText: qsTr("")
+                        placeholderText: qsTr("Título do Gráfico")
                         selectByMouse: true
+
+                        background: Rectangle{
+                            radius: 5
+                            border.color: titulo.focus ? '#55aaff':'#00000000'
+                            border.width: 2
+                        }
                     }
                 }
 
@@ -100,10 +96,16 @@ Item {
                             anchors.verticalCenter: parent.verticalCenter
                             anchors.left: label1.right
                             anchors.right: parent.right
-                            placeholderText: qsTr("")
+                            placeholderText: qsTr("Título de Eixo X")
                             anchors.rightMargin: 10
                             selectByMouse: true
                             anchors.leftMargin: 10
+
+                            background: Rectangle{
+                                radius: 5
+                                border.color: eixox.focus ? '#55aaff':'#00000000'
+                                border.width: 2
+                            }
                         }
                         anchors.leftMargin: 0
                     }
@@ -149,8 +151,14 @@ Item {
                             anchors.right: parent.right
                             anchors.rightMargin: 10
                             anchors.leftMargin: 10
-                            placeholderText: qsTr("")
+                            placeholderText: qsTr("Título do Eixo Y")
                             selectByMouse: true
+
+                            background: Rectangle{
+                                radius: 5
+                                border.color: eixoy.focus ? '#55aaff':'#00000000'
+                                border.width: 2
+                            }
                         }
                     }
 
@@ -173,36 +181,9 @@ Item {
                     id: gridLayout
                     width: 100
                     height: 80
-                    columns: 4
-                    rows: 2
+                    columns: 6
+                    rows: 1
                     Layout.fillWidth: true
-
-                    Label {
-                        id: label7
-                        color: "#ffffff"
-                        text: qsTr("Incerteza em X")
-                        Layout.fillWidth: true
-                        Layout.leftMargin: 10
-                    }
-
-                    Switch {
-                        id: switch_sigmax
-                        checked: true
-                        Layout.fillWidth: true
-                    }
-
-                    Label {
-                        id: label8
-                        color: "#ffffff"
-                        text: qsTr("Incerteza em Y")
-                        Layout.fillWidth: true
-                    }
-
-                    Switch {
-                        id: switch_sigmay
-                        checked: true
-                        Layout.fillWidth: true
-                    }
 
                     Label {
                         id: label4
@@ -228,6 +209,20 @@ Item {
                         id: switchGrade
                         Layout.fillWidth: true
                     }
+
+                    Label {
+                        id: label7
+                        color: "#ffffff"
+                        text: qsTr("Legenda")
+                        horizontalAlignment: Text.AlignHCenter
+                        wrapMode: Text.NoWrap
+                        Layout.fillWidth: true
+                    }
+
+                    Switch {
+                        id: switchLegend
+                        Layout.fillWidth: true
+                    }
                 }
 
                 GroupBox {
@@ -240,6 +235,16 @@ Item {
                     Layout.leftMargin: 10
                     Layout.fillWidth: true
                     title: qsTr("Propriedades dos pontos")
+
+                    background: Rectangle{
+                        radius: 10
+                        color: '#00000000'
+                        border.color: '#ffffff'
+
+                        y: groupBox_pontos.topPadding - groupBox_pontos.bottomPadding
+                        width: parent.width
+                        height: parent.height - groupBox_pontos.topPadding + groupBox_pontos.bottomPadding
+                    }
 
                     label: Label {
 //                        x: groupBox.leftPadding
@@ -285,6 +290,7 @@ Item {
                                 title: "Escolha uma cor para os pontos"
                                 onAccepted: {
                                     rectColor.color = colorDialog.color
+                                    iconOverlay.color = rectColor.color
                                 }
                             }
 
@@ -392,23 +398,40 @@ Item {
                             }
                         }
 
-                        Image {
-                            id: icons
-                            width: 100
-                            height: 100
-                            source: "../../../images/symbols/Círculo.png"
-                            fillMode: Image.PreserveAspectFit
-                            mirror: false
-                            mipmap: true
-                            autoTransform: false
-                            Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-                            asynchronous: false
-                            cache: true
-                            smooth: true
-                            Layout.preferredWidth: 20
-                            Layout.preferredHeight: 20
+                        Rectangle{
+                            width: 20
+                            height: 20
+                            color: '#00000000'
+                            Layout.fillWidth: true
                             Layout.fillHeight: false
-                            Layout.fillWidth: false
+                            Image {
+                                id: icons
+                                anchors.fill: parent
+                                source: "../../../images/symbols/Círculo.png"
+                                fillMode: Image.PreserveAspectFit
+                                mirror: false
+                                mipmap: true
+                                autoTransform: false
+                                Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+                                asynchronous: false
+                                cache: true
+                                smooth: true
+                                Layout.preferredWidth: 20
+                                Layout.preferredHeight: 20
+                                Layout.fillHeight: false
+                                Layout.fillWidth: false
+                            }
+
+                            ColorOverlay{
+                                id: iconOverlay
+                                anchors.fill: parent
+                                source: icons
+                                color: "#000000"
+                                anchors.verticalCenter: parent.verticalCenter
+                                antialiasing: true
+                                width: icons.width
+                                height: icons.height
+                            }
                         }
                     }
                 }
@@ -421,6 +444,17 @@ Item {
                     title: qsTr("Propriedades da curva")
                     Layout.fillWidth: true
                     Layout.preferredHeight: 150
+
+                    background: Rectangle{
+                        radius: 10
+                        color: '#00000000'
+                        border.color: '#ffffff'
+
+                        y: groupBox_curva.topPadding - groupBox_curva.bottomPadding
+                        width: parent.width
+                        height: parent.height - groupBox_curva.topPadding + groupBox_curva.bottomPadding
+                    }
+
                     GridLayout {
                         id: gridLayout2
                         anchors.fill: parent
@@ -577,12 +611,37 @@ Item {
                     Layout.fillHeight: true
                     Layout.fillWidth: true
                 }
-
-
-
-
-
             }
+        }
+    }
+
+    Connections{
+        target: backend
+
+        function onSignalPropPage(){
+            backend.loadOptions(titulo.text, eixox.text, eixoy.text, switchResiduos.position, switchGrade.position, log_eixox.checkState, log_eixoy.checkState, rectColor.color, size.value, symbol.currentText, rectColor_curve.color, thickness.value, type_curve.currentText, switchLegend.position)
+        }
+    }
+
+    Connections{
+        target: projectMngr
+
+        function onFillPropPage(title, xaxis, log_x, yaxis, log_y, residuals, grid, legend, symbol_color, symbol_size, symbol_style, curve_color, curve_thickness, curve_style){
+                titulo.text = title
+                eixox.text = xaxis
+                eixoy.text = yaxis
+                switchResiduos.checked = residuals
+                switchGrade.checked = grid
+                log_eixox.checked = log_x
+                log_eixoy.checked = log_y
+                rectColor.color = symbol_color
+                size.value = symbol_size
+                symbol.currentIndex = symbol.find(symbol_style)
+                icons.source = "../../../images/symbols/" + symbol.currentText + ".png"
+                rectColor_curve.color = curve_color
+                thickness.value = curve_thickness
+                type_curve.currentIndex = type_curve.find(curve_style)
+                switchLegend.checked = legend
         }
     }
 
@@ -590,6 +649,6 @@ Item {
 
 /*##^##
 Designer {
-    D{i:0;autoSize:true;formeditorZoom:1.1;height:800;width:372}D{i:31}D{i:55}
+    D{i:0;autoSize:true;height:480;width:640}
 }
 ##^##*/

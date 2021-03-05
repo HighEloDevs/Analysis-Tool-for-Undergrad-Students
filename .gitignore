@@ -71,3 +71,7 @@ Thumbs.db
 *.dll
 *.exe
 
+.idea
+.pytest_cache
+.vscode
+
