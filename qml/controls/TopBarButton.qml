@@ -1,6 +1,7 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtGraphicalEffects 1.15
+import "../colors.js" as Colors
 
 Button{
     id: btnTopBar
@@ -9,9 +10,9 @@ Button{
     implicitHeight: 35
 
     property url btnIconSource: "../../images/svg_images/minimize_icon.svg"
-    property color btnColorDefault: "#1c1d20"
-    property color btnColorMouseOver: "#23273E"
-    property color btnColorClicked: "#00a1f1"
+    property color btnColorDefault: Colors.c_button_sideBar
+    property color btnColorMouseOver: Colors.c_button_hover
+    property color btnColorClicked: Colors.c_button_active
 
     QtObject{
         id: internal

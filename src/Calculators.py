@@ -185,14 +185,15 @@ class CalculatorCanvas(QtCore.QObject):
         self.axes.grid(True)
         self.canvas.draw_idle()
 
-    def Plot(self, x, y, x_area, y_area):
-        try:
-            self.axes.remove()
-        except:
-            pass
-        self.axes = self.figure.add_subplot(111)
-        self.axes.grid(True)       
-        self.axes.fill_between(x_area, y_area, color = 'blue', alpha = 0.3)
-        self.axes.plot(x, y, lw = 1, c = 'red')
-        self.axes.set_title("P.D.F.")
-        self.canvas.draw_idle()
+def Plot(displayBridge, x, y, x_area, y_area):
+    try:
+        displayBridge.clearAxis()
+    except:
+        pass
+
+    displayBridge.axes = displayBridge.figure.add_subplot(111)
+    displayBridge.axes.grid(True)       
+    displayBridge.axes.fill_between(x_area, y_area, color = 'blue', alpha = 0.3)
+    displayBridge.axes.plot(x, y, lw = 1, c = 'red')
+    displayBridge.axes.set_title("P.D.F.")
+    displayBridge.canvas.draw_idle()

@@ -3,7 +3,7 @@ import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.11
 import QtQuick.Window 2.12
 import "../controls"
-import Canvas 1.0
+import "../colors.js" as Colors
 
 Item {
     width: 1408
@@ -15,7 +15,7 @@ Item {
 
     Rectangle {
         id: bg
-        color: "#40464c"
+        color: Colors.color3
         anchors.fill: parent
         anchors.rightMargin: 0
         anchors.bottomMargin: 0
@@ -208,14 +208,10 @@ Item {
                         QtObject{
                             id: internal
 
-                            property color btnColorDefault: "#34334a"
-                            property color btnColorMouseOver: "#23272E"
-                            property color btnColorClicked: "#00a1f1"
-
                             property color dynamicColor: if(btnCalcular.down){
-                                       btnCalcular.down ? btnColorClicked : btnColorDefault
+                                       btnCalcular.down ? Colors.c_button_active : Colors.c_button
                                    } else {
-                                       btnCalcular.hovered ? btnColorMouseOver : btnColorDefault
+                                       btnCalcular.hovered ? Colors.c_button_hover : Colors.c_button
                                    }
                         }
 
@@ -264,21 +260,6 @@ Item {
                 }
             }
 
-            Rectangle {
-                id: bg_canvas1
-                width: 200
-                height: 200
-                color: "#00000000"
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-
-               FigureCanvas {
-                    objectName : "canvasCalculadora"
-                    dpi_ratio: Screen.devicePixelRatio
-                    anchors.fill: parent
-              }
-            }
-
 
         }
     }
@@ -293,12 +274,8 @@ Item {
 
 }
 
-
-
-
-
 /*##^##
 Designer {
-    D{i:0;autoSize:true;height:480;width:640}
+    D{i:0;formeditorZoom:0.66}
 }
 ##^##*/

@@ -3,13 +3,14 @@ import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.11
 import QtQuick.Dialogs 1.3
 import QtGraphicalEffects 1.15
+import "../../colors.js" as Colors
 
 Item {
     Rectangle {
         id: rectangle
         width: 372
         height: 673
-        color: "#565e66"
+        color: Colors.c_section
         anchors.fill: parent
         anchors.rightMargin: 0
         anchors.bottomMargin: 0
@@ -61,7 +62,7 @@ Item {
 
                         background: Rectangle{
                             radius: 5
-                            border.color: titulo.focus ? '#55aaff':'#00000000'
+                            border.color: titulo.focus ? Colors.mainColor2:'#00000000'
                             border.width: 2
                         }
                     }
@@ -103,7 +104,7 @@ Item {
 
                             background: Rectangle{
                                 radius: 5
-                                border.color: eixox.focus ? '#55aaff':'#00000000'
+                                border.color: eixox.focus ? Colors.mainColor2:'#00000000'
                                 border.width: 2
                             }
                         }
@@ -156,7 +157,7 @@ Item {
 
                             background: Rectangle{
                                 radius: 5
-                                border.color: eixoy.focus ? '#55aaff':'#00000000'
+                                border.color: eixoy.focus ? Colors.mainColor2:'#00000000'
                                 border.width: 2
                             }
                         }
@@ -301,9 +302,9 @@ Item {
                             QtObject{
                                 id: internal
                                 property var dynamicColor: if(btnColor.down){
-                                                               btnColor.down ? "#00a1f1" : "#34334a"
+                                                               btnColor.down ? Colors.c_button_active : Colors.c_button
                                                            } else {
-                                                               btnColor.hovered ? "#23272E" : "#34334a"
+                                                               btnColor.hovered ? Colors.c_button_hover : Colors.c_button
                                                            }
 
                             }
@@ -485,9 +486,9 @@ Item {
                             QtObject{
                                 id: internal2
                                 property var dynamicColor: if(btnColor_curve.down){
-                                                               btnColor_curve.down ? "#00a1f1" : "#34334a"
+                                                               btnColor_curve.down ? Colors.c_button_active : Colors.c_button
                                                            } else {
-                                                               btnColor_curve.hovered ? "#23272E" : "#34334a"
+                                                               btnColor_curve.hovered ? Colors.c_button_hover : Colors.c_button
                                                            }
                             }
 

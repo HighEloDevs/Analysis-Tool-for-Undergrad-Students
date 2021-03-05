@@ -1,11 +1,12 @@
 import QtQuick 2.0
 import QtQuick.Controls 2.15
+import "../colors.js" as Colors
 
 Item {
     anchors.fill: parent
     Rectangle {
         id: rectangle
-        color: "#40464c"
+        color: Colors.color3
         anchors.fill: parent
 
         TextArea {

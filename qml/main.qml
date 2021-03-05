@@ -2,10 +2,14 @@ import QtQuick 2.15
 import QtQuick.Window 2.15
 import QtQuick.Controls 2.15
 import QtGraphicalEffects 1.15
+import QtQuick.Dialogs 1.3
+import QtQuick.Layouts 1.11
+import Canvas 1.0
 
 import "controls"
 import "widgets"
-import QtQuick.Layouts 1.11
+import "."
+import "colors.js" as Colors
 
 Window {
     id: mainWindow
@@ -17,6 +21,7 @@ Window {
 
     visible: true
     color: "#00000000"
+    property alias btnCalcWidth: btnCalc.width
     property alias labelRightInfoText: labelRightInfo.text
 
     // Removing Title Bar
@@ -26,6 +31,8 @@ Window {
     property int windowStatus: 0
     property int windowMargin: 10
     property int stackedPage: 0
+
+    
 
     // Internal Functions
     QtObject{
@@ -83,8 +90,8 @@ Window {
 
     Rectangle {
         id: bg
-        color: "#2c313c"
-        border.color: "#353b48"
+        color: Colors.bgColor
+        border.color: Colors.bgBorderColor
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.top: parent.top
@@ -107,7 +114,7 @@ Window {
             Rectangle {
                 id: topBar
                 height: 60
-                color: "#1c1d20"
+                color: Colors.color1
                 anchors.left: parent.left
                 anchors.right: parent.right
                 anchors.top: parent.top
@@ -123,7 +130,7 @@ Window {
                     id: topBarDescription
                     y: 21
                     height: 25
-                    color: "#282c34"
+                    color: Colors.color2
                     anchors.left: parent.left
                     anchors.right: parent.right
                     anchors.bottom: parent.bottom
@@ -133,7 +140,7 @@ Window {
 
                     Label {
                         id: labelLeftInfo
-                        color: "#c3cbdd"
+                        color: Colors.fontColor
                         anchors.left: parent.left
                         anchors.right: parent.right
                         anchors.top: parent.top
@@ -148,7 +155,7 @@ Window {
 
                     Label {
                         id: labelRightInfo
-                        color: "#c3cbdd"
+                        color: Colors.fontColor
                         text: "| Início"
                         anchors.left: labelLeftInfo.right
                         anchors.right: parent.right
@@ -203,7 +210,7 @@ Window {
 
                     Label {
                         id: appTitle
-                        color: "#c3cbdd"
+                        color: Colors.fontColor
                         text: qsTr("Analysis Tool for Undergrad Students | ATUS")
                         anchors.left: iconApp.right
                         anchors.right: parent.right
@@ -260,395 +267,596 @@ Window {
                 anchors.bottom: parent.bottom
                 anchors.topMargin: 0
 
-                Rectangle {
-                    id: leftMenu
-                    y: 70
-                    width: 70
-                    height: 70
-                    color: "#1c1d20"
-                    anchors.left: parent.left
-                    anchors.top: parent.top
-                    anchors.bottom: parent.bottom
-                    focus: true
-                    anchors.leftMargin: 0
-                    anchors.bottomMargin: 0
-                    anchors.topMargin: 0
+                GridLayout {
+                    id: layoutContent
+                    anchors.fill: parent
+                    columnSpacing: 0
+                    rowSpacing: 0
+                    rows: 2
+                    columns: 2
 
-                    ColumnLayout {
-                        id: layout_menu
-                        anchors.fill: parent
+                    Rectangle {
+                        id: leftMenu
+                        width: 70
+                        height: 70
+                        color: Colors.color1
+                        z: 1
+                        focus: true
+                        Layout.fillWidth: false
+                        Layout.preferredWidth: 70
+                        Layout.fillHeight: true
+                        Layout.rowSpan: 2
+
+                        ColumnLayout {
+                            id: layout_menu
+                            anchors.fill: parent
+                            spacing: 0
+                            z: 1
+                            clip: true
+
+                            LeftMenuButton {
+                                id: btnHome
+                                width: leftMenu.width
+                                text: qsTr("Início")
+                                Layout.fillWidth: true
+                                clip: true
+                                isActiveMenu: true
+
+                                onClicked: {
+                                    if(stackedPage != 0){
+                                        stackedPage = 0
+                                        btnHome.isActiveMenu = true
+                                        btnPlot.isActiveMenu = false
+                                        btnMultiPlot.isActiveMenu = false
+                                        btnCalc.isActiveMenu = false
+                                        btnHist.isActiveMenu = false
+                                        btnExamples.isActiveMenu = false
+                                        btnInfos.isActiveMenu = false
+
+                                        pageHome.visible = true
+                                        pagePlots.visible = false
+                                        pageExamples.visible = false
+                                        pageInfos.visible = false
+
+                                        labelRightInfo.text = "| Início"
+                                    }
+                                }
+                            }
+
+                            LeftMenuButton {
+                                id: btnPlot
+                                width: leftMenu.width
+                                text: qsTr("Ajuste")
+                                Layout.fillWidth: false
+                                btnIconSource: "../images/svg_images/plot_icon.svg"
+                                isActiveMenu: false
+                                clip: false
+
+                                onClicked: {
+                                    if(stackedPage != 1){
+                                        stackedPage = 1
+                                        btnHome.isActiveMenu = false
+                                        btnPlot.isActiveMenu = true
+                                        btnMultiPlot.isActiveMenu = false
+                                        btnCalc.isActiveMenu = false
+                                        btnHist.isActiveMenu = false
+                                        btnExamples.isActiveMenu = false
+                                        btnInfos.isActiveMenu = false
+
+                                        pageHome.visible = false
+                                        pagePlots.visible = true
+                                        pageExamples.visible = false
+                                        pageInfos.visible = false
+
+                                        pagePlot.visible = true
+                                        pageMultiPlot.visible = false
+                                        pageCalculadora.visible = false
+                                        pageHistograma.visible = false
+
+                                        labelRightInfo.text = "| Ajuste"
+                                    }
+                                }
+                            }
+
+                            LeftMenuButton {
+                                id: btnMultiPlot
+                                width: leftMenu.width
+                                text: qsTr("Vários Ajustes")
+                                Layout.fillWidth: false
+                                btnIconSource: "../images/svg_images/multiplot_icon.svg"
+                                isActiveMenu: false
+                                clip: false
+
+                                onClicked: {
+                                    if(stackedPage != 2){
+                                        stackedPage = 2
+                                        btnHome.isActiveMenu = false
+                                        btnPlot.isActiveMenu = false
+                                        btnMultiPlot.isActiveMenu = true
+                                        btnCalc.isActiveMenu = false
+                                        btnHist.isActiveMenu = false
+                                        btnExamples.isActiveMenu = false
+                                        btnInfos.isActiveMenu = false
+
+                                        pageHome.visible = false
+                                        pagePlots.visible = true
+                                        pageExamples.visible = false
+                                        pageInfos.visible = false
+                                        pagePlot.visible = false
+                                        pageMultiPlot.visible = true
+                                        pageCalculadora.visible = false
+                                        pageHistograma.visible = false
+
+                                        labelRightInfo.text = "| Vários Ajustes"
+                                    }
+                                }
+                            }
+
+                            LeftMenuButton {
+                                id: btnCalc
+                                width: leftMenu.width
+                                text: qsTr("Intervalos de confiança")
+                                clip: false
+                                btnIconSource: "../images/svg_images/calculator_icon.svg"
+                                isActiveMenu: false
+
+                                onClicked: {
+                                    if(stackedPage != 3){
+                                        stackedPage = 3
+                                        btnHome.isActiveMenu = false
+                                        btnPlot.isActiveMenu = false
+                                        btnMultiPlot.isActiveMenu = false
+                                        btnCalc.isActiveMenu = true
+                                        btnHist.isActiveMenu = false
+                                        btnExamples.isActiveMenu = false
+                                        btnInfos.isActiveMenu = false
+
+                                        pageHome.visible = false
+                                        pagePlots.visible = true
+                                        pageExamples.visible = false
+                                        pageInfos.visible = false
+
+                                        pagePlot.visible = false
+                                        pageMultiPlot.visible = false
+                                        pageCalculadora.visible = true
+                                        pageHistograma.visible = false
+
+                                        labelRightInfo.text = "| Calculadora de Intervalos de Confiança"
+                                    }
+                                }
+                            }
+
+                            LeftMenuButton {
+                                id: btnHist
+                                width: leftMenu.width
+                                text: qsTr("Histogramas")
+                                Layout.fillWidth: true
+                                clip: false
+                                btnIconSource: "../images/svg_images/histogram_icon.svg"
+                                isActiveMenu: false
+
+                                onClicked: {
+                                    if(stackedPage != 4){
+                                        stackedPage = 4
+                                        btnHome.isActiveMenu = false
+                                        btnPlot.isActiveMenu = false
+                                        btnMultiPlot.isActiveMenu = false
+                                        btnCalc.isActiveMenu = false
+                                        btnHist.isActiveMenu = true
+                                        btnExamples.isActiveMenu = false
+                                        btnInfos.isActiveMenu = false
+
+                                        pageHome.visible = false
+                                        pagePlots.visible = true
+                                        pageExamples.visible = false
+                                        pageInfos.visible = false
+                                        pagePlot.visible = false
+                                        pageMultiPlot.visible = false
+                                        pageCalculadora.visible = false
+                                        pageHistograma.visible = true
+
+                                        labelRightInfo.text = "| Histogramas"
+                                    }
+                                }
+                            }
+
+                            LeftMenuButton {
+                                id: btnExamples
+                                btnIconSource: "../images/svg_images/examples_icon.svg"
+                                width: leftMenu.width
+                                text: qsTr("Exemplos")
+                                Layout.fillWidth: true
+                                isActiveMenu: false
+                                clip: false
+
+                                onClicked: {
+                                    if(stackedPage != 5){
+                                        stackedPage = 5
+                                        btnHome.isActiveMenu = false
+                                        btnPlot.isActiveMenu = false
+                                        btnMultiPlot.isActiveMenu = false
+                                        btnCalc.isActiveMenu = false
+                                        btnHist.isActiveMenu = false
+                                        btnExamples.isActiveMenu = true
+                                        btnInfos.isActiveMenu = false
+
+                                        pageHome.visible = false
+                                        pagePlots.visible = false
+                                        pageExamples.visible = true
+                                        pageInfos.visible = false
+
+                                        labelRightInfo.text = "| Exemplos"
+                                    }
+                                }
+                            }
+
+                            Rectangle {
+                                id: rectangle1
+                                width: leftMenu.width
+                                height: 200
+                                color: "#00000000"
+                                Layout.fillWidth: true
+                                Layout.fillHeight: true
+                            }
+
+                            LeftMenuButton {
+                                id: btnInfos
+                                width: leftMenu.width
+                                text: qsTr("Informações")
+                                Layout.fillWidth: true
+                                btnIconSource: "../images/svg_images/info_icon.svg"
+                                isActiveMenu: false
+                                clip: false
+
+                                onClicked: {
+                                    if(stackedPage != 6){
+                                        stackedPage = 6
+                                        btnHome.isActiveMenu = false
+                                        btnPlot.isActiveMenu = false
+                                        btnMultiPlot.isActiveMenu = false
+                                        btnCalc.isActiveMenu = false
+                                        btnHist.isActiveMenu = false
+                                        btnExamples.isActiveMenu = false
+                                        btnInfos.isActiveMenu = true
+
+                                        pageHome.visible = false
+                                        pagePlots.visible = false
+                                        pageExamples.visible = false
+                                        pageInfos.visible = true
+
+                                        labelRightInfo.text = "| Informações"
+                                    }
+                                }
+                            }
+                        }
+
+                        PropertyAnimation{
+                            id: animationMenu
+                            target: leftMenu
+                            property: "width"
+                            to: if(leftMenu.width == 70) return 300;
+                                else return 70
+                            duration: 500
+                            easing.type: Easing.OutBounce
+                        }
+
+                        Column {
+                            id: columnMenus
+                            anchors.fill: parent
+                            clip: true
+                            anchors.bottomMargin: 0
+                            spacing: 0
+                        }
+
+                    }
+
+                    Rectangle {
+                        id: contentPages
+                        color: Colors.color3
+                        z: 0
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
                         clip: true
 
-                        LeftMenuButton {
-                            id: btnHome
-                            width: leftMenu.width
-                            text: qsTr("Início")
-                            clip: false
-                            isActiveMenu: true
+                        GridLayout {
+                            id: pagesLayout
+                            anchors.fill: parent
+                            columns: 2
+                            rows: 1
+                            columnSpacing: 0
+                            rowSpacing: 0
 
-                            onClicked: {
-                                if(stackedPage != 0){
-                                    stackedPage = 0
-                                    btnHome.isActiveMenu = true
-                                    btnPlot.isActiveMenu = false
-                                    btnMultiPlot.isActiveMenu = false
-                                    btnCalc.isActiveMenu = false
-                                    // btnHist.isActiveMenu = false
-                                    btnExamples.isActiveMenu = false
-                                    btnInfos.isActiveMenu = false
+                            Loader{
+                                id: pageHome
+                                source: Qt.resolvedUrl("pages/homePage.qml")
+                                clip: true
+                                Layout.fillHeight: true
+                                Layout.fillWidth: true
+                                visible: true
+                            }
 
-                                    pageHome.visible = true
-                                    pagePlot.visible = false
-                                    pageMultiPlot.visible = false
-                                    pageCalculadora.visible = false
-                                    pageHistograma.visible = false
-                                    pageExamples.visible = false
-                                    pageInfos.visible = false
+                            Loader{
+                                id: pageExamples
+                                Layout.fillHeight: true
+                                Layout.fillWidth: true
+                                source: Qt.resolvedUrl("pages/examplesPage.qml")
+                                visible: false
+                            }
 
-                                    labelRightInfo.text = "| Início"
+                            Loader{
+                                id: pageInfos
+                                Layout.fillHeight: true
+                                Layout.fillWidth: true
+                                source: Qt.resolvedUrl("pages/infosPage.qml")
+                                clip: false
+                                visible: false
+                            }
+
+                            GridLayout {
+                                id: pagePlots
+                                width: 100
+                                height: 100
+                                visible: false
+                                Layout.margins: 10
+                                Layout.preferredWidth: -1
+                                Layout.fillHeight: true
+                                Layout.fillWidth: true
+                                rows: 1
+                                columns: 2
+                                columnSpacing: 0
+                                rowSpacing: 0
+
+                                Rectangle {
+                                    id: optionsLayout
+                                    Layout.fillWidth: true
+                                    Layout.fillHeight: true
+
+                                    Loader{
+                                        id: pagePlot
+                                        anchors.fill: parent
+                                        source: Qt.resolvedUrl("pages/plotPage.qml")
+                                        visible: false
+                                    }
+
+                                    Loader{
+                                        id: pageMultiPlot
+                                        anchors.fill: parent
+                                        source: Qt.resolvedUrl("pages/multiPlotPage.qml")
+                                        visible: false
+                                    }
+
+                                    Loader{
+                                        id: pageCalculadora
+                                        anchors.fill: parent
+                                        source: Qt.resolvedUrl("pages/calculadoraPage.qml")
+                                        visible: false
+                                    }
+
+                                    Loader{
+                                        id: pageHistograma
+                                        anchors.fill: parent
+                                        source: Qt.resolvedUrl("pages/histogramaPage.qml")
+                                        visible: false
+                                    }
                                 }
+
+                                Rectangle {
+                                    id: canvasLayout
+                                    visible: true
+                                    radius: 0
+                                    Layout.preferredWidth: -1
+                                    Layout.leftMargin: 0
+                                    Layout.rightMargin: 0
+                                    Layout.bottomMargin: 0
+                                    Layout.topMargin: 0
+                                    Layout.fillHeight: true
+                                    Layout.fillWidth: true
+
+                                    ColumnLayout {
+                                        id: rightPanel_layout
+                                        x: 0
+                                        y: -692
+                                        anchors.fill: parent
+                                        Layout.fillWidth: true
+                                        Layout.fillHeight: true
+                                        spacing: 0
+
+                                        Rectangle {
+                                            id: toolBar
+                                            height: 60
+                                            color: Colors.color1
+                                            Layout.fillWidth: true
+
+                                            TabButton{
+                                                id: backBtn
+                                                y: 0
+                                                width: toolBar.width/6
+                                                text: "Voltar"
+                                                anchors.left: homeBtn.right
+                                                anchors.leftMargin: 0
+
+                                                onClicked: {
+                                                    displayBridge.back();
+                                                }
+
+                                            }
+
+                                            TabButton{
+                                                id: homeBtn
+                                                y: 0
+                                                width: toolBar.width/6
+                                                text: "Resetar"
+                                                anchors.verticalCenter: parent.verticalCenter
+                                                anchors.left: parent.left
+                                                anchors.leftMargin: 0
+
+                                                onClicked: {
+                                                    displayBridge.home();
+                                                }
+
+                                            }
+
+                                            TabButton {
+                                                id: fowardBtn
+                                                y: 0
+                                                width: toolBar.width/6
+                                                text: "Avançar"
+                                                anchors.left: backBtn.right
+                                                anchors.leftMargin: 0
+
+                                                onClicked: {
+                                                    displayBridge.forward();
+                                                }
+                                            }
+
+                                            TabButton {
+                                                id: panBtn
+                                                y: 0
+                                                width: toolBar.width/6
+                                                text: "Mover"
+                                                anchors.left: fowardBtn.right
+                                                anchors.leftMargin: 0
+                                                checkable: true
+                                                isActiveMenu: false
+
+                                                onClicked: {
+                                                    if (zoomBtn.checked) {
+                                                        zoomBtn.checked = false;
+                                                        zoomBtn.isActiveMenu = false;
+                                                    }
+                                                    displayBridge.pan();
+                                                    panBtn.isActiveMenu = true;
+                                                }
+
+                                            }
+
+                                            TabButton {
+                                                id: zoomBtn
+                                                y: 0
+                                                width: toolBar.width/6
+                                                text: "Zoom"
+                                                anchors.left: panBtn.right
+                                                anchors.leftMargin: 0
+                                                checkable: true
+                                                isActiveMenu: false
+
+                                                onClicked: {
+                                                    if (panBtn.checked) {
+                                                        // toggle pan off
+                                                        panBtn.checked = false;
+                                                        panBtn.isActiveMenu = false;
+                                                    }
+                                                    zoomBtn.isActiveMenu = true;
+                                                    displayBridge.zoom();
+                                                }
+                                            }
+
+                                            TabButton {
+                                                id: saveBtn
+                                                y: 0
+                                                width: toolBar.width/6
+                                                text: "Salvar"
+                                                anchors.left: zoomBtn.right
+                                                anchors.leftMargin: 0
+                                                checkable: true
+                                                isActiveMenu: false
+
+                                                onClicked:{
+                                                    fileSaver.open()
+                                                }
+
+                                                FileDialog{
+                                                    id: fileSaver
+                                                    title: "Escolha um local para salvar a figura"
+                                                    folder: shortcuts.desktop
+                                                    selectExisting: false
+                                                    nameFilters: ["Arquivos de imagem (*.png)"]
+                                                    onAccepted: {
+                                                        backend.savePlot(fileSaver.fileUrl)
+                                                    }
+                                                }
+                                            }
+                                        }
+
+                                        Rectangle {
+                                            id: bg_canvas
+                                            Layout.fillHeight: true
+                                            Layout.fillWidth: true
+
+                                             FigureCanvas {
+                                                   id: mplView
+                                                   objectName : "canvasPlot"
+                                                   dpi_ratio: Screen.devicePixelRatio
+                                                   anchors.fill: parent
+                                             }
+                                        }
+
+                                        Rectangle {
+                                            id: footer
+                                            height: 20
+                                            color: Colors.color2
+                                            Layout.fillWidth: true
+
+                                            TextInput {
+                                                id: location
+                                                readOnly: true
+                                                text: displayBridge.coordinates
+                                                anchors.verticalCenter: parent.verticalCenter
+                                                anchors.left: parent.left
+                                                anchors.leftMargin: 10
+                                                color: Colors.fontColor
+                                            }
+                                        }
+
+                                    }
+                                }
+
+
                             }
                         }
+                    }
 
-                        LeftMenuButton {
-                            id: btnPlot
-                            width: leftMenu.width
-                            text: qsTr("Ajuste")
-                            btnIconSource: "../images/svg_images/plot_icon.svg"
-                            isActiveMenu: false
-                            clip: false
+                    Rectangle {
+                        id: footer1
+                        color: Colors.color2
+                        Layout.preferredHeight: 25
+                        Layout.fillWidth: true
 
-                            onClicked: {
-                                if(stackedPage != 1){
-                                    stackedPage = 1
-                                    btnHome.isActiveMenu = false
-                                    btnPlot.isActiveMenu = true
-                                    btnMultiPlot.isActiveMenu = false
-                                    btnCalc.isActiveMenu = false
-                                    // btnHist.isActiveMenu = false
-                                    btnExamples.isActiveMenu = false
-                                    btnInfos.isActiveMenu = false
-
-                                    pageHome.visible = false
-                                    pagePlot.visible = true
-                                    pageMultiPlot.visible = false
-                                    pageCalculadora.visible = false
-                                    pageHistograma.visible = false
-                                    pageExamples.visible = false
-                                    pageInfos.visible = false
-
-                                    labelRightInfo.text = "| Ajuste"
-                                }
-                            }
+                        Label {
+                            id: labelLeftInfo1
+                            color: Colors.fontColor
+                            horizontalAlignment: Text.AlignLeft
+                            verticalAlignment: Text.AlignVCenter
                         }
 
-                        LeftMenuButton {
-                            id: btnMultiPlot
-                            width: leftMenu.width
-                            text: qsTr("Vários Ajustes")
-                            btnIconSource: "../images/svg_images/multiplot_icon.svg"
-                            isActiveMenu: false
-                            clip: false
-
-                            onClicked: {
-                                if(stackedPage != 2){
-                                    stackedPage = 2
-                                    btnHome.isActiveMenu = false
-                                    btnPlot.isActiveMenu = false
-                                    btnMultiPlot.isActiveMenu = true
-                                    btnCalc.isActiveMenu = false
-                                    // btnHist.isActiveMenu = false
-                                    btnExamples.isActiveMenu = false
-                                    btnInfos.isActiveMenu = false
-
-                                    pageHome.visible = false
-                                    pagePlot.visible = false
-                                    pageMultiPlot.visible = true
-                                    pageCalculadora.visible = false
-                                    pageHistograma.visible = false
-                                    pageExamples.visible = false
-                                    pageInfos.visible = false
-
-                                    labelRightInfo.text = "| Vários Ajustes"
-                                }
-                            }
-                        }
-
-                        LeftMenuButton {
-                            id: btnCalc
-                            width: leftMenu.width
-                            text: qsTr("Intervalos de confiança")
-                            clip: false
-                            btnIconSource: "../images/svg_images/calculator_icon.svg"
-                            isActiveMenu: false
-
-                            onClicked: {
-                                if(stackedPage != 3){
-                                    stackedPage = 3
-                                    btnHome.isActiveMenu = false
-                                    btnPlot.isActiveMenu = false
-                                    btnMultiPlot.isActiveMenu = false
-                                    btnCalc.isActiveMenu = true
-                                    // btnHist.isActiveMenu = false
-                                    btnExamples.isActiveMenu = false
-                                    btnInfos.isActiveMenu = false
-
-                                    pageHome.visible = false
-                                    pagePlot.visible = false
-                                    pageMultiPlot.visible = false
-                                    pageCalculadora.visible = true
-                                    pageHistograma.visible = false
-                                    pageExamples.visible = false
-                                    pageInfos.visible = false
-
-                                    labelRightInfo.text = "| Calculadora de Intervalos de Confiança"
-                                }
-                            }
-                        }
-
-                        // LeftMenuButton {
-                        //     id: btnHist
-                        //     width: leftMenu.width
-                        //     text: qsTr("Histogramas")
-                        //     clip: false
-                        //     btnIconSource: "../images/svg_images/histogram_icon.svg"
-                        //     isActiveMenu: false
-
-                        //     onClicked: {
-                        //         if(stackedPage != 4){
-                        //             stackedPage = 4
-                        //             btnHome.isActiveMenu = false
-                        //             btnPlot.isActiveMenu = false
-                        //             btnMultiPlot.isActiveMenu = false
-                        //             btnCalc.isActiveMenu = false
-                        //             btnHist.isActiveMenu = true
-                        //             btnExamples.isActiveMenu = false
-                        //             btnInfos.isActiveMenu = false
-
-                        //             pageHome.visible = false
-                        //             pagePlot.visible = false
-                        //             pageMultiPlot.visible = false
-                        //             pageCalculadora.visible = false
-                        //             pageHistograma.visible = true
-                        //             pageExamples.visible = false
-                        //             pageInfos.visible = false
-
-                        //             labelRightInfo.text = "| Histogramas"
-                        //         }
-                        //     }
-                        // }
-
-                        LeftMenuButton {
-                            id: btnExamples
-                            btnIconSource: "../images/svg_images/examples_icon.svg"
-                            width: leftMenu.width
-                            text: qsTr("Exemplos")
-                            isActiveMenu: false
-                            clip: false
-
-                            onClicked: {
-                                if(stackedPage != 5){
-                                    stackedPage = 5
-                                    btnHome.isActiveMenu = false
-                                    btnPlot.isActiveMenu = false
-                                    btnMultiPlot.isActiveMenu = false
-                                    btnCalc.isActiveMenu = false
-                                    // btnHist.isActiveMenu = false
-                                    btnExamples.isActiveMenu = true
-                                    btnInfos.isActiveMenu = false
-
-                                    pageHome.visible = false
-                                    pagePlot.visible = false
-                                    pageMultiPlot.visible = false
-                                    pageCalculadora.visible = false
-                                    pageHistograma.visible = false
-                                    pageExamples.visible = true
-                                    pageInfos.visible = false
-
-                                    labelRightInfo.text = "| Exemplos"
-                                }
-                            }
-                        }
-
-                        Rectangle {
-                            id: rectangle1
-                            width: 200
-                            height: 200
-                            color: "#00000000"
-                            Layout.fillHeight: true
-                        }
-
-                        LeftMenuButton {
-                            id: btnInfos
-                            width: leftMenu.width
-                            text: qsTr("Informações")
-                            btnIconSource: "../images/svg_images/info_icon.svg"
-                            isActiveMenu: false
-                            clip: false
-
-                            onClicked: {
-                                if(stackedPage != 6){
-                                    stackedPage = 6
-                                    btnHome.isActiveMenu = false
-                                    btnPlot.isActiveMenu = false
-                                    btnMultiPlot.isActiveMenu = false
-                                    btnCalc.isActiveMenu = false
-                                    // btnHist.isActiveMenu = false
-                                    btnExamples.isActiveMenu = false
-                                    btnInfos.isActiveMenu = true
-
-                                    pageHome.visible = false
-                                    pagePlot.visible = false
-                                    pageMultiPlot.visible = false
-                                    pageCalculadora.visible = false
-                                    pageHistograma.visible = false
-                                    pageExamples.visible = false
-                                    pageInfos.visible = true
-
-                                    labelRightInfo.text = "| Informações"
-                                }
-                            }
-                        }
-                    }
-
-                    PropertyAnimation{
-                        id: animationMenu
-                        target: leftMenu
-                        property: "width"
-                        to: if(leftMenu.width == 70) return 200;
-                            else return 70
-                        duration: 200
-                        easing.type: Easing.InOutQuint
-                    }
-
-                    Column {
-                        id: columnMenus
-                        anchors.fill: parent
-                        clip: true
-                        anchors.bottomMargin: 0
-                        spacing: 0
-                    }
-
-                }
-
-                Rectangle {
-                    id: contentPages
-                    color: "#40464c"
-                    anchors.left: leftMenu.right
-                    anchors.right: parent.right
-                    anchors.top: parent.top
-                    anchors.bottom: parent.bottom
-                    clip: true
-                    anchors.rightMargin: 0
-                    anchors.leftMargin: 0
-                    anchors.bottomMargin: 25
-                    anchors.topMargin: 0
-
-                    Loader{
-                        id: pageHome
-                        anchors.fill: parent
-                        source: Qt.resolvedUrl("pages/homePage.qml")
-                        visible: true
-                    }
-
-                    Loader{
-                        id: pagePlot
-                        anchors.fill: parent
-                        source: Qt.resolvedUrl("pages/plotPage.qml")
-                        visible: false
-                    }
-
-                    Loader{
-                        id: pageMultiPlot
-                        anchors.fill: parent
-                        source: Qt.resolvedUrl("pages/multiPlotPage.qml")
-                        visible: false
-                    }
-
-                    Loader{
-                        id: pageCalculadora
-                        anchors.fill: parent
-                        source: Qt.resolvedUrl("pages/calculadoraPage.qml")
-                        visible: false
-                    }
-
-                    Loader{
-                        id: pageHistograma
-                        anchors.fill: parent
-                        source: Qt.resolvedUrl("pages/histogramaPage.qml")
-                        visible: false
-                    }
-
-                    Loader{
-                        id: pageExamples
-                        anchors.fill: parent
-                        source: Qt.resolvedUrl("pages/examplesPage.qml")
-                        visible: false
-                    }
-
-                    Loader{
-                        id: pageInfos
-                        anchors.fill: parent
-                        source: Qt.resolvedUrl("pages/infosPage.qml")
-                        clip: false
-                        visible: false
-                    }
-                }
-
-                Rectangle {
-                    id: rectangle
-                    color: "#282c34"
-                    anchors.left: leftMenu.right
-                    anchors.right: parent.right
-                    anchors.top: contentPages.bottom
-                    anchors.bottom: parent.bottom
-                    anchors.rightMargin: 0
-                    anchors.leftMargin: 0
-                    anchors.bottomMargin: 0
-                    anchors.topMargin: 0
-
-                    Label {
-                        id: labelLeftInfo1
-                        color: "#c3cbdd"
-                        anchors.left: parent.left
-                        anchors.right: parent.right
-                        anchors.top: parent.top
-                        anchors.bottom: parent.bottom
-                        horizontalAlignment: Text.AlignLeft
-                        verticalAlignment: Text.AlignVCenter
-                        anchors.bottomMargin: 0
-                        anchors.rightMargin: 300
-                        anchors.leftMargin: 10
-                        anchors.topMargin: 0
-                    }
-
-                    MouseArea {
-                        id: resizeBottomRight
-                        x: 1183
-                        y: 0
-                        width: 25
-                        height: 25
-                        anchors.right: parent.right
-                        anchors.bottom: parent.bottom
-                        anchors.rightMargin: 0
-                        anchors.bottomMargin: 0
-                        cursorShape: Qt.SizeFDiagCursor
-
-                        Image {
-                            id: image
+                        MouseArea {
+                            id: resizeBottomRight
+                            x: 1183
+                            y: 0
                             width: 25
                             height: 25
-                            source: "../images/svg_images/resize_icon.svg"
-                            fillMode: Image.PreserveAspectFit
-                        }
+                            anchors.right: parent.right
+                            anchors.bottom: parent.bottom
+                            anchors.rightMargin: 0
+                            anchors.bottomMargin: 0
+                            cursorShape: Qt.SizeFDiagCursor
 
-                        DragHandler{
-                            target: null
-                            onActiveChanged: if(active){
-                                                 mainWindow.startSystemResize(Qt.RightEdge | Qt.BottomEdge)
-                                             }
-                        }
+                            Image {
+                                id: image
+                                width: 25
+                                height: 25
+                                source: "../images/svg_images/resize_icon.svg"
+                                fillMode: Image.PreserveAspectFit
+                            }
 
+                            DragHandler{
+                                target: null
+                                onActiveChanged: if(active){
+                                                     mainWindow.startSystemResize(Qt.RightEdge | Qt.BottomEdge)
+                                                 }
+                            }
+
+                        }
                     }
                 }
             }
@@ -731,9 +939,19 @@ Window {
         verticalOffset: 0
         radius: 10
         samples: 16
-        color: "#80000000"
+        color: Colors.bgBorderColor
         source: bg
         z: 0
     }
 }
 
+
+
+
+
+
+/*##^##
+Designer {
+    D{i:0;autoSize:true;formeditorZoom:0.75;height:480;width:640}
+}
+##^##*/

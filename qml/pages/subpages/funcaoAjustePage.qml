@@ -2,6 +2,7 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 import Qt.labs.qmlmodels 1.0
 import QtQuick.Layouts 1.11
+import "../../colors.js" as Colors
 
 Item {
     width: 366
@@ -25,7 +26,7 @@ Item {
 
     Rectangle {
         id: bg
-        color: "#565e66"
+        color: Colors.c_section
         anchors.fill: parent
 
         ColumnLayout {
@@ -69,7 +70,7 @@ Item {
 
                     background: Rectangle{
                         radius: 5
-                        border.color: expression.focus ? '#55aaff':'#00000000'
+                        border.color: expression.focus ? Colors.mainColor2:'#00000000'
                         border.width: 2
                     }
                 }
@@ -111,7 +112,7 @@ Item {
 
                     background: Rectangle{
                         radius: 5
-                        border.color: p0.focus ? '#55aaff':'#00000000'
+                        border.color: p0.focus ? Colors.mainColor2:'#00000000'
                         border.width: 2
                     }
 
@@ -283,9 +284,9 @@ Item {
                 QtObject{
                     id: internal
                     property var dynamicColor: if(btnPlot.down){
-                                                   btnPlot.down ? "#00a1f1" : "#34334a"
+                                                   btnPlot.down ? Colors.c_button_active : Colors.c_button
                                                } else {
-                                                   btnPlot.hovered ? "#23272E" : "#34334a"
+                                                   btnPlot.hovered ? Colors.c_button_hover : Colors.c_button
                                                }
 
                 }
@@ -312,17 +313,6 @@ Item {
 
 
         }
-    }
-
-    Connections{
-        target: backend
-        // function onFillParamsTable(param, value, uncertainty){
-        //     tableParamsModel.appendRow({"Parâmetros" : param, "Valor": value, "Incerteza" : uncertainty})
-        // }
-
-        // function onWriteInfos(expr){
-        //     infos.text = expr
-        // }
     }
 
     Connections{

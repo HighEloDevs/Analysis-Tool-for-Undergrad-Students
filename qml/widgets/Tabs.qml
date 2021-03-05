@@ -1,8 +1,9 @@
 import QtQuick 2.0
 import QtQuick.Controls 2.15
-import "../controls"
 import QtGraphicalEffects 1.15
 import QtQuick.Window 2.15
+import "../colors.js" as Colors
+import "../controls"
 
 Item {
     id: item1
@@ -13,7 +14,7 @@ Item {
 
     Rectangle {
         id: bg
-        color: "#565e66"
+        color: Colors.c_section
         anchors.fill: parent
         clip: true
         z: 1
@@ -21,7 +22,7 @@ Item {
         Rectangle {
             id: topBar
             height: 60
-            color: "#383d42"
+            color: "#00000000"
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.top: parent.top
@@ -38,7 +39,6 @@ Item {
                     width: topBar.width / 2
                     text: "Função de Ajuste"
                     activeMenuColorRight: "#565e66"
-                    btnColorDefault: "#34334a"
                     isActiveMenu: true
 
                     onClicked: {
@@ -55,7 +55,6 @@ Item {
                     width: topBar.width / 2
                     text: "Propriedades do gráfico"
                     activeMenuColorRight: "#565e66"
-                    btnColorDefault: "#34334a"
                     isActiveMenu: false
 
                     onClicked: {
@@ -73,7 +72,7 @@ Item {
             id: bottomBar
             y: 165
             height: 20
-            color: "#34334a"
+            color: Colors.color2
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.bottom: parent.bottom
