@@ -4,7 +4,7 @@ Created on Fri Jan 29 17:10:06 2021
 
 @author: Leonardo Eiji Tamayose & Guilherme Ferrari Fortino 
 
-MatPlotLib Class
+Calculator Class
 
 """
 from matplotlib_backend_qtquick.backend_qtquick import NavigationToolbar2QtQuick

@@ -36,13 +36,14 @@ Button{
             height: 16
             width: 16
             fillMode: Image.PreserveAspectFit
+            antialiasing: true
         }
 
         ColorOverlay{
             anchors.fill: iconBtn
             source: iconBtn
             color: "#ffffff"
-            antialiasing: false
+            antialiasing: true
         }
     }
 }

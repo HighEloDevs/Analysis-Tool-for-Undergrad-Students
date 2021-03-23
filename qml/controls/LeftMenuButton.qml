@@ -8,9 +8,9 @@ Button{
     text: qsTr("Left Menu Text")
 
     // CUSTOM PROPERTIES
-    property url btnIconSource: "../../images/svg_images/home_icon.svg"
-    property int iconWidth: 18
-    property int iconHeight: 18
+    property url btnIconSource: "../../images/icons/home-36px.svg"
+    property int iconWidth: 24
+    property int iconHeight: 24
     property color activeMenuColor: Colors.mainColor2
     property color activeMenuColorRight: "#2c313c"
     property bool isActiveMenu: false
@@ -64,7 +64,7 @@ Button{
         Image {
             id: iconBtn
             source: btnIconSource
-            anchors.leftMargin: 26
+            anchors.leftMargin: 23
             anchors.verticalCenter: parent.verticalCenter
             anchors.left: parent.left
             sourceSize.width: iconWidth

@@ -9,8 +9,6 @@ import "../widgets"
 import "../controls"
 import "../colors.js" as Colors
 
-//import Canvas 1.0
-
 Item {
     width: 704
     height: 693
@@ -48,6 +46,7 @@ Item {
                 id: leftPanel
                 width: 298
                 color: Colors.c_section
+                Layout.fillWidth: true
                 Layout.fillHeight: true
 
                 ColumnLayout {
@@ -436,7 +435,7 @@ Item {
             Tabs{
                 id: middleTabs
                 Layout.fillHeight: true
-                Layout.fillWidth: false
+                Layout.fillWidth: true
             }
         }
     }

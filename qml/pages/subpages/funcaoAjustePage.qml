@@ -29,15 +29,19 @@ Item {
         color: Colors.c_section
         anchors.fill: parent
 
-        ColumnLayout {
-            id: columnLayout
+        GridLayout {
+            id: bgLayout
             anchors.fill: parent
-            spacing: 0
+            columnSpacing: 0
+            rowSpacing: 0
+            rows: 6
+            columns: 4
 
             Rectangle {
                 id: rectangle1
                 height: 45
                 color: "#00000000"
+                Layout.columnSpan: 4
                 Layout.fillWidth: true
 
                 Label {
@@ -80,6 +84,7 @@ Item {
                 id: rectangle
                 height: 45
                 color: "#00000000"
+                Layout.columnSpan: 4
                 Layout.fillWidth: true
 
                 Label {
@@ -125,6 +130,9 @@ Item {
                 id: rowLayout
                 width: 100
                 height: 45
+                Layout.columnSpan: 4
+                Layout.fillWidth: true
+                Layout.rowSpan: 1
 
                 Label {
                     id: label7
@@ -157,6 +165,7 @@ Item {
             Frame {
                 id: frame
                 height: 130
+                Layout.columnSpan: 4
                 Layout.preferredHeight: 35
                 Layout.rightMargin: 10
                 Layout.leftMargin: 10
@@ -172,7 +181,6 @@ Item {
                 TableView {
                     id: tableParams
                     anchors.fill: parent
-                    anchors.rightMargin: 5
                     interactive: true
                     columnSpacing: 1
                     rowSpacing: 0.8
@@ -223,6 +231,7 @@ Item {
 
             GroupBox {
                 id: groupBox_params
+                Layout.columnSpan: 4
                 Layout.preferredHeight: 50
                 Layout.topMargin: 10
                 Layout.rightMargin: 10
@@ -257,6 +266,7 @@ Item {
                         id: infos
                         color: "#ffffff"
                         text: ""
+                        anchors.fill: parent
                         font.pointSize: 10
                         readOnly: true
                         selectByMouse: true
@@ -267,6 +277,7 @@ Item {
             Button {
                 id: btnPlot
                 text: qsTr("Plot")
+                Layout.columnSpan: 4
                 Layout.preferredHeight: 25
                 Layout.bottomMargin: 10
                 Layout.topMargin: 10
@@ -309,9 +320,6 @@ Item {
                     }
                 }
             }
-
-
-
         }
     }
 
@@ -350,12 +358,13 @@ Item {
         }
     }
 
+
 }
 
 
 
 /*##^##
 Designer {
-    D{i:0;height:720;width:600}
+    D{i:0;height:720;width:600}D{i:3}
 }
 ##^##*/
