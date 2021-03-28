@@ -13,6 +13,13 @@ Item {
 
         TableView {
             anchors.fill: parent
+            interactive: false
+            pixelAligned: false
+            clip: false
+            anchors.rightMargin: 0
+            anchors.bottomMargin: 0
+            anchors.leftMargin: 0
+            anchors.topMargin: 0
             columnSpacing: 1
             rowSpacing: 1
             boundsBehavior: Flickable.StopAtBounds
@@ -27,7 +34,7 @@ Item {
                 // Each row is one type of fruit that can be ordered
                 rows: [
                     {
-                        checked: false,
+                        checked: true,
                         amount: 1,
                         fruitType: "Apple",
                         fruitName: "Granny Smith",
@@ -49,6 +56,7 @@ Item {
                     }
                 ]
             }
+
             delegate: DelegateChooser {
                 DelegateChoice {
                     column: 0
@@ -67,6 +75,7 @@ Item {
                 DelegateChoice {
                     delegate: TextField {
                         text: model.display
+                        readOnly: true
                         selectByMouse: true
                         implicitWidth: 140
                         onAccepted: model.display = text

@@ -169,7 +169,7 @@ if __name__ == "__main__":
 
     # Updating canvasPlot with the plot
     win = engine.rootObjects()[0]
-    # displayBridge.updateWithCanvas(win.findChild(QtCore.QObject, "canvasPlot"))
+    displayBridge.updateWithCanvas(win.findChild(QtCore.QObject, "canvasPlot"))
     
     # Stopping program if PySide fails loading the file
     if not engine.rootObjects():
