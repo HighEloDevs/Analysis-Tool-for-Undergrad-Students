@@ -4,7 +4,7 @@ import QtQuick.Controls 2.15
 import QtGraphicalEffects 1.15
 import QtQuick.Dialogs 1.3
 import QtQuick.Layouts 1.11
-//import Canvas 1.0
+import Canvas 1.0
 
 import "controls"
 import "widgets"
@@ -834,12 +834,12 @@ Window {
                                             Layout.fillHeight: true
                                             Layout.fillWidth: true
 
-//                                              FigureCanvas {
-//                                                      id: mplView
-//                                                      objectName : "canvasPlot"
-//                                                      dpi_ratio: Screen.devicePixelRatio
-//                                                      anchors.fill: parent
-//                                              }
+                                             FigureCanvas {
+                                                     id: mplView
+                                                     objectName : "canvasPlot"
+                                                     dpi_ratio: Screen.devicePixelRatio
+                                                     anchors.fill: parent
+                                             }
                                         }
 
                                         Rectangle {
