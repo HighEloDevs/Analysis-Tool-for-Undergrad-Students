@@ -219,13 +219,13 @@ class Model(QtCore.QObject):
                 self.__set_param_values_ODR()
                 self.__set_report_ODR()
 
-            params = self.get_params()
-            keys = list(params.keys())
+        params = self.get_params()
+        keys = list(params.keys())
             
-            for i in range(len(keys)):
-                self.fillParamsTable.emit(keys[i], "{:.8g}".format(params[keys[i]][0]), "{:.8g}".format(params[keys[i]][1]))
+        for i in range(len(keys)):
+            self.fillParamsTable.emit(keys[i], "{:.8g}".format(params[keys[i]][0]), "{:.8g}".format(params[keys[i]][1]))
 
-            self.writeInfos.emit(self.report_fit)
+        self.writeInfos.emit(self.report_fit)
 
     def __fit_ODR(self, data, pi):
         def f(a, x):

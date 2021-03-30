@@ -4,84 +4,101 @@ import "../colors.js" as Colors
 import Qt.labs.qmlmodels 1.0
 import QtQuick.Window 2.12
 import QtQuick.Layouts 1.12
+import "../controls"
 
 Item {
-    Rectangle {
-        id: bg
-        color: Colors.color3
-        anchors.fill: parent
+    // Rectangle {
+    //     id: bg
+    //     color: Colors.color3
+    //     anchors.fill: parent
 
-        TableView {
-            anchors.fill: parent
-            interactive: false
-            pixelAligned: false
-            clip: false
-            anchors.rightMargin: 0
-            anchors.bottomMargin: 0
-            anchors.leftMargin: 0
-            anchors.topMargin: 0
-            columnSpacing: 1
-            rowSpacing: 1
-            boundsBehavior: Flickable.StopAtBounds
+    //     TableView {
+    //         anchors.fill: parent
+    //         interactive: false
+    //         pixelAligned: false
+    //         clip: false
+    //         anchors.rightMargin: 0
+    //         anchors.bottomMargin: 0
+    //         anchors.leftMargin: 0
+    //         anchors.topMargin: 0
+    //         columnSpacing: 1
+    //         rowSpacing: 1
+    //         boundsBehavior: Flickable.StopAtBounds
 
-            model: TableModel {
-                TableModelColumn { display: "checked" }
-                TableModelColumn { display: "amount" }
-                TableModelColumn { display: "fruitType" }
-                TableModelColumn { display: "fruitName" }
-                TableModelColumn { display: "fruitPrice" }
+    //         model: TableModel {
+    //             TableModelColumn { display: "checked" }
+    //             TableModelColumn { display: "amount" }
+    //             TableModelColumn { display: "fruitType" }
+    //             TableModelColumn { display: "fruitPrice" }
 
-                // Each row is one type of fruit that can be ordered
-                rows: [
-                    {
-                        checked: true,
-                        amount: 1,
-                        fruitType: "Apple",
-                        fruitName: "Granny Smith",
-                        fruitPrice: 1.50
-                    },
-                    {
-                        checked: true,
-                        amount: 4,
-                        fruitType: "Orange",
-                        fruitName: "Navel",
-                        fruitPrice: 2.50
-                    },
-                    {
-                        checked: false,
-                        amount: 1,
-                        fruitType: "Banana",
-                        fruitName: "Cavendish",
-                        fruitPrice: 3.50
-                    }
-                ]
-            }
+    //             // Each row is one type of fruit that can be ordered
+    //             rows: [
+    //                 {
+    //                     checked: true,
+    //                     amount: 1,
+    //                     fruitType: "Arquivos",
+    //                     fruitPrice: 1.50
+    //                 },
+    //             ]
+    //         }
 
-            delegate: DelegateChooser {
-                DelegateChoice {
-                    column: 0
-                    delegate: CheckBox {
-                        checked: model.display
-                        onToggled: model.display = checked
-                    }
-                }
-                DelegateChoice {
-                    column: 1
-                    delegate: SpinBox {
-                        value: model.display
-                        onValueModified: model.display = value
-                    }
-                }
-                DelegateChoice {
-                    delegate: TextField {
-                        text: model.display
-                        readOnly: true
-                        selectByMouse: true
-                        implicitWidth: 140
-                        onAccepted: model.display = text
-                    }
-                }
-            }
+    //         delegate: DelegateChooser {
+    //             DelegateChoice {
+    //                 column: 0
+    //                 delegate: CheckBox {
+    //                     checked: model.display
+    //                     onToggled: model.display = checked
+    //                 }
+    //             }
+    //             DelegateChoice {
+    //                 column: 1
+    //                 delegate: SpinBox {
+    //                     value: model.display
+    //                     onValueModified: model.display = value
+    //                 }
+    //             }
+    //             DelegateChoice {
+    //                 delegate: TextField {
+    //                     text: model.display
+    //                     readOnly: true
+    //                     selectByMouse: true
+    //                     implicitWidth: 140
+    //                     onAccepted: model.display = text
+    //                 }
+    //             }
+    //         }
+    //     }
+    // }
+
+    Table{
+        id: table
+        width: 500
+        height: 500
+
+        headerModel: [
+            {text: 'TESTE 1', width: 0.25},
+            {text: 'TESTE 2', width: 0.25},
+            {text: 'TESTE 3', width: 0.25},
+            {text: 'TESTE 4', width: 0.25},
+        ]
+
+        dataModel: [
+            [1, 1, 1, 1],
+            [1, 1, 1, 1],
+            [1, 1, 1, 1],
+            [1, 1, 1, 1],
+            [1, 1, 1, 1],
+            [1, 1, 1, 1],
+            [1, 1, 1, 1],
+            [1, 1, 1, 1],
+            [1, 1, 1, 1],
+            [1, 1, 1, 1],
+            [1, 1, 1, 1],
+        ]
+
+        onClicked: {
+            print(row, rowData)
+            dataModel.push([2, 2, 2, 2])
         }
     }
 

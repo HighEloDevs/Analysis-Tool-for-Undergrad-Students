@@ -81,6 +81,7 @@ class Bridge(QtCore.QObject):
             for i in p0.split(','):
                 p0_tmp.append(float(i))
             model.set_p0(p0_tmp)
+            print(p0_tmp)
 
         # Anti-dummies system 2
         expression = expression.replace('^', '**')
