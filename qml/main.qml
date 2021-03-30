@@ -4,7 +4,7 @@ import QtQuick.Controls 2.15
 import QtGraphicalEffects 1.15
 import QtQuick.Dialogs 1.3
 import QtQuick.Layouts 1.11
-import Canvas 1.0
+//import Canvas 1.0
 
 import "controls"
 import "widgets"
@@ -188,17 +188,19 @@ Window {
                         anchors.fill: parent
                         cache: true
                         smooth: true
-                        mirror: true
                         mipmap: true
                         autoTransform: true
                         asynchronous: false
-                        source: "../images/main_icon/icon.png"
-                        fillMode: Image.PreserveAspectFit
+                        source: "../ATUS Logo Preto.svg"
+                        sourceSize.height: 55
+                        sourceSize.width: 55
+                        fillMode: Image.Pad
                     }
 
                     ColorOverlay{
                         id: logoOverlay
                         source: logo
+                        cached: false
                         color: "#fff"
                         anchors.fill: parent
                         antialiasing: true
@@ -832,12 +834,12 @@ Window {
                                             Layout.fillHeight: true
                                             Layout.fillWidth: true
 
-                                               FigureCanvas {
-                                                       id: mplView
-                                                       objectName : "canvasPlot"
-                                                       dpi_ratio: Screen.devicePixelRatio
-                                                       anchors.fill: parent
-                                               }
+//                                              FigureCanvas {
+//                                                      id: mplView
+//                                                      objectName : "canvasPlot"
+//                                                      dpi_ratio: Screen.devicePixelRatio
+//                                                      anchors.fill: parent
+//                                              }
                                         }
 
                                         Rectangle {
@@ -999,8 +1001,4 @@ Window {
 
 
 
-/*##^##
-Designer {
-    D{i:0;formeditorZoom:0.66}
-}
-##^##*/
+

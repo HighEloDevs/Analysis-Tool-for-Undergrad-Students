@@ -149,7 +149,7 @@ if __name__ == "__main__":
     app.setOrganizationName("High Elo Devs")
     app.setOrganizationDomain("https://github.com/leoeiji/Analysis-Tool-for-Undergrad-Students---ATUS")
     app.setApplicationName("Analysis Tool for Undergrad Students")
-    app.setWindowIcon(QtGui.QIcon(os.path.join(os.path.dirname(__file__), "images/main_icon/icon.png")))
+    app.setWindowIcon(QtGui.QIcon(os.path.join(os.path.dirname(__file__), "ATUS Icon 3.png")))
     engine = QtQml.QQmlApplicationEngine()
 
     # Creating bridge
@@ -170,7 +170,7 @@ if __name__ == "__main__":
 
     # Updating canvasPlot with the plot
     win = engine.rootObjects()[0]
-    displayBridge.updateWithCanvas(win.findChild(QtCore.QObject, "canvasPlot"))
+    # displayBridge.updateWithCanvas(win.findChild(QtCore.QObject, "canvasPlot"))
     
     # Stopping program if PySide fails loading the file
     if not engine.rootObjects():

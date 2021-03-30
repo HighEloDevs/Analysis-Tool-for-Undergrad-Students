@@ -1,5 +1,6 @@
-import QtQuick 2.0
+import QtQuick 2.15
 import QtQuick.Controls 2.15
+import QtGraphicalEffects 1.15
 import "../colors.js" as Colors
 
 Item {
@@ -8,18 +9,38 @@ Item {
         color: Colors.color3
         anchors.fill: parent
 
-        Label {
-            id: label
-            x: 292
-            y: 234
+        Image {
+            id: image
+            anchors.fill: parent
+            source: "../../images/ATUS_Docs/ATUS Logos Cinzas/ATUS Logo Cinza 2 Tagline.svg"
+            anchors.rightMargin: 20
+            anchors.leftMargin: 20
+            anchors.bottomMargin: 20
+            anchors.topMargin: 20
+            autoTransform: true
+            mipmap: true
+            asynchronous: true
+            smooth: true
+            mirror: false
+            fillMode: Image.PreserveAspectFit
+        }
+
+        ColorOverlay{
+            anchors.fill: image
+            source: image
+            cached: true
             color: "#ffffff"
-            text: qsTr("Analysis Tool for Undergrad Students | ATUS")
             anchors.verticalCenter: parent.verticalCenter
-            horizontalAlignment: Text.AlignHCenter
-            verticalAlignment: Text.AlignVCenter
-            font.pointSize: 20
-            anchors.horizontalCenter: parent.horizontalCenter
+            antialiasing: true
+            width: image.width
+            height: image.heigth
         }
     }
 
 }
+
+/*##^##
+Designer {
+    D{i:0;autoSize:true;formeditorZoom:1.1;height:480;width:640}
+}
+##^##*/

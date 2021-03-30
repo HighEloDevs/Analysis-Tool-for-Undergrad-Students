@@ -15,14 +15,14 @@ Item{
     signal clicked(int row, variant rowData)
 
     // Private
-    width: 500
-    height: 200
+    width: 300
+    height: 700
 
     // Header
     Rectangle{
         id: header
         width: parent.width
-        height: 0.04*parent.height
+        height: 30
         color: Colors.color1
         radius: 0.03 * root.width
 
@@ -51,7 +51,7 @@ Item{
                     text: modelData.text
                     anchors.verticalCenter: parent.verticalCenter
                     anchors.horizontalCenter: parent.horizontalCenter
-                    font.pixelSize: 0.03 * root.width
+                    font.pixelSize: 15
                     color: 'white'
                 } 
             }
@@ -59,61 +59,78 @@ Item{
     }
 
     // Data
-    ScrollView{
+    Rectangle{
+        id: rectangle
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.top: header.bottom
         anchors.bottom: parent.bottom
         anchors.topMargin: 0
-        ScrollBar.horizontal.policy: ScrollBar.AsNeeded
-        ScrollBar.vertical.policy: ScrollBar.AsNeeded
+        anchors.bottomMargin: 20
+        color: Colors.color1
 
-        ListView{
-            id: data
-            anchors{fill: parent}
-            interactive: contentHeight > height
-            clip: true
+        Rectangle{
+            width: parent.width
+            height: 0.5 * parent.height
+            color: parent.color
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: -20
+            radius: 0.03 * root.width
+        }
 
-            model: dataModel
+        ScrollView{
+            id: dataTable
+            anchors.fill: parent
 
-            delegate: Item{
-                width: root.width
-                height: header.height
+            ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+            ScrollBar.vertical.policy: ScrollBar.AsNeeded
 
-                opacity: !mouseArea.pressed? 1:0.3
+            ListView{
+                anchors{fill: parent}
+                interactive: contentHeight > height
+                clip: true
 
-                // Some variants
-                property int row: index
-                property variant rowData: modelData
+                model: dataModel
 
-                Row{
-                    anchors.fill: parent
+                delegate: Item{
+                    width: root.width
+                    height: header.height
 
-                    Repeater{
-                        model: rowData
+                    opacity: !mouseArea.pressed? 1:0.3
 
-                        delegate: Item{
-                            width: headerModel[index].width * root.width
-                            height: header.height
+                    // Some variants
+                    property int row: index
+                    property variant rowData: modelData
 
-                            Text{
-                                x: root.width
-                                text: modelData
-                                anchors.verticalCenter: parent.verticalCenter
-                                anchors.horizontalCenter: parent.horizontalCenter
-                                font.pixelSize: 0.025 * root.width
+                    Row{
+                        anchors.fill: parent
+
+                        Repeater{
+                            model: rowData
+
+                            delegate: Item{
+                                width: headerModel[index].width * root.width
+                                height: header.height
+
+                                Text{
+                                    x: root.width
+                                    text: modelData
+                                    color: 'white'
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    anchors.horizontalCenter: parent.horizontalCenter
+                                    font.pixelSize: 0.50 * parent.height
+                                }
                             }
                         }
                     }
-                }
+                    MouseArea{
+                        id: mouseArea
 
-                MouseArea{
-                    id: mouseArea
+                        anchors.fill: parent
 
-                    anchors.fill: parent
-
-                    onClicked: {
-                        root.clicked(row, rowData)
+                        onClicked: {
+                            root.clicked(row, rowData)
+                        }
                     }
                 }
             }
@@ -121,8 +138,10 @@ Item{
     }
 }
 
+
+
 /*##^##
 Designer {
-    D{i:0;formeditorZoom:1.25}
+    D{i:0;formeditorZoom:1.33}
 }
 ##^##*/

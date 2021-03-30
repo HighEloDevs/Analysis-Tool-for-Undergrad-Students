@@ -72,32 +72,19 @@ Item {
 
     Table{
         id: table
-        width: 500
-        height: 500
+        width: 300
+        height: parent.height/3
 
         headerModel: [
-            {text: 'TESTE 1', width: 0.25},
-            {text: 'TESTE 2', width: 0.25},
-            {text: 'TESTE 3', width: 0.25},
-            {text: 'TESTE 4', width: 0.25},
-        ]
-
-        dataModel: [
-            [1, 1, 1, 1],
-            [1, 1, 1, 1],
-            [1, 1, 1, 1],
-            [1, 1, 1, 1],
-            [1, 1, 1, 1],
-            [1, 1, 1, 1],
-            [1, 1, 1, 1],
-            [1, 1, 1, 1],
-            [1, 1, 1, 1],
-            [1, 1, 1, 1],
-            [1, 1, 1, 1],
+            {text: '<b>X</b>', width: 0.25},
+            {text: '<b>Y</b>', width: 0.25},
+            {text: '<b>Sigma Y</b>', width: 0.25},
+            {text: '<b>Sigma X</b>', width: 0.25},
         ]
 
         onClicked: {
-            print(row, rowData)
+            print(row)
+            print(dataModel)
             dataModel.push([2, 2, 2, 2])
         }
     }
