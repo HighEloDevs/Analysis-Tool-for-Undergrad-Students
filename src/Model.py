@@ -271,7 +271,15 @@ class Model(QtCore.QObject):
         self.report_fit += "\nAjuste: y = %s\n"%self.exp_model
         self.report_fit += "\nNGL  = %d"%(len(self.data["x"]) - len(self.coef))
         self.report_fit += "\nChi² = %f"%self.result.chisqr
-        self.report_fit += "\nMatriz de covariância:\n" + str(self.result.covar) + "\n\n"
+        self.report_fit += "\nMatriz de covariância:\n\n" + str(self.result.covar) + "\n"
+        lista           =list(self.params.keys())
+        matriz_corr     = np.zeros((len(self.result.covar), len(self.result.covar)))
+        z = len(matriz_corr)
+        for i in range(z):
+            for j in range(z):
+                matriz_corr[i, j] = self.result.covar[i, j]/(self.dict[lista[i]][1]*self.dict[lista[j]][1])
+        matriz_corr = matriz_corr.round(3)
+        self.report_fit += "\nMatriz de correlação:\n\n" + str(matriz_corr) + "\n\n"
         self.isvalid     = True
 
     def __set_report_ODR(self):
@@ -279,7 +287,15 @@ class Model(QtCore.QObject):
         self.report_fit += "\nAjuste: y = %s\n"%self.exp_model
         self.report_fit += "\nNGL  = %d"%(len(self.data["x"]) - len(self.coef))
         self.report_fit += "\nChi² = %f"%self.result.sum_square
-        self.report_fit += "\nMatriz de covariância:\n" + str(self.result.cov_beta) + "\n\n"
+        self.report_fit += "\nMatriz de covariância:\n\n" + str(self.result.cov_beta) + "\n"
+        lista           =list(self.params.keys())
+        matriz_corr     = np.zeros((len(self.result.cov_beta), len(self.result.cov_beta)))
+        z = len(matriz_corr)
+        for i in range(z):
+            for j in range(z):
+                matriz_corr[i, j] = self.result.cov_beta[i, j]/(self.dict[lista[i]][1]*self.dict[lista[j]][1])
+        matriz_corr = matriz_corr.round(3)
+        self.report_fit += "\nMatriz de correlação:\n\n" + str(matriz_corr) + "\n\n"
         self.isvalid     = True
         
     def get_coefficients(self):
