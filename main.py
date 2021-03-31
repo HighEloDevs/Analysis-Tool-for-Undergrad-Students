@@ -15,23 +15,16 @@ from PySide2.QtCore import Qt, Slot, Signal
 from matplotlib_backend_qtquick.backend_qtquickagg import FigureCanvasQtQuickAgg
 from src.MatPlotLib import DisplayBridge
 from src.Model import Model
-from src.Calculators import CalculatorCanvas, interpreter_calculator
+from src.Calculators import CalculatorCanvas, interpreter_calculator, Plot
 from src.ProjectManager import ProjectManager
 
 # Instantiating the display bridge || Global variable, fuck the world
 displayBridge = DisplayBridge()
-calculatorCanvas = CalculatorCanvas()
 
 # Instantiating the fit class
 model = Model() 
 
 class Bridge(QtCore.QObject):
-    # Signal fillDataTable
-    # fillDataTable = Signal(str, str, str, str, str, arguments=['x', 'y', 'sy', 'sx', 'filename'])
-
-    # Signal fillParamsTable
-    # fillParamsTable = Signal(str, str, str, arguments=['param', 'value', 'uncertainty'])
-
     # Signal to Properties page
     signalPropPage = Signal()
 
@@ -43,22 +36,6 @@ class Bridge(QtCore.QObject):
     def loadData(self, file_path):
         """Gets the path to data's file and fills the data's table"""
         model.load_data(QtCore.QUrl(file_path).toLocalFile())
-        # x, y, sy, sx = model.get_data()        
-
-        # Getting file's name
-        # fileName = QtCore.QUrl(file_path).toLocalFile().split('/')[-1]
-        # if model.has_sx and model.has_sy:
-        #     for i in range(len(x)):
-        #         self.fillDataTable.emit("{:.2g}".format(x[i]), "{:.2g}".format(y[i]), "{:.2g}".format(sy[i]), "{:.2g}".format(sx[i]), fileName)
-        # elif model.has_sx:
-        #     for i in range(len(x)):
-        #         self.fillDataTable.e it("{:.2g}".format(x[i]), "{:.2g}".format(y[i]), "", "{:.2g}".format(sx[i]), fileName)
-        # elif model.has_sy:
-        #     for i in range(len(x)):
-        #         self.fillDataTable.emit("{:.2g}".format(x[i]), "{:.2g}".format(y[i]), "{:.2g}".format(sy[i]), "", fileName)
-        # else:
-        #     for i in range(len(x)):
-        #         self.fillDataTable.emit("{:.2g}".format(x[i]), "{:.2g}".format(y[i]), "", "", fileName)
 
     @Slot(str, str, str, int, int, int, int, str, int, str, str, int, str, int)
     def loadOptions(self, title, xaxis, yaxis, residuals, grid, log_x, log_y, symbol_color, symbol_size, symbol, curve_color, curve_thickness, curve_style, legend):
@@ -88,16 +65,6 @@ class Bridge(QtCore.QObject):
 
         # Making plot
         displayBridge.Plot(model, residuals, grid)
-
-        # Filling paramsTable
-        # params = model.get_params()
-        # keys = list(params.keys())
-            
-        # for i in range(len(keys)):
-        #     self.fillParamsTable.emit(keys[i], "{:.8g}".format(params[keys[i]][0]), "{:.8g}".format(params[keys[i]][1]))
-
-        # Writing infos
-        # self.writeInfos.emit(model.report_fit)
     
     @Slot(str, str, int, int)
     def loadExpression(self, expression, p0, wsx, wsy):
@@ -114,6 +81,7 @@ class Bridge(QtCore.QObject):
             for i in p0.split(','):
                 p0_tmp.append(float(i))
             model.set_p0(p0_tmp)
+            print(p0_tmp)
 
         # Anti-dummies system 2
         expression = expression.replace('^', '**')
@@ -168,20 +136,20 @@ class Bridge(QtCore.QObject):
             pass
 
         s, x, y, x_area, y_area = interpreter_calculator(functionDict[function], methodDict[opt1], nc, ngl, mean, std)
-        calculatorCanvas.Plot(x, y, x_area, y_area)
+        Plot(displayBridge, x, y, x_area, y_area)
         self.writeCalculator.emit(s)
 
 if __name__ == "__main__":
     # Matplotlib stuff
     QtQml.qmlRegisterType(FigureCanvasQtQuickAgg, "Canvas", 1, 0, "FigureCanvas")
-    # QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
+    QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
 
     # Setting up app
     app = QtGui.QGuiApplication(sys.argv)
     app.setOrganizationName("High Elo Devs")
     app.setOrganizationDomain("https://github.com/leoeiji/Analysis-Tool-for-Undergrad-Students---ATUS")
     app.setApplicationName("Analysis Tool for Undergrad Students")
-    app.setWindowIcon(QtGui.QIcon(os.path.join(os.path.dirname(__file__), "images/main_icon/Análise.png")))
+    app.setWindowIcon(QtGui.QIcon(os.path.join(os.path.dirname(__file__), "ATUS Icon 3.png")))
     engine = QtQml.QQmlApplicationEngine()
 
     # Creating bridge
@@ -203,7 +171,6 @@ if __name__ == "__main__":
     # Updating canvasPlot with the plot
     win = engine.rootObjects()[0]
     displayBridge.updateWithCanvas(win.findChild(QtCore.QObject, "canvasPlot"))
-    calculatorCanvas.updateWithCanvas(win.findChild(QtCore.QObject, "canvasCalculadora"))
     
     # Stopping program if PySide fails loading the file
     if not engine.rootObjects():

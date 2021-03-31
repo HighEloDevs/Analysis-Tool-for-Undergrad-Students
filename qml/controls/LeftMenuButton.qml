@@ -1,19 +1,17 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtGraphicalEffects 1.15
+import "../colors.js" as Colors
 
 Button{
     id: btnLeftMenu
     text: qsTr("Left Menu Text")
 
     // CUSTOM PROPERTIES
-    property url btnIconSource: "../../images/svg_images/home_icon.svg"
-    property color btnColorDefault: "#1c1d20"
-    property color btnColorMouseOver: "#23272E"
-    property color btnColorClicked: "#00a1f1"
-    property int iconWidth: 18
-    property int iconHeight: 18
-    property color activeMenuColor: "#55aaff"
+    property url btnIconSource: "../../images/icons/home-36px.svg"
+    property int iconWidth: 24
+    property int iconHeight: 24
+    property color activeMenuColor: Colors.mainColor2
     property color activeMenuColorRight: "#2c313c"
     property bool isActiveMenu: false
 
@@ -22,9 +20,9 @@ Button{
 
         // MOUSE OVER AND CLICK CHANGE COLOR
         property var dynamicColor: if(btnLeftMenu.down){
-                                       btnLeftMenu.down ? btnColorClicked : btnColorDefault
+                                       btnLeftMenu.down ? Colors.c_button_active : Colors.c_button_sideBar
                                    } else {
-                                       btnLeftMenu.hovered ? btnColorMouseOver : btnColorDefault
+                                       btnLeftMenu.hovered ? Colors.c_button_hover : Colors.c_button_sideBar
                                    }
 
     }
@@ -66,7 +64,7 @@ Button{
         Image {
             id: iconBtn
             source: btnIconSource
-            anchors.leftMargin: 26
+            anchors.leftMargin: 23
             anchors.verticalCenter: parent.verticalCenter
             anchors.left: parent.left
             sourceSize.width: iconWidth

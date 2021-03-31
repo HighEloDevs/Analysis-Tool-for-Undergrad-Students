@@ -7,13 +7,10 @@ import QtQuick.Dialogs 1.3
 
 import "../widgets"
 import "../controls"
-
-import Canvas 1.0
-
+import "../colors.js" as Colors
 
 Item {
-    property alias backBtnWidth: backBtn.width
-    width: 1408
+    width: 704
     height: 693
     QtObject{
         id: internal
@@ -33,22 +30,23 @@ Item {
 
     Rectangle {
         id: bg
-        color: "#40464c"
+        color: Colors.color3
         anchors.fill: parent
 
         RowLayout {
             id: bg_layout
             anchors.fill: parent
-            anchors.rightMargin: 10
-            anchors.leftMargin: 10
-            anchors.bottomMargin: 10
-            anchors.topMargin: 10
+            anchors.rightMargin: 0
+            anchors.leftMargin: 0
+            anchors.bottomMargin: 0
+            anchors.topMargin: 0
             spacing: 10
 
             Rectangle {
                 id: leftPanel
                 width: 298
-                color: "#565e66"
+                color: Colors.c_section
+                Layout.fillWidth: true
                 Layout.fillHeight: true
 
                 ColumnLayout {
@@ -96,9 +94,9 @@ Item {
                             QtObject {
                                 id: func1
                                 property var dynamicColor: if(btnNew.down){
-                                                               btnNew.down ? "#00a1f1" : "#34334a"
+                                                               btnNew.down ? Colors.c_button_active : Colors.c_button
                                                            } else {
-                                                               btnNew.hovered ? "#23272E" : "#34334a"
+                                                               btnNew.hovered ? Colors.c_button_hover : Colors.c_button
                                                            }
                             }
                             background: Rectangle {
@@ -146,9 +144,9 @@ Item {
                             QtObject {
                                 id: func2
                                 property var dynamicColor: if(btnLoadProject.down){
-                                                               btnLoadProject.down ? "#00a1f1" : "#34334a"
+                                                               btnLoadProject.down ? Colors.c_button_active : Colors.c_button
                                                            } else {
-                                                               btnLoadProject.hovered ? "#23272E" : "#34334a"
+                                                               btnLoadProject.hovered ? Colors.c_button_hover : Colors.c_button
                                                            }
                             }
 
@@ -187,9 +185,9 @@ Item {
                             QtObject {
                                 id: func3
                                 property var dynamicColor: if(btnSave.down){
-                                                               btnSave.down ? "#00a1f1" : "#34334a"
+                                                               btnSave.down ? Colors.c_button_active : Colors.c_button
                                                            } else {
-                                                               btnSave.hovered ? "#23272E" : "#34334a"
+                                                               btnSave.hovered ? Colors.c_button_hover : Colors.c_button
                                                            }
                             }
                             background: Rectangle {
@@ -239,9 +237,9 @@ Item {
                             QtObject {
                                 id: func4
                                 property var dynamicColor: if(btnSaveAs.down){
-                                                               btnSaveAs.down ? "#00a1f1" : "#34334a"
+                                                               btnSaveAs.down ? Colors.c_button_active : Colors.c_button
                                                            } else {
-                                                               btnSaveAs.hovered ? "#23272E" : "#34334a"
+                                                               btnSaveAs.hovered ? Colors.c_button_hover : Colors.c_button
                                                            }
                             }
                             background: Rectangle {
@@ -276,7 +274,7 @@ Item {
 
                             background: Rectangle{
                                 radius: 5
-                                border.color: nomeProjeto.focus ? '#55aaff':'#00000000'
+                                border.color: nomeProjeto.focus ? Colors.mainColor2:'#00000000'
                                 border.width: 2
                             }
                         }
@@ -317,9 +315,9 @@ Item {
                             QtObject{
                                 id: func
                                 property var dynamicColor: if(btnUpload.down){
-                                                               btnUpload.down ? "#00a1f1" : "#34334a"
+                                                               btnUpload.down ? Colors.c_button_active : Colors.c_button
                                                            } else {
-                                                               btnUpload.hovered ? "#23272E" : "#34334a"
+                                                               btnUpload.hovered ? Colors.c_button_hover : Colors.c_button
                                                            }
 
                             }
@@ -422,7 +420,7 @@ Item {
                     id: rectangle3
                     y: 648
                     height: 20
-                    color: "#34334a"
+                    color: Colors.color2
                     anchors.left: parent.left
                     anchors.right: parent.right
                     anchors.bottom: parent.bottom
@@ -437,174 +435,7 @@ Item {
             Tabs{
                 id: middleTabs
                 Layout.fillHeight: true
-                Layout.fillWidth: false
-            }
-
-            Rectangle {
-                id: rightPanel
-                color: "#565e66"
-                Layout.fillHeight: true
                 Layout.fillWidth: true
-
-                ColumnLayout {
-                    id: rightPanel_layout
-                    anchors.fill: parent
-                    spacing: 0
-
-                    Rectangle {
-                        id: toolBar
-                        height: 60
-                        color: "#34334a"
-                        Layout.fillWidth: true
-
-                        TabButton{
-                            id: backBtn
-                            y: 0
-                            width: toolBar.width/6
-                            text: "Voltar"
-                            anchors.left: homeBtn.right
-                            btnColorDefault: "#34334a"
-                            anchors.leftMargin: 0
-
-                            onClicked: {
-                                displayBridge.back();
-                            }
-
-                        }
-
-                        TabButton{
-                            id: homeBtn
-                            y: 0
-                            width: toolBar.width/6
-                            text: "Resetar"
-                            anchors.verticalCenter: parent.verticalCenter
-                            anchors.left: parent.left
-                            btnColorDefault: "#34334a"
-                            anchors.leftMargin: 0
-
-                            onClicked: {
-                                displayBridge.home();
-                            }
-
-                        }
-
-                        TabButton {
-                            id: fowardBtn
-                            y: 0
-                            width: toolBar.width/6
-                            text: "Avançar"
-                            anchors.left: backBtn.right
-                            btnColorDefault: "#34334a"
-                            anchors.leftMargin: 0
-
-                            onClicked: {
-                                displayBridge.forward();
-                            }
-                        }
-
-                        TabButton {
-                            id: panBtn
-                            y: 0
-                            width: toolBar.width/6
-                            text: "Mover"
-                            anchors.left: fowardBtn.right
-                            btnColorDefault: "#34334a"
-                            anchors.leftMargin: 0
-                            checkable: true
-                            isActiveMenu: false
-
-                            onClicked: {
-                                if (zoomBtn.checked) {
-                                    zoomBtn.checked = false;
-                                    zoomBtn.isActiveMenu = false;
-                                }
-                                displayBridge.pan();
-                                panBtn.isActiveMenu = true;
-                            }
-
-                        }
-
-                        TabButton {
-                            id: zoomBtn
-                            y: 0
-                            width: toolBar.width/6
-                            text: "Zoom"
-                            anchors.left: panBtn.right
-                            btnColorDefault: "#34334a"
-                            anchors.leftMargin: 0
-                            checkable: true
-                            isActiveMenu: false
-
-                            onClicked: {
-                                if (panBtn.checked) {
-                                    // toggle pan off
-                                    panBtn.checked = false;
-                                    panBtn.isActiveMenu = false;
-                                }
-                                zoomBtn.isActiveMenu = true;
-                                displayBridge.zoom();
-                            }
-                        }
-
-                        TabButton {
-                            id: saveBtn
-                            y: 0
-                            width: toolBar.width/6
-                            text: "Salvar"
-                            anchors.left: zoomBtn.right
-                            btnColorDefault: "#34334a"
-                            anchors.leftMargin: 0
-                            checkable: true
-                            isActiveMenu: false
-
-                            onClicked:{
-                                fileSaver.open()
-                            }
-
-                            FileDialog{
-                                id: fileSaver
-                                title: "Escolha um local para salvar a figura"
-                                folder: shortcuts.desktop
-                                selectExisting: false
-                                nameFilters: ["Arquivos de imagem (*.png)"]
-                                onAccepted: {
-                                    backend.savePlot(fileSaver.fileUrl)
-                                }
-                            }
-                        }
-                    }
-
-                    Rectangle {
-                        id: bg_canvas
-                        Layout.fillHeight: true
-                        Layout.fillWidth: true
-
-                           FigureCanvas {
-                                 id: mplView
-                                 objectName : "canvasPlot"
-                                 dpi_ratio: Screen.devicePixelRatio
-                                 anchors.fill: parent
-                           }
-                    }
-
-                    Rectangle {
-                        id: footer
-                        height: 20
-                        color: "#34334a"
-                        Layout.fillWidth: true
-
-                        TextInput {
-                            id: location
-                            readOnly: true
-                            text: displayBridge.coordinates
-                            anchors.verticalCenter: parent.verticalCenter
-                            anchors.left: parent.left
-                            anchors.leftMargin: 10
-                            color: "#ffffff"
-                        }
-                    }
-                }
-
             }
         }
     }
@@ -649,9 +480,8 @@ Item {
 
 }
 
-
 /*##^##
 Designer {
-    D{i:0;formeditorZoom:1.1}
+    D{i:0;formeditorZoom:0.9}
 }
 ##^##*/

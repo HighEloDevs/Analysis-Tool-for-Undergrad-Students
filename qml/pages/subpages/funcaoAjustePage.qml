@@ -2,6 +2,7 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 import Qt.labs.qmlmodels 1.0
 import QtQuick.Layouts 1.11
+import "../../colors.js" as Colors
 
 Item {
     width: 366
@@ -25,18 +26,22 @@ Item {
 
     Rectangle {
         id: bg
-        color: "#565e66"
+        color: Colors.c_section
         anchors.fill: parent
 
-        ColumnLayout {
-            id: columnLayout
+        GridLayout {
+            id: bgLayout
             anchors.fill: parent
-            spacing: 0
+            columnSpacing: 0
+            rowSpacing: 0
+            rows: 6
+            columns: 4
 
             Rectangle {
                 id: rectangle1
                 height: 45
                 color: "#00000000"
+                Layout.columnSpan: 4
                 Layout.fillWidth: true
 
                 Label {
@@ -69,7 +74,7 @@ Item {
 
                     background: Rectangle{
                         radius: 5
-                        border.color: expression.focus ? '#55aaff':'#00000000'
+                        border.color: expression.focus ? Colors.mainColor2:'#00000000'
                         border.width: 2
                     }
                 }
@@ -79,6 +84,7 @@ Item {
                 id: rectangle
                 height: 45
                 color: "#00000000"
+                Layout.columnSpan: 4
                 Layout.fillWidth: true
 
                 Label {
@@ -111,7 +117,7 @@ Item {
 
                     background: Rectangle{
                         radius: 5
-                        border.color: p0.focus ? '#55aaff':'#00000000'
+                        border.color: p0.focus ? Colors.mainColor2:'#00000000'
                         border.width: 2
                     }
 
@@ -124,6 +130,9 @@ Item {
                 id: rowLayout
                 width: 100
                 height: 45
+                Layout.columnSpan: 4
+                Layout.fillWidth: true
+                Layout.rowSpan: 1
 
                 Label {
                     id: label7
@@ -156,6 +165,7 @@ Item {
             Frame {
                 id: frame
                 height: 130
+                Layout.columnSpan: 4
                 Layout.preferredHeight: 35
                 Layout.rightMargin: 10
                 Layout.leftMargin: 10
@@ -171,7 +181,6 @@ Item {
                 TableView {
                     id: tableParams
                     anchors.fill: parent
-                    anchors.rightMargin: 5
                     interactive: true
                     columnSpacing: 1
                     rowSpacing: 0.8
@@ -222,6 +231,7 @@ Item {
 
             GroupBox {
                 id: groupBox_params
+                Layout.columnSpan: 4
                 Layout.preferredHeight: 50
                 Layout.topMargin: 10
                 Layout.rightMargin: 10
@@ -256,6 +266,7 @@ Item {
                         id: infos
                         color: "#ffffff"
                         text: ""
+                        anchors.fill: parent
                         font.pointSize: 10
                         readOnly: true
                         selectByMouse: true
@@ -266,6 +277,7 @@ Item {
             Button {
                 id: btnPlot
                 text: qsTr("Plot")
+                Layout.columnSpan: 4
                 Layout.preferredHeight: 25
                 Layout.bottomMargin: 10
                 Layout.topMargin: 10
@@ -283,9 +295,9 @@ Item {
                 QtObject{
                     id: internal
                     property var dynamicColor: if(btnPlot.down){
-                                                   btnPlot.down ? "#00a1f1" : "#34334a"
+                                                   btnPlot.down ? Colors.c_button_active : Colors.c_button
                                                } else {
-                                                   btnPlot.hovered ? "#23272E" : "#34334a"
+                                                   btnPlot.hovered ? Colors.c_button_hover : Colors.c_button
                                                }
 
                 }
@@ -308,21 +320,7 @@ Item {
                     }
                 }
             }
-
-
-
         }
-    }
-
-    Connections{
-        target: backend
-        // function onFillParamsTable(param, value, uncertainty){
-        //     tableParamsModel.appendRow({"Parâmetros" : param, "Valor": value, "Incerteza" : uncertainty})
-        // }
-
-        // function onWriteInfos(expr){
-        //     infos.text = expr
-        // }
     }
 
     Connections{
@@ -360,12 +358,13 @@ Item {
         }
     }
 
+
 }
 
 
 
 /*##^##
 Designer {
-    D{i:0;height:720;width:600}
+    D{i:0;height:720;width:600}D{i:3}
 }
 ##^##*/

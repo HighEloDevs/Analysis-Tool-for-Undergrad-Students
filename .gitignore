@@ -75,3 +75,6 @@ Thumbs.db
 .pytest_cache
 .vscode
 
+*.json
+
+build

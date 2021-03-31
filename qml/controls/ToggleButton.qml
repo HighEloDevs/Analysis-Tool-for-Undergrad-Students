@@ -1,6 +1,7 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtGraphicalEffects 1.15
+import "../colors.js" as Colors
 
 Button{
     id: btnToggle
@@ -9,17 +10,14 @@ Button{
     implicitHeight: 60
 
     property url btnIconSource: "../../images/svg_images/menu_icon.svg"
-    property color btnColorDefault: "#1c1d20"
-    property color btnColorMouseOver: "#23273E"
-    property color btnColorClicked: "#00a1f1"
 
     QtObject{
         id: internal
 
         property var dynamicColor: if(btnToggle.down){
-                                       btnToggle.down ? btnColorClicked : btnColorDefault
+                                       btnToggle.down ? Colors.c_button_active : Colors.c_button_sideBar
                                    } else {
-                                       btnToggle.hovered ? btnColorMouseOver : btnColorDefault
+                                       btnToggle.hovered ? Colors.c_button_hover : Colors.c_button_sideBar
                                    }
     }
 
