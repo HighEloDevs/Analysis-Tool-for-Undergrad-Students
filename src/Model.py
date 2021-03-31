@@ -17,6 +17,7 @@ from copy import deepcopy
 from lmfit.models import ExpressionModel
 from lmfit import Parameters
 from scipy.odr import ODR, Model as SciPyModel, Data, RealData
+from copy import deepcopy
 
 class Model(QtCore.QObject):
     """Class used for fit
@@ -29,6 +30,7 @@ class Model(QtCore.QObject):
     def __init__(self):
         super().__init__()
         self.data       = None
+        self.data_json  = None
         self.eixos      = [["Eixo x"], ["Eixo y"], ["Título"]]
         self.exp_model  = ""
         self.model      = None
@@ -59,14 +61,21 @@ class Model(QtCore.QObject):
 
         # Naming columns
         if self.mode == 0:
-            df["sy"] = [1]*len(df[0])
-            df["sx"] = [1]*len(df[0])
-            self.has_sy = False
-            self.has_sx = False
+            self.data_json        = deepcopy(df)
+            self.data_json.colums = ['x', 'y']
+            df["sy"]              = [1]*len(df[0])
+            df["sx"]              = [1]*len(df[0])
+            self.has_sy           = False
+            self.has_sx           = False
         elif self.mode == 1:
-            df["sx"] = [1]*len(df[0])
-            self.has_sx = False
-        df.columns= ['x', 'y', 'sy', 'sx']
+            self.data_json        = deepcopy(df)
+            self.data_json.colums = ['x', 'y', 'sy']
+            df["sx"]              = [1]*len(df[0])
+            self.has_sx           = False
+        else:
+            self.data_json         = deepcopy(df)
+            self.data_json.columns = ['x', 'y', 'sy', 'sx']
+        df.columns    = ['x', 'y', 'sy', 'sx']
         self.data     = deepcopy(df)
         self.has_data = True
 
@@ -93,20 +102,43 @@ class Model(QtCore.QObject):
         self.has_sx     = True
         self.has_sy     = True
 
-        x, y, sy, sx = df['x'], df['y'], df['sy'], df['sx']
+        # Naming columns
+        if self.mode == 0:
+            self.data_json        = deepcopy(df)
+            self.data_json.colums = ['x', 'y']
+            df["sy"]              = [1]*len(df[0])
+            df["sx"]              = [1]*len(df[0])
+            self.has_sy           = False
+            self.has_sx           = False
+        elif self.mode == 1:
+            self.data_json        = deepcopy(df)
+            self.data_json.colums = ['x', 'y', 'sy']
+            df["sx"]              = [1]*len(df[0])
+            self.has_sx           = False
+        else:
+            self.data_json         = deepcopy(df)
+            self.data_json.columns = ['x', 'y', 'sy', 'sx']
+        df.columns    = ['x', 'y', 'sy', 'sx']
+        self.data     = deepcopy(df)
+        self.has_data = True
+
+        # x, y, sy, sx = df['x'], df['y'], df['sy'], df['sx']
+
         fileName = 'Dados Carregados do Projeto'
 
         # Naming columns
-        if self.mode == 0:
-            df["sy"] = [1]*len(df[0])
-            df["sx"] = [1]*len(df[0])
-            self.has_sy = False
-            self.has_sx = False
-        elif self.mode == 1:
-            df["sx"] = [1]*len(df[0])
-            self.has_sx = False
+        # if self.mode == 0:
+        #     df["sy"] = [1]*len(df[0])
+        #     df["sx"] = [1]*len(df[0])
+        #     self.has_sy = False
+        #     self.has_sx = False
+        # elif self.mode == 1:
+        #     df["sx"] = [1]*len(df[0])
+        #     self.has_sx = False
 
-        self.has_data = True
+        # self.has_data = True
+
+        x, y, sy, sx = self.get_data() 
 
         if self.has_sx and self.has_sy:
             for i in range(len(x)):
