@@ -60,6 +60,7 @@ class Bridge(QtCore.QObject):
         # Setting style of the plot
         model.set_title(title)
         model.set_x_axis(xaxis)
+        
         model.set_y_axis(yaxis)
         displayBridge.setStyle(log_x, log_y, symbol_color, symbol_size, symbols[symbol], curve_color, curve_thickness, curveStyles[curve_style], legend, model.exp_model.replace('**', '^'))
 

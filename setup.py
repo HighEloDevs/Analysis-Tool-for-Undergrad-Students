@@ -3,7 +3,7 @@ import os
 from cx_Freeze import setup, Executable
 
 # ADD FILES
-files = ['icon.ico','images/', 'qml/', 'src/']
+files = ['ATUS Icon 3.svg','ATUS Icon 3.png', 'icon.ico', 'ATUS Logo Preto.svg', 'images/', 'qml/', 'src/']
 
 # TARGET
 target = Executable(
