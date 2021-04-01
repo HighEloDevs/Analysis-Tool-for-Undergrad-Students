@@ -23,13 +23,13 @@ def calc_chi2_lim_sup(ngl, nc):
     return chi2.ppf(nc, ngl)
 
 def calc_gauss_sim(media, dp, nc):
-    return array([norm.ppf(0.5 - nc/2)*dp + media, norm.ppf(0.5 + nc/2)*dp + media])
+    return array([norm.ppf(0.5 - nc/2), norm.ppf(0.5 + nc/2)])
 
 def calc_gauss_lim_inf(media, dp, nc):
-    return norm.ppf(1 - nc)*dp + media
+    return norm.ppf(1 - nc)
 
 def calc_gauss_lim_sup(media, dp, nc):
-    return norm.ppf(nc)*dp + media
+    return norm.ppf(nc)
 
 def calc_t_sim(media, dp, ngl, nc):
     return array([t.ppf(0.5 - nc/2, df = ngl)*dp + media, t.ppf(0.5 + nc/2, df = ngl)*dp + media])
@@ -119,30 +119,30 @@ def interpreter_calculator(f, opt, nc, ngl, mean, std):
         # If it's Gaussian
         x_plot = np.linspace(norm.ppf(lim_inf) , norm.ppf(lim_sup), 350)
         y_plot = norm.pdf(x_plot)
-        x_plot = x_plot * std + mean
+        x_plot = (x_plot * std) + mean
 
         if opt == 0:
             result = calc_gauss_sim(mean, std, nc)
-            s      = "Limite inferior = %f \n Limite superior  = %f"%(result[0], result[1])
+            s      = "Limite inferior = %f \n Limite superior  = %f"%(result[0]*std + mean, result[1]*std + mean)
             x_area = np.linspace(result[0], result[1], 350)
-            norm.pdf(x_area)
+            y_area = norm.pdf(x_area)
             x_area = x_area*std + mean
             return s, x_plot, y_plot, x_area, y_area
 
         elif opt == 1:
             result = calc_gauss_lim_inf(mean, std, nc)
-            s      = "Limite inferior = %f \n Limite superior = inf"%result
-            x_area = np.linspace(norm.ppf(lim_inf), result, 350)
+            s      = "Limite inferior = %f \n Limite superior = inf"%(result*std + mean)
+            x_area = np.linspace(result, norm.ppf(lim_sup), 350)
             y_area = norm.pdf(x_area)
             x_area = x_area*std + mean
             return s, x_plot, y_plot, x_area, y_area
 
         result = calc_gauss_lim_sup(mean, std, nc)
-        s      = "Limite inferior = -inf \n Limite superior = %f"%result
-
-        norm.pdf(x_area)
+        s      = "Limite inferior = -inf \n Limite superior = %f"%(result*std + mean)
+        x_area = np.linspace(result, norm.ppf(lim_inf), 350)
+        y_area = norm.pdf(x_area)
         x_area = x_area*std + mean
-        return s, x_plot, y_plot, (-1, result)
+        return s, x_plot, y_plot, x_area, y_area
 
     # If it's Student:    
     x_plot = np.linspace(t.ppf(lim_inf, df = ngl)*std + mean, t.ppf(lim_sup, df = ngl)*std + mean)
