@@ -17,6 +17,7 @@ from copy import deepcopy
 from lmfit.models import ExpressionModel
 from lmfit import Parameters
 from scipy.odr import ODR, Model as SciPyModel, Data, RealData
+from copy import deepcopy
 
 class Model(QtCore.QObject):
     """Class used for fit
@@ -29,6 +30,7 @@ class Model(QtCore.QObject):
     def __init__(self):
         super().__init__()
         self.data       = None
+        self.data_json  = None
         self.eixos      = [["Eixo x"], ["Eixo y"], ["Título"]]
         self.exp_model  = ""
         self.model      = None
@@ -59,14 +61,21 @@ class Model(QtCore.QObject):
 
         # Naming columns
         if self.mode == 0:
-            df["sy"] = [1]*len(df[0])
-            df["sx"] = [1]*len(df[0])
-            self.has_sy = False
-            self.has_sx = False
+            self.data_json        = deepcopy(df)
+            self.data_json.colums = ['x', 'y']
+            df["sy"]              = [1]*len(df[0])
+            df["sx"]              = [1]*len(df[0])
+            self.has_sy           = False
+            self.has_sx           = False
         elif self.mode == 1:
-            df["sx"] = [1]*len(df[0])
-            self.has_sx = False
-        df.columns= ['x', 'y', 'sy', 'sx']
+            self.data_json        = deepcopy(df)
+            self.data_json.colums = ['x', 'y', 'sy']
+            df["sx"]              = [1]*len(df[0])
+            self.has_sx           = False
+        else:
+            self.data_json         = deepcopy(df)
+            self.data_json.columns = ['x', 'y', 'sy', 'sx']
+        df.columns    = ['x', 'y', 'sy', 'sx']
         self.data     = deepcopy(df)
         self.has_data = True
 
@@ -93,20 +102,43 @@ class Model(QtCore.QObject):
         self.has_sx     = True
         self.has_sy     = True
 
-        x, y, sy, sx = df['x'], df['y'], df['sy'], df['sx']
+        # Naming columns
+        if self.mode == 0:
+            self.data_json        = deepcopy(df)
+            self.data_json.colums = ['x', 'y']
+            df["sy"]              = [1]*len(df[0])
+            df["sx"]              = [1]*len(df[0])
+            self.has_sy           = False
+            self.has_sx           = False
+        elif self.mode == 1:
+            self.data_json        = deepcopy(df)
+            self.data_json.colums = ['x', 'y', 'sy']
+            df["sx"]              = [1]*len(df[0])
+            self.has_sx           = False
+        else:
+            self.data_json         = deepcopy(df)
+            self.data_json.columns = ['x', 'y', 'sy', 'sx']
+        df.columns    = ['x', 'y', 'sy', 'sx']
+        self.data     = deepcopy(df)
+        self.has_data = True
+
+        # x, y, sy, sx = df['x'], df['y'], df['sy'], df['sx']
+
         fileName = 'Dados Carregados do Projeto'
 
         # Naming columns
-        if self.mode == 0:
-            df["sy"] = [1]*len(df[0])
-            df["sx"] = [1]*len(df[0])
-            self.has_sy = False
-            self.has_sx = False
-        elif self.mode == 1:
-            df["sx"] = [1]*len(df[0])
-            self.has_sx = False
+        # if self.mode == 0:
+        #     df["sy"] = [1]*len(df[0])
+        #     df["sx"] = [1]*len(df[0])
+        #     self.has_sy = False
+        #     self.has_sx = False
+        # elif self.mode == 1:
+        #     df["sx"] = [1]*len(df[0])
+        #     self.has_sx = False
 
-        self.has_data = True
+        # self.has_data = True
+
+        x, y, sy, sx = self.get_data() 
 
         if self.has_sx and self.has_sy:
             for i in range(len(x)):
@@ -271,7 +303,15 @@ class Model(QtCore.QObject):
         self.report_fit += "\nAjuste: y = %s\n"%self.exp_model
         self.report_fit += "\nNGL  = %d"%(len(self.data["x"]) - len(self.coef))
         self.report_fit += "\nChi² = %f"%self.result.chisqr
-        self.report_fit += "\nMatriz de covariância:\n" + str(self.result.covar) + "\n\n"
+        self.report_fit += "\nMatriz de covariância:\n\n" + str(self.result.covar) + "\n"
+        lista           =list(self.params.keys())
+        matriz_corr     = np.zeros((len(self.result.covar), len(self.result.covar)))
+        z = len(matriz_corr)
+        for i in range(z):
+            for j in range(z):
+                matriz_corr[i, j] = self.result.covar[i, j]/(self.dict[lista[i]][1]*self.dict[lista[j]][1])
+        matriz_corr = matriz_corr.round(3)
+        self.report_fit += "\nMatriz de correlação:\n\n" + str(matriz_corr) + "\n\n"
         self.isvalid     = True
 
     def __set_report_ODR(self):
@@ -279,7 +319,15 @@ class Model(QtCore.QObject):
         self.report_fit += "\nAjuste: y = %s\n"%self.exp_model
         self.report_fit += "\nNGL  = %d"%(len(self.data["x"]) - len(self.coef))
         self.report_fit += "\nChi² = %f"%self.result.sum_square
-        self.report_fit += "\nMatriz de covariância:\n" + str(self.result.cov_beta) + "\n\n"
+        self.report_fit += "\nMatriz de covariância:\n\n" + str(self.result.cov_beta) + "\n"
+        lista           =list(self.params.keys())
+        matriz_corr     = np.zeros((len(self.result.cov_beta), len(self.result.cov_beta)))
+        z = len(matriz_corr)
+        for i in range(z):
+            for j in range(z):
+                matriz_corr[i, j] = self.result.cov_beta[i, j]/(self.dict[lista[i]][1]*self.dict[lista[j]][1])
+        matriz_corr = matriz_corr.round(3)
+        self.report_fit += "\nMatriz de correlação:\n\n" + str(matriz_corr) + "\n\n"
         self.isvalid     = True
         
     def get_coefficients(self):

@@ -66,7 +66,7 @@ class ProjectManager(QtCore.QObject):
     def __importOptions(self):
         '''Import all options from classes'''
         try:
-            data = self.model.data.to_json()
+            data = self.model.data_json.to_json()
         except:
             data = None
 
@@ -170,7 +170,7 @@ class ProjectManager(QtCore.QObject):
         self.path = QtCore.QUrl(path).toLocalFile()
         
         # Loading and setting up options
-        with open(self.path) as file:
+        with open(self.path, encoding='utf-8') as file:
             options = json.load(file)
         
         self.model.set_expression(options['expr'])
