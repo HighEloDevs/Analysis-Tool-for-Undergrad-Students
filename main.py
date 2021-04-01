@@ -18,7 +18,7 @@ from src.Model import Model
 from src.Calculators import CalculatorCanvas, interpreter_calculator, Plot
 from src.ProjectManager import ProjectManager
 
-# Instantiating the display bridge || Global variable, fuck the world
+# Instantiating the display bridge || Global variable
 displayBridge = DisplayBridge()
 
 # Instantiating the fit class

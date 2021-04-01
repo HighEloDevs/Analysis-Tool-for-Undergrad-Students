@@ -62,19 +62,19 @@ class Model(QtCore.QObject):
         # Naming columns
         if self.mode == 0:
             self.data_json        = deepcopy(df)
-            self.data_json.colums = ['x', 'y']
+            # self.data_json.colums = ['x', 'y']
             df["sy"]              = [1]*len(df[0])
             df["sx"]              = [1]*len(df[0])
             self.has_sy           = False
             self.has_sx           = False
         elif self.mode == 1:
             self.data_json        = deepcopy(df)
-            self.data_json.colums = ['x', 'y', 'sy']
+            # self.data_json.colums = ['x', 'y', 'sy']
             df["sx"]              = [1]*len(df[0])
             self.has_sx           = False
         else:
             self.data_json         = deepcopy(df)
-            self.data_json.columns = ['x', 'y', 'sy', 'sx']
+            # self.data_json.columns = ['x', 'y', 'sy', 'sx']
         df.columns    = ['x', 'y', 'sy', 'sx']
         self.data     = deepcopy(df)
         self.has_data = True
@@ -105,19 +105,19 @@ class Model(QtCore.QObject):
         # Naming columns
         if self.mode == 0:
             self.data_json        = deepcopy(df)
-            self.data_json.colums = ['x', 'y']
+            # self.data_json.colums = ['x', 'y']
             df["sy"]              = [1]*len(df[0])
             df["sx"]              = [1]*len(df[0])
             self.has_sy           = False
             self.has_sx           = False
         elif self.mode == 1:
             self.data_json        = deepcopy(df)
-            self.data_json.colums = ['x', 'y', 'sy']
+            # self.data_json.colums = ['x', 'y', 'sy']
             df["sx"]              = [1]*len(df[0])
             self.has_sx           = False
         else:
             self.data_json         = deepcopy(df)
-            self.data_json.columns = ['x', 'y', 'sy', 'sx']
+            # self.data_json.columns = ['x', 'y', 'sy', 'sx']
         df.columns    = ['x', 'y', 'sy', 'sx']
         self.data     = deepcopy(df)
         self.has_data = True
@@ -288,12 +288,15 @@ class Model(QtCore.QObject):
         
     def __set_param_values_lm(self):
         self.dict.clear()
+        self.params = Parameters()
         for i in range(len(self.coef)):
             self.params.add(self.coef[i], self.result.values[self.coef[i]])
             self.dict.update({self.coef[i]: [self.result.values[self.coef[i]], np.sqrt(self.result.covar[i, i])]})       
+        print(self.dict)
 
     def __set_param_values_ODR(self):
         self.dict.clear()
+        self.params = Parameters()
         for i in range(len(self.coef)):
             self.params.add(self.coef[i], self.result.beta[i])
             self.dict.update({self.coef[i]: [self.result.beta[i], np.sqrt(self.result.cov_beta[i, i])]})
@@ -304,7 +307,7 @@ class Model(QtCore.QObject):
         self.report_fit += "\nNGL  = %d"%(len(self.data["x"]) - len(self.coef))
         self.report_fit += "\nChi² = %f"%self.result.chisqr
         self.report_fit += "\nMatriz de covariância:\n\n" + str(self.result.covar) + "\n"
-        lista           =list(self.params.keys())
+        lista           = list(self.params.keys())
         matriz_corr     = np.zeros((len(self.result.covar), len(self.result.covar)))
         z = len(matriz_corr)
         for i in range(z):
