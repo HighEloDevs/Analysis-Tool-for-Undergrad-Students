@@ -291,8 +291,7 @@ class Model(QtCore.QObject):
         self.params = Parameters()
         for i in range(len(self.coef)):
             self.params.add(self.coef[i], self.result.values[self.coef[i]])
-            self.dict.update({self.coef[i]: [self.result.values[self.coef[i]], np.sqrt(self.result.covar[i, i])]})       
-        print(self.dict)
+            self.dict.update({self.coef[i]: [self.result.values[self.coef[i]], np.sqrt(self.result.covar[i, i])]})
 
     def __set_param_values_ODR(self):
         self.dict.clear()
