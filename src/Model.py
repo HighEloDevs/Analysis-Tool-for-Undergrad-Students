@@ -48,6 +48,14 @@ class Model(QtCore.QObject):
         
     def __str__(self):
         return self.report_fit
+
+    @Slot(QtCore.QJsonArray)
+    def getData(self, data):
+        """Getting data from table"""
+        df = pd.DataFrame.from_records(data.toVariantList())
+        df.columns = ['x', 'y', 'sy', 'sx', 'bool']
+        df = df[df['bool'] == 1]
+        self.data = deepcopy(df)
         
     def load_data(self, data_path):
         """ Loads the data from a given path. """

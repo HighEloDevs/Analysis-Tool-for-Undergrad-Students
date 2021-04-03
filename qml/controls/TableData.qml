@@ -16,12 +16,18 @@ Item{
         {text: 'Ação', width: 0.2},
     ]
     property variant dataModel: null
+    property variant dataShaped: []
 
-    // Signals
-    signal clicked(int row, variant rowData)
+    function addRow(x_v, y_v, sy, sx) {
+        dataSet.insert(dataSet.count, {x_v: Number(x_v), y_v: Number(y_v), sy: Number(sy), sx: Number(sx)})
+    }
+
+    function clear(){
+        dataSet.clear()
+    }
 
     // Private
-    width: 300
+    width: 800
     height: 500
 
     // Header
@@ -57,7 +63,7 @@ Item{
                     text: modelData.text
                     anchors.verticalCenter: parent.verticalCenter
                     anchors.horizontalCenter: parent.horizontalCenter
-                    font.pixelSize: 16
+                    font.pixelSize: 14
                     font.bold: true
                     color: 'white'
                 }
@@ -79,13 +85,20 @@ Item{
         ScrollView{
             id: dataTable
             anchors.fill: parent
+            antialiasing: true
+            focus: true
+            clip: true
 
             ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
             ScrollBar.vertical.policy: ScrollBar.AsNeeded
 
+            contentHeight: dataModel.count * header.height
+
+
             RowLayout {
                 id: rowLayout
-                anchors.fill: parent
+                width: root.width
+                height: dataModel.count * header.height
                 spacing: 0
 
                 ListView{
@@ -112,7 +125,7 @@ Item{
                                 delegate: Rectangle{
                                     width: headerModel[index].width * parent.width
                                     height: header.height
-                                    color: cellMouseArea.containsMouse? 'grey' : 'transparent'
+                                    color: cellMouseArea.containsMouse? Colors.mainColor1 : 'transparent'
 
                                     ColorAnimation on color {
                                         id: changeSuccessAnimation
@@ -151,6 +164,7 @@ Item{
                                                 let tmp = Number(text)
                                                 if(!isNaN(tmp)){
                                                     dataSet.setProperty(row, keys[column], Number(text))
+                                                    dataShaped[row][column] = tmp
                                                     changeSuccessAnimation.running = true
                                                 }else{
                                                     changeFailAnimation.running = true
@@ -177,15 +191,6 @@ Item{
                             duration: 400
                         }
                     }
-
-                    remove: Transition {
-                        NumberAnimation{
-                            property: "opacity";
-                            from: 1;
-                            to: 0;
-                            duration: 400
-                        }
-                    }
                 }
 
                 ListView {
@@ -198,42 +203,37 @@ Item{
                     delegate: Item{
                         width: 0.2 * root.width
                         height: header.height
-                        
+
                         property int row: index
 
                         Rectangle{
-                            anchors.fill: parent
                             color: 'transparent'
+                            anchors.fill: parent
 
-                            Rectangle{
-                                width: 22
-                                height: 22
-                                radius: 15
-                                color: 'transparent'
-                                opacity: trashBtnMouseArea.containsMouse? 0.7:1.0
-                                anchors.verticalCenter: parent.verticalCenter
-                                anchors.horizontalCenter: parent.horizontalCenter
+                            RowLayout{
+                                anchors.fill: parent
+                                spacing: -0.5 * parent.width
 
-                                MouseArea{
-                                    id: trashBtnMouseArea
-                                    anchors.fill: parent
-
-                                    onClicked: {
-                                        dataSet.remove(row)
+                                CheckBoxCustom{
+                                    id: checkBox
+                                    onCheckedChanged: {
+                                        if(checkBox.checkState === 2)
+                                            dataShaped[index][4] = checkBox.checkState - 1
+                                        else
+                                            dataShaped[index][4] = checkBox.checkState
                                     }
                                 }
 
-                                Label{
-                                    text: "x"
-                                    anchors.top: parent.top
-                                    anchors.topMargin: -0.7
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    anchors.horizontalCenter: parent.horizontalCenter
-                                    color: 'red'
-                                    font.bold: true
-                                    font.pixelSize: 15
+                                TrashButton{
+                                    onClicked: {
+                                        dataShaped.splice(row, 1)
+                                        dataSet.remove(row)                                        
+                                    }
                                 }
                             }
+                        }
+                        Component.onCompleted: {
+                            dataShaped.push([x_v, y_v, sy, sx, checkBox.checkState - 1])
                         }
                     }
                 }
@@ -259,42 +259,18 @@ Item{
             anchors.topMargin: 0
         }
 
-        Rectangle{
-            width: 60
-            height: 30
-            radius: 15
-            color: button_addRow.pressed? Colors.color3 : Colors.color1
+        AddButton{
             anchors.verticalCenter: parent.verticalCenter
             anchors.horizontalCenter: parent.horizontalCenter
 
-            MouseArea{
-                id: button_addRow
-                anchors.fill: parent
-
-                onClicked:{
-                    dataSet.insert(tableData.count, {x_v:0, y_v:0, sy: 0, sx: 0})
-                }
-            }
-            
-            Text {
-                anchors.verticalCenter: parent.verticalCenter
-                anchors.horizontalCenter: parent.horizontalCenter
-
-                text: '+'
-                font.pixelSize: 30
-                font.bold: true
-                color: 'white'
+            onClicked:{
+                dataSet.insert(dataSet.count, {x_v:0, y_v:0, sy: 0, sx: 0})
             }
         }
     }
 }
-
-
-
-
-
 /*##^##
 Designer {
-    D{i:0;formeditorZoom:1.33}D{i:8}
+    D{i:0;formeditorZoom:0.75}D{i:8}
 }
 ##^##*/

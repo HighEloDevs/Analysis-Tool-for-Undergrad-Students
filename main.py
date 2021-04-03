@@ -7,16 +7,20 @@ Created on Fri Jan 29 17:10:06 2021
 Main File
 
 """
-from operator import mod
+
 import sys
 import os
+import platform
+import numpy as np
 from PySide2 import QtGui, QtQml, QtCore
-from PySide2.QtCore import Qt, Slot, Signal
+from PySide2.QtCore import QBitArray, QJsonArray, QJsonValue, QMetaObject, Qt, Slot, Signal
 from matplotlib_backend_qtquick.backend_qtquickagg import FigureCanvasQtQuickAgg
+from numpy.core.records import array
 from src.MatPlotLib import DisplayBridge
 from src.Model import Model
 from src.Calculators import CalculatorCanvas, interpreter_calculator, Plot
 from src.ProjectManager import ProjectManager
+from operator import mod
 
 # Instantiating the display bridge || Global variable
 displayBridge = DisplayBridge()
@@ -31,6 +35,73 @@ class Bridge(QtCore.QObject):
     # Signal to write infos
     writeInfos = Signal(str, arguments='expr')
     writeCalculator = Signal(str, arguments='expr')
+    emitData = Signal()
+
+    @Slot(QJsonValue)
+    def getProps(self, props):
+        self.emitData.emit()
+        props = props.toObject()
+
+        displayBridge.setSigma(props['sigmax'], props['sigmay'])
+
+        # Setting up initial parameters
+        p0_tmp = list()
+        p0 = props['p0']
+        if p0 != '':
+            # Anti-dummies system
+            p0 = p0.replace(';', ',')
+            p0 = p0.replace('/', ',')
+            for i in p0.split(','):
+                p0_tmp.append(float(i))
+            model.set_p0(p0_tmp)
+            print(p0_tmp)
+
+        # Anti-dummies system 2
+        expression = props['expr']
+        expression = expression.replace('^', '**')
+        expression = expression.replace('arctan', 'atan')
+        expression = expression.replace('arcsin', 'asin')
+        expression = expression.replace('arccos', 'acos')
+        expression = expression.replace('sen', 'sin')
+        
+        # Setting expression
+        model.set_expression(expression)
+
+        curveStyles = {
+            'Sólido':'-',
+            'Tracejado':'--',
+            'Ponto-Tracejado':'-.'
+            }
+        symbols = {
+            'Círculo':'o',
+            'Triângulo':'^',
+            'Quadrado':'s',
+            'Pentagono':'p',
+            'Octagono':'8',
+            'Cruz':'P',
+            'Estrela':'*',
+            'Diamante':'d',
+            'Produto':'X'
+            }
+
+        # Setting style of the plot
+        model.set_title(props['titulo'])
+        model.set_x_axis(props['eixox'])
+        model.set_y_axis(props['eixoy'])
+        displayBridge.setStyle( props['logx'],
+                                props['logy'],
+                                props['markerColor'],
+                                props['markerSize'],
+                                symbols[props['marker']],
+                                props['curveColor'],
+                                props['curveThickness'],
+                                curveStyles[props['curveType']],
+                                props['legend'],
+                                model.exp_model.replace('**', '^'))
+
+        # Making plot
+        displayBridge.Plot(model, props['residuos'], props['grade'])
+        
 
     @Slot(str)
     def loadData(self, file_path):
@@ -167,7 +238,13 @@ if __name__ == "__main__":
     context.setContextProperty("projectMngr", projectMngr)
     
     # Loading QML files
-    engine.load(QtCore.QUrl.fromLocalFile(os.path.join(os.path.dirname(__file__), "qml/main.qml")))
+    plat = platform.system()
+    print('Sistema Operacional: ' + plat)
+
+    if(plat == 'Darwin'):
+        engine.load(QtCore.QUrl.fromLocalFile(os.path.join(os.path.dirname(__file__), "qml/main_mac.qml")))
+    else:
+        engine.load(QtCore.QUrl.fromLocalFile(os.path.join(os.path.dirname(__file__), "qml/main_windows.qml")))
 
     # Updating canvasPlot with the plot
     win = engine.rootObjects()[0]

@@ -8,6 +8,22 @@ import "../../colors.js" as Colors
 Item {
     width: 366
     height: 598
+
+    property string titulo_text: titulo.text
+    property string eixox_text: eixox.text
+    property string eixoy_text: eixoy.text
+    property int residuals: switchResiduos.position
+    property int grid: switchGrade.position
+    property int logx: log_eixox.checkState
+    property int logy: log_eixoy.checkState
+    property string markerColor: rectColor.color
+    property int markerSize: size.value
+    property string marker: symbol.currentText
+    property string curveColor: rectColor_curve.color
+    property int curveThickness: thickness.value
+    property string curveType: type_curve.currentText
+    property int legend: switchLegend.position
+
     Rectangle {
         id: bg
         color: Colors.c_section

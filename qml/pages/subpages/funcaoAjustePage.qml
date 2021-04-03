@@ -8,11 +8,14 @@ Item {
     width: 366
     height: 598
 
-    // Functions
-    QtObject{
-        id: internal1
+    property string expr: expression.text
+    property string initParams: p0.text
+    property int sigmax: switch_sigmax.position
+    property int sigmay: switch_sigmay.position
 
-        function clearTableParams(){
+    // Functions
+
+    function clearTableParams(){
             tableParamsModel.clear()
             tableParamsModel.rows = [
                         {
@@ -21,8 +24,21 @@ Item {
                             "Incerteza": "Incerteza",
                         }
                     ]
-        }
     }
+    // QtObject{
+    //     id: internal1
+
+    //     function clearTableParams(){
+    //         tableParamsModel.clear()
+    //         tableParamsModel.rows = [
+    //                     {
+    //                         "Parâmetros": "Parâmetros",
+    //                         "Valor": "Valor",
+    //                         "Incerteza": "Incerteza",
+    //                     }
+    //                 ]
+    //     }
+    // }
 
     Rectangle {
         id: bg
@@ -274,52 +290,52 @@ Item {
                 }
             }
 
-            Button {
-                id: btnPlot
-                text: qsTr("Plot")
-                Layout.columnSpan: 4
-                Layout.preferredHeight: 25
-                Layout.bottomMargin: 10
-                Layout.topMargin: 10
-                Layout.rightMargin: 10
-                Layout.leftMargin: 10
-                Layout.fillWidth: true
-                font.pointSize: 10
-                font.bold: false
+            // Button {
+            //     id: btnPlot
+            //     text: qsTr("Plot")
+            //     Layout.columnSpan: 4
+            //     Layout.preferredHeight: 25
+            //     Layout.bottomMargin: 10
+            //     Layout.topMargin: 10
+            //     Layout.rightMargin: 10
+            //     Layout.leftMargin: 10
+            //     Layout.fillWidth: true
+            //     font.pointSize: 10
+            //     font.bold: false
 
-                onClicked:{
-                    internal1.clearTableParams()
-                    backend.loadExpression(expression.text, p0.text, switch_sigmax.position, switch_sigmay.position)
-                }
+            //     onClicked:{
+            //         internal1.clearTableParams()
+            //         backend.loadExpression(expression.text, p0.text, switch_sigmax.position, switch_sigmay.position)
+            //     }
 
-                QtObject{
-                    id: internal
-                    property var dynamicColor: if(btnPlot.down){
-                                                   btnPlot.down ? Colors.c_button_active : Colors.c_button
-                                               } else {
-                                                   btnPlot.hovered ? Colors.c_button_hover : Colors.c_button
-                                               }
+            //     QtObject{
+            //         id: internal
+            //         property var dynamicColor: if(btnPlot.down){
+            //                                        btnPlot.down ? Colors.c_button_active : Colors.c_button
+            //                                    } else {
+            //                                        btnPlot.hovered ? Colors.c_button_hover : Colors.c_button
+            //                                    }
 
-                }
+            //     }
 
-                background: Rectangle{
-                    id: btnbg
-                    radius: 10
-                    color: internal.dynamicColor
-                }
+            //     background: Rectangle{
+            //         id: btnbg
+            //         radius: 10
+            //         color: internal.dynamicColor
+            //     }
 
-                contentItem: Item{
-                    anchors.fill: parent
-                    id: content
+            //     contentItem: Item{
+            //         anchors.fill: parent
+            //         id: content
 
-                    Text{
-                        color: "#ffffff"
-                        text: "Plot"
-                        anchors.verticalCenter: parent.verticalCenter
-                        anchors.horizontalCenter: parent.horizontalCenter
-                    }
-                }
-            }
+            //         Text{
+            //             color: "#ffffff"
+            //             text: "Plot"
+            //             anchors.verticalCenter: parent.verticalCenter
+            //             anchors.horizontalCenter: parent.horizontalCenter
+            //         }
+            //     }
+            // }
         }
     }
 
