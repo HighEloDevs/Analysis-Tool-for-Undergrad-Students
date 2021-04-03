@@ -9,10 +9,8 @@ Button{
     property color primaryColor: 'green'
     property color hoverColor: 'blue'
     property color clickColor: 'red'
-    property color textColor: 'white'
     property color iconColor: 'blue'
     property string iconUrl: ''
-    property int textSize: 14
     property int r: 15
 
     property color dynamicColor: if(root.down){

@@ -1,13 +1,13 @@
 // Background colors
 var bgColor = "#363636"
-var bgBorderColor = "#2b112a"
+var bgBorderColor = "#243300"
 
 // Font colors
 var fontColor = "#fff"
 
 // Main colors
-var mainColor1 = "#3d193c"
-var mainColor2 = "#C651CD"
+var mainColor1 = "#405c00"
+var mainColor2 = "#97d700"
 var c_section = "#565e66"
 
 var color1 = "#23272A"
@@ -17,6 +17,6 @@ var color3 = "#40464c"
 // Button colors
 var c_button_sideBar = color1
 var c_button = "#2C2F33"
-var c_button_hover = "#2b112a"
-var c_button_active = "#3d193c"
+var c_button_hover = "#243300"
+var c_button_active = "#324700"
 

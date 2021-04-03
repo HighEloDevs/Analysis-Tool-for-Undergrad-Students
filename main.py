@@ -108,65 +108,65 @@ class Bridge(QtCore.QObject):
         """Gets the path to data's file and fills the data's table"""
         model.load_data(QtCore.QUrl(file_path).toLocalFile())
 
-    @Slot(str, str, str, int, int, int, int, str, int, str, str, int, str, int)
-    def loadOptions(self, title, xaxis, yaxis, residuals, grid, log_x, log_y, symbol_color, symbol_size, symbol, curve_color, curve_thickness, curve_style, legend):
-        """Gets the input options and set them to the model"""
-        curveStyles = {
-            'Sólido':'-',
-            'Tracejado':'--',
-            'Ponto-Tracejado':'-.'
-            }
-        symbols = {
-            'Círculo':'o',
-            'Triângulo':'^',
-            'Quadrado':'s',
-            'Pentagono':'p',
-            'Octagono':'8',
-            'Cruz':'P',
-            'Estrela':'*',
-            'Diamante':'d',
-            'Produto':'X'
-            }
+    # @Slot(str, str, str, int, int, int, int, str, int, str, str, int, str, int)
+    # def loadOptions(self, title, xaxis, yaxis, residuals, grid, log_x, log_y, symbol_color, symbol_size, symbol, curve_color, curve_thickness, curve_style, legend):
+    #     """Gets the input options and set them to the model"""
+    #     curveStyles = {
+    #         'Sólido':'-',
+    #         'Tracejado':'--',
+    #         'Ponto-Tracejado':'-.'
+    #         }
+    #     symbols = {
+    #         'Círculo':'o',
+    #         'Triângulo':'^',
+    #         'Quadrado':'s',
+    #         'Pentagono':'p',
+    #         'Octagono':'8',
+    #         'Cruz':'P',
+    #         'Estrela':'*',
+    #         'Diamante':'d',
+    #         'Produto':'X'
+    #         }
 
-        # Setting style of the plot
-        model.set_title(title)
-        model.set_x_axis(xaxis)
+    #     # Setting style of the plot
+    #     model.set_title(title)
+    #     model.set_x_axis(xaxis)
         
-        model.set_y_axis(yaxis)
-        displayBridge.setStyle(log_x, log_y, symbol_color, symbol_size, symbols[symbol], curve_color, curve_thickness, curveStyles[curve_style], legend, model.exp_model.replace('**', '^'))
+    #     model.set_y_axis(yaxis)
+    #     displayBridge.setStyle(log_x, log_y, symbol_color, symbol_size, symbols[symbol], curve_color, curve_thickness, curveStyles[curve_style], legend, model.exp_model.replace('**', '^'))
 
-        # Making plot
-        displayBridge.Plot(model, residuals, grid)
+    #     # Making plot
+    #     displayBridge.Plot(model, residuals, grid)
     
-    @Slot(str, str, int, int)
-    def loadExpression(self, expression, p0, wsx, wsy):
-        """Gets the expression and set it up"""
+    # @Slot(str, str, int, int)
+    # def loadExpression(self, expression, p0, wsx, wsy):
+    #     """Gets the expression and set it up"""
 
-        displayBridge.setSigma(wsx, wsy)
+    #     displayBridge.setSigma(wsx, wsy)
 
-        # Setting up initial parameters
-        p0_tmp = list()
-        if p0 != '':
-            # Anti-dummies system
-            p0 = p0.replace(';', ',')
-            p0 = p0.replace('/', ',')
-            for i in p0.split(','):
-                p0_tmp.append(float(i))
-            model.set_p0(p0_tmp)
-            print(p0_tmp)
+    #     # Setting up initial parameters
+    #     p0_tmp = list()
+    #     if p0 != '':
+    #         # Anti-dummies system
+    #         p0 = p0.replace(';', ',')
+    #         p0 = p0.replace('/', ',')
+    #         for i in p0.split(','):
+    #             p0_tmp.append(float(i))
+    #         model.set_p0(p0_tmp)
+    #         print(p0_tmp)
 
-        # Anti-dummies system 2
-        expression = expression.replace('^', '**')
-        expression = expression.replace('arctan', 'atan')
-        expression = expression.replace('arcsin', 'asin')
-        expression = expression.replace('arccos', 'acos')
-        expression = expression.replace('sen', 'sin')
+    #     # Anti-dummies system 2
+    #     expression = expression.replace('^', '**')
+    #     expression = expression.replace('arctan', 'atan')
+    #     expression = expression.replace('arcsin', 'asin')
+    #     expression = expression.replace('arccos', 'acos')
+    #     expression = expression.replace('sen', 'sin')
         
-        # Setting expression
-        model.set_expression(expression)
+    #     # Setting expression
+    #     model.set_expression(expression)
 
-        # Emitting signal to load the options
-        self.signalPropPage.emit()
+    #     # Emitting signal to load the options
+    #     self.signalPropPage.emit()
 
     @Slot(str)
     def savePlot(self, save_path):

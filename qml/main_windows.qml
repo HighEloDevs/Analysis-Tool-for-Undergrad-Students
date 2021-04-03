@@ -212,7 +212,7 @@ Window {
                     anchors.left: parent.left
                     anchors.right: parent.right
                     anchors.top: parent.top
-                    anchors.rightMargin: 105
+                    anchors.rightMargin: 140
                     anchors.leftMargin: 70
                     anchors.topMargin: 0
 
@@ -259,14 +259,31 @@ Window {
 
                 Row {
                     id: rowBtns
-                    x: 910
-                    width: 105
                     height: 35
+                    anchors.left: titleBar.right
                     anchors.right: parent.right
                     anchors.top: parent.top
+                    anchors.leftMargin: 0
                     transformOrigin: Item.Center
                     anchors.rightMargin: 0
                     anchors.topMargin: 0
+
+                    IconButton{
+                        width: 35
+                        anchors.top: parent.top
+                        anchors.bottom: parent.bottom
+                        anchors.topMargin: 0
+                        anchors.bottomMargin: 0
+                        r: 0
+                        iconUrl: '../../images/icons/github-36px.svg'
+
+                        primaryColor: 'transparent'
+                        clickColor: Colors.c_button_active
+                        hoverColor: Colors.c_button_hover
+                        iconColor: '#fff'
+
+                        onClicked: Qt.openUrlExternally("https://github.com/leoeiji/Analysis-Tool-for-Undergrad-Students---ATUS")
+                    }
 
                     TopBarButton {
                         id: btnMinimize
@@ -1000,3 +1017,9 @@ Window {
 
 
 
+
+/*##^##
+Designer {
+    D{i:0;formeditorZoom:0.9}D{i:16}
+}
+##^##*/

@@ -23,6 +23,7 @@ Item{
     }
 
     function clear(){
+        dataShaped = []
         dataSet.clear()
     }
 
@@ -149,15 +150,18 @@ Item{
                                         anchors.fill: parent
                                         hoverEnabled: true
                                         onClicked: {
-                                            print([column, row, value])
+                                            //
                                         }
                                         TextEdit {
-                                            text: data_row[modelData]
-                                            anchors.verticalCenter: parent.verticalCenter
-                                            anchors.horizontalCenter: parent.horizontalCenter
+                                            text: data_row[modelData].toPrecision(3)
+                                            anchors.fill: parent
                                             font.pixelSize: 15
                                             color: 'white'
                                             selectByMouse: true
+                                            clip: true
+                                            // wrapMode: TextEdit.Wrap
+                                            horizontalAlignment: TextEdit.AlignHCenter
+                                            verticalAlignment: TextEdit.AlignVCenter
 
                                             Keys.onReturnPressed: {
                                                 let keys = ['x_v', 'y_v', 'sy', 'sx']

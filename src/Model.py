@@ -23,7 +23,7 @@ class Model(QtCore.QObject):
     """Class used for fit
     """
     # Signals
-    fillDataTable = Signal(str, str, str, str, str, arguments=['x', 'y', 'sy', 'sx', 'filename'])
+    fillDataTable = Signal(float, float, float, float, str, arguments=['x', 'y', 'sy', 'sx', 'filename'])
     fillParamsTable = Signal(str, str, str, arguments=['param', 'value', 'uncertainty'])
     writeInfos = Signal(str, arguments='expr')
 
@@ -92,16 +92,16 @@ class Model(QtCore.QObject):
         fileName = data_path.split('/')[-1]
         if self.has_sx and self.has_sy:
             for i in range(len(x)):
-                self.fillDataTable.emit("{:.2g}".format(x[i]), "{:.2g}".format(y[i]), "{:.2g}".format(sy[i]), "{:.2g}".format(sx[i]), fileName)
+                self.fillDataTable.emit(x[i], y[i], sy[i], sx[i], fileName)
         elif self.has_sx:
             for i in range(len(x)):
-                self.fillDataTable.emit("{:.2g}".format(x[i]), "{:.2g}".format(y[i]), "", "{:.2g}".format(sx[i]), fileName)
+                self.fillDataTable.emit(x[i], y[i], 0, sx[i], fileName)
         elif self.has_sy:
             for i in range(len(x)):
-                self.fillDataTable.emit("{:.2g}".format(x[i]), "{:.2g}".format(y[i]), "{:.2g}".format(sy[i]), "", fileName)
+                self.fillDataTable.emit(x[i], y[i], sy[i], 0, fileName)
         else:
             for i in range(len(x)):
-                self.fillDataTable.emit("{:.2g}".format(x[i]), "{:.2g}".format(y[i]), "", "", fileName)
+                self.fillDataTable.emit(x[i], y[i], 0, 0, fileName)
 
     def load_data_json(self, df):
         """ Loads the data """
