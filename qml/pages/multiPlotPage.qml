@@ -69,7 +69,7 @@ Item {
         text: 'oi'
         onClicked: {
             table.clear()
-            print(dataModel.get(0))
+            print(table.dataModel.get(0))
             }
     }
 }

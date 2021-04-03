@@ -54,9 +54,39 @@ class Model(QtCore.QObject):
         """Getting data from table"""
         df = pd.DataFrame.from_records(data.toVariantList())
         df.columns = ['x', 'y', 'sy', 'sx', 'bool']
+
         df = df[df['bool'] == 1]
-        self.data = deepcopy(df)
-        
+
+        # Dropping some useless columns
+        if df[df['sx'] != 0].empty: del df['sx']
+        if df[df['sy'] != 0].empty: del df['sy']
+        del df['bool']
+
+        self.mode = len(df.columns) - 2
+        self.has_sx     = True
+        self.has_sy     = True
+
+        # Naming columns
+        if self.mode == 0:
+            self.data_json        = deepcopy(df)
+            # self.data_json.colums = ['x', 'y']
+            df["sy"]              = 1
+            df["sx"]              = 1
+            self.has_sy           = False
+            self.has_sx           = False
+        elif self.mode == 1:
+            self.data_json        = deepcopy(df)
+            # self.data_json.colums = ['x', 'y', 'sy']
+            df["sx"]              = 1
+            self.has_sx           = False
+        else:
+            self.data_json         = deepcopy(df)
+            # self.data_json.columns = ['x', 'y', 'sy', 'sx']
+        df.columns    = ['x', 'y', 'sy', 'sx']
+        self.data     = deepcopy(df)
+        self.has_data = True
+        print(df)
+                
     def load_data(self, data_path):
         """ Loads the data from a given path. """
         df = pd.read_csv(data_path, sep='\t', header=None, dtype = str).dropna()

@@ -91,7 +91,12 @@ Item{
                     height: header.height
 
                     property int row: index
-                    property variant dataRow: Object.values(dataModel.get(row))
+                    property variant dataRow:   if(dataModel.get(row) == undefined){
+                                                    []
+                                                }else{
+                                                    Object.values(dataModel.get(row))
+                                                }
+                    
 
                     Row{
                         anchors.fill: parent

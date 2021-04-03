@@ -152,7 +152,19 @@ Item{
                                             //
                                         }
                                         TextEdit {
-                                            text: data_row[modelData].toPrecision(3)
+                                            text: if(modelData == 2 || modelData ==3){
+                                                if(data_row[modelData].toPrecision(3) == 0){
+                                                    ''
+                                                }else{
+                                                    data_row[modelData].toPrecision(3)
+                                                }
+                                            }else{
+                                                data_row[modelData].toPrecision(3)
+                                            }
+                                            
+                                            
+                                            
+                                            // data_row[modelData].toPrecision(3)
                                             anchors.fill: parent
                                             font.pixelSize: 15
                                             color: 'white'
