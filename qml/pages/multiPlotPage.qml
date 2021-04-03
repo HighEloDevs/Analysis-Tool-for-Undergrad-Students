@@ -53,6 +53,25 @@ Item {
     //     iconUrl: '../../images/icons/chart-18px.svg'
     //     iconColor: 'green'
     // }
+
+    Table{
+        id: table
+        headerModel: [
+            {text: 'Parâmetro', width: 1/2},
+            {text: 'Valor', width: 1/2},
+        ]
+        dataModel: ListModel{
+            id: dataSet
+            ListElement{parametro: 3; valor: 3}
+        } 
+    }
+    Button{
+        text: 'oi'
+        onClicked: {
+            table.clear()
+            print(dataModel.get(0))
+            }
+    }
 }
 
 /*##^##

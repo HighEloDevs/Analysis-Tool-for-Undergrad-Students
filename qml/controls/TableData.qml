@@ -95,7 +95,6 @@ Item{
 
             contentHeight: dataModel.count * header.height
 
-
             RowLayout {
                 id: rowLayout
                 width: root.width
@@ -159,7 +158,6 @@ Item{
                                             color: 'white'
                                             selectByMouse: true
                                             clip: true
-                                            // wrapMode: TextEdit.Wrap
                                             horizontalAlignment: TextEdit.AlignHCenter
                                             verticalAlignment: TextEdit.AlignVCenter
 
@@ -248,7 +246,7 @@ Item{
         id: footer
         width: root.width
         height: 40
-        color: Colors.color1
+        color: Colors.color2
         radius: 0.03 * root.width
 
         anchors.bottom: parent.bottom
