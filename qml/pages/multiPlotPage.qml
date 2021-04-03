@@ -54,24 +54,24 @@ Item {
     //     iconColor: 'green'
     // }
 
-    Table{
-        id: table
-        headerModel: [
-            {text: 'Parâmetro', width: 1/2},
-            {text: 'Valor', width: 1/2},
-        ]
-        dataModel: ListModel{
-            id: dataSet
-            ListElement{parametro: 3; valor: 3}
-        } 
-    }
-    Button{
-        text: 'oi'
-        onClicked: {
-            table.clear()
-            print(table.dataModel.get(0))
-            }
-    }
+    // Table{
+    //     id: table
+    //     headerModel: [
+    //         {text: 'Parâmetro', width: 1/2},
+    //         {text: 'Valor', width: 1/2},
+    //     ]
+    //     dataModel: ListModel{
+    //         id: dataSet
+    //         ListElement{parametro: 3; valor: 3}
+    //     } 
+    // }
+    // Button{
+    //     text: 'oi'
+    //     onClicked: {
+    //         table.clear()
+    //         // print(table.dataModel.get(0))
+    //         }
+    // }
 }
 
 /*##^##

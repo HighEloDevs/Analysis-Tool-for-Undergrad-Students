@@ -118,7 +118,15 @@ Item{
                                     color: 'white'
                                     clip: true
 
-                                    text: dataRow[index].toPrecision(5)
+                                    text:   if(dataModel.get(row) == undefined){
+                                                ''
+                                            }else{
+                                                if(typeof dataRow[index] == 'number'){
+                                                    dataRow[index].toPrecision(5)
+                                                }else{
+                                                    dataRow[index]
+                                                }
+                                            }
                                 }
                             }
                         }

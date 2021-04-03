@@ -128,6 +128,12 @@ Item {
                         curveThickness: pageProp.curveThickness,
                         curveType: pageProp.curveType,
                         legend: pageProp.legend,
+                        xmin: pageProp.xmin,
+                        xmax: pageProp.xmax,
+                        xdiv: pageProp.xdiv,
+                        ymin: pageProp.ymin,
+                        ymax: pageProp.ymax,
+                        ydiv: pageProp.ydiv,
                     })
                 }
             }

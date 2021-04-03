@@ -41,6 +41,7 @@ class Bridge(QtCore.QObject):
     def getProps(self, props):
         self.emitData.emit()
         props = props.toObject()
+        print(props)
 
         displayBridge.setSigma(props['sigmax'], props['sigmay'])
 
@@ -54,7 +55,6 @@ class Bridge(QtCore.QObject):
             for i in p0.split(','):
                 p0_tmp.append(float(i))
             model.set_p0(p0_tmp)
-            print(p0_tmp)
 
         # Anti-dummies system 2
         expression = props['expr']
@@ -102,7 +102,6 @@ class Bridge(QtCore.QObject):
         # Making plot
         displayBridge.Plot(model, props['residuos'], props['grade'])
         
-
     @Slot(str)
     def loadData(self, file_path):
         """Gets the path to data's file and fills the data's table"""

@@ -3,6 +3,7 @@ import QtQuick.Controls 2.15
 import Qt.labs.qmlmodels 1.0
 import QtQuick.Layouts 1.11
 import "../../colors.js" as Colors
+import "../../controls"
 
 Item {
     width: 366
@@ -10,35 +11,13 @@ Item {
 
     property string expr: expression.text
     property string initParams: p0.text
-    property int sigmax: switch_sigmax.position
-    property int sigmay: switch_sigmay.position
+    property int sigmax: switch_sigmax.checkState
+    property int sigmay: switch_sigmay.checkState
 
     // Functions
-
     function clearTableParams(){
-            tableParamsModel.clear()
-            tableParamsModel.rows = [
-                        {
-                            "Parâmetros": "Parâmetros",
-                            "Valor": "Valor",
-                            "Incerteza": "Incerteza",
-                        }
-                    ]
+            tableParams.clear()
     }
-    // QtObject{
-    //     id: internal1
-
-    //     function clearTableParams(){
-    //         tableParamsModel.clear()
-    //         tableParamsModel.rows = [
-    //                     {
-    //                         "Parâmetros": "Parâmetros",
-    //                         "Valor": "Valor",
-    //                         "Incerteza": "Incerteza",
-    //                     }
-    //                 ]
-    //     }
-    // }
 
     Rectangle {
         id: bg
@@ -49,7 +28,7 @@ Item {
             id: bgLayout
             anchors.fill: parent
             columnSpacing: 0
-            rowSpacing: 0
+            rowSpacing: 5
             rows: 6
             columns: 4
 
@@ -136,9 +115,6 @@ Item {
                         border.color: p0.focus ? Colors.mainColor2:'#00000000'
                         border.width: 2
                     }
-
-
-
                 }
             }
 
@@ -150,36 +126,41 @@ Item {
                 Layout.fillWidth: true
                 Layout.rowSpan: 1
 
-                Label {
-                    id: label7
-                    color: "#ffffff"
-                    text: qsTr("Incerteza em X")
-                    Layout.fillWidth: true
-                    Layout.leftMargin: 10
-                }
+                // Label {
+                //     id: label7
+                //     color: "#ffffff"
+                //     text: qsTr("Incerteza em X")
+                //     Layout.fillWidth: false
+                //     Layout.leftMargin: 10
+                // }
 
-                Switch {
+                CheckBoxCustom{
                     id: switch_sigmax
+                    Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+                    Layout.fillWidth: true
+                    w: 25
                     checked: true
-                    Layout.fillWidth: true
+                    texto: "Incerteza em X"
                 }
 
-                Label {
-                    id: label8
-                    color: "#ffffff"
-                    text: qsTr("Incerteza em Y")
-                    Layout.fillWidth: true
-                }
+                // Label {
+                //     id: label8
+                //     color: "#ffffff"
+                //     text: qsTr("Incerteza em Y")
+                //     Layout.fillWidth: false
+                // }
 
-                Switch {
+                CheckBoxCustom{
                     id: switch_sigmay
-                    checked: true
+                    w: 25
                     Layout.fillWidth: true
+                    checked: true
+                    texto: "Incerteza em Y"
                 }
             }
 
-            Frame {
-                id: frame
+            Table{
+                id: tableParams
                 height: 130
                 Layout.columnSpan: 4
                 Layout.preferredHeight: 35
@@ -187,62 +168,14 @@ Item {
                 Layout.leftMargin: 10
                 Layout.fillHeight: true
                 Layout.fillWidth: true
-
-                background: Rectangle{
-                    color: 'transparent'
-                    radius: 10
-                    border.color: '#ffffff'
-                }
-
-                TableView {
-                    id: tableParams
-                    anchors.fill: parent
-                    interactive: true
-                    columnSpacing: 1
-                    rowSpacing: 0.8
-                    clip: true
-                    boundsBehavior: Flickable.DragOverBounds
-
-                    ScrollBar.vertical: ScrollBar{
-                        id: scrollBarTableData
-                        policy: ScrollBar.AlwaysOn
-                        parent: tableParams.parent
-                        anchors.top: tableParams.top
-                        anchors.left: tableParams.right
-                        anchors.bottom: tableParams.bottom
-                    }
-
-                    model: TableModel {
-
-                        id: tableParamsModel
-
-                        TableModelColumn { display: "Parâmetros" }
-                        TableModelColumn { display: "Valor" }
-                        TableModelColumn { display: "Incerteza" }
-
-                        rows: [
-                            {
-                                "Parâmetros": "Parâmetros",
-                                "Valor": "Valor",
-                                "Incerteza": "Incerteza",
-                            }
-                        ]
-                    }
-
-                    delegate: Rectangle {
-                        height: 200
-                        implicitWidth: tableParams.width/3
-                        implicitHeight: 20
-                        border.width: 1
-
-                        TextArea {
-                            text: display
-                            anchors.centerIn: parent
-                            readOnly: true
-                            selectByMouse: true
-                        }
-                    }
-                }
+                headerModel: [
+                    {text: 'Parâmetro', width: 1/3},
+                    {text: 'Valor', width: 1/3},
+                    {text: 'Incerteza', width: 1/3}
+                ]
+                dataModel: ListModel{
+                    id: dataSet
+                } 
             }
 
             GroupBox {
@@ -289,53 +222,6 @@ Item {
                     }
                 }
             }
-
-            // Button {
-            //     id: btnPlot
-            //     text: qsTr("Plot")
-            //     Layout.columnSpan: 4
-            //     Layout.preferredHeight: 25
-            //     Layout.bottomMargin: 10
-            //     Layout.topMargin: 10
-            //     Layout.rightMargin: 10
-            //     Layout.leftMargin: 10
-            //     Layout.fillWidth: true
-            //     font.pointSize: 10
-            //     font.bold: false
-
-            //     onClicked:{
-            //         internal1.clearTableParams()
-            //         backend.loadExpression(expression.text, p0.text, switch_sigmax.position, switch_sigmay.position)
-            //     }
-
-            //     QtObject{
-            //         id: internal
-            //         property var dynamicColor: if(btnPlot.down){
-            //                                        btnPlot.down ? Colors.c_button_active : Colors.c_button
-            //                                    } else {
-            //                                        btnPlot.hovered ? Colors.c_button_hover : Colors.c_button
-            //                                    }
-
-            //     }
-
-            //     background: Rectangle{
-            //         id: btnbg
-            //         radius: 10
-            //         color: internal.dynamicColor
-            //     }
-
-            //     contentItem: Item{
-            //         anchors.fill: parent
-            //         id: content
-
-            //         Text{
-            //             color: "#ffffff"
-            //             text: "Plot"
-            //             anchors.verticalCenter: parent.verticalCenter
-            //             anchors.horizontalCenter: parent.horizontalCenter
-            //         }
-            //     }
-            // }
         }
     }
 
@@ -343,7 +229,8 @@ Item {
         target: model
 
         function onFillParamsTable(param, value, uncertainty){
-            tableParamsModel.appendRow({"Parâmetros" : param, "Valor": value, "Incerteza" : uncertainty})
+            // tableParamsModel.appendRow({"Parâmetros" : param, "Valor": value, "Incerteza" : uncertainty})
+            tableParams.addRow({"parametro": param, "valor": value, "incerteza": uncertainty})
         }
 
         function onWriteInfos(expr){
@@ -362,25 +249,13 @@ Item {
         }
 
         function onClearTableParams(){
-            tableParamsModel.clear()
-            tableParamsModel.rows = [
-                        {
-                            "Parâmetros": "Parâmetros",
-                            "Valor": "Valor",
-                            "Incerteza": "Incerteza",
-                        }
-                    ]
-            infos.text = ''
+            tableParams.clear()
         }
     }
-
-
 }
-
-
 
 /*##^##
 Designer {
-    D{i:0;height:720;width:600}D{i:3}
+    D{i:0;height:720;width:600}
 }
 ##^##*/

@@ -25,8 +25,8 @@ class ProjectManager(QtCore.QObject):
     fillDataTable = QtCore.Signal()
     fillParamsTable = QtCore.Signal()
     fillProjectName = QtCore.Signal(str, arguments=['projectName'])
-    clearTableData = QtCore.Signal()
     clearTableParams = QtCore.Signal()
+    clearTableData = QtCore.Signal()
     
 
     def __init__(self, displayBridge, model):
@@ -66,7 +66,7 @@ class ProjectManager(QtCore.QObject):
     def __importOptions(self):
         '''Import all options from classes'''
         try:
-            data = self.model.data_json.to_json()
+            data = self.model.data_json.to_json(double_precision = 15)
         except:
             data = None
 
@@ -238,9 +238,7 @@ class ProjectManager(QtCore.QObject):
                                 self.opt['curve_color'],
                                 self.opt['curve_thickness'],
                                 'Sólido')
-        print(self.opt['p0'])
         self.fillProjectName.emit(self.opt['projectName'])
-        self.clearTableData.emit()
         self.clearTableParams.emit()
         self.model.reset()
         self.displayBridge.reset()

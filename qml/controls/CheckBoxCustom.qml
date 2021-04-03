@@ -8,22 +8,33 @@ CheckBox{
     display: AbstractButton.TextOnly
     checked: true
 
+    property int w: 18
+    property string texto: ''
+
     indicator: Rectangle {
-        implicitWidth: 18
-        implicitHeight: 18
+        width: w
+        height: w
         x: checkBox.leftPadding
         y: parent.height / 2 - height / 2
         radius: 3
         border.color: Colors.color1
 
         Rectangle {
-            width: 8
-            height: 8
+            width: w - 10
+            height: w - 10
             radius: 2
             color: Colors.color3
             visible: checkBox.checked
             anchors.verticalCenter: parent.verticalCenter
             anchors.horizontalCenter: parent.horizontalCenter
         }
+    }
+
+    contentItem: Text {
+        text: texto
+        opacity: enabled ? 1.0 : 0.3
+        color: 'white'
+        verticalAlignment: Text.AlignVCenter
+        leftPadding: checkBox.indicator.width + checkBox.spacing
     }
 }

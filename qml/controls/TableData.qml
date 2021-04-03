@@ -153,7 +153,7 @@ Item{
                                         }
                                         TextEdit {
                                             text: if(modelData == 2 || modelData ==3){
-                                                if(data_row[modelData].toPrecision(3) == 0){
+                                                if(data_row[modelData] == 0){
                                                     ''
                                                 }else{
                                                     data_row[modelData].toPrecision(3)
@@ -162,9 +162,6 @@ Item{
                                                 data_row[modelData].toPrecision(3)
                                             }
                                             
-                                            
-                                            
-                                            // data_row[modelData].toPrecision(3)
                                             anchors.fill: parent
                                             font.pixelSize: 15
                                             color: 'white'
@@ -188,6 +185,19 @@ Item{
                                             Keys.onEscapePressed: {
                                                 changeFailAnimation.running = true
                                                 text = value
+                                            }
+
+                                            onEditingFinished: {
+                                                let keys = ['x_v', 'y_v', 'sy', 'sx']
+                                                let tmp = Number(text)
+                                                if(!isNaN(tmp)){
+                                                    dataSet.setProperty(row, keys[column], Number(text))
+                                                    dataShaped[row][column] = tmp
+                                                    changeSuccessAnimation.running = true
+                                                }else{
+                                                    changeFailAnimation.running = true
+                                                    text = value
+                                                }
                                             }
                                         }
                                     }

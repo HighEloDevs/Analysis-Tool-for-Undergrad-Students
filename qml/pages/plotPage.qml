@@ -67,6 +67,7 @@ Item {
                             onClicked: {
                                 projectMngr.newProject()
                                 table.clear()
+                                label_fileName.text = 'Dados não selecionados'
                             }
                         }
 
@@ -114,7 +115,7 @@ Item {
                             id: btnSaveAs
                             height: 25
                             Layout.fillWidth: true
-                            texto: 'Salvar'
+                            texto: 'Salvar Como'
                             textSize: 10
                             primaryColor: Colors.c_button
                             clickColor: Colors.c_button_active

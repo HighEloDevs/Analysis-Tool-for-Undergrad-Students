@@ -4,6 +4,7 @@ import QtQuick.Layouts 1.11
 import QtQuick.Dialogs 1.3
 import QtGraphicalEffects 1.15
 import "../../colors.js" as Colors
+import "../../controls"
 
 Item {
     width: 366
@@ -12,8 +13,8 @@ Item {
     property string titulo_text: titulo.text
     property string eixox_text: eixox.text
     property string eixoy_text: eixoy.text
-    property int residuals: switchResiduos.position
-    property int grid: switchGrade.position
+    property int residuals: switchResiduos.checkState
+    property int grid: switchGrade.checkState
     property int logx: log_eixox.checkState
     property int logy: log_eixoy.checkState
     property string markerColor: rectColor.color
@@ -22,7 +23,13 @@ Item {
     property string curveColor: rectColor_curve.color
     property int curveThickness: thickness.value
     property string curveType: type_curve.currentText
-    property int legend: switchLegend.position
+    property int legend: switchLegend.checkState
+    property int xmin: Number(xmin.text)
+    property int xmax: Number(xmax.text)
+    property int xdiv: Number(xdiv.text)
+    property int ymin: Number(ymin.text)
+    property int ymax: Number(ymax.text)
+    property int ydiv: Number(ydiv.text)
 
     Rectangle {
         id: bg
@@ -37,24 +44,25 @@ Item {
             id: scrollView
             anchors.fill: parent
             anchors.topMargin: 5
-            font.preferShaping: false
-            font.kerning: false
 
             ScrollBar.horizontal.policy: ScrollBar.AsNeeded
-            ScrollBar.vertical.policy: ScrollBar.AlwaysOn
+            ScrollBar.vertical.policy: ScrollBar.AsNeeded
+
+            contentWidth: gridLayout.width
 
             GridLayout {
                 id: gridLayout
-                anchors.fill: parent
-                columnSpacing: 0
+                width: bg.width
+                columnSpacing: 5
                 rowSpacing: 5
-                rows: 6
+                rows: 10
                 columns: 6
 
                 Label {
                     id: label
                     color: "#ffffff"
                     text: qsTr("Título")
+                    Layout.leftMargin: 5
                     Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                     Layout.fillWidth: false
                 }
@@ -62,6 +70,8 @@ Item {
                 TextField {
                     id: titulo
                     height: 30
+                    Layout.rightMargin: 5
+                    rightPadding: 10
                     Layout.rowSpan: 1
                     Layout.columnSpan: 5
                     Layout.fillWidth: true
@@ -79,6 +89,7 @@ Item {
                     id: label1
                     color: "#ffffff"
                     text: qsTr("Eixo X")
+                    Layout.leftMargin: 5
                     Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                 }
 
@@ -86,7 +97,7 @@ Item {
                     id: eixox
                     height: 30
                     Layout.fillWidth: true
-                    Layout.columnSpan: 3
+                    Layout.columnSpan: 4
                     placeholderText: qsTr("Título de Eixo X")
                     selectByMouse: true
 
@@ -97,28 +108,106 @@ Item {
                     }
                 }
 
-                Label {
-                    id: label6
-                    color: "#ffffff"
-                    text: qsTr("Log")
-                    Layout.columnSpan: 1
-                    Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-                    Layout.fillWidth: false
+                CheckBoxCustom{
+                    id: log_eixox
+                    w: 25
+                    texto: 'Log X'
+                    checked: false
                 }
 
-                CheckBox {
-                    id: log_eixox
-                    Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-                    Layout.fillWidth: false
-                    Layout.columnSpan: 1
-                    display: AbstractButton.TextOnly
-                    tristate: false
+                Rectangle {
+                    id: rectangle
+                    width: 200
+                    height: 200
+                    color: "#00000000"
+                    Layout.preferredHeight: 30
+                    Layout.fillWidth: true
+                    Layout.columnSpan: 6
+
+                    RowLayout {
+                        id: rowLayout
+                        anchors.fill: parent
+
+                        Label {
+                            id: label3
+                            color: "#ffffff"
+                            text: qsTr("X mín.")
+                            Layout.fillWidth: false
+                            Layout.leftMargin: 5
+                        }
+
+                        TextField {
+                            id: xmin
+                            height: 30
+                            Layout.fillWidth: true
+                            placeholderText: qsTr("Ex.: 3.3, 2, 2.54")
+                            background: Rectangle {
+                                radius: 5
+                                border.color: xmin.focus ? Colors.mainColor2:'#00000000'
+                                border.width: 2
+                            }
+                            Layout.columnSpan: 1
+                            selectByMouse: true
+                        }
+
+                        Label {
+                            id: label4
+                            color: "#ffffff"
+                            text: qsTr("X máx.")
+                            Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+                            Layout.fillWidth: false
+                        }
+
+                        TextField {
+                            id: xmax
+                            width: 61
+                            height: 30
+                            clip: false
+                            Layout.fillWidth: true
+                            placeholderText: qsTr("Ex.: 3.3, 2, 2.54")
+                            background: Rectangle {
+                                radius: 5
+                                border.color: xmax.focus ? Colors.mainColor2:'#00000000'
+                                border.width: 2
+                            }
+                            Layout.columnSpan: 1
+                            selectByMouse: true
+                        }
+
+                        Label {
+                            id: label5
+                            color: "#ffffff"
+                            text: qsTr("Divisões")
+                            Layout.fillWidth: false
+                            clip: false
+                        }
+
+                        TextField {
+                            id: xdiv
+                            width: 88
+                            height: 30
+                            font.kerning: true
+                            font.preferShaping: true
+                            Layout.rightMargin: 5
+                            rightInset: 0
+                            Layout.fillWidth: true
+                            placeholderText: qsTr("Ex.: 1, 2, 3...")
+                            background: Rectangle {
+                                radius: 5
+                                border.color: xdiv.focus ? Colors.mainColor2:'#00000000'
+                                border.width: 2
+                            }
+                            Layout.columnSpan: 1
+                            selectByMouse: true
+                        }
+                    }
                 }
 
                 Label {
                     id: label2
                     color: "#ffffff"
                     text: qsTr("Eixo Y")
+                    Layout.leftMargin: 5
                     Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                 }
 
@@ -126,7 +215,7 @@ Item {
                     id: eixoy
                     height: 30
                     Layout.fillWidth: true
-                    Layout.columnSpan: 3
+                    Layout.columnSpan: 4
                     placeholderText: qsTr("Título do Eixo Y")
                     selectByMouse: true
 
@@ -137,67 +226,121 @@ Item {
                     }
                 }
 
-                Label {
-                    id: label9
-                    color: "#ffffff"
-                    text: qsTr("Log")
-                    horizontalAlignment: Text.AlignHCenter
-                    verticalAlignment: Text.AlignVCenter
-                    wrapMode: Text.NoWrap
-                    transformOrigin: Item.Center
-                    Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-                }
-
-                CheckBox {
+                CheckBoxCustom{
                     id: log_eixoy
-                    Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-                    display: AbstractButton.TextOnly
-                    tristate: false
+                    w: 25
+                    texto: 'Log Y'
+                    checked: false
                 }
 
-                Label {
-                    id: label4
-                    color: "#ffffff"
-                    text: qsTr("Resíduos")
-                    Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-                    Layout.leftMargin: 10
-                    Layout.fillWidth: false
+                Rectangle {
+                    id: rectangle2
+                    width: 200
+                    height: 200
+                    color: "#00000000"
+                    Layout.fillWidth: true
+                    RowLayout {
+                        id: rowLayout1
+                        anchors.fill: parent
+                        Label {
+                            id: label6
+                            color: "#ffffff"
+                            text: qsTr("Y mín.")
+                            Layout.leftMargin: 5
+                            Layout.fillWidth: false
+                        }
+
+                        TextField {
+                            id: ymin
+                            height: 30
+                            Layout.fillWidth: true
+                            placeholderText: qsTr("Ex.: 3.3, 2, 2.54")
+                            background: Rectangle {
+                                radius: 5
+                                border.color: ymin.focus ? Colors.mainColor2:'#00000000'
+                                border.width: 2
+                            }
+                            Layout.columnSpan: 1
+                            selectByMouse: true
+                        }
+
+                        Label {
+                            id: label7
+                            color: "#ffffff"
+                            text: qsTr("Y máx.")
+                            Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+                            Layout.fillWidth: false
+                        }
+
+                        TextField {
+                            id: ymax
+                            width: 61
+                            height: 30
+                            clip: false
+                            Layout.fillWidth: true
+                            placeholderText: qsTr("Ex.: 3.3, 2, 2.54")
+                            background: Rectangle {
+                                radius: 5
+                                border.color: ymax.focus ? Colors.mainColor2:'#00000000'
+                                border.width: 2
+                            }
+                            Layout.columnSpan: 1
+                            selectByMouse: true
+                        }
+
+                        Label {
+                            id: label8
+                            color: "#ffffff"
+                            text: qsTr("Divisões")
+                            clip: false
+                            Layout.fillWidth: false
+                        }
+
+                        TextField {
+                            id: ydiv
+                            height: 30
+                            Layout.rightMargin: 5
+                            Layout.fillWidth: true
+                            placeholderText: qsTr("Ex.: 1, 2, 3...")
+                            rightInset: 0
+                            background: Rectangle {
+                                radius: 5
+                                border.color: ydiv.focus ? Colors.mainColor2:'#00000000'
+                                border.width: 2
+                            }
+                            Layout.columnSpan: 1
+                            selectByMouse: true
+                        }
+                    }
+                    Layout.columnSpan: 6
+                    Layout.preferredHeight: 30
                 }
 
-                Switch {
+                CheckBoxCustom{
                     id: switchResiduos
-                    Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-                    Layout.fillWidth: false
+                    Layout.fillWidth: true
+                    Layout.columnSpan: 2
+                    w: 25
+                    texto: 'Resíduos'
+                    checked: false
                 }
 
-                Label {
-                    id: label5
-                    color: "#ffffff"
-                    text: qsTr("Grade")
-                    Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-                    Layout.fillWidth: false
-                }
-
-                Switch {
+                CheckBoxCustom{
                     id: switchGrade
-                    Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-                    Layout.fillWidth: false
+                    Layout.fillWidth: true
+                    Layout.columnSpan: 2
+                    w: 25
+                    texto: 'Grade'
+                    checked: false
                 }
 
-                Label {
-                    id: label7
-                    color: "#ffffff"
-                    text: qsTr("Legenda")
-                    horizontalAlignment: Text.AlignHCenter
-                    wrapMode: Text.NoWrap
-                    Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-                    Layout.fillWidth: false
-                }
-
-                Switch {
+                CheckBoxCustom{
                     id: switchLegend
-                    Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-                    Layout.fillWidth: false
+                    Layout.fillWidth: true
+                    Layout.columnSpan: 2
+                    w: 25
+                    texto: 'Legenda'
+                    checked: false
                 }
 
                 GroupBox {
@@ -247,20 +390,15 @@ Item {
                             Layout.fillWidth: true
                         }
 
-                        Button {
+                        TextButton{
                             id: btnColor
-                            height: 20
-                            Layout.preferredHeight: 30
-                            Layout.rowSpan: 1
-                            display: AbstractButton.TextOnly
-                            checkable: false
-                            checked: false
-                            Layout.fillHeight: false
                             Layout.fillWidth: true
-
-                            font.pointSize: 10
-                            font.bold: false
-
+                            primaryColor: Colors.c_button
+                            clickColor: Colors.c_button_active
+                            hoverColor: Colors.c_button_hover
+                            height: 20
+                            texto: 'Escolher Cor'
+                            
                             ColorDialog {
                                 id: colorDialog
                                 title: "Escolha uma cor para os pontos"
@@ -270,37 +408,7 @@ Item {
                                 }
                             }
 
-                            onClicked:{
-                                colorDialog.open()
-                            }
-
-                            QtObject{
-                                id: internal
-                                property var dynamicColor: if(btnColor.down){
-                                                               btnColor.down ? Colors.c_button_active : Colors.c_button
-                                                           } else {
-                                                               btnColor.hovered ? Colors.c_button_hover : Colors.c_button
-                                                           }
-
-                            }
-
-                            background: Rectangle{
-                                id: btnbg
-                                radius: 10
-                                color: internal.dynamicColor
-                            }
-
-                            contentItem: Item{
-                                anchors.fill: parent
-                                id: content
-
-                                Text{
-                                    color: "#ffffff"
-                                    text: "Escolher Cor"
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    anchors.horizontalCenter: parent.horizontalCenter
-                                }
-                            }
+                            onClicked: colorDialog.open()
                         }
 
                         Rectangle {
@@ -443,14 +551,15 @@ Item {
                             Layout.fillHeight: false
                         }
 
-                        Button {
+                        TextButton{
                             id: btnColor_curve
-                            height: 20
-                            Layout.preferredWidth: 120
-                            font.bold: false
                             Layout.fillWidth: true
-                            checked: false
-
+                            primaryColor: Colors.c_button
+                            clickColor: Colors.c_button_active
+                            hoverColor: Colors.c_button_hover
+                            height: 20
+                            texto: 'Escolher Cor'
+                            
                             ColorDialog {
                                 id: colorDialog1
                                 title: "Escolha uma cor para os pontos"
@@ -459,43 +568,62 @@ Item {
                                 }
                             }
 
-                            QtObject{
-                                id: internal2
-                                property var dynamicColor: if(btnColor_curve.down){
-                                                               btnColor_curve.down ? Colors.c_button_active : Colors.c_button
-                                                           } else {
-                                                               btnColor_curve.hovered ? Colors.c_button_hover : Colors.c_button
-                                                           }
-                            }
-
-                            background: Rectangle {
-                                id: btnbg1
-                                color: internal2.dynamicColor
-                                radius: 10
-                            }
-
-                            onClicked:{
-                                colorDialog1.open()
-                            }
-
-                            Layout.rowSpan: 1
-                            Layout.preferredHeight: 30
-                            display: AbstractButton.TextOnly
-                            Layout.fillHeight: false
-                            checkable: false
-
-                            contentItem: Item {
-                                id: content1
-                                anchors.fill: parent
-                                Text {
-                                    color: "#ffffff"
-                                    text: "Escolher Cor"
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    anchors.horizontalCenter: parent.horizontalCenter
-                                }
-                            }
-                            font.pointSize: 10
+                            onClicked: colorDialog1.open()
                         }
+
+                        // Button {
+                        //     id: btnColor_curve
+                        //     height: 20
+                        //     Layout.preferredWidth: 120
+                        //     font.bold: false
+                        //     Layout.fillWidth: true
+                        //     checked: false
+
+                        //     ColorDialog {
+                        //         id: colorDialog1
+                        //         title: "Escolha uma cor para os pontos"
+                        //         onAccepted: {
+                        //             rectColor_curve.color = colorDialog1.color
+                        //         }
+                        //     }
+
+                        //     QtObject{
+                        //         id: internal2
+                        //         property var dynamicColor: if(btnColor_curve.down){
+                        //                                        btnColor_curve.down ? Colors.c_button_active : Colors.c_button
+                        //                                    } else {
+                        //                                        btnColor_curve.hovered ? Colors.c_button_hover : Colors.c_button
+                        //                                    }
+                        //     }
+
+                        //     background: Rectangle {
+                        //         id: btnbg1
+                        //         color: internal2.dynamicColor
+                        //         radius: 10
+                        //     }
+
+                        //     onClicked:{
+                        //         colorDialog1.open()
+                        //     }
+
+                        //     Layout.rowSpan: 1
+                        //     Layout.preferredHeight: 30
+                        //     display: AbstractButton.TextOnly
+                        //     Layout.fillHeight: false
+                        //     checkable: false
+
+                        //     contentItem: Item {
+                        //         id: content1
+                        //         anchors.fill: parent
+                        //         Text {
+                        //             color: "#ffffff"
+                        //             text: "Escolher Cor"
+                        //             anchors.verticalCenter: parent.verticalCenter
+                        //             anchors.horizontalCenter: parent.horizontalCenter
+                        //         }
+                        //     }
+                        //     font.pointSize: 10
+                        // }
 
                         Rectangle {
                             id: rectColor_curve
@@ -590,6 +718,14 @@ Item {
                     Layout.fillWidth: true
                 }
 
+
+
+
+
+
+
+
+
             }
 
 
@@ -629,3 +765,9 @@ Item {
 }
 
 
+
+/*##^##
+Designer {
+    D{i:0;formeditorZoom:1.33}D{i:12}D{i:26}D{i:3}
+}
+##^##*/
