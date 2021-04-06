@@ -98,7 +98,15 @@ class ProjectManager(QtCore.QObject):
             'curve_thickness' : self.displayBridge.curve_thickness,
             'curve_style' : self.displayBridge.curve_style,
             'grid' : self.displayBridge.grid,
-            'residuals' : self.displayBridge.residuals
+            'residuals' : self.displayBridge.residuals,
+            'xmin' : self.displayBridge.xmin,
+            'xmax' : self.displayBridge.xmax,
+            'xdiv' : self.displayBridge.xdiv,
+            'ymin' : self.displayBridge.ymin,
+            'ymax' : self.displayBridge.ymax,
+            'ydiv' : self.displayBridge.ydiv,
+            'resmin' : self.displayBridge.resmin,
+            'resmax' : self.displayBridge.resmax
         }
 
     def __clearOptions(self):
@@ -193,7 +201,10 @@ class ProjectManager(QtCore.QObject):
                     options['expr']
                     )
         
-        self.displayBridge.Plot(self.model, options['residuals'], options['grid'], 0, 0, 0, 0, 0, 0)
+        self.displayBridge.Plot(self.model, options['residuals'], options['grid'],
+         options['xmin'], options['xmax'], options['xdiv'],
+         options['ymin'], options['ymax'], options['ydiv'],
+         options['resmin'],  options['resmax'])
 
         # Setting all options to frontend
         self.fillFuncPage.emit( options['expr'],

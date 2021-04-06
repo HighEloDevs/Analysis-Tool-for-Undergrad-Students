@@ -49,6 +49,8 @@ class DisplayBridge(QtCore.QObject):
         self.ymin            = 0.
         self.ymax            = 0.
         self.ydiv            = 0.
+        self.resmin          = 0.
+        self.resmax          = 0. 
 
         # This is used to display the coordinates of the mouse in the window
         self._coordinates = ""
@@ -66,7 +68,7 @@ class DisplayBridge(QtCore.QObject):
         # Connect for displaying the coordinates
         self.figure.canvas.mpl_connect('motion_notify_event', self.on_motion)
 
-    def Plot(self, model, residuals, grid, xmin, xmax, xdiv, ymin, ymax, ydiv):
+    def Plot(self, model, residuals, grid, xmin, xmax, xdiv, ymin, ymax, ydiv, resmin, resmax):
         # Data Predicted by the model and residuals
         px, py, y_r    = None, None, None
 
@@ -78,6 +80,8 @@ class DisplayBridge(QtCore.QObject):
         self.ymin      = ymin
         self.ymax      = ymax
         self.ydiv      = ydiv
+        self.resmin    = resmin
+        self.resmax    = resmax
 
         if model.has_data:
 
@@ -128,6 +132,10 @@ class DisplayBridge(QtCore.QObject):
                             self.ax1.set_ylim(bottom = self.ymin, top = None)
                         elif self.ymin != 0. and self.ymax != 0.:
                             self.ax1.set_ylim(bottom = self.ymin, top = self.ymax)
+                    
+                    if self.resmin != 0. or self.resmax != 0.:
+                        self.ax2.set_ylim(bottom = self.resmin, top = self.resmax)
+
 
 
                     if grid:

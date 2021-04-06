@@ -101,7 +101,10 @@ class Bridge(QtCore.QObject):
                                 model.exp_model.replace('**', '^'))
 
         # Making plot
-        displayBridge.Plot(model, props['residuos'], props['grade'], props['xmin'], props['xmax'], props['xdiv'], props['ymin'], props['ymax'], props['ydiv'])
+        displayBridge.Plot(model, props['residuos'], props['grade'],
+         props['xmin'], props['xmax'], props['xdiv'],
+         props['ymin'], props['ymax'], props['ydiv'],
+         props['resMin'], props['resMax'])
 
     @Slot(str)
     def loadData(self, file_path):

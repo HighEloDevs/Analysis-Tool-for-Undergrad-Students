@@ -172,27 +172,13 @@ class Model(QtCore.QObject):
         df.columns    = ['x', 'y', 'sy', 'sx']
         self.data     = deepcopy(df)
         self.has_data = True
-        
+
         self.x  = self.data["x"].to_numpy()
         self.y  = self.data["y"].to_numpy()
         self.sy = self.data["sy"].to_numpy()
         self.sx = self.data["sx"].to_numpy()
 
-        # x, y, sy, sx = df['x'], df['y'], df['sy'], df['sx']
-
         fileName = 'Dados Carregados do Projeto'
-
-        # Naming columns
-        # if self.mode == 0:
-        #     df["sy"] = [1]*len(df[0])
-        #     df["sx"] = [1]*len(df[0])
-        #     self.has_sy = False
-        #     self.has_sx = False
-        # elif self.mode == 1:
-        #     df["sx"] = [1]*len(df[0])
-        #     self.has_sx = False
-
-        # self.has_data = True
 
         x, y, sy, sx = self.get_data() 
 
@@ -233,12 +219,6 @@ class Model(QtCore.QObject):
         wsx = kargs.pop("wsx", True)
         wsy = kargs.pop("wsy", True)
 
-        mode = self.mode
-        # if wsx:
-        #     mode += 10
-        # if wsy:
-        #     mode += 20
-
         # Getting Model
         self.model = ExpressionModel(self.exp_model)
 
@@ -260,35 +240,32 @@ class Model(QtCore.QObject):
                 except:
                     pi.append(1.0)
 
-        # Clearing p0
-        # self.p0 = None
-
         # Data
         x, y, sy, sx = self.get_data()
 
         data = None
 
         if self.mode == 0:
-            self.__fit_lm(x, y, sy, pi)
+            self.__fit_lm_wy(x, y, pi)
             self.__set_param_values_lm()
-            self.__set_report_lm()
+            self.__set_report_lm_special()
             
         elif self.mode == 1:
             if wsy:
                 self.__fit_lm_wy(x, y, pi)
                 self.__set_param_values_lm()
-                self.__set_report_lm()
+                self.__set_report_lm_special()
 
             else:
                 self.__fit_lm(x, y, sy, pi)
                 self.__set_param_values_lm()
-                self.__set_report_lm()
+                self.__set_report_lm_special()
 
         else:
             if wsx == True and wsy == True:
-                self.__fit_lm(x, y, 1, pi)
+                self.__fit_lm_wy(x, y, pi)
                 self.__set_param_values_lm()
-                self.__set_report_lm()
+                self.__set_report_lm_special()
             
             elif wsx:
                 self.__fit_lm(x, y, sy, pi)
@@ -361,6 +338,24 @@ class Model(QtCore.QObject):
         self.report_fit += "\nAjuste: y = %s\n"%self.exp_model
         self.report_fit += "\nNGL  = %d"%(len(self.data["x"]) - len(self.coef))
         self.report_fit += "\nChi² = %f"%self.result.chisqr
+        self.report_fit += "\nMatriz de covariância:\n\n" + str(self.result.covar) + "\n"
+        lista           = list(self.params.keys())
+        matriz_corr     = np.zeros((len(self.result.covar), len(self.result.covar)))
+        z = len(matriz_corr)
+        for i in range(z):
+            for j in range(z):
+                matriz_corr[i, j] = self.result.covar[i, j]/(self.dict[lista[i]][1]*self.dict[lista[j]][1])
+        matriz_corr = matriz_corr.round(3)
+        self.report_fit += "\nMatriz de correlação:\n\n" + str(matriz_corr) + "\n\n"
+        self.isvalid     = True
+    
+    def __set_report_lm_special(self):
+        ngl             = len(self.data["x"]) - len(self.coef)
+        self.report_fit = ""
+        self.report_fit += "\nAjuste: y = %s\n"%self.exp_model
+        self.report_fit += "\nNGL  = %d"%(ngl)
+        self.report_fit += "\nSomatória dos resíduos absolutos ao quadrado = %f\n"%self.result.chisqr
+        self.report_fit += "Incerteza estimada = %f\n"%(self.result.chisqr/ngl)
         self.report_fit += "\nMatriz de covariância:\n\n" + str(self.result.covar) + "\n"
         lista           = list(self.params.keys())
         matriz_corr     = np.zeros((len(self.result.covar), len(self.result.covar)))
