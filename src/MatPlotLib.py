@@ -20,28 +20,28 @@ class DisplayBridge(QtCore.QObject):
         super().__init__(parent)
 
         # The figure, canvas, toolbar and axes
-        self.figure = None
-        self.canvas = None
+        self.figure  = None
+        self.canvas  = None
         self.toolbar = None
-        self.axes = None
-        self.ax1 = ''
-        self.ax2 = ''
+        self.axes    = None
+        self.ax1     = ''
+        self.ax2     = ''
 
         # Options
-        self.sigma_x = False
-        self.sigma_y = False
-        self.log_x = False
-        self.log_y = False
-        self.legend = False
-        self.grid = False
-        self.residuals = False
-        self.symbol_color = ''
-        self.symbol_size = 3
-        self.symbol = ''
-        self.curve_color = ''
+        self.sigma_x         = False
+        self.sigma_y         = False
+        self.log_x           = False
+        self.log_y           = False
+        self.legend          = False
+        self.grid            = False
+        self.residuals       = False
+        self.symbol_color    = ''
+        self.symbol_size     = 3
+        self.symbol          = ''
+        self.curve_color     = ''
         self.curve_thickness = 2
-        self.curve_style = ''
-        self.expression = ''
+        self.curve_style     = ''
+        self.expression      = ''
 
         # This is used to display the coordinates of the mouse in the window
         self._coordinates = ""
@@ -49,10 +49,10 @@ class DisplayBridge(QtCore.QObject):
     def updateWithCanvas(self, canvas):
         """ initialize with the canvas for the figure
         """
-        self.canvas = canvas
-        self.figure = self.canvas.figure
+        self.canvas  = canvas
+        self.figure  = self.canvas.figure
         self.toolbar = NavigationToolbar2QtQuick(canvas=canvas)
-        self.axes = self.figure.add_subplot(111)
+        self.axes    = self.figure.add_subplot(111)
         self.axes.grid(False)
         canvas.draw_idle()
 
@@ -61,10 +61,10 @@ class DisplayBridge(QtCore.QObject):
 
     def Plot(self, model, residuals, grid):
         # Data Predicted by the model and residuals
-        px, py, y_r = None, None, None
+        px, py, y_r    = None, None, None
 
         self.residuals = residuals
-        self.grid = grid
+        self.grid      = grid
 
         if model.has_data:
 
@@ -179,23 +179,23 @@ class DisplayBridge(QtCore.QObject):
                 self.axes.set(xlabel = str(model.eixos[0][0]))
 
         # Reseting parameters
-        px, py, y_r = None, None, None
+        px, py, y_r   = None, None, None
         model.isvalid = False
 
         self.canvas.draw_idle()
 
     def setStyle(self, log_x, log_y, symbol_color, symbol_size, symbol, curve_color, curve_thickness, curve_style, legend, expression):
         """Sets the style of the plot"""
-        self.log_x = bool(log_x)
-        self.log_y = bool(log_y)
-        self.symbol_color = symbol_color
-        self.symbol_size = symbol_size
-        self.symbol = symbol
-        self.curve_color = curve_color
+        self.log_x           = bool(log_x)
+        self.log_y           = bool(log_y)
+        self.symbol_color    = symbol_color
+        self.symbol_size     = symbol_size
+        self.symbol          = symbol
+        self.curve_color     = curve_color
         self.curve_thickness = curve_thickness
-        self.curve_style = curve_style
-        self.legend = bool(legend)
-        self.expression = expression
+        self.curve_style     = curve_style
+        self.legend          = bool(legend)
+        self.expression      = expression
     
     def setSigma(self, wsx, wsy):
         """Consider sigmas"""
@@ -231,20 +231,20 @@ class DisplayBridge(QtCore.QObject):
         self.canvas.draw_idle()
 
         # Options
-        self.sigma_x = False
-        self.sigma_y = False
-        self.log_x = False
-        self.log_y = False
-        self.legend = False
-        self.grid = False
-        self.residuals = False
-        self.symbol_color = ''
-        self.symbol_size = 3
-        self.symbol = ''
-        self.curve_color = ''
+        self.sigma_x         = False
+        self.sigma_y         = False
+        self.log_x           = False
+        self.log_y           = False
+        self.legend          = False
+        self.grid            = False
+        self.residuals       = False
+        self.symbol_color    = ''
+        self.symbol_size     = 3
+        self.symbol          = ''
+        self.curve_color     = ''
         self.curve_thickness = 2
-        self.curve_style = ''
-        self.expression = ''
+        self.curve_style     = ''
+        self.expression      = ''
 
         # This is used to display the coordinates of the mouse in the window
         self._coordinates = ""

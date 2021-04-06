@@ -45,6 +45,10 @@ class Model(QtCore.QObject):
         self.isvalid    = False
         self.has_sx     = True
         self.has_sy     = True
+        self.x          = None
+        self.y          = None
+        self.sy         = None
+        self.sx         = None
         
     def __str__(self):
         return self.report_fit
@@ -85,6 +89,11 @@ class Model(QtCore.QObject):
         df.columns    = ['x', 'y', 'sy', 'sx']
         self.data     = deepcopy(df)
         self.has_data = True
+        
+        self.x  = self.data["x"].to_numpy()
+        self.y  = self.data["y"].to_numpy()
+        self.sy = self.data["sy"].to_numpy()
+        self.sx = self.data["sx"].to_numpy()
                 
     def load_data(self, data_path):
         """ Loads the data from a given path. """
@@ -115,6 +124,11 @@ class Model(QtCore.QObject):
         df.columns    = ['x', 'y', 'sy', 'sx']
         self.data     = deepcopy(df)
         self.has_data = True
+
+        self.x  = self.data["x"].to_numpy()
+        self.y  = self.data["y"].to_numpy()
+        self.sy = self.data["sy"].to_numpy()
+        self.sx = self.data["sx"].to_numpy()
 
         x, y, sy, sx = self.get_data()  
 
@@ -379,7 +393,8 @@ class Model(QtCore.QObject):
         #     return self.data["x"].to_numpy(), self.data["y"].to_numpy()
         # elif self.mode == 1:
         #     return self.data["x"].to_numpy(), self.data["y"].to_numpy(), self.data["sy"].to_numpy()
-        return self.data["x"].to_numpy(), self.data["y"].to_numpy(), self.data["sy"].to_numpy(), self.data["sx"].to_numpy()
+        # return self.data["x"].to_numpy(), self.data["y"].to_numpy(), self.data["sy"].to_numpy(), self.data["sx"].to_numpy()
+        return self.x, self.y, self.sy, self.sx
         
     def get_predict(self, x_min = None, y_min = None):
         ''' Return the model prediction. '''
@@ -392,7 +407,7 @@ class Model(QtCore.QObject):
     
     def get_residuals(self):
         ''' Return residuals from adjust. '''
-        return self.data["y"].to_numpy() - self.model.eval(x = self.data["x"].to_numpy())
+        return self.y - self.model.eval(x = self.x)
 
     def reset(self):
         self.data       = None

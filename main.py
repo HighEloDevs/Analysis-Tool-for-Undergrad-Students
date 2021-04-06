@@ -101,7 +101,7 @@ class Bridge(QtCore.QObject):
 
         # Making plot
         displayBridge.Plot(model, props['residuos'], props['grade'])
-        
+
     @Slot(str)
     def loadData(self, file_path):
         """Gets the path to data's file and fills the data's table"""
