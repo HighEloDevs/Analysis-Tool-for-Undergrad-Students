@@ -192,7 +192,8 @@ class ProjectManager(QtCore.QObject):
                     options['legend'],
                     options['expr']
                     )
-        self.displayBridge.Plot(self.model, options['residuals'], options['grid'])
+        
+        self.displayBridge.Plot(self.model, options['residuals'], options['grid'], 0, 0, 0, 0, 0, 0)
 
         # Setting all options to frontend
         self.fillFuncPage.emit( options['expr'],

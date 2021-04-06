@@ -172,6 +172,11 @@ class Model(QtCore.QObject):
         df.columns    = ['x', 'y', 'sy', 'sx']
         self.data     = deepcopy(df)
         self.has_data = True
+        
+        self.x  = self.data["x"].to_numpy()
+        self.y  = self.data["y"].to_numpy()
+        self.sy = self.data["sy"].to_numpy()
+        self.sx = self.data["sx"].to_numpy()
 
         # x, y, sy, sx = df['x'], df['y'], df['sy'], df['sx']
 
