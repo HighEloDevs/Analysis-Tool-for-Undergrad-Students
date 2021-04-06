@@ -20,6 +20,7 @@ from src.MatPlotLib import DisplayBridge
 from src.Model import Model
 from src.Calculators import CalculatorCanvas, interpreter_calculator, Plot
 from src.ProjectManager import ProjectManager
+from src.MultiPlot import Multiplot
 from operator import mod
 
 # Instantiating the display bridge || Global variable
@@ -225,6 +226,7 @@ if __name__ == "__main__":
 
     # Creating bridge
     bridge = Bridge()
+    multiplot = Multiplot()
 
     # Project Manager
     projectMngr = ProjectManager(displayBridge, model)
@@ -235,6 +237,7 @@ if __name__ == "__main__":
     context.setContextProperty("backend", bridge)
     context.setContextProperty("model", model)
     context.setContextProperty("projectMngr", projectMngr)
+    context.setContextProperty("multiplot", multiplot)
     
     # Loading QML files
     plat = platform.system()

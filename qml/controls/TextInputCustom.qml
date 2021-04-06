@@ -10,7 +10,7 @@ Item{
     width: 200
     height: 50
     // Fixed height
-    implicitHeight: 45
+    // implicitHeight: 50
 
     // Some properties
     property color focusColor: '#f0f'

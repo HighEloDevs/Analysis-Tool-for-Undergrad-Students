@@ -107,7 +107,7 @@ Item{
                     Layout.fillWidth: false
                     Layout.fillHeight: true
                     interactive: false
-                    clip: true
+                    clip: true  
 
                     model: dataModel
                     delegate: Item{

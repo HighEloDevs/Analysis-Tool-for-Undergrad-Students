@@ -19,6 +19,13 @@ Button{
                                     root.hovered ? hoverColor : primaryColor
                                  }
 
+    MouseArea{
+        id: mouseArea
+        anchors.fill: parent
+        cursorShape: Qt.PointingHandCursor
+        onPressed:  mouse.accepted = false
+    }
+
     background: Rectangle{
         radius: 10
         color: dynamicColor

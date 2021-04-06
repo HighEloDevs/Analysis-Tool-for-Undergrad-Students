@@ -463,60 +463,6 @@ Item {
                             onClicked: colorDialog1.open()
                         }
 
-                        // Button {
-                        //     id: btnColor_curve
-                        //     height: 20
-                        //     Layout.preferredWidth: 120
-                        //     font.bold: false
-                        //     Layout.fillWidth: true
-                        //     checked: false
-
-                        //     ColorDialog {
-                        //         id: colorDialog1
-                        //         title: "Escolha uma cor para os pontos"
-                        //         onAccepted: {
-                        //             rectColor_curve.color = colorDialog1.color
-                        //         }
-                        //     }
-
-                        //     QtObject{
-                        //         id: internal2
-                        //         property var dynamicColor: if(btnColor_curve.down){
-                        //                                        btnColor_curve.down ? Colors.c_button_active : Colors.c_button
-                        //                                    } else {
-                        //                                        btnColor_curve.hovered ? Colors.c_button_hover : Colors.c_button
-                        //                                    }
-                        //     }
-
-                        //     background: Rectangle {
-                        //         id: btnbg1
-                        //         color: internal2.dynamicColor
-                        //         radius: 10
-                        //     }
-
-                        //     onClicked:{
-                        //         colorDialog1.open()
-                        //     }
-
-                        //     Layout.rowSpan: 1
-                        //     Layout.preferredHeight: 30
-                        //     display: AbstractButton.TextOnly
-                        //     Layout.fillHeight: false
-                        //     checkable: false
-
-                        //     contentItem: Item {
-                        //         id: content1
-                        //         anchors.fill: parent
-                        //         Text {
-                        //             color: "#ffffff"
-                        //             text: "Escolher Cor"
-                        //             anchors.verticalCenter: parent.verticalCenter
-                        //             anchors.horizontalCenter: parent.horizontalCenter
-                        //         }
-                        //     }
-                        //     font.pointSize: 10
-                        // }
-
                         Rectangle {
                             id: rectColor_curve
                             width: 30
@@ -540,15 +486,13 @@ Item {
 
                         SpinBox {
                             id: thickness
-                            width: 100
-                            height: 20
-                            Layout.columnSpan: 2
-                            value: 2
+                            Layout.fillHeight: false
                             Layout.fillWidth: true
+                            Layout.columnSpan: 2
+                            Layout.preferredHeight: 30
+                            value: 2
                             wrap: false
                             stepSize: 1
-                            Layout.preferredHeight: 30
-                            Layout.fillHeight: false
                             to: 10
                             from: 1
                         }
@@ -609,18 +553,7 @@ Item {
                     Layout.fillHeight: true
                     Layout.fillWidth: true
                 }
-
-
-
-
-
-
-
-
-
             }
-
-
         }
     }
 
@@ -653,11 +586,7 @@ Item {
             switchLegend.checked = legend
         }
     }
-
 }
-
-
-
 /*##^##
 Designer {
     D{i:0;formeditorZoom:1.33}D{i:3}

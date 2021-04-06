@@ -7,81 +7,17 @@ import "../controls"
 import "../colors.js" as Colors
 
 Item {
-    // TableData{
-    //     id: table
-    //     width: 300
-    //     height: 500
-    //     // anchors.fill: parent
+    id: root
+    
+    TableMultiPlot{
+        width: parent.width
+        height: 400
+    }
 
-    //     dataModel: ListModel{
-    //         id: dataSet
-    //         ListElement {x_v: 3; y_v: 3; sy: 3; sx: 3}
-    //         ListElement {x_v: 3; y_v: 3; sy: 3; sx: 3}
-    //         ListElement {x_v: 3; y_v: 3; sy: 3; sx: 3}
-    //         ListElement {x_v: 3; y_v: 3; sy: 3; sx: 3}
-    //         ListElement {x_v: 3; y_v: 3; sy: 3; sx: 3}
-    //         ListElement {x_v: 3; y_v: 3; sy: 3; sx: 3}
-    //         ListElement {x_v: 3; y_v: 3; sy: 3; sx: 3}
-    //         ListElement {x_v: 3; y_v: 3; sy: 3; sx: 3}
-    //         ListElement {x_v: 3; y_v: 3; sy: 3; sx: 3}
-    //         ListElement {x_v: 3; y_v: 3; sy: 3; sx: 3}
-    //         ListElement {x_v: 3; y_v: 3; sy: 3; sx: 3}
-    //         ListElement {x_v: 3; y_v: 3; sy: 3; sx: 3}
-    //         ListElement {x_v: 3; y_v: 3; sy: 3; sx: 3}
-    //         ListElement {x_v: 3; y_v: 3; sy: 3; sx: 3}
-    //         ListElement {x_v: 3; y_v: 3; sy: 3; sx: 3}
-    //         ListElement {x_v: 3; y_v: 3; sy: 3; sx: 3}
-    //     }   
-    // }
-
-    // TextButton{
-    //     texto: 'TEESTEE'
-    //     primaryColor: Colors.c_button
-    //     clickColor: Colors.c_button_active
-    //     hoverColor: Colors.c_button_hover
-    //     width: 100
-    //     onClicked: print('PINTO')
-    // }
-
-    // IconButton{
-    //     primaryColor: Colors.c_button
-    //     clickColor: Colors.c_button_active
-    //     hoverColor: Colors.c_button_hover
-    //     width: 30
-    //     height: 30
-    //     r: 4
-    //     iconUrl: '../../images/icons/chart-18px.svg'
-    //     iconColor: 'green'
-    // }
-
-    // Table{
-    //     id: table
-    //     headerModel: [
-    //         {text: 'Parâmetro', width: 1/2},
-    //         {text: 'Valor', width: 1/2},
-    //     ]
-    //     dataModel: ListModel{
-    //         id: dataSet
-    //         ListElement{parametro: 3; valor: 3}
-    //     } 
-    // }
-    // Button{
-    //     text: 'oi'
-    //     onClicked: {
-    //         table.clear()
-    //         // print(table.dataModel.get(0))
-    //         }
-    // }
-    Row{
-        TextButton{
-            onClicked: print(teste.text)
-        }
-        TextInputCustom{
-            id: teste
-            width: 400
-            focusColor: Colors.mainColor1
-            title: 'Título'
-            textHolder: 'Título do gráfico'
+    Connections{
+        target: multiplot
+        function onSetData(data){
+            print(data['projectName'])
         }
     }
 }

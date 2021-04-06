@@ -5,19 +5,24 @@ import "../colors.js" as Colors
 
 Button{
     id: root
-
     property color primaryColor: 'green'
     property color hoverColor: 'blue'
     property color clickColor: 'red'
     property color iconColor: 'white'
     property string iconUrl: ''
     property int r: 15 // Radius
-
     property color dynamicColor: if(root.down){
                                     root.down ? clickColor : primaryColor
                                  }else{
                                     root.hovered ? hoverColor : primaryColor
                                  }
+
+    MouseArea{
+        id: mouseArea
+        anchors.fill: parent
+        cursorShape: Qt.PointingHandCursor
+        onPressed:  mouse.accepted = false
+    }
 
     background: Rectangle{
         radius: r
