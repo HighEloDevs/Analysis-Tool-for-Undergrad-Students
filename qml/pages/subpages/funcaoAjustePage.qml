@@ -27,95 +27,33 @@ Item {
         GridLayout {
             id: bgLayout
             anchors.fill: parent
+            anchors.rightMargin: 10
+            anchors.leftMargin: 10
             columnSpacing: 0
             rowSpacing: 5
             rows: 6
             columns: 4
 
-            Rectangle {
-                id: rectangle1
-                height: 45
-                color: "#00000000"
-                Layout.columnSpan: 4
+            TextInputCustom{
+                id: expression
                 Layout.fillWidth: true
-
-                Label {
-                    id: label
-                    x: 10
-                    y: 274
-                    width: 110
-                    height: 49
-                    color: "#ffffff"
-                    text: qsTr("Expressão | y(x) = ")
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                    font.pointSize: 10
-                    anchors.leftMargin: 10
-                }
-
-                TextField {
-                    id: expression
-                    anchors.left: label.right
-                    anchors.right: parent.right
-                    anchors.top: parent.top
-                    anchors.bottom: parent.bottom
-                    anchors.rightMargin: 10
-                    anchors.topMargin: 10
-                    anchors.bottomMargin: 10
-                    anchors.leftMargin: 5
-                    placeholderText: qsTr("Ex.: a*x + b")
-                    selectByMouse: true
-
-                    background: Rectangle{
-                        radius: 5
-                        border.color: expression.focus ? Colors.mainColor2:'#00000000'
-                        border.width: 2
-                    }
-                }
+                Layout.columnSpan: 4
+                focusColor: Colors.mainColor2
+                title: 'Expressão | y(x) ='
+                textHolder: 'Função a ser ajustada'
+                defaultColor: '#fff'
+                textColor: '#fff'
             }
 
-            Rectangle {
-                id: rectangle
-                height: 45
-                color: "#00000000"
-                Layout.columnSpan: 4
+            TextInputCustom{
+                id: p0
                 Layout.fillWidth: true
-
-                Label {
-                    id: label1
-                    x: 10
-                    y: 274
-                    width: 110
-                    height: 49
-                    color: "#ffffff"
-                    text: qsTr("Parâmetros Iniciais")
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                    anchors.leftMargin: 10
-                    font.pointSize: 10
-                }
-
-                TextField {
-                    id: p0
-                    anchors.left: label1.right
-                    anchors.right: parent.right
-                    anchors.top: parent.top
-                    anchors.bottom: parent.bottom
-                    anchors.leftMargin: 5
-                    anchors.topMargin: 10
-                    placeholderText: qsTr("Ex.: 0, 1, 2, 3, 3.4, 4.33, ...")
-                    anchors.rightMargin: 10
-                    anchors.bottomMargin: 10
-                    selectByMouse: true
-
-                    background: Rectangle{
-                        radius: 5
-                        border.color: p0.focus ? Colors.mainColor2:'#00000000'
-                        border.width: 2
-                    }
-                }
+                Layout.columnSpan: 4
+                focusColor: Colors.mainColor2
+                title: 'Parâmetros Iniciais'
+                textHolder: 'Ex.: 0, 32, 4.3, 23.4'
+                defaultColor: '#fff'
+                textColor: '#fff'
             }
 
             RowLayout {
@@ -126,14 +64,6 @@ Item {
                 Layout.fillWidth: true
                 Layout.rowSpan: 1
 
-                // Label {
-                //     id: label7
-                //     color: "#ffffff"
-                //     text: qsTr("Incerteza em X")
-                //     Layout.fillWidth: false
-                //     Layout.leftMargin: 10
-                // }
-
                 CheckBoxCustom{
                     id: switch_sigmax
                     Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
@@ -142,13 +72,6 @@ Item {
                     checked: true
                     texto: "Incerteza em X"
                 }
-
-                // Label {
-                //     id: label8
-                //     color: "#ffffff"
-                //     text: qsTr("Incerteza em Y")
-                //     Layout.fillWidth: false
-                // }
 
                 CheckBoxCustom{
                     id: switch_sigmay
@@ -164,8 +87,8 @@ Item {
                 height: 130
                 Layout.columnSpan: 4
                 Layout.preferredHeight: 35
-                Layout.rightMargin: 10
-                Layout.leftMargin: 10
+                Layout.rightMargin: 0
+                Layout.leftMargin: 0
                 Layout.fillHeight: true
                 Layout.fillWidth: true
                 headerModel: [
@@ -183,8 +106,8 @@ Item {
                 Layout.columnSpan: 4
                 Layout.preferredHeight: 50
                 Layout.topMargin: 10
-                Layout.rightMargin: 10
-                Layout.leftMargin: 10
+                Layout.rightMargin: 0
+                Layout.leftMargin: 0
                 Layout.fillHeight: true
                 Layout.fillWidth: true
                 title: qsTr("Dados do Ajuste")

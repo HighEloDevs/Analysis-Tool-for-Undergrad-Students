@@ -134,6 +134,8 @@ Item {
                         ymin: pageProp.ymin,
                         ymax: pageProp.ymax,
                         ydiv: pageProp.ydiv,
+                        resMin: pageProp.resMin,
+                        resMax: pageProp.resMax
                     })
                 }
             }

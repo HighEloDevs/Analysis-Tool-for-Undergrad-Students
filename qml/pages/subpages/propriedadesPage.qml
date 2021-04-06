@@ -30,6 +30,8 @@ Item {
     property int ymin: Number(ymin.text)
     property int ymax: Number(ymax.text)
     property int ydiv: Number(ydiv.text)
+    property int resMin: Number(resMin.text)
+    property int resMax: Number(resMax.text)
 
     Rectangle {
         id: bg
@@ -43,69 +45,47 @@ Item {
         ScrollView {
             id: scrollView
             anchors.fill: parent
+            rightPadding: 10
+            leftPadding: 10
+            anchors.rightMargin: 0
+            anchors.leftMargin: 0
+            anchors.bottomMargin: 0
             anchors.topMargin: 5
 
             ScrollBar.horizontal.policy: ScrollBar.AsNeeded
             ScrollBar.vertical.policy: ScrollBar.AsNeeded
 
             contentWidth: gridLayout.width
+            contentHeight: gridLayout.height
 
             GridLayout {
                 id: gridLayout
-                width: bg.width
-                columnSpacing: 5
+                width: 366
+                columnSpacing: 0
                 rowSpacing: 5
                 rows: 10
                 columns: 6
 
-                Label {
-                    id: label
-                    color: "#ffffff"
-                    text: qsTr("Título")
-                    Layout.leftMargin: 5
-                    Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-                    Layout.fillWidth: false
-                }
-
-                TextField {
+                TextInputCustom{
                     id: titulo
-                    height: 30
-                    Layout.rightMargin: 5
-                    rightPadding: 10
-                    Layout.rowSpan: 1
-                    Layout.columnSpan: 5
                     Layout.fillWidth: true
-                    placeholderText: qsTr("Título do Gráfico")
-                    selectByMouse: true
-
-                    background: Rectangle{
-                        radius: 5
-                        border.color: titulo.focus ? Colors.mainColor2:'#00000000'
-                        border.width: 2
-                    }
+                    Layout.columnSpan: 6
+                    focusColor: Colors.mainColor2
+                    title: 'Título do Gráfico'
+                    textHolder: ''
+                    defaultColor: '#fff'
+                    textColor: '#fff'
                 }
 
-                Label {
-                    id: label1
-                    color: "#ffffff"
-                    text: qsTr("Eixo X")
-                    Layout.leftMargin: 5
-                    Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-                }
-
-                TextField {
+                TextInputCustom{
                     id: eixox
-                    height: 30
                     Layout.fillWidth: true
-                    Layout.columnSpan: 4
-                    placeholderText: qsTr("Título de Eixo X")
-                    selectByMouse: true
-
-                    background: Rectangle{
-                        radius: 5
-                        border.color: eixox.focus ? Colors.mainColor2:'#00000000'
-                        border.width: 2
-                    }
+                    Layout.columnSpan: 5
+                    focusColor: Colors.mainColor2
+                    title: 'Eixo X'
+                    textHolder: 'Título do Eixo X'
+                    defaultColor: '#fff'
+                    textColor: '#fff'
                 }
 
                 CheckBoxCustom{
@@ -116,116 +96,54 @@ Item {
                 }
 
                 Rectangle {
-                    id: rectangle
-                    width: 200
-                    height: 200
                     color: "#00000000"
-                    Layout.preferredHeight: 30
+                    Layout.preferredHeight: 50
                     Layout.fillWidth: true
                     Layout.columnSpan: 6
 
                     RowLayout {
-                        id: rowLayout
                         anchors.fill: parent
-
-                        Label {
-                            id: label3
-                            color: "#ffffff"
-                            text: qsTr("X mín.")
-                            Layout.fillWidth: false
-                            Layout.leftMargin: 5
-                        }
-
-                        TextField {
+                        TextInputCustom{
                             id: xmin
-                            height: 30
                             Layout.fillWidth: true
-                            placeholderText: qsTr("Ex.: 3.3, 2, 2.54")
-                            background: Rectangle {
-                                radius: 5
-                                border.color: xmin.focus ? Colors.mainColor2:'#00000000'
-                                border.width: 2
-                            }
-                            Layout.columnSpan: 1
-                            selectByMouse: true
+                            focusColor: Colors.mainColor2
+                            title: 'X Mínimo'
+                            textHolder: 'Menor valor de X no gráfico'
+                            defaultColor: '#fff'
+                            textColor: '#fff'
                         }
-
-                        Label {
-                            id: label4
-                            color: "#ffffff"
-                            text: qsTr("X máx.")
-                            Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-                            Layout.fillWidth: false
-                        }
-
-                        TextField {
+                        TextInputCustom{
                             id: xmax
-                            width: 61
-                            height: 30
-                            clip: false
                             Layout.fillWidth: true
-                            placeholderText: qsTr("Ex.: 3.3, 2, 2.54")
-                            background: Rectangle {
-                                radius: 5
-                                border.color: xmax.focus ? Colors.mainColor2:'#00000000'
-                                border.width: 2
-                            }
-                            Layout.columnSpan: 1
-                            selectByMouse: true
+                            focusColor: Colors.mainColor2
+                            title: 'X Máximo'
+                            textHolder: 'Maior valor de X no gráfico'
+                            defaultColor: '#fff'
+                            textColor: '#fff'
                         }
-
-                        Label {
-                            id: label5
-                            color: "#ffffff"
-                            text: qsTr("Divisões")
-                            Layout.fillWidth: false
-                            clip: false
-                        }
-
-                        TextField {
+                        TextInputCustom{
                             id: xdiv
-                            width: 88
-                            height: 30
-                            font.kerning: true
-                            font.preferShaping: true
-                            Layout.rightMargin: 5
-                            rightInset: 0
                             Layout.fillWidth: true
-                            placeholderText: qsTr("Ex.: 1, 2, 3...")
-                            background: Rectangle {
-                                radius: 5
-                                border.color: xdiv.focus ? Colors.mainColor2:'#00000000'
-                                border.width: 2
-                            }
-                            Layout.columnSpan: 1
-                            selectByMouse: true
+                            focusColor: Colors.mainColor2
+                            title: 'Divisões em X'
+                            textHolder: 'Número de divisões no eixo'
+                            defaultColor: '#fff'
+                            textColor: '#fff'
                         }
                     }
                 }
 
-                Label {
-                    id: label2
-                    color: "#ffffff"
-                    text: qsTr("Eixo Y")
-                    Layout.leftMargin: 5
-                    Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-                }
-
-                TextField {
+                TextInputCustom{
                     id: eixoy
-                    height: 30
                     Layout.fillWidth: true
-                    Layout.columnSpan: 4
-                    placeholderText: qsTr("Título do Eixo Y")
-                    selectByMouse: true
-
-                    background: Rectangle{
-                        radius: 5
-                        border.color: eixoy.focus ? Colors.mainColor2:'#00000000'
-                        border.width: 2
-                    }
+                    Layout.columnSpan: 5
+                    focusColor: Colors.mainColor2
+                    title: 'Eixo Y'
+                    textHolder: 'Título do Eixo Y'
+                    defaultColor: '#fff'
+                    textColor: '#fff'
                 }
-
+                
                 CheckBoxCustom{
                     id: log_eixoy
                     w: 25
@@ -234,86 +152,41 @@ Item {
                 }
 
                 Rectangle {
-                    id: rectangle2
-                    width: 200
-                    height: 200
-                    color: "#00000000"
+                    Layout.columnSpan: 6
+                    Layout.preferredHeight: 50
                     Layout.fillWidth: true
+                    color: "#00000000"
+
                     RowLayout {
-                        id: rowLayout1
                         anchors.fill: parent
-                        Label {
-                            id: label6
-                            color: "#ffffff"
-                            text: qsTr("Y mín.")
-                            Layout.leftMargin: 5
-                            Layout.fillWidth: false
-                        }
-
-                        TextField {
+                        TextInputCustom{
                             id: ymin
-                            height: 30
                             Layout.fillWidth: true
-                            placeholderText: qsTr("Ex.: 3.3, 2, 2.54")
-                            background: Rectangle {
-                                radius: 5
-                                border.color: ymin.focus ? Colors.mainColor2:'#00000000'
-                                border.width: 2
-                            }
-                            Layout.columnSpan: 1
-                            selectByMouse: true
+                            focusColor: Colors.mainColor2
+                            title: 'Y Mínimo'
+                            textHolder: 'Menor valor de Y no gráfico'
+                            defaultColor: '#fff'
+                            textColor: '#fff'
                         }
-
-                        Label {
-                            id: label7
-                            color: "#ffffff"
-                            text: qsTr("Y máx.")
-                            Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-                            Layout.fillWidth: false
-                        }
-
-                        TextField {
+                        TextInputCustom{
                             id: ymax
-                            width: 61
-                            height: 30
-                            clip: false
                             Layout.fillWidth: true
-                            placeholderText: qsTr("Ex.: 3.3, 2, 2.54")
-                            background: Rectangle {
-                                radius: 5
-                                border.color: ymax.focus ? Colors.mainColor2:'#00000000'
-                                border.width: 2
-                            }
-                            Layout.columnSpan: 1
-                            selectByMouse: true
+                            focusColor: Colors.mainColor2
+                            title: 'Y Máximo'
+                            textHolder: 'Maior valor de Y no gráfico'
+                            defaultColor: '#fff'
+                            textColor: '#fff'
                         }
-
-                        Label {
-                            id: label8
-                            color: "#ffffff"
-                            text: qsTr("Divisões")
-                            clip: false
-                            Layout.fillWidth: false
-                        }
-
-                        TextField {
+                        TextInputCustom{
                             id: ydiv
-                            height: 30
-                            Layout.rightMargin: 5
                             Layout.fillWidth: true
-                            placeholderText: qsTr("Ex.: 1, 2, 3...")
-                            rightInset: 0
-                            background: Rectangle {
-                                radius: 5
-                                border.color: ydiv.focus ? Colors.mainColor2:'#00000000'
-                                border.width: 2
-                            }
-                            Layout.columnSpan: 1
-                            selectByMouse: true
+                            focusColor: Colors.mainColor2
+                            title: 'Divisões em Y'
+                            textHolder: 'Número de divisões no eixo'
+                            defaultColor: '#fff'
+                            textColor: '#fff'
                         }
                     }
-                    Layout.columnSpan: 6
-                    Layout.preferredHeight: 30
                 }
 
                 CheckBoxCustom{
@@ -343,10 +216,30 @@ Item {
                     checked: false
                 }
 
+                TextInputCustom{
+                    id: resMax
+                    Layout.fillWidth: true
+                    Layout.columnSpan: 3
+                    focusColor: Colors.mainColor2
+                    title: 'Resíduos - Y Máximo'
+                    textHolder: 'Y Máximo do gráfico de resíduos'
+                    defaultColor: '#fff'
+                    textColor: '#fff'
+                }
+
+                TextInputCustom{
+                    id: resMin
+                    Layout.fillWidth: true
+                    Layout.columnSpan: 3
+                    focusColor: Colors.mainColor2
+                    title: 'Resíduos - Y Mínimo'
+                    textHolder: 'Y Minimo do gráfico de resíduos'
+                    defaultColor: '#fff'
+                    textColor: '#fff'
+                }
+
                 GroupBox {
                     id: groupBox_pontos
-                    width: 200
-                    height: 100
                     Layout.columnSpan: 6
                     Layout.topMargin: 0
                     Layout.preferredHeight: 150
@@ -366,7 +259,6 @@ Item {
                     }
 
                     label: Label {
-                        //                        x: groupBox.leftPadding
                         width: groupBox_pontos.availableWidth
                         text: groupBox_pontos.title
                         color: "#ffffff"
@@ -768,6 +660,6 @@ Item {
 
 /*##^##
 Designer {
-    D{i:0;formeditorZoom:1.33}D{i:12}D{i:26}D{i:3}
+    D{i:0;formeditorZoom:1.33}D{i:3}
 }
 ##^##*/

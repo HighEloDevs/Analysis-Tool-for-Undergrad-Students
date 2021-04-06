@@ -72,6 +72,18 @@ Item {
     //         // print(table.dataModel.get(0))
     //         }
     // }
+    Row{
+        TextButton{
+            onClicked: print(teste.text)
+        }
+        TextInputCustom{
+            id: teste
+            width: 400
+            focusColor: Colors.mainColor1
+            title: 'Título'
+            textHolder: 'Título do gráfico'
+        }
+    }
 }
 
 /*##^##

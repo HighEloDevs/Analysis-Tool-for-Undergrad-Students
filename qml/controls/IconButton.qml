@@ -9,9 +9,9 @@ Button{
     property color primaryColor: 'green'
     property color hoverColor: 'blue'
     property color clickColor: 'red'
-    property color iconColor: 'blue'
+    property color iconColor: 'white'
     property string iconUrl: ''
-    property int r: 15
+    property int r: 15 // Radius
 
     property color dynamicColor: if(root.down){
                                     root.down ? clickColor : primaryColor
