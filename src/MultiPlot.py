@@ -17,16 +17,29 @@ class Multiplot(QtCore.QObject):
 
     setData = Signal(QtCore.QJsonValue, arguments='data')
 
-    @Slot(str)
-    def loadData(self, fileUrl):
+    @Slot(str, int)
+    def loadData(self, fileUrl, row):
+        curveStyles = {
+            '-': 0,
+            '--': 1,
+            '-.':2
+        }
         # Opening json file
         with open(QtCore.QUrl(fileUrl).toLocalFile(), encoding='utf-8') as file:
             data = json.load(file)
 
         self.setData.emit(QtCore.QJsonValue.fromVariant({
+            'row': row,
+            'data': data['data'],
+            'params': [],
             'fileName': QtCore.QUrl(fileUrl).toLocalFile().split('/')[-1],
             'projectName': data['projectName'],
             'expr': data['expr'],
             'p0': data['p0'],
-            'symbolColor': data['symbol_color']
+            'symbolColor': data['symbol_color'],
+            'curve': curveStyles[data['curve_style']]
         }))
+
+    @Slot(QtCore.QJsonValue)
+    def getData(self, data):
+        print(data.toObject())

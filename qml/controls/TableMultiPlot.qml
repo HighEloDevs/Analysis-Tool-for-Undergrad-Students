@@ -11,7 +11,8 @@ Item {
     id: root
     width: 600
     height: 400
-     
+    
+    // Fixed header
     property variant headerArr: [
         {title: 'Projeto (.json)', width: 4.5/20},
         {title: 'Pontos', width: 1.5/20},
@@ -22,14 +23,55 @@ Item {
         {title: 'Excluir', width: 1.5/20}
     ]
 
-    property variant dataSet: ListModel{
-        ListElement{ projeto: 'TESTE' }
+    property variant dataSet: ListModel{}
+
+    property variant dataShaped: {
+        'rows': [],
+        'options': {
+            'xmin': 0,
+            'xmax': 0,
+            'xdiv': 0,
+            'ymin': 0,
+            'ymax': 0,
+            'ydiv': 0,
+            'logx': false,
+            'logy': false,
+            'grid': false,
+            'title': '',
+            'xaxis': '',
+            'yaxis': ''
+        }
     }
 
-    function addRow(data){
+    function addRow(){
         dataSet.insert(dataSet.count, {
-            
+            fileName: 'Escolha o Projeto',
+            marker: true,
+            func: true,
+            label: '',
+            markerColor: '#fff',
+            curve: 0
         })
+    }
+
+    function fillRow(options){
+        dataSet.setProperty(options['row'], 'fileName', options['fileName'])
+        dataSet.setProperty(options['row'], 'label', options['projectName'])
+        dataSet.setProperty(options['row'], 'markerColor', options['symbolColor'])
+        dataSet.setProperty(options['row'], 'curve', options['curve'])
+
+        let curveStyles = {
+            0: '-',
+            1: '--',
+            2: '-.'
+        }
+        dataShaped['rows'][options['row']]['df'] = options['data']
+        dataShaped['rows'][options['row']]['params'] = options['params']
+        dataShaped['rows'][options['row']]['expr'] = options['expr']
+        dataShaped['rows'][options['row']]['p0'] = options['p0']
+        dataShaped['rows'][options['row']]['label'] = options['projectName']
+        dataShaped['rows'][options['row']]['markerColor'] = options['symbolColor']
+        dataShaped['rows'][options['row']]['curve'] = curveStyles[options['curve']]
     }
 
     ColumnLayout{
@@ -73,6 +115,8 @@ Item {
 
             ScrollView{
                 anchors.fill: parent
+                anchors.rightMargin: 2
+                anchors.leftMargin: 2
                 contentWidth: root.width
                 contentHeight: listViewTable.height
                 ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
@@ -96,6 +140,18 @@ Item {
 
                         Row{
                             anchors.fill: parent
+                            // Each row has its data
+                            property variant dataRow: {
+                                'df': {},
+                                'params': [],
+                                'expr': '',
+                                'p0': '',
+                                'marker': checkBoxMarker.checked,
+                                'func': checkBoxFunc.checked,
+                                'label': textInputLabel.text,
+                                'markerColor': '#fff',
+                                'curve': comboBoxCurve.currentText
+                            }
                             Item{
                                 width: headerArr[0].width * root.width
                                 height: parent.height
@@ -124,7 +180,7 @@ Item {
                                             selectMultiple: false
                                             nameFilters: ["Arquivos JSON (*.json)"]
                                             onAccepted:{
-                                                multiplot.loadData(fileUrl)
+                                                multiplot.loadData(fileUrl, row)
                                             }
                                         }
 
@@ -134,7 +190,7 @@ Item {
                                         height: parent.height
                                         width: parent.width - iconBtn.width
                                         verticalAlignment: Text.AlignVCenter
-                                        text: 'Escolha o projeto'
+                                        text: fileName
                                         color: 'white'
                                         font.pixelSize: 12
                                         elide: Text.ElideRight
@@ -146,42 +202,57 @@ Item {
                                 width: headerArr[1].width * root.width
                                 height: parent.height
                                 CheckBoxCustom{
+                                    id: checkBoxMarker
                                     anchors.verticalCenter: parent.verticalCenter
                                     anchors.horizontalCenter: parent.horizontalCenter
-                                    checked: false
+                                    checked: marker
+
+                                    onCheckedChanged: {
+                                        dataShaped['rows'][row]['marker'] = Boolean(checkBoxMarker.checkState)
+                                    }
                                 }
                             }
                             Item{
                                 width: headerArr[2].width * root.width
                                 height: parent.height
                                 CheckBoxCustom{
+                                    id: checkBoxFunc
                                     anchors.verticalCenter: parent.verticalCenter
                                     anchors.horizontalCenter: parent.horizontalCenter
+                                    checked: func
+
+                                    onCheckedChanged: {
+                                        dataShaped['rows'][row]['func'] = Boolean(checkBoxFunc.checkState)
+                                    }
                                 }
                             }
                             Item{
                                 width: headerArr[3].width * root.width
                                 height: parent.height
                                 TextInput{
-                                    id: textInput
+                                    id: textInputLabel
                                     verticalAlignment: TextInput.AlignVCenter
                                     anchors.fill: parent
                                     anchors.rightMargin: 10
                                     anchors.leftMargin: 10
                                     selectByMouse: true
-                                    color: 'white'
+                                    color: '#fff'
                                     font.pixelSize: 14
                                     clip: true
+
+                                    text: label
+
+                                    onEditingFinished: dataShaped['rows'][row]['label'] = textInputLabel.text
                                 }
                                 Rectangle{
-                                    anchors.top: textInput.bottom
+                                    anchors.top: textInputLabel.bottom
                                     anchors.right: parent.right
                                     anchors.left: parent.left
                                     anchors.topMargin: -10
                                     anchors.rightMargin: 10
                                     anchors.leftMargin: 10
                                     height: 2
-                                    color: textInput.focus? Colors.mainColor2 : '#fff'
+                                    color: textInputLabel.focus? Colors.mainColor2 : '#fff'
                                 }
                             }
                             Item{
@@ -191,17 +262,20 @@ Item {
                                     id: colorBtn
                                     anchors.verticalCenter: parent.verticalCenter
                                     anchors.horizontalCenter: parent.horizontalCenter
-                                    primaryColor: '#fff'
+                                    width: 45
+                                    height: 20
+                                    primaryColor: markerColor
                                     hoverColor: colorBtn.primaryColor
                                     clickColor: colorBtn.primaryColor
                                     textColor: '#000'
-                                    texto: 'Cor'
+                                    texto: ''
 
                                     ColorDialog {
                                         id: colorDialog
                                         title: "Escolha uma cor para os pontos"
                                         onAccepted: {
                                             colorBtn.primaryColor = colorDialog.color
+                                            dataShaped['rows'][row]['markerColor'] = colorDialog.color
                                         }
                                     }
 
@@ -214,11 +288,15 @@ Item {
                                 height: parent.height
 
                                 ComboBoxCustom{
+                                    id: comboBoxCurve
                                     anchors.fill: parent
                                     anchors.rightMargin: 10
                                     anchors.leftMargin: 10
                                     anchors.topMargin: 8
                                     anchors.bottomMargin: 8
+                                    currentIndex: curve
+
+                                    onAccepted: dataShaped['rows'][row]['curve'] = comboBoxCurve.currentText
                                 }
                             }
 
@@ -229,8 +307,14 @@ Item {
                                 TrashButton{
                                     anchors.verticalCenter: parent.verticalCenter
                                     anchors.horizontalCenter: parent.horizontalCenter
+
+                                    onClicked: {
+                                        dataShaped['rows'].splice(row, 1)
+                                        dataSet.remove(row)  
+                                    }
                                 }
                             }
+                            Component.onCompleted: dataShaped['rows'].push(dataRow)
                         }
                     }
                 }
@@ -242,6 +326,22 @@ Item {
             Layout.fillWidth: true
             height: 20
             color: Colors.color1
+
+            IconButton{
+                id: addRowBtn
+                anchors.left: parent.left
+                anchors.leftMargin: 2
+                height: parent.height
+                width: addRowBtn.height
+                primaryColor: 'transparent'
+                hoverColor: 'transparent'
+                clickColor: 'transparent'
+                iconColor: '#fff'
+                iconUrl: '../../images/icons/add_white-24px.svg'
+                r: 0
+                
+                onClicked: addRow()
+            }
         }
     }
 }

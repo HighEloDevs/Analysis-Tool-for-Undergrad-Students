@@ -42,7 +42,6 @@ class Bridge(QtCore.QObject):
     def getProps(self, props):
         self.emitData.emit()
         props = props.toObject()
-        print(props)
 
         displayBridge.setSigma(props['sigmax'], props['sigmay'])
 
