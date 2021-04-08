@@ -132,9 +132,9 @@ class Multiplot(QtCore.QObject):
         self.displayBridge.axes.set_title(self.title)
         self.displayBridge.axes.set(xlabel = self.xaxis, ylabel = self.yaxis)
         handles, labels = self.displayBridge.axes.get_legend_handles_labels()
-        # print(handles, labels)
-        by_label = dict(zip(np.array(labels, dtype=object)[::-1], np.array(handles, dtype=object)[::-1]))
-        self.displayBridge.axes.legend(by_label.values(), by_label.keys())
+        if len(handles) > 0:
+            by_label = dict(zip(np.array(labels, dtype=object)[::-1], np.array(handles, dtype=object)[::-1]))
+            self.displayBridge.axes.legend(by_label.values(), by_label.keys())
 
     def Plot_sx_sy(self, df, options):
         if options['label'] != '':
@@ -161,7 +161,7 @@ class Multiplot(QtCore.QObject):
             ecolor = options['markerColor'], capsize = 0, elinewidth = 1, ms = 2, marker = '.', color = options['markerColor'], ls = 'none')
     
     def Func_plot(self, options, model, params):
-        px = np.linspace(self.Multi_Model.min_x, self.Multi_Model.max_x, 350)
+        px = np.linspace(self.Multi_Model.min_x, self.Multi_Model.max_x, 1000)
         py = model.eval(x = px, params = params)
         if options['label'] != '':
             self.displayBridge.axes.plot(px, py, lw = 2, color = options['markerColor'], ls = options['curve'], label = '${}$'.format(options['label']))
