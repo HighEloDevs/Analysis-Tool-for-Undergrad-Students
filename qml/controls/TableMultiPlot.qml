@@ -337,8 +337,8 @@ Item {
 
             IconButton{
                 id: addRowBtn
-                anchors.left: parent.left
-                anchors.leftMargin: 2
+                anchors.right: parent.right
+                anchors.rightMargin: 2
                 height: parent.height
                 width: addRowBtn.height
                 primaryColor: 'transparent'
@@ -348,10 +348,7 @@ Item {
                 iconUrl: '../../images/icons/add_white-24px.svg'
                 r: 0
                 
-                onClicked: {
-                    addRow()
-                    chooseProject.open()
-                }
+                onClicked: addRow()
             }
         }
     }

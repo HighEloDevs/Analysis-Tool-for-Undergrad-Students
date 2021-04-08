@@ -9,6 +9,7 @@ MultiPlot Class
 """
 
 import json
+import matplotlib.pyplot as plt
 from PySide2 import QtCore
 from PySide2.QtCore import Slot, Signal
 from .Model_multiplot import MultiModel
@@ -114,37 +115,55 @@ class Multiplot(QtCore.QObject):
 
         for i in range(len(self.Multi_Model.models)):
             if self.Multi_Model.num_cols[i] == 4:
+                if self.Multi_Model.arquivos[i]['func'] == True and self.Multi_Model.models[i] != 0.:
+                    self.Func_plot(self.Multi_Model.arquivos[i], self.Multi_Model.models[i], self.Multi_Model.parameters[i])
                 if self.Multi_Model.arquivos[i]['marker'] == True:
                     self.Plot_sx_sy(self.Multi_Model.dfs[i], self.Multi_Model.arquivos[i])
+            elif self.Multi_Model.num_cols[i] == 3:
                 if self.Multi_Model.arquivos[i]['func'] == True and self.Multi_Model.models[i] != 0.:
                     self.Func_plot(self.Multi_Model.arquivos[i], self.Multi_Model.models[i], self.Multi_Model.parameters[i])
-            elif self.Multi_Model.num_cols[i] == 3:
                 if self.Multi_Model.arquivos[i]['marker'] == True:
                     self.Plot_sy(self.Multi_Model.dfs[i], self.Multi_Model.arquivos[i])
+            else:
                 if self.Multi_Model.arquivos[i]['func'] == True and self.Multi_Model.models[i] != 0.:
                     self.Func_plot(self.Multi_Model.arquivos[i], self.Multi_Model.models[i], self.Multi_Model.parameters[i])
-            else:
                 if self.Multi_Model.arquivos[i]['marker'] == True:
                     self.Plot_op(self.Multi_Model.dfs[i], self.Multi_Model.arquivos[i])
-                if self.Multi_Model.arquivos[i]['func'] == True and self.Multi_Model.models[i] != 0.:
-                    self.Func_plot(self.Multi_Model.arquivos[i], self.Multi_Model.models[i], self.Multi_Model.parameters[i])
         self.displayBridge.axes.set_title(self.title)
         self.displayBridge.axes.set(xlabel = self.xaxis, ylabel = self.yaxis)
+        handles, labels = self.displayBridge.axes.get_legend_handles_labels()
+        # print(handles, labels)
+        by_label = dict(zip(np.array(labels, dtype=object)[::-1], np.array(handles, dtype=object)[::-1]))
+        self.displayBridge.axes.legend(by_label.values(), by_label.keys())
 
     def Plot_sx_sy(self, df, options):
-        self.displayBridge.axes.errorbar(df['x'], df['y'], yerr=df['sy'], xerr = df['sx'],
-         ecolor = options['markerColor'], capsize = 0, elinewidth = 1, ms = 2, marker = '.', color = options['markerColor'], ls = 'none')
+        if options['label'] != '':
+            self.displayBridge.axes.errorbar(df['x'], df['y'], yerr=df['sy'], xerr = df['sx'],
+            ecolor = options['markerColor'], capsize = 0, elinewidth = 1, ms = 2, marker = '.', color = options['markerColor'], ls = 'none', label = '${}$'.format(options['label']))
+        else:
+            self.displayBridge.axes.errorbar(df['x'], df['y'], yerr=df['sy'], xerr = df['sx'],
+            ecolor = options['markerColor'], capsize = 0, elinewidth = 1, ms = 2, marker = '.', color = options['markerColor'], ls = 'none')
     
     def Plot_sy(self, df, options):
-        self.displayBridge.axes.errorbar(df['x'], df['y'], yerr=df['sy'],
-         ecolor = options['markerColor'], capsize = 0, elinewidth = 1, ms = 2, marker = '.', color = options['markerColor'], ls = 'none')
+        if options['label'] != '':
+            self.displayBridge.axes.errorbar(df['x'], df['y'], yerr=df['sy'],
+            ecolor = options['markerColor'], capsize = 0, elinewidth = 1, ms = 2, marker = '.', color = options['markerColor'], ls = 'none', label = '${}$'.format(options['label']))
+        else:
+            self.displayBridge.axes.errorbar(df['x'], df['y'], yerr=df['sy'],
+            ecolor = options['markerColor'], capsize = 0, elinewidth = 1, ms = 2, marker = '.', color = options['markerColor'], ls = 'none')
     
     def Plot_op(self, df, options):
-        self.displayBridge.axes.errorbar(df['x'], df['y'],
-         ecolor = options['markerColor'], capsize = 0, elinewidth = 1, ms = 2, marker = '.', color = options['markerColor'], ls = 'none')
+        if options['label'] != '':
+            self.displayBridge.axes.errorbar(df['x'], df['y'],
+            ecolor = options['markerColor'], capsize = 0, elinewidth = 1, ms = 2, marker = '.', color = options['markerColor'], ls = 'none', label = '${}$'.format(options['label']))
+        else:
+            self.displayBridge.axes.errorbar(df['x'], df['y'],
+            ecolor = options['markerColor'], capsize = 0, elinewidth = 1, ms = 2, marker = '.', color = options['markerColor'], ls = 'none')
     
     def Func_plot(self, options, model, params):
-        # print(options['curve'])
         px = np.linspace(self.Multi_Model.min_x, self.Multi_Model.max_x, 350)
         py = model.eval(x = px, params = params)
-        self.displayBridge.axes.plot(px, py, lw = 2, color = options['markerColor'], ls = options['curve'], label = '${}$'.format(options['label']))
+        if options['label'] != '':
+            self.displayBridge.axes.plot(px, py, lw = 2, color = options['markerColor'], ls = options['curve'], label = '${}$'.format(options['label']))
+        else:
+            self.displayBridge.axes.plot(px, py, lw = 2, color = options['markerColor'], ls = options['curve'])
