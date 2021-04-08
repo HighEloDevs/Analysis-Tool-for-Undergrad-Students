@@ -9,6 +9,7 @@ MatPlotLib Class
 """
 from matplotlib_backend_qtquick.backend_qtquick import NavigationToolbar2QtQuick
 from matplotlib_backend_qtquick.qt_compat import QtCore
+from .Model_multiplot import MultiModel
 import numpy as np
 
 class DisplayBridge(QtCore.QObject):
@@ -82,6 +83,8 @@ class DisplayBridge(QtCore.QObject):
         self.ydiv      = ydiv
         self.resmin    = resmin
         self.resmax    = resmax
+
+        print(self.symbol_color)
 
         if model.has_data:
 

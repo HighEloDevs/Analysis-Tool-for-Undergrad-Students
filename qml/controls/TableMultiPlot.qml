@@ -275,7 +275,7 @@ Item {
                                         title: "Escolha uma cor para os pontos"
                                         onAccepted: {
                                             colorBtn.primaryColor = colorDialog.color
-                                            dataShaped['rows'][row]['markerColor'] = colorDialog.color
+                                            dataShaped['rows'][row]['markerColor'] = colorBtn.primaryColor
                                         }
                                     }
 

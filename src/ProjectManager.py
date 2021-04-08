@@ -106,7 +106,8 @@ class ProjectManager(QtCore.QObject):
             'ymax' : self.displayBridge.ymax,
             'ydiv' : self.displayBridge.ydiv,
             'resmin' : self.displayBridge.resmin,
-            'resmax' : self.displayBridge.resmax
+            'resmax' : self.displayBridge.resmax,
+            'parameters': self.model.params.valuesdict()
         }
 
     def __clearOptions(self):
