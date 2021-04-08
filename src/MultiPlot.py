@@ -72,10 +72,10 @@ class Multiplot(QtCore.QObject):
         self.logy          = graph_options['logy']
         self.xmin          = float(graph_options['xmin'])
         self.xmax          = float(graph_options['xmax'])
-        self.xdiv          = float(graph_options['xdiv'])
+        self.xdiv          = int(graph_options['xdiv'])
         self.ymin          = float(graph_options['ymin'])
         self.ymax          = float(graph_options['ymax'])
-        self.ydiv          = float(graph_options['ydiv'])
+        self.ydiv          = int(graph_options['ydiv'])
         self.title         = graph_options['title']
         self.xaxis         = graph_options['xaxis']
         self.yaxis         = graph_options['yaxis']
@@ -132,23 +132,19 @@ class Multiplot(QtCore.QObject):
         self.displayBridge.axes.set(xlabel = self.xaxis, ylabel = self.yaxis)
 
     def Plot_sx_sy(self, df, options):
-        print(options['markerColor'])
         self.displayBridge.axes.errorbar(df['x'], df['y'], yerr=df['sy'], xerr = df['sx'],
          ecolor = options['markerColor'], capsize = 0, elinewidth = 1, ms = 2, marker = '.', color = options['markerColor'], ls = 'none')
     
     def Plot_sy(self, df, options):
-        print(options['markerColor'])
         self.displayBridge.axes.errorbar(df['x'], df['y'], yerr=df['sy'],
          ecolor = options['markerColor'], capsize = 0, elinewidth = 1, ms = 2, marker = '.', color = options['markerColor'], ls = 'none')
     
     def Plot_op(self, df, options):
-        print(options['markerColor'])
         self.displayBridge.axes.errorbar(df['x'], df['y'],
          ecolor = options['markerColor'], capsize = 0, elinewidth = 1, ms = 2, marker = '.', color = options['markerColor'], ls = 'none')
     
     def Func_plot(self, options, model, params):
-        print(options['markerColor'])
-        print(options['curve'])
+        # print(options['curve'])
         px = np.linspace(self.Multi_Model.min_x, self.Multi_Model.max_x, 350)
         py = model.eval(x = px, params = params)
         self.displayBridge.axes.plot(px, py, lw = 2, color = options['markerColor'], ls = options['curve'], label = '${}$'.format(options['label']))

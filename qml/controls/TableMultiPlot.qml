@@ -149,7 +149,7 @@ Item {
                                 'marker': checkBoxMarker.checked,
                                 'func': checkBoxFunc.checked,
                                 'label': textInputLabel.text,
-                                'markerColor': '#fff',
+                                'markerColor': '#000',
                                 'curve': comboBoxCurve.currentText
                             }
                             Item{
@@ -275,7 +275,7 @@ Item {
                                         title: "Escolha uma cor para os pontos"
                                         onAccepted: {
                                             colorBtn.primaryColor = colorDialog.color
-                                            dataShaped['rows'][row]['markerColor'] = colorBtn.primaryColor
+                                            dataShaped['rows'][row]['markerColor'] = String(colorDialog.color)
                                         }
                                     }
 
@@ -296,7 +296,15 @@ Item {
                                     anchors.bottomMargin: 8
                                     currentIndex: curve
 
-                                    onAccepted: dataShaped['rows'][row]['curve'] = comboBoxCurve.currentText
+                                    onActivated: {
+                                        let curveStyle = {
+                                            'Sólido': '-',
+                                            'Tracejado': '--',
+                                            'Ponto-tracejado': '-.',
+                                            'Ponto': ':'
+                                        }
+                                        dataShaped['rows'][row]['curve'] = curveStyle[comboBoxCurve.currentText]
+                                    }
                                 }
                             }
 
@@ -340,7 +348,10 @@ Item {
                 iconUrl: '../../images/icons/add_white-24px.svg'
                 r: 0
                 
-                onClicked: addRow()
+                onClicked: {
+                    addRow()
+                    chooseProject.open()
+                }
             }
         }
     }
