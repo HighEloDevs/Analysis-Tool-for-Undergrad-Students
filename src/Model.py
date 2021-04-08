@@ -11,8 +11,8 @@ Model Class
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
-from PySide2 import QtCore
-from PySide2.QtCore import Slot, Signal
+from matplotlib_backend_qtquick.qt_compat import QtCore
+# from PySide2.QtCore import Slot, Signal
 from copy import deepcopy
 from lmfit.models import ExpressionModel
 from lmfit import Parameters
@@ -23,9 +23,9 @@ class Model(QtCore.QObject):
     """Class used for fit
     """
     # Signals
-    fillDataTable = Signal(float, float, float, float, str, arguments=['x', 'y', 'sy', 'sx', 'filename'])
-    fillParamsTable = Signal(str, float, float, arguments=['param', 'value', 'uncertainty'])
-    writeInfos = Signal(str, arguments='expr')
+    fillDataTable = QtCore.Signal(float, float, float, float, str, arguments=['x', 'y', 'sy', 'sx', 'filename'])
+    fillParamsTable = QtCore.Signal(str, float, float, arguments=['param', 'value', 'uncertainty'])
+    writeInfos = QtCore.Signal(str, arguments='expr')
 
     def __init__(self):
         super().__init__()
@@ -52,11 +52,11 @@ class Model(QtCore.QObject):
         
     def __str__(self):
         return self.report_fit
-
-    @Slot(QtCore.QJsonArray)
+        
+    @QtCore.Slot(QtCore.QJsonValue)
     def getData(self, data):
         """Getting data from table"""
-        df = pd.DataFrame.from_records(data.toVariantList())
+        df = pd.DataFrame.from_records(data.toVariant())
         df.columns = ['x', 'y', 'sy', 'sx', 'bool']
 
         df = df[df['bool'] == 1]

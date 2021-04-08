@@ -10,8 +10,8 @@ MultiPlot Class
 
 import json
 import matplotlib.pyplot as plt
-from PySide2 import QtCore
-from PySide2.QtCore import Slot, Signal
+from matplotlib_backend_qtquick.qt_compat import QtCore
+# from PySide2.QtCore import Slot, Signal
 from .Model_multiplot import MultiModel
 from .MatPlotLib import DisplayBridge
 from lmfit import Parameters
@@ -20,7 +20,7 @@ import numpy as np
 class Multiplot(QtCore.QObject):
     """Backend for multiplot page"""
 
-    setData = Signal(QtCore.QJsonValue, arguments='data')
+    setData = QtCore.Signal(QtCore.QJsonValue, arguments='data')
 
     def __init__(self, displayBridge):
         super().__init__()
@@ -39,7 +39,7 @@ class Multiplot(QtCore.QObject):
         self.xaxis         = ''
         self.yaxis         = ''
 
-    @Slot(str, int)
+    @QtCore.Slot(str, int)
     def loadData(self, fileUrl, row):
         curveStyles = {
             '-': 0,
@@ -62,7 +62,7 @@ class Multiplot(QtCore.QObject):
             'curve': curveStyles[data['curve_style']]
         }))
 
-    @Slot(QtCore.QJsonValue)
+    @QtCore.Slot(QtCore.QJsonValue)
     def getData(self, data):
         dados              = data.toObject()
         graph_options      = dados['options']

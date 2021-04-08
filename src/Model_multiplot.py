@@ -5,8 +5,8 @@ Classe que gerencia os arquivos do multiplot
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
-from PySide2 import QtCore
-from PySide2.QtCore import Slot, Signal
+from matplotlib_backend_qtquick.qt_compat import QtCore
+# from PySide2.QtCore import Slot, Signal
 from copy import deepcopy
 from lmfit.models import ExpressionModel
 from lmfit import Parameters

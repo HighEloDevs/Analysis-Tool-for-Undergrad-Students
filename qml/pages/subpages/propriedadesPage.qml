@@ -7,8 +7,7 @@ import "../../colors.js" as Colors
 import "../../controls"
 
 Item {
-    width: 366
-    height: 598
+    id: root
 
     property string titulo_text: titulo.text
     property string eixox_text: eixox.text
@@ -45,8 +44,8 @@ Item {
         ScrollView {
             id: scrollView
             anchors.fill: parent
-            rightPadding: 10
-            leftPadding: 10
+            rightPadding: 0
+            leftPadding: 0
             anchors.rightMargin: 0
             anchors.leftMargin: 0
             anchors.bottomMargin: 0
@@ -55,12 +54,17 @@ Item {
             ScrollBar.horizontal.policy: ScrollBar.AsNeeded
             ScrollBar.vertical.policy: ScrollBar.AsNeeded
 
-            contentWidth: gridLayout.width
+            contentWidth: root.width
             contentHeight: gridLayout.height
 
             GridLayout {
                 id: gridLayout
-                width: 366
+                // anchors.fill: parent
+                anchors.right: parent.right
+                anchors.left: parent.left
+                anchors.rightMargin: 15
+                anchors.leftMargin: 15
+                width: root.width
                 columnSpacing: 0
                 rowSpacing: 5
                 rows: 10
@@ -589,6 +593,6 @@ Item {
 }
 /*##^##
 Designer {
-    D{i:0;formeditorZoom:1.33}D{i:3}
+    D{i:0;autoSize:true;formeditorZoom:0.66;height:480;width:640}
 }
 ##^##*/

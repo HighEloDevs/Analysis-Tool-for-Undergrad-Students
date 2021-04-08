@@ -17,7 +17,10 @@ includes = ['matplotlib',
             'lmfit',
             'scipy.spatial.transform._rotation_groups',
             'numpy',
-            'matplotlib_backend_qtquick']
+            'matplotlib_backend_qtquick',
+            'pandas._libs.tslibs.base',
+            'scipy'
+            ]
 
 # SETUP CX FREEZE
 setup(

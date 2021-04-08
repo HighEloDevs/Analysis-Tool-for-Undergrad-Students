@@ -147,26 +147,28 @@ Item{
                                     MouseArea{
                                         id: cellMouseArea
                                         anchors.fill: parent
+                                        clip: true
                                         hoverEnabled: true
-                                        onClicked: {
-                                            //
-                                        }
-                                        TextEdit {
+                                        TextInput {
+                                            id: textInput
                                             text: if(modelData == 2 || modelData ==3){
                                                 if(data_row[modelData] == 0){
                                                     ''
                                                 }else{
-                                                    data_row[modelData].toPrecision(3)
+                                                    String(data_row[modelData])
                                                 }
                                             }else{
-                                                data_row[modelData].toPrecision(3)
+                                                String(data_row[modelData])
                                             }
-                                            
+
                                             anchors.fill: parent
-                                            font.pixelSize: 15
+                                            anchors.rightMargin: 5
+                                            anchors.leftMargin: 5
+                                            font.pixelSize: 13
                                             color: 'white'
-                                            selectByMouse: true
                                             clip: true
+                                            selectByMouse: true
+                                            layer.enabled: true
                                             horizontalAlignment: TextEdit.AlignHCenter
                                             verticalAlignment: TextEdit.AlignVCenter
 
@@ -198,6 +200,21 @@ Item{
                                                     changeFailAnimation.running = true
                                                     text = value
                                                 }
+                                            }  
+
+                                            Component.onCompleted: {
+                                                // let texto = ''
+                                                // if(modelData == 2 || modelData ==3){
+                                                //     if(data_row[modelData] == 0){
+                                                //         texto = ''
+                                                //     }else{
+                                                //         texto = data_row[modelData]
+                                                //     }
+                                                // }else{
+                                                //     texto = data_row[modelData]
+                                                // }
+                                                // textInput.insert(0, texto)
+                                                textInput.ensureVisible(0)
                                             }
                                         }
                                     }
@@ -256,9 +273,7 @@ Item{
                                 }
                             }
                         }
-                        Component.onCompleted: {
-                            dataShaped.push([x_v, y_v, sy, sx, checkBox.checkState - 1])
-                        }
+                        Component.onCompleted: dataShaped.push([x_v, y_v, sy, sx, checkBox.checkState - 1])
                     }
                 }
             }

@@ -849,12 +849,12 @@ Window {
                                             Layout.fillHeight: true
                                             Layout.fillWidth: true
 
-                                             FigureCanvas {
-                                                     id: mplView
-                                                     objectName : "canvasPlot"
-                                                     dpi_ratio: Screen.devicePixelRatio
-                                                     anchors.fill: parent
-                                             }
+                                            FigureCanvas {
+                                                    id: mplView
+                                                    objectName : "canvasPlot"
+                                                //  dpi_ratio: Screen.devicePixelRatio
+                                                    anchors.fill: parent
+                                            }
                                         }
 
                                         Rectangle {

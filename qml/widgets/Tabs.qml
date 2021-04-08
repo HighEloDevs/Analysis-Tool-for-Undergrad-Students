@@ -101,7 +101,7 @@ Item {
                 Layout.bottomMargin: 5
                 Layout.topMargin: 5
                 Layout.fillWidth: true
-                texto: 'Plot'
+                texto: 'Plot / Atualizar'
                 textSize: 10
                 primaryColor: Colors.c_button
                 clickColor: Colors.c_button_active

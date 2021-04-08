@@ -12,8 +12,8 @@ import sys
 import os
 import platform
 import numpy as np
-from PySide2 import QtGui, QtQml, QtCore
-from PySide2.QtCore import QBitArray, QJsonArray, QJsonValue, QMetaObject, Qt, Slot, Signal
+from matplotlib_backend_qtquick.qt_compat import QtGui, QtQml, QtCore
+# from PySide2.QtCore import QJsonValue, Slot, Signal
 from matplotlib_backend_qtquick.backend_qtquickagg import FigureCanvasQtQuickAgg
 from numpy.core.records import array
 from src.MatPlotLib import DisplayBridge
@@ -31,17 +31,17 @@ model = Model()
 
 class Bridge(QtCore.QObject):
     # Signal to Properties page
-    signalPropPage = Signal()
+    signalPropPage = QtCore.Signal()
 
     # Signal to write infos
-    writeInfos = Signal(str, arguments='expr')
-    writeCalculator = Signal(str, arguments='expr')
-    emitData = Signal()
+    writeInfos = QtCore.Signal(str, arguments='expr')
+    writeCalculator = QtCore.Signal(str, arguments='expr')
+    emitData = QtCore.Signal()
 
-    @Slot(QJsonValue)
+    @QtCore.Slot(QtCore.QJsonValue)
     def getProps(self, props):
         self.emitData.emit()
-        props = props.toObject()
+        props = props.toVariant()
 
         displayBridge.setSigma(props['sigmax'], props['sigmay'])
 
@@ -105,17 +105,17 @@ class Bridge(QtCore.QObject):
          props['ymin'], props['ymax'], props['ydiv'],
          props['resMin'], props['resMax'])
 
-    @Slot(str)
+    @QtCore.Slot(str)
     def loadData(self, file_path):
         """Gets the path to data's file and fills the data's table"""
         model.load_data(QtCore.QUrl(file_path).toLocalFile())
 
-    @Slot(str)
+    @QtCore.Slot(str)
     def savePlot(self, save_path):
         """Gets the path from input and save the actual plot"""
         displayBridge.figure.savefig(QtCore.QUrl(save_path).toLocalFile(), dpi = 400)
 
-    @Slot(str, str, str, str, str, str)
+    @QtCore.Slot(str, str, str, str, str, str)
     def calculator(self, function, opt1, nc, ngl, mean, std):
         functionDict = {
             'Chi²':0,
@@ -189,7 +189,6 @@ if __name__ == "__main__":
         engine.load(QtCore.QUrl.fromLocalFile(os.path.join(os.path.dirname(__file__), "qml/main_mac.qml")))
     else:
         engine.load(QtCore.QUrl.fromLocalFile(os.path.join(os.path.dirname(__file__), "qml/main_windows.qml")))
-
     # Updating canvasPlot with the plot
     win = engine.rootObjects()[0]
     displayBridge.updateWithCanvas(win.findChild(QtCore.QObject, "canvasPlot"))

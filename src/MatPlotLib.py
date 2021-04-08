@@ -84,8 +84,6 @@ class DisplayBridge(QtCore.QObject):
         self.resmin    = resmin
         self.resmax    = resmax
 
-        print(self.symbol_color)
-
         if model.has_data:
 
             # Fitting expression to data, if there's any expression
