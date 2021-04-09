@@ -101,7 +101,7 @@ Item {
                             TextInputCustom{
                                 id: xdiv
                                 focusColor: Colors.mainColor2
-                                title: 'Divisões em X'
+                                title: 'Intervalos em X'
                                 textHolder: ''
                                 defaultColor: '#fff'
                                 textColor: '#fff'
@@ -153,7 +153,7 @@ Item {
                             TextInputCustom{
                                 id: ydiv
                                 focusColor: Colors.mainColor2
-                                title: 'Divisões em Y'
+                                title: 'Intervalos em Y'
                                 textHolder: ''
                                 defaultColor: '#fff'
                                 textColor: '#fff'

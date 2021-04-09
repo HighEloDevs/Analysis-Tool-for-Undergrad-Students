@@ -355,7 +355,7 @@ class Model(QtCore.QObject):
         self.report_fit += "\nAjuste: y = %s\n"%self.exp_model
         self.report_fit += "\nNGL  = %d"%(ngl)
         self.report_fit += "\nSomatória dos resíduos absolutos ao quadrado = %f\n"%self.result.chisqr
-        self.report_fit += "Incerteza estimada = %f\n"%(self.result.chisqr/ngl)
+        self.report_fit += "Incerteza considerada = %f\n"%(np.sqrt(self.result.chisqr/ngl))
         self.report_fit += "\nMatriz de covariância:\n\n" + str(self.result.covar) + "\n"
         lista           = list(self.params.keys())
         matriz_corr     = np.zeros((len(self.result.covar), len(self.result.covar)))

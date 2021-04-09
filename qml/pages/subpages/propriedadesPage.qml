@@ -129,8 +129,8 @@ Item {
                             id: xdiv
                             Layout.fillWidth: true
                             focusColor: Colors.mainColor2
-                            title: 'Divisões em X'
-                            textHolder: 'Número de divisões no eixo'
+                            title: 'Intervalos em X'
+                            textHolder: 'Número de intervalos no eixo'
                             defaultColor: '#fff'
                             textColor: '#fff'
                         }
@@ -185,8 +185,8 @@ Item {
                             id: ydiv
                             Layout.fillWidth: true
                             focusColor: Colors.mainColor2
-                            title: 'Divisões em Y'
-                            textHolder: 'Número de divisões no eixo'
+                            title: 'Intervalos em Y'
+                            textHolder: 'Número de intervalos no eixo'
                             defaultColor: '#fff'
                             textColor: '#fff'
                         }
