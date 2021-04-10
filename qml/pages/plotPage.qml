@@ -249,7 +249,7 @@ Item {
 
         function onFillDataTable(x, y, sy, sx, fileName){
             label_fileName.text = fileName
-            table.addRow(x, y, sy, sx)
+            table.addRow(x, y, sy, sx, false)
         }
     }
 
