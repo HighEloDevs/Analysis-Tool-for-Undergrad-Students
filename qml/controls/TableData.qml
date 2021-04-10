@@ -18,7 +18,7 @@ Item{
     property variant dataModel: null
     property variant dataShaped: []
 
-    function addRow(x_v, y_v, sy, sx, isEditable = false) {
+    function addRow(x_v, y_v, sy, sx, isEditable = true) {
         dataSet.insert(dataSet.count, {x_v: Number(x_v), y_v: Number(y_v), sy: Number(sy), sx: Number(sx), isEditable: isEditable})
     }
 
