@@ -27,7 +27,7 @@ Item{
         width: parent.width
         height: 30
         color: Colors.color2
-        radius: 0.03 * root.width
+        radius: 0
 
         // Half bottom of the header must be flat
         Rectangle{
@@ -140,9 +140,9 @@ Item{
     Rectangle{
         id: footer
         width: root.width
-        height: 30
+        height: 15
         color: Colors.color2
-        radius: 0.03 * root.width
+        radius: 0
 
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 0

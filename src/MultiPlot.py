@@ -64,7 +64,7 @@ class Multiplot(QtCore.QObject):
 
     @QtCore.Slot(QtCore.QJsonValue)
     def getData(self, data):
-        dados              = data.toObject()
+        dados              = data.toVariant()
         graph_options      = dados['options']
         projetos           = dados['rows']
         self.Multi_Model   = MultiModel(graph_options, projetos)

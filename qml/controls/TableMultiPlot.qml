@@ -166,8 +166,9 @@ Item {
                                         clickColor: 'transparent'
                                         hoverColor: 'transparent'
                                         primaryColor: 'transparent'
-                                        iconUrl: '../../images/icons/attach_file_white_36dp.svg'
+                                        iconUrl: '../../images/icons/attach_file_white_24dp.svg'
                                         iconColor: 'white'
+                                        iconWidth: 24
                                         r: 20
                                         y: (parent.height - iconBtn.height)/2
                                         width: parent.height - 15
