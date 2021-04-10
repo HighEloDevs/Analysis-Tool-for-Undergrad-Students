@@ -104,7 +104,7 @@ Item {
                                 id: xdiv
                                 Layout.fillWidth: true
                                 focusColor: Colors.mainColor2
-                                title: 'Divisões em X'
+                                title: 'Intervalos em X'
                                 textHolder: ''
                                 defaultColor: '#fff'
                                 textColor: '#fff'
@@ -159,7 +159,7 @@ Item {
                                 id: ydiv
                                 Layout.fillWidth: true
                                 focusColor: Colors.mainColor2
-                                title: 'Divisões em Y'
+                                title: 'Intervalos em Y'
                                 textHolder: ''
                                 defaultColor: '#fff'
                                 textColor: '#fff'
