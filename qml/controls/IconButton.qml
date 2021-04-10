@@ -9,6 +9,7 @@ Button{
     property color hoverColor: 'blue'
     property color clickColor: 'red'
     property color iconColor: 'white'
+    property int iconWidth: 24
     property string iconUrl: ''
     property int r: 15 // Radius
     property color dynamicColor: if(root.down){
@@ -30,13 +31,13 @@ Button{
 
         Image {
             id: image
-            width: 0.6 * root.width
-            height: image.width
+            width: iconWidth
+            height: iconWidth
             anchors.verticalCenter: parent.verticalCenter
             anchors.horizontalCenter: parent.horizontalCenter
             source: iconUrl
             mipmap: true
-            smooth: true
+            // smooth: true
             fillMode: Image.PreserveAspectFit
         }
 

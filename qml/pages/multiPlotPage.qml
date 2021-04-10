@@ -80,10 +80,11 @@ Item {
                         Layout.fillWidth: true
                         height: 50
                         color: 'transparent'
-                        Row{
+                        RowLayout{
                             anchors.fill: parent
                             TextInputCustom{
                                 id: xmin
+                                Layout.fillWidth: true
                                 focusColor: Colors.mainColor2
                                 title: 'X Mínimo'
                                 textHolder: ''
@@ -92,6 +93,7 @@ Item {
                             }
                             TextInputCustom{
                                 id: xmax
+                                Layout.fillWidth: true
                                 focusColor: Colors.mainColor2
                                 title: 'X Máximo'
                                 textHolder: ''
@@ -100,6 +102,7 @@ Item {
                             }
                             TextInputCustom{
                                 id: xdiv
+                                Layout.fillWidth: true
                                 focusColor: Colors.mainColor2
                                 title: 'Divisões em X'
                                 textHolder: ''
@@ -132,10 +135,11 @@ Item {
                         Layout.fillWidth: true
                         height: 50
                         color: 'transparent'
-                        Row{
+                        RowLayout{
                             anchors.fill: parent
                             TextInputCustom{
                                 id: ymin
+                                Layout.fillWidth: true
                                 focusColor: Colors.mainColor2
                                 title: 'Y Mínimo'
                                 textHolder: ''
@@ -144,6 +148,7 @@ Item {
                             }
                             TextInputCustom{
                                 id: ymax
+                                Layout.fillWidth: true
                                 focusColor: Colors.mainColor2
                                 title: 'Y Máximo'
                                 textHolder: ''
@@ -152,6 +157,7 @@ Item {
                             }
                             TextInputCustom{
                                 id: ydiv
+                                Layout.fillWidth: true
                                 focusColor: Colors.mainColor2
                                 title: 'Divisões em Y'
                                 textHolder: ''

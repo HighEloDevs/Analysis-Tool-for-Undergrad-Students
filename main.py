@@ -84,7 +84,7 @@ class Bridge(QtCore.QObject):
             'Produto':'X'
             }
 
-        # Setting style of the plot
+        # Setting style of the plot 
         model.set_title(props['titulo'])
         model.set_x_axis(props['eixox'])
         model.set_y_axis(props['eixoy'])

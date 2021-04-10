@@ -276,6 +276,7 @@ Window {
                         anchors.bottomMargin: 0
                         r: 0
                         iconUrl: '../../images/icons/github-36px.svg'
+                        iconWidth: 22
 
                         primaryColor: 'transparent'
                         clickColor: Colors.c_button_active
@@ -852,7 +853,7 @@ Window {
                                             FigureCanvas {
                                                     id: mplView
                                                     objectName : "canvasPlot"
-                                                //  dpi_ratio: Screen.devicePixelRatio
+                                                    dpi_ratio: Screen.devicePixelRatio
                                                     anchors.fill: parent
                                             }
                                         }

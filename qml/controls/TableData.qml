@@ -18,8 +18,8 @@ Item{
     property variant dataModel: null
     property variant dataShaped: []
 
-    function addRow(x_v, y_v, sy, sx) {
-        dataSet.insert(dataSet.count, {x_v: Number(x_v), y_v: Number(y_v), sy: Number(sy), sx: Number(sx)})
+    function addRow(x_v, y_v, sy, sx, isEditable = false) {
+        dataSet.insert(dataSet.count, {x_v: Number(x_v), y_v: Number(y_v), sy: Number(sy), sx: Number(sx), isEditable: isEditable})
     }
 
     function clear(){
@@ -37,7 +37,7 @@ Item{
         width: parent.width
         height: 30
         color: Colors.color2
-        radius: 0.03 * root.width
+        radius: 0
 
         // Half bottom of the header must be flat
         Rectangle{
@@ -116,6 +116,7 @@ Item{
 
                         property variant    data_row: [x_v, y_v, sy, sx]
                         property int        row: index
+                        property bool       edit: isEditable
 
                         Row{
                             anchors.fill: parent
@@ -171,6 +172,7 @@ Item{
                                             layer.enabled: true
                                             horizontalAlignment: TextEdit.AlignHCenter
                                             verticalAlignment: TextEdit.AlignVCenter
+                                            readOnly: !edit
 
                                             Keys.onReturnPressed: {
                                                 let keys = ['x_v', 'y_v', 'sy', 'sx']
@@ -203,17 +205,6 @@ Item{
                                             }  
 
                                             Component.onCompleted: {
-                                                // let texto = ''
-                                                // if(modelData == 2 || modelData ==3){
-                                                //     if(data_row[modelData] == 0){
-                                                //         texto = ''
-                                                //     }else{
-                                                //         texto = data_row[modelData]
-                                                //     }
-                                                // }else{
-                                                //     texto = data_row[modelData]
-                                                // }
-                                                // textInput.insert(0, texto)
                                                 textInput.ensureVisible(0)
                                             }
                                         }
@@ -245,7 +236,8 @@ Item{
                         width: 0.2 * root.width
                         height: header.height
 
-                        property int row: index
+                        property int        row: index
+                        property bool       edit: isEditable
 
                         Rectangle{
                             color: 'transparent'
@@ -257,6 +249,7 @@ Item{
 
                                 CheckBoxCustom{
                                     id: checkBox
+                                    enabled: edit
                                     onCheckedChanged: {
                                         if(checkBox.checkState === 2)
                                             dataShaped[index][4] = checkBox.checkState - 1
@@ -266,6 +259,7 @@ Item{
                                 }
 
                                 TrashButton{
+                                    enabled: edit
                                     onClicked: {
                                         dataShaped.splice(row, 1)
                                         dataSet.remove(row)                                        
@@ -282,9 +276,9 @@ Item{
     Rectangle{
         id: footer
         width: root.width
-        height: 40
+        height: 30
         color: Colors.color2
-        radius: 0.03 * root.width
+        radius: 0
 
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 0
@@ -297,13 +291,54 @@ Item{
             anchors.top: parent.top
             anchors.topMargin: 0
         }
-
-        AddButton{
-            anchors.verticalCenter: parent.verticalCenter
+        IconButton{
             anchors.horizontalCenter: parent.horizontalCenter
+            anchors.verticalCenter: parent.verticalCenter
+            width: 22
+            height: 22
+            iconWidth: 22
+            primaryColor: 'transparent'
+            hoverColor: 'transparent'
+            clickColor: 'transparent'
+            iconColor: 'white'
+            iconUrl: '../../images/icons/add_white-24px.svg'
 
             onClicked:{
-                dataSet.insert(dataSet.count, {x_v:0, y_v:0, sy: 0, sx: 0})
+                if(!lockBtn.isLocked){
+                    addRow(0, 0, 0, 0)
+                }else{
+                }
+            }
+        }
+        IconButton{
+            id: lockBtn
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.right: parent.right
+            anchors.rightMargin: 5
+            width: 22
+            height: 22
+            iconWidth: 18
+            primaryColor: 'transparent'
+            hoverColor: 'transparent'
+            clickColor: 'transparent'
+            iconColor: 'white'
+            iconUrl: '../../images/icons/lock-outline.svg'
+
+            property bool isLocked: true
+
+            onClicked: {
+                isLocked = !isLocked
+                if(isLocked){
+                    iconUrl = '../../images/icons/lock-outline.svg'
+                    for(let i = 0; i < dataModel.count; i++){
+                        dataModel.setProperty(i, 'isEditable', false)
+                    }
+                }else{
+                    iconUrl = '../../images/icons/lock-open-variant-outline.svg'
+                    for(let i = 0; i < dataModel.count; i++){
+                        dataModel.setProperty(i, 'isEditable', true)
+                    }
+                }
             }
         }
     }
