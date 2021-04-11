@@ -32,6 +32,39 @@ Window {
     property int windowMargin: 0
     property int stackedPage: 0
 
+    Popup {
+        id: popup
+        anchors.centerIn: parent
+        width: 400
+        height: 100
+        modal: true
+        focus: true
+        closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
+        leftInset: 0
+        rightInset: 0
+        bottomInset: 0
+        topInset: 0
+
+        background: Rectangle{
+            anchors.fill: parent
+            color: Colors.color1
+            radius: 5
+
+            Text{
+                anchors.fill: parent
+                anchors.leftMargin: 20
+                anchors.rightMargin: 20
+                anchors.bottomMargin: 5
+                anchors.topMargin: 5
+
+                color: '#fff'
+                font.pixelSize: 15
+                wrapMode: Text.WordWrap
+                text: 'Nova atualização disponível. Por favor, baixe o instalador no link abaixo:'
+            }
+        }
+    }
+
     // Internal Functions
     QtObject{
         id: internal
@@ -119,10 +152,6 @@ Window {
                 anchors.rightMargin: 0
                 anchors.leftMargin: 0
                 anchors.topMargin: 0
-
-                // ToggleButton{
-                //     onClicked: animationMenu.running = true
-                // }
 
                 Rectangle {
                     id: topBarDescription
@@ -1010,14 +1039,16 @@ Window {
         source: bg
         z: 0
     }
+
+    Connections{
+        target: updater
+        function onShowUpdate(){
+            popup.open()
+        }
+    }
+
+    Component.onCompleted: updater.checkUpdate()
 }
-
-
-
-
-
-
-
 
 /*##^##
 Designer {

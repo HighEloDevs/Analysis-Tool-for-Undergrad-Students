@@ -11,17 +11,16 @@ Main File
 import sys
 import os
 import platform
-import numpy as np
 from matplotlib_backend_qtquick.qt_compat import QtGui, QtQml, QtCore
-# from PySide2.QtCore import QJsonValue, Slot, Signal
 from matplotlib_backend_qtquick.backend_qtquickagg import FigureCanvasQtQuickAgg
 from numpy.core.records import array
+from operator import mod
 from src.MatPlotLib import DisplayBridge
 from src.Model import Model
 from src.Calculators import CalculatorCanvas, interpreter_calculator, Plot
 from src.ProjectManager import ProjectManager
 from src.MultiPlot import Multiplot
-from operator import mod
+from src.UpdateChecker import UpdateChecker
 
 # Instantiating the display bridge || Global variable
 displayBridge = DisplayBridge()
@@ -169,6 +168,7 @@ if __name__ == "__main__":
     # Creating bridge
     bridge    = Bridge()
     multiplot = Multiplot(displayBridge)
+    updater = UpdateChecker()
 
     # Project Manager
     projectMngr = ProjectManager(displayBridge, model)
@@ -180,6 +180,7 @@ if __name__ == "__main__":
     context.setContextProperty("model", model)
     context.setContextProperty("projectMngr", projectMngr)
     context.setContextProperty("multiplot", multiplot)
+    context.setContextProperty("updater", updater)
     
     # Loading QML files
     plat = platform.system()

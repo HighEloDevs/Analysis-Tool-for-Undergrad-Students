@@ -24,8 +24,8 @@ includes = ['matplotlib',
 
 # SETUP CX FREEZE
 setup(
-    name = "Analysis Tool for Undergrad Students",
-    version = "2.0.0a.1",
+    name = "ATUS",
+    version = "2.0.0",
     description = "Ferramenta para análise de dados",
     author = "Leonardo Eiji Tamayose & Guilherme Ferrari Fortino",
     options = {'build_exe' : {'include_files' : files, 'includes' : includes}},
