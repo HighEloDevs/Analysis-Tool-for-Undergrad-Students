@@ -11,7 +11,6 @@ MultiPlot Class
 import json
 import matplotlib.pyplot as plt
 from matplotlib_backend_qtquick.qt_compat import QtCore
-# from PySide2.QtCore import Slot, Signal
 from .Model_multiplot import MultiModel
 from .MatPlotLib import DisplayBridge
 from lmfit import Parameters

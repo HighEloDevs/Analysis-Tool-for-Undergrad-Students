@@ -33,34 +33,117 @@ Window {
     property int stackedPage: 0
 
     Popup {
-        id: popup
+        id: updatePopup
         anchors.centerIn: parent
-        width: 400
-        height: 100
+        width: 600
+        height: 500
         modal: true
         focus: true
-        closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
+        closePolicy: Popup.CloseOnEscape
         leftInset: 0
         rightInset: 0
         bottomInset: 0
         topInset: 0
 
+        property string updateLog: ''
+        property string version: ''
+        property string link: ''
+
         background: Rectangle{
             anchors.fill: parent
             color: Colors.color1
-            radius: 5
+            radius: 2
 
-            Text{
-                anchors.fill: parent
-                anchors.leftMargin: 20
-                anchors.rightMargin: 20
-                anchors.bottomMargin: 5
-                anchors.topMargin: 5
+            IconButton{
+                id: closeUpdateLogBtn
 
-                color: '#fff'
-                font.pixelSize: 15
-                wrapMode: Text.WordWrap
-                text: 'Nova atualização disponível. Por favor, baixe o instalador no link abaixo:'
+                anchors.right: parent.right
+                anchors.rightMargin: -closeUpdateLogBtn.width/3
+                anchors.top: parent.top
+                anchors.topMargin: -closeUpdateLogBtn.width/3
+
+                width: 30
+                height: 30
+                r: 20
+                z: 1
+
+                primaryColor: Colors.color1
+                hoverColor: Colors.color1
+                clickColor: Colors.color3
+                iconColor: '#fff'
+                iconUrl: '../../images/icons/close-24px.svg'
+                iconWidth: 20
+
+                onClicked: updatePopup.close()
+            }
+
+            Rectangle{
+                id: titleBg
+                width: parent.width
+                height: 60
+                color: Colors.color2
+
+                Label{
+                    anchors.left: parent.left
+                    anchors.leftMargin: 15
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: 'Nova atualização disponível! v' + updatePopup.version
+                    color: '#fff'
+                    font.pixelSize: 20
+                }
+            }
+
+            ScrollView{
+                anchors.top: titleBg.bottom
+                anchors.topMargin: 15
+                anchors.left: parent.left
+                anchors.leftMargin: 0
+                anchors.right: parent.right
+                anchors.rightMargin: 0
+                anchors.bottom: popupFooter.top
+                anchors.bottomMargin: 15
+                contentWidth: logText.width
+                contentHeight: logText.height
+                clip: true
+
+                Text{
+                    id: logText
+                    width: updatePopup.width - 30
+                    anchors.left: parent.left
+                    anchors.leftMargin: 15
+                    color: '#fff'
+                    font.pixelSize: 15
+                    wrapMode: Text.WrapAnywhere
+                    text: updatePopup.updateLog
+                }
+            }
+
+            Rectangle{
+                id: popupFooter
+                anchors.bottom: parent.bottom
+                anchors.bottomMargin: 0
+                width: parent.width
+
+                color: Colors.color2
+                height: 40
+
+                IconTextButton{
+                    id: downloadBtn
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.right: parent.right
+                    anchors.rightMargin: 15
+                    primaryColor: '#004500'
+                    hoverColor: '#004500'
+                    clickColor: '#004500'
+
+                    width: 120
+                    height: 30
+                    texto: 'Download'
+
+                    iconUrl: '../../images/icons/get_app_black_24dp.svg'
+
+                    onClicked: Qt.openUrlExternally(updatePopup.link)
+                }
             }
         }
     }
@@ -1042,8 +1125,11 @@ Window {
 
     Connections{
         target: updater
-        function onShowUpdate(){
-            popup.open()
+        function onShowUpdate(updateLog, version, downloadUrl){
+            updatePopup.updateLog = updateLog
+            updatePopup.version = version
+            updatePopup.link = downloadUrl
+            updatePopup.open()
         }
     }
 

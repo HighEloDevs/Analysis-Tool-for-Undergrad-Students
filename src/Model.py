@@ -9,11 +9,8 @@ Model Class
 """
 
 import numpy as np
-import matplotlib.pyplot as plt
 import pandas as pd
 from matplotlib_backend_qtquick.qt_compat import QtCore
-# from PySide2.QtCore import Slot, Signal
-from copy import deepcopy
 from lmfit.models import ExpressionModel
 from lmfit import Parameters
 from scipy.odr import ODR, Model as SciPyModel, Data, RealData
