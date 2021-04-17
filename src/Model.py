@@ -102,7 +102,7 @@ class Model(QtCore.QObject):
         df = pd.read_csv(data_path, sep='\t', header=None, dtype = str).dropna()
         for i in df.columns:
             df[i] = [x.replace(',', '.') for x in df[i]]
-            # df[i] = df[i].astype(float)
+            df[i] = df[i].astype(float)
         self.mode = len(df.columns) - 2
         self.has_sx     = True
         self.has_sy     = True
@@ -150,6 +150,7 @@ class Model(QtCore.QObject):
 
     def load_data_json(self, df):
         """ Loads the data """
+
         self.data = df
         self.mode = len(df.columns) - 2
         self.has_sx     = True
@@ -172,7 +173,7 @@ class Model(QtCore.QObject):
             self.data_json         = deepcopy(df)
             # self.data_json.columns = ['x', 'y', 'sy', 'sx']
         df.columns    = ['x', 'y', 'sy', 'sx']
-        self.data     = deepcopy(df)
+        self.data     = deepcopy(df.astype(float))
         self.has_data = True
 
         self.x  = self.data["x"].to_numpy()
@@ -182,7 +183,10 @@ class Model(QtCore.QObject):
 
         fileName = 'Dados Carregados do Projeto'
 
-        x, y, sy, sx = self.get_data() 
+        x  = df["x"].to_numpy()
+        y  = df["y"].to_numpy()
+        sy = df["sy"].to_numpy()
+        sx = df["sx"].to_numpy()
 
         if self.has_sx and self.has_sy:
             for i in range(len(x)):
