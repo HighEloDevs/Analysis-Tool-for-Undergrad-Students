@@ -64,7 +64,8 @@ class Bridge(QtCore.QObject):
         expression = expression.replace('sen', 'sin')
         
         # Setting expression
-        model.set_expression(expression)
+        if model.exp_model != expression:
+            model.set_expression(expression)
 
         curveStyles = {
             'Sólido':'-',

@@ -106,7 +106,7 @@ class DisplayBridge(QtCore.QObject):
                     self.ax1, self.ax2 = self.figure.subplots(2, 1, sharex=True, gridspec_kw={'height_ratios': [3, 1.0]})
                     self.figure.subplots_adjust(left = None, bottom = None, right = None, top = None, wspace = None, hspace = 0)
 
-                    if self.xdiv != 0.:
+                    if self.xdiv != 0. and (self.xmax != 0. or self.xmin != 0.):
                         self.ax1.set_xticks(np.linspace(self.xmin, self.xmax, self.xdiv + 1))
                         self.ax2.set_xticks(np.linspace(self.xmin, self.xmax, self.xdiv + 1))
                         self.ax1.set_xlim(left = self.xmin, right = self.xmax)
@@ -122,7 +122,7 @@ class DisplayBridge(QtCore.QObject):
                             self.ax1.set_xlim(left = self.xmin, right = self.xmax)
                             self.ax2.set_xlim(left = self.xmin, right = self.xmax)
                     
-                    if self.ydiv != 0.:
+                    if self.ydiv != 0. and (self.ymax != 0. or self.ymin != 0.):
                         self.ax1.set_yticks(np.linspace(self.ymin, self.ymax, self.ydiv + 1))
                         self.ax2.set_yticks(np.linspace(self.ymin, self.ymax, self.ydiv + 1))
                         self.ax1.set_ylim(bottom = self.ymin, top = self.ymax)
@@ -181,7 +181,7 @@ class DisplayBridge(QtCore.QObject):
                     if self.log_x:
                         self.axes.set_xscale('log')
 
-                    if self.xdiv != 0.:
+                    if self.xdiv != 0. and (self.xmax != 0. or self.xmin != 0.):
                         self.axes.set_xticks(np.linspace(self.xmin, self.xmax, self.xdiv + 1))
                         self.axes.set_xlim(left = self.xmin, right = self.xmax)
 
@@ -193,7 +193,7 @@ class DisplayBridge(QtCore.QObject):
                         elif self.xmin != 0. and self.xmax != 0.:
                             self.axes.set_xlim(left = self.xmin, right = self.xmax)
                     
-                    if self.ydiv != 0.:
+                    if self.ydiv != 0. and (self.ymax != 0. or self.ymin != 0.):
                         self.axes.set_yticks(np.linspace(self.ymin, self.ymax, self.ydiv + 1))
                         self.axes.set_ylim(bottom = self.ymin, top = self.ymax)
                     else:
@@ -236,7 +236,7 @@ class DisplayBridge(QtCore.QObject):
                 if self.log_x:
                     self.axes.set_xscale('log')
 
-                if self.xdiv != 0.:
+                if self.xdiv != 0. and (self.xmax != 0. or self.xmin != 0.):
                     self.axes.set_xticks(np.linspace(self.xmin, self.xmax, self.xdiv + 1))
                     self.axes.set_xlim(left = self.xmin, right = self.xmax)
 
@@ -248,7 +248,7 @@ class DisplayBridge(QtCore.QObject):
                     elif self.xmin != 0. and self.xmax != 0.:
                         self.axes.set_xlim(left = self.xmin, right = self.xmax)
                 
-                if self.ydiv != 0.:
+                if self.ydiv != 0. and (self.ymax != 0. or self.ymin != 0.):
                     self.axes.set_yticks(np.linspace(self.ymin, self.ymax, self.ydiv + 1))
                     self.axes.set_ylim(bottom = self.ymin, top = self.ymax)
                 else:
