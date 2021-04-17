@@ -59,6 +59,7 @@ class Model(QtCore.QObject):
         df = df[df['bool'] == 1]
 
         # Dropping some useless columns
+        df = df.replace('', '0')
         if df[df['sx'] != 0].empty: del df['sx']
         if df[df['sy'] != 0].empty: del df['sy']
         del df['bool']
@@ -103,6 +104,8 @@ class Model(QtCore.QObject):
         for i in df.columns:
             df[i] = [x.replace(',', '.') for x in df[i]]
             # df[i] = df[i].astype(float)
+
+        df = df.replace('', '0')
         self.mode = len(df.columns) - 2
         self.has_sx     = True
         self.has_sy     = True

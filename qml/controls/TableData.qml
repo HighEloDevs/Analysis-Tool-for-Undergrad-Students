@@ -152,6 +152,7 @@ Item{
                                         hoverEnabled: true
                                         TextInput {
                                             id: textInput
+
                                             text: if(modelData == 2 || modelData == 3){
                                                 if(Number(data_row[modelData]) == 0){
                                                     ''
@@ -161,6 +162,8 @@ Item{
                                             }else{
                                                 data_row[modelData]
                                             }
+
+                                            Component.onCompleted: ensureVisible(0)
 
                                             anchors.fill: parent
                                             anchors.rightMargin: 5
@@ -172,7 +175,9 @@ Item{
                                             layer.enabled: true
                                             horizontalAlignment: TextEdit.AlignHCenter
                                             verticalAlignment: TextEdit.AlignVCenter
+                                            wrapMode: TextInput.WrapAnywhere
                                             readOnly: !edit
+                                            inputMethodHints: Qt.ImhDigitsOnly
 
                                             Keys.onReturnPressed: {
                                                 let keys = ['x_v', 'y_v', 'sy', 'sx']
@@ -203,10 +208,6 @@ Item{
                                                     text = String(value)
                                                 }
                                             }  
-
-                                            Component.onCompleted: {
-                                                textInput.ensureVisible(0)
-                                            }
                                         }
                                     }
                                 }
