@@ -19,7 +19,7 @@ Item{
     property variant dataShaped: []
 
     function addRow(x_v, y_v, sy, sx, isEditable = true) {
-        dataSet.insert(dataSet.count, {x_v: x_v, y_v: y_v, sy: sy, sx: sx, isEditable: isEditable})
+        dataSet.insert(dataSet.count, {x_v: String(x_v), y_v: String(y_v), sy: String(sy), sx: String(sx), isEditable: isEditable})
     }
 
     function clear(){
@@ -152,8 +152,9 @@ Item{
                                         hoverEnabled: true
                                         TextInput {
                                             id: textInput
-                                            text: if(modelData == 2 || modelData ==3){
-                                                if(data_row[modelData] == 0){
+                                            text: if(modelData == 2 || modelData == 3){
+                                                print(Number(data_row[modelData]))
+                                                if(Number(data_row[modelData]) == 0){
                                                     ''
                                                 }else{
                                                     data_row[modelData]
@@ -179,16 +180,16 @@ Item{
                                                 let tmp = Number(text)
                                                 if(!isNaN(tmp)){
                                                     dataSet.setProperty(row, keys[column], text)
-                                                    dataShaped[row][column] = tmp
+                                                    dataShaped[row][column] = text
                                                     changeSuccessAnimation.running = true
                                                 }else{
                                                     changeFailAnimation.running = true
-                                                    text = value
+                                                    text = String(value)
                                                 }
                                             }
                                             Keys.onEscapePressed: {
                                                 changeFailAnimation.running = true
-                                                text = value
+                                                text = String(value)
                                             }
 
                                             onEditingFinished: {
@@ -196,11 +197,11 @@ Item{
                                                 let tmp = Number(text)
                                                 if(!isNaN(tmp)){
                                                     dataSet.setProperty(row, keys[column], text)
-                                                    dataShaped[row][column] = tmp
+                                                    dataShaped[row][column] = text
                                                     changeSuccessAnimation.running = true
                                                 }else{
                                                     changeFailAnimation.running = true
-                                                    text = value
+                                                    text = String(value)
                                                 }
                                             }  
 
