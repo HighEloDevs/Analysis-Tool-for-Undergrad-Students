@@ -19,7 +19,7 @@ Item{
     property variant dataShaped: []
 
     function addRow(x_v, y_v, sy, sx, isEditable = true) {
-        dataSet.insert(dataSet.count, {x_v: Number(x_v), y_v: Number(y_v), sy: Number(sy), sx: Number(sx), isEditable: isEditable})
+        dataSet.insert(dataSet.count, {x_v: x_v, y_v: y_v, sy: sy, sx: sx, isEditable: isEditable})
     }
 
     function clear(){
@@ -156,10 +156,10 @@ Item{
                                                 if(data_row[modelData] == 0){
                                                     ''
                                                 }else{
-                                                    String(data_row[modelData])
+                                                    data_row[modelData]
                                                 }
                                             }else{
-                                                String(data_row[modelData])
+                                                data_row[modelData]
                                             }
 
                                             anchors.fill: parent
@@ -178,7 +178,7 @@ Item{
                                                 let keys = ['x_v', 'y_v', 'sy', 'sx']
                                                 let tmp = Number(text)
                                                 if(!isNaN(tmp)){
-                                                    dataSet.setProperty(row, keys[column], Number(text))
+                                                    dataSet.setProperty(row, keys[column], text)
                                                     dataShaped[row][column] = tmp
                                                     changeSuccessAnimation.running = true
                                                 }else{
@@ -195,7 +195,7 @@ Item{
                                                 let keys = ['x_v', 'y_v', 'sy', 'sx']
                                                 let tmp = Number(text)
                                                 if(!isNaN(tmp)){
-                                                    dataSet.setProperty(row, keys[column], Number(text))
+                                                    dataSet.setProperty(row, keys[column], text)
                                                     dataShaped[row][column] = tmp
                                                     changeSuccessAnimation.running = true
                                                 }else{

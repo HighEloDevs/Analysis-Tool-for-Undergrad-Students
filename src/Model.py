@@ -20,7 +20,7 @@ class Model(QtCore.QObject):
     """Class used for fit
     """
     # Signals
-    fillDataTable = QtCore.Signal(float, float, float, float, str, arguments=['x', 'y', 'sy', 'sx', 'filename'])
+    fillDataTable = QtCore.Signal(str, str, str, str, str, arguments=['x', 'y', 'sy', 'sx', 'filename'])
     fillParamsTable = QtCore.Signal(str, float, float, arguments=['param', 'value', 'uncertainty'])
     writeInfos = QtCore.Signal(str, arguments='expr')
 
@@ -84,7 +84,12 @@ class Model(QtCore.QObject):
             self.data_json         = deepcopy(df)
             # self.data_json.columns = ['x', 'y', 'sy', 'sx']
         df.columns    = ['x', 'y', 'sy', 'sx']
+
+        # Turn everything into number (str -> number)
+        df = df.astype(float)
+
         self.data     = deepcopy(df)
+
         self.has_data = True
         
         self.x  = self.data["x"].to_numpy()
@@ -97,7 +102,7 @@ class Model(QtCore.QObject):
         df = pd.read_csv(data_path, sep='\t', header=None, dtype = str).dropna()
         for i in df.columns:
             df[i] = [x.replace(',', '.') for x in df[i]]
-            df[i] = df[i].astype(float)
+            # df[i] = df[i].astype(float)
         self.mode = len(df.columns) - 2
         self.has_sx     = True
         self.has_sy     = True
@@ -132,16 +137,16 @@ class Model(QtCore.QObject):
         fileName = data_path.split('/')[-1]
         if self.has_sx and self.has_sy:
             for i in range(len(x)):
-                self.fillDataTable.emit(x[i], y[i], sy[i], sx[i], fileName)
+                self.fillDataTable.emit(str(x[i]), str(y[i]), str(sy[i]), str(sx[i]), fileName)
         elif self.has_sx:
             for i in range(len(x)):
-                self.fillDataTable.emit(x[i], y[i], 0, sx[i], fileName)
+                self.fillDataTable.emit(str(x[i]), str(y[i]), 0, str(sx[i]), fileName)
         elif self.has_sy:
             for i in range(len(x)):
-                self.fillDataTable.emit(x[i], y[i], sy[i], 0, fileName)
+                self.fillDataTable.emit(str(x[i]), str(y[i]), str(sy[i]), 0, fileName)
         else:
             for i in range(len(x)):
-                self.fillDataTable.emit(x[i], y[i], 0, 0, fileName)
+                self.fillDataTable.emit(str(x[i]), str(y[i]), 0, 0, fileName)
 
     def load_data_json(self, df):
         """ Loads the data """
