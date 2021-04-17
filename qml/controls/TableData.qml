@@ -153,7 +153,6 @@ Item{
                                         TextInput {
                                             id: textInput
                                             text: if(modelData == 2 || modelData == 3){
-                                                print(Number(data_row[modelData]))
                                                 if(Number(data_row[modelData]) == 0){
                                                     ''
                                                 }else{
