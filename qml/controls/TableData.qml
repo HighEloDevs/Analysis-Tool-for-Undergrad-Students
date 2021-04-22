@@ -17,6 +17,7 @@ Item{
     ]
     property variant dataModel: null
     property variant dataShaped: []
+    property variant hasData:  dataShaped.length != 0 ? true : false
 
     function addRow(x_v, y_v, sy, sx, isEditable = true) {
         dataSet.insert(dataSet.count, {x_v: String(x_v), y_v: String(y_v), sy: String(sy), sx: String(sx), isEditable: isEditable})
@@ -25,6 +26,10 @@ Item{
     function clear(){
         dataShaped = []
         dataSet.clear()
+    }
+
+    function checkData(){
+        root.hasData = dataShaped.length != 0 ? true : false
     }
 
     // Private
@@ -106,7 +111,7 @@ Item{
                     Layout.preferredWidth: 0.8 * parent.width
                     Layout.fillWidth: false
                     Layout.fillHeight: true
-                    interactive: false
+                    interactive: true
                     clip: true  
 
                     model: dataModel
@@ -263,12 +268,16 @@ Item{
                                     enabled: edit
                                     onClicked: {
                                         dataShaped.splice(row, 1)
-                                        dataSet.remove(row)                                        
+                                        dataSet.remove(row)     
                                     }
                                 }
                             }
                         }
-                        Component.onCompleted: dataShaped.push([x_v, y_v, sy, sx, checkBox.checkState - 1])
+                        Component.onCompleted: {
+                            dataShaped.push([x_v, y_v, sy, sx, checkBox.checkState - 1])
+                            root.checkData()
+                        }
+                        Component.onDestruction: root.checkData()
                     }
                 }
             }
@@ -307,7 +316,6 @@ Item{
             onClicked:{
                 if(!lockBtn.isLocked){
                     addRow(0, 0, 0, 0)
-                }else{
                 }
             }
         }

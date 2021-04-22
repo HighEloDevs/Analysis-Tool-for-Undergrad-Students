@@ -20,6 +20,7 @@ class Multiplot(QtCore.QObject):
     """Backend for multiplot page"""
 
     setData = QtCore.Signal(QtCore.QJsonValue, arguments='data')
+    removeRow = QtCore.Signal(int, arguments='row')
 
     def __init__(self, displayBridge):
         super().__init__()
@@ -48,18 +49,20 @@ class Multiplot(QtCore.QObject):
         # Opening json file
         with open(QtCore.QUrl(fileUrl).toLocalFile(), encoding='utf-8') as file:
             data = json.load(file)
-
-        self.setData.emit(QtCore.QJsonValue.fromVariant({
-            'row': row,
-            'data': data['data'],
-            'params': data['parameters'],
-            'fileName': QtCore.QUrl(fileUrl).toLocalFile().split('/')[-1],
-            'projectName': data['projectName'],
-            'expr': data['expr'],
-            'p0': data['p0'],
-            'symbolColor': data['symbol_color'],
-            'curve': curveStyles[data['curve_style']]
-        }))
+        try:
+            self.setData.emit(QtCore.QJsonValue.fromVariant({
+                'row': row,
+                'data': data['data'],
+                'params': data['parameters'],
+                'fileName': QtCore.QUrl(fileUrl).toLocalFile().split('/')[-1],
+                'projectName': data['projectName'],
+                'expr': data['expr'],
+                'p0': data['p0'],
+                'symbolColor': data['symbol_color'],
+                'curve': curveStyles[data['curve_style']]
+            }))
+        except:
+            self.removeRow.emit(row)
 
     @QtCore.Slot(QtCore.QJsonValue)
     def getData(self, data):

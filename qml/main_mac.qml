@@ -16,8 +16,8 @@ Window {
     width: 1500
     height: 800
 
-    minimumWidth: 1300
-    minimumHeight: 600
+    minimumWidth: 1000
+    minimumHeight: 400
 
     visible: true
     color: "#00000000"
@@ -471,12 +471,12 @@ Window {
                                             btnMultiPlot.isActiveMenu = false
                                             btnCalc.isActiveMenu = false
                                             btnHist.isActiveMenu = false
-                                            btnExamples.isActiveMenu = false
+                                            // btnExamples.isActiveMenu = false
                                             btnInfos.isActiveMenu = false
 
                                             pageHome.visible = true
                                             pagePlots.visible = false
-                                            pageExamples.visible = false
+                                            // pageExamples.visible = false
                                             pageInfos.visible = false
 
                                             labelRightInfo.text = "| Início"
@@ -501,12 +501,12 @@ Window {
                                             btnMultiPlot.isActiveMenu = false
                                             btnCalc.isActiveMenu = false
                                             btnHist.isActiveMenu = false
-                                            btnExamples.isActiveMenu = false
+                                            // btnExamples.isActiveMenu = false
                                             btnInfos.isActiveMenu = false
 
                                             pageHome.visible = false
                                             pagePlots.visible = true
-                                            pageExamples.visible = false
+                                            // pageExamples.visible = false
                                             pageInfos.visible = false
 
                                             pagePlot.visible = true
@@ -536,12 +536,12 @@ Window {
                                             btnMultiPlot.isActiveMenu = true
                                             btnCalc.isActiveMenu = false
                                             btnHist.isActiveMenu = false
-                                            btnExamples.isActiveMenu = false
+                                            // btnExamples.isActiveMenu = false
                                             btnInfos.isActiveMenu = false
 
                                             pageHome.visible = false
                                             pagePlots.visible = true
-                                            pageExamples.visible = false
+                                            // pageExamples.visible = false
                                             pageInfos.visible = false
                                             pagePlot.visible = false
                                             pageMultiPlot.visible = true
@@ -569,12 +569,12 @@ Window {
                                             btnMultiPlot.isActiveMenu = false
                                             btnCalc.isActiveMenu = true
                                             btnHist.isActiveMenu = false
-                                            btnExamples.isActiveMenu = false
+                                            // btnExamples.isActiveMenu = false
                                             btnInfos.isActiveMenu = false
 
                                             pageHome.visible = false
                                             pagePlots.visible = true
-                                            pageExamples.visible = false
+                                            // pageExamples.visible = false
                                             pageInfos.visible = false
 
                                             pagePlot.visible = false
@@ -604,12 +604,12 @@ Window {
                                             btnMultiPlot.isActiveMenu = false
                                             btnCalc.isActiveMenu = false
                                             btnHist.isActiveMenu = true
-                                            btnExamples.isActiveMenu = false
+                                            // btnExamples.isActiveMenu = false
                                             btnInfos.isActiveMenu = false
 
                                             pageHome.visible = false
                                             pagePlots.visible = true
-                                            pageExamples.visible = false
+                                            // pageExamples.visible = false
                                             pageInfos.visible = false
                                             pagePlot.visible = false
                                             pageMultiPlot.visible = false
@@ -621,35 +621,35 @@ Window {
                                     }
                                 }
 
-                                LeftMenuButton {
-                                    id: btnExamples
-                                    btnIconSource: "../images/icons/file-18px.svg"
-                                    width: leftMenu.width
-                                    text: qsTr("Exemplos")
-                                    Layout.fillWidth: true
-                                    isActiveMenu: false
-                                    clip: false
+                                // LeftMenuButton {
+                                //     id: btnExamples
+                                //     btnIconSource: "../images/icons/file-18px.svg"
+                                //     width: leftMenu.width
+                                //     text: qsTr("Exemplos")
+                                //     Layout.fillWidth: true
+                                //     isActiveMenu: false
+                                //     clip: false
 
-                                    onClicked: {
-                                        if(stackedPage != 5){
-                                            stackedPage = 5
-                                            btnHome.isActiveMenu = false
-                                            btnPlot.isActiveMenu = false
-                                            btnMultiPlot.isActiveMenu = false
-                                            btnCalc.isActiveMenu = false
-                                            btnHist.isActiveMenu = false
-                                            btnExamples.isActiveMenu = true
-                                            btnInfos.isActiveMenu = false
+                                //     onClicked: {
+                                //         if(stackedPage != 5){
+                                //             stackedPage = 5
+                                //             btnHome.isActiveMenu = false
+                                //             btnPlot.isActiveMenu = false
+                                //             btnMultiPlot.isActiveMenu = false
+                                //             btnCalc.isActiveMenu = false
+                                //             btnHist.isActiveMenu = false
+                                //             btnExamples.isActiveMenu = true
+                                //             btnInfos.isActiveMenu = false
 
-                                            pageHome.visible = false
-                                            pagePlots.visible = false
-                                            pageExamples.visible = true
-                                            pageInfos.visible = false
+                                //             pageHome.visible = false
+                                //             pagePlots.visible = false
+                                //             pageExamples.visible = true
+                                //             pageInfos.visible = false
 
-                                            labelRightInfo.text = "| Exemplos"
-                                        }
-                                    }
-                                }
+                                //             labelRightInfo.text = "| Exemplos"
+                                //         }
+                                //     }
+                                // }
 
                                 Rectangle {
                                     id: rectangle1
@@ -677,12 +677,12 @@ Window {
                                             btnMultiPlot.isActiveMenu = false
                                             btnCalc.isActiveMenu = false
                                             btnHist.isActiveMenu = false
-                                            btnExamples.isActiveMenu = false
+                                            // btnExamples.isActiveMenu = false
                                             btnInfos.isActiveMenu = true
 
                                             pageHome.visible = false
                                             pagePlots.visible = false
-                                            pageExamples.visible = false
+                                            // pageExamples.visible = false
                                             pageInfos.visible = true
 
                                             labelRightInfo.text = "| Informações"

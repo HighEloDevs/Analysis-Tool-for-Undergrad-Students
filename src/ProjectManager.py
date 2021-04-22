@@ -50,17 +50,17 @@ class ProjectManager(QtCore.QObject):
             'data' : None,
             'wsx' : True,
             'wsy' : True,
-            'log_x' : '',
-            'log_y' : '',
-            'legend' : '',
+            'log_x' : 0,
+            'log_y' : 0,
+            'legend' : 0,
             'symbol_color' : '',
             'symbol_size' : 3,
             'symbol' : '',
             'curve_color' : '',
             'curve_thickness' : 2,
             'curve_style' : '',
-            'grid' : '',
-            'residuals' : ''
+            'grid' : 0,
+            'residuals' : 0
         }   
         
     def __importOptions(self):
@@ -122,17 +122,17 @@ class ProjectManager(QtCore.QObject):
             'data' : None,
             'wsx' : True,
             'wsy' : True,
-            'log_x' : '',
-            'log_y' : '',
-            'legend' : '',
+            'log_x' : 0,
+            'log_y' : 0,
+            'legend' : 0,
             'symbol_color' : '',
             'symbol_size' : 3,
             'symbol' : '',
             'curve_color' : '',
             'curve_thickness' : 2,
             'curve_style' : '',
-            'grid' : '',
-            'residuals' : ''
+            'grid' : 0,
+            'residuals' : 0
         }
 
     @QtCore.Slot()
@@ -175,6 +175,9 @@ class ProjectManager(QtCore.QObject):
             'X':'Produto'
             }
 
+        # Reseting front-end
+        self.newProject()
+
         # Saving path
         self.path = QtCore.QUrl(path).toLocalFile()
         
@@ -201,6 +204,7 @@ class ProjectManager(QtCore.QObject):
                     options['legend'],
                     options['expr']
                     )
+        self.displayBridge.setSigma(options['wsx'], options['wsy'])
         
         self.displayBridge.Plot(self.model, options['residuals'], options['grid'],
          options['xmin'], options['xmax'], options['xdiv'],

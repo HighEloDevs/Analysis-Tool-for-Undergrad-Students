@@ -19,6 +19,7 @@ Item{
     property string title: 'Título do TextInput'
     property string textHolder: 'Placeholder'
     property string text: textInput.text
+    property string displayText: ''
 
     Rectangle{
         id: bg
@@ -37,6 +38,7 @@ Item{
             anchors.bottomMargin: 0
             anchors.rightMargin: 5
             anchors.leftMargin: 5
+
             TextInput{
                 id: textInput
                 verticalAlignment: TextInput.AlignVCenter
@@ -45,6 +47,7 @@ Item{
                 selectByMouse: true
                 clip: true
                 color: textColor
+                text: root.displayText
             }
 
             IconButton{

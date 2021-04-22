@@ -172,11 +172,13 @@ Item {
                         Layout.alignment: Qt.AlignHCenter
                         width: 50
                         height: 30
-                        texto: 'Plot / Atualizar'
+                        texto: 'PLOT / ATUALIZAR'
                         
                         primaryColor: Colors.color3
                         hoverColor: Colors.c_button_hover
                         clickColor: Colors.c_button_active
+
+                        enabled: multiPlotTable.hasData
                         
                         onClicked:{
                             let data = multiPlotTable.dataShaped
@@ -204,6 +206,10 @@ Item {
         target: multiplot
         function onSetData(data){
             multiPlotTable.fillRow(data)
+        }
+
+        function onRemoveRow(row){
+            multiPlotTable.removeRow(row)
         }
     }
 }

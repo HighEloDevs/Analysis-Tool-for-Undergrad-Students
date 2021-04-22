@@ -165,8 +165,8 @@ Item {
         target: projectMngr
 
         function onFillFuncPage(expr, pi, sx, sy){
-            expression.text = expr
-            p0.text = pi
+            expression.displayText = expr
+            p0.displayText = pi
             switch_sigmax.checked = sx
             switch_sigmay.checked = sy
         }

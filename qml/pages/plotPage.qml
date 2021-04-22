@@ -88,6 +88,7 @@ Item {
                                 selectMultiple: false
                                 nameFilters: ["Arquivos JSON (*.json)"]
                                 onAccepted:{
+                                    table.clear()
                                     projectMngr.loadProject(projectOpen.fileUrl)
                                 }
                             }
@@ -139,33 +140,43 @@ Item {
                         }
                     }
 
-                    RowLayout {
-                        id: projectName_layout
-                        width: 100
-                        height: 100
-                        Layout.preferredHeight: 35
-                        spacing: 10
+                    // RowLayout {
+                    //     id: projectName_layout
+                    //     width: 100
+                    //     height: 100
+                    //     Layout.preferredHeight: 35
+                    //     spacing: 10
+                    //     Layout.fillWidth: true
+
+                    //     Label {
+                    //         id: label
+                    //         width: 50
+                    //         color: "#ffffff"
+                    //         text: qsTr("Projeto")
+                    //     }
+
+                    //     TextField {
+                    //         id: nomeProjeto
+                    //         height: 25
+                    //         Layout.fillWidth: true
+                    //         placeholderText: qsTr("Identificação do Projeto")
+
+                    //         background: Rectangle{
+                    //             radius: 5
+                    //             border.color: nomeProjeto.focus ? Colors.mainColor2:'#00000000'
+                    //             border.width: 2
+                    //         }
+                    //     }
+                    // }
+
+                    TextInputCustom{
+                        id: nomeProjeto
                         Layout.fillWidth: true
-
-                        Label {
-                            id: label
-                            width: 50
-                            color: "#ffffff"
-                            text: qsTr("Projeto")
-                        }
-
-                        TextField {
-                            id: nomeProjeto
-                            height: 25
-                            Layout.fillWidth: true
-                            placeholderText: qsTr("Identificação do Projeto")
-
-                            background: Rectangle{
-                                radius: 5
-                                border.color: nomeProjeto.focus ? Colors.mainColor2:'#00000000'
-                                border.width: 2
-                            }
-                        }
+                        focusColor: Colors.mainColor2
+                        title: 'Identificação do projeto'
+                        textHolder: 'Ex.: Ajuste X vs T'
+                        defaultColor: '#fff'
+                        textColor: '#fff'
                     }
 
                     RowLayout {
@@ -240,6 +251,8 @@ Item {
                 id: middleTabs
                 Layout.fillHeight: true
                 Layout.fillWidth: true
+
+                isPlotable: table.hasData
             }
         }
     }

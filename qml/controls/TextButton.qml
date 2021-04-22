@@ -19,25 +19,28 @@ Button{
                                     root.hovered ? hoverColor : primaryColor
                                  }
 
+    property var dynamicOpacity: root.enabled ? 1 : 0.5
+
     MouseArea{
         id: mouseArea
         anchors.fill: parent
-        cursorShape: Qt.PointingHandCursor
+        cursorShape: root.enabled ? Qt.PointingHandCursor : Qt.ForbiddenCursor
         onPressed:  mouse.accepted = false
     }
 
     background: Rectangle{
-        radius: 10
+        radius: 5
         color: dynamicColor
+        opacity: dynamicOpacity
     }
 
     contentItem: Text{
         text: texto
         color: textColor
-        font.pixelSize: textSize
         font.bold: true
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
         elide: Text.ElideRight
+        opacity: dynamicOpacity
     }
 }

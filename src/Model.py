@@ -10,10 +10,10 @@ Model Class
 
 import numpy as np
 import pandas as pd
+from scipy.odr import ODR, Model as SciPyModel, Data, RealData
 from matplotlib_backend_qtquick.qt_compat import QtCore
 from lmfit.models import ExpressionModel
 from lmfit import Parameters
-from scipy.odr import ODR, Model as SciPyModel, Data, RealData
 from copy import deepcopy
 
 class Model(QtCore.QObject):
@@ -51,17 +51,18 @@ class Model(QtCore.QObject):
         return self.report_fit
         
     @QtCore.Slot(QtCore.QJsonValue)
-    def getData(self, data):
+    def getData(self, data = None, path = ''):
         """Getting data from table"""
         df = pd.DataFrame.from_records(data.toVariant())
         df.columns = ['x', 'y', 'sy', 'sx', 'bool']
 
+        # Removing not chosen rows
         df = df[df['bool'] == 1]
 
         # Dropping some useless columns
         df = df.replace('', '0')
-        if df[df['sx'] != 0].empty: del df['sx']
-        if df[df['sy'] != 0].empty: del df['sy']
+        if df[df['sx'] != '0'].empty: del df['sx']
+        if df[df['sy'] != '0'].empty: del df['sy']
         del df['bool']
 
         self.mode = len(df.columns) - 2
@@ -71,28 +72,24 @@ class Model(QtCore.QObject):
         # Naming columns
         if self.mode == 0:
             self.data_json        = deepcopy(df)
-            # self.data_json.colums = ['x', 'y']
-            df["sy"]              = 1
-            df["sx"]              = 1
             self.has_sy           = False
             self.has_sx           = False
+            df["sy"]              = 1
+            df["sx"]              = 1
         elif self.mode == 1:
             self.data_json        = deepcopy(df)
-            # self.data_json.colums = ['x', 'y', 'sy']
-            df["sx"]              = 1
             self.has_sx           = False
+            df["sx"]              = 1
         else:
             self.data_json         = deepcopy(df)
-            # self.data_json.columns = ['x', 'y', 'sy', 'sx']
-        df.columns    = ['x', 'y', 'sy', 'sx']
+
+        df.columns = ['x', 'y', 'sy', 'sx']
 
         # Turn everything into number (str -> number)
         df = df.astype(float)
 
         self.data     = deepcopy(df)
-
         self.has_data = True
-        
         self.x  = self.data["x"].to_numpy()
         self.y  = self.data["y"].to_numpy()
         self.sy = self.data["sy"].to_numpy()
@@ -101,11 +98,12 @@ class Model(QtCore.QObject):
     def load_data(self, data_path):
         """ Loads the data from a given path. """
         df = pd.read_csv(data_path, sep='\t', header=None, dtype = str).dropna()
+
         for i in df.columns:
             df[i] = [x.replace(',', '.') for x in df[i]]
-            # df[i] = df[i].astype(float)
 
         df = df.replace('', '0')
+        
         df[i] = df[i].astype(float)
         self.mode = len(df.columns) - 2
         self.has_sx     = True
@@ -114,19 +112,17 @@ class Model(QtCore.QObject):
         # Naming columns
         if self.mode == 0:
             self.data_json        = deepcopy(df)
-            # self.data_json.colums = ['x', 'y']
-            df["sy"]              = 1
-            df["sx"]              = 1
             self.has_sy           = False
             self.has_sx           = False
+            df["sy"]              = 1
+            df["sx"]              = 1
         elif self.mode == 1:
             self.data_json        = deepcopy(df)
-            # self.data_json.colums = ['x', 'y', 'sy']
-            df["sx"]              = 1
             self.has_sx           = False
+            df["sx"]              = 1
         else:
             self.data_json         = deepcopy(df)
-            # self.data_json.columns = ['x', 'y', 'sy', 'sx']
+
         df.columns    = ['x', 'y', 'sy', 'sx']
         self.data     = deepcopy(df)
         self.has_data = True
@@ -144,13 +140,13 @@ class Model(QtCore.QObject):
                 self.fillDataTable.emit(str(x[i]), str(y[i]), str(sy[i]), str(sx[i]), fileName)
         elif self.has_sx:
             for i in range(len(x)):
-                self.fillDataTable.emit(str(x[i]), str(y[i]), 0, str(sx[i]), fileName)
+                self.fillDataTable.emit(str(x[i]), str(y[i]), '0', str(sx[i]), fileName)
         elif self.has_sy:
             for i in range(len(x)):
-                self.fillDataTable.emit(str(x[i]), str(y[i]), str(sy[i]), 0, fileName)
+                self.fillDataTable.emit(str(x[i]), str(y[i]), str(sy[i]), '0', fileName)
         else:
             for i in range(len(x)):
-                self.fillDataTable.emit(str(x[i]), str(y[i]), 0, 0, fileName)
+                self.fillDataTable.emit(str(x[i]), str(y[i]), '0', '0', fileName)
 
     def load_data_json(self, df):
         """ Loads the data """
@@ -236,7 +232,6 @@ class Model(QtCore.QObject):
         self.coef = [i for i in self.model.param_names]
         
         # If there's no p0, everything is set to 1.0
-
         pi = list()   # Inital values
 
         if self.p0 is None:
@@ -254,7 +249,6 @@ class Model(QtCore.QObject):
         x, y, sy, sx = self.get_data()
 
         data = None
-
         if self.mode == 0:
             self.__fit_lm_wy(x, y, pi)
             self.__set_param_values_lm()
@@ -436,5 +430,3 @@ class Model(QtCore.QObject):
         self.has_sx     = True
         self.has_sy     = True
         self.writeInfos.emit('')
-        
-        

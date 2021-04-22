@@ -573,9 +573,9 @@ Item {
         target: projectMngr
 
         function onFillPropPage(title, xaxis, log_x, yaxis, log_y, residuals, grid, legend, symbol_color, symbol_size, symbol_style, curve_color, curve_thickness, curve_style){
-            titulo.text = title
-            eixox.text = xaxis
-            eixoy.text = yaxis
+            titulo.displayText = title
+            eixox.displayText = xaxis
+            eixoy.displayText = yaxis
             switchResiduos.checked = residuals
             switchGrade.checked = grid
             log_eixox.checked = log_x

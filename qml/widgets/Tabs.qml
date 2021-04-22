@@ -7,7 +7,7 @@ import "../colors.js" as Colors
 import "../controls"
 
 Item {
-    id: item1
+    id: root
     width: 372
     height: 673
     implicitWidth: 372
@@ -15,6 +15,7 @@ Item {
 
     property alias pageFunc: pageFuncaoAjuste.item
     property alias pageProp: pageProps.item
+    property bool isPlotable: false
 
     Rectangle {
         id: bg
@@ -101,11 +102,12 @@ Item {
                 Layout.bottomMargin: 5
                 Layout.topMargin: 5
                 Layout.fillWidth: true
-                texto: 'Plot / Atualizar'
+                texto: 'PLOT / ATUALIZAR'
                 textSize: 10
                 primaryColor: Colors.c_button
                 clickColor: Colors.c_button_active
                 hoverColor: Colors.c_button_hover
+                enabled: root.isPlotable
 
                 onClicked: {
                     pageFunc.clearTableParams()

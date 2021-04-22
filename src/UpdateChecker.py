@@ -21,7 +21,7 @@ class UpdateChecker(QtCore.QObject):
         super().__init__()
         
         # Actual version
-        self.__VERSION__  = '2.1.0a1'
+        self.__VERSION__  = '2.0.0a1'
         self.isUpdate = True
         
     @QtCore.Slot()

@@ -43,6 +43,8 @@ Item {
         }
     }
 
+    property variant hasData:  dataShaped['rows'].length != 0 ? true : false
+
     function addRow(){
         dataSet.insert(dataSet.count, {
             fileName: 'Escolha o Projeto',
@@ -65,6 +67,7 @@ Item {
             1: '--',
             2: '-.'
         }
+
         dataShaped['rows'][options['row']]['df'] = options['data']
         dataShaped['rows'][options['row']]['params'] = options['params']
         dataShaped['rows'][options['row']]['expr'] = options['expr']
@@ -72,6 +75,16 @@ Item {
         dataShaped['rows'][options['row']]['label'] = options['projectName']
         dataShaped['rows'][options['row']]['markerColor'] = options['symbolColor']
         dataShaped['rows'][options['row']]['curve'] = curveStyles[options['curve']]
+    }
+
+    function checkData(){
+        root.hasData = dataShaped['rows'].length != 0 ? true : false
+    }
+
+    function removeRow(row){
+        dataShaped['rows'].splice(row, 1)
+        dataSet.remove(row)  
+        root.checkData()
     }
 
     ColumnLayout{
@@ -180,12 +193,20 @@ Item {
                                             folder: shortcuts.desktop
                                             selectMultiple: false
                                             nameFilters: ["Arquivos JSON (*.json)"]
-                                            onAccepted:{
+                                            onAccepted: {
                                                 multiplot.loadData(fileUrl, row)
+                                                root.checkData()
+                                            }
+                                            onRejected: {
+                                                dataShaped['rows'].splice(row, 1)
+                                                dataSet.remove(row)
+                                                root.checkData()
                                             }
                                         }
 
                                         onClicked: chooseProject.open()
+
+                                        Component.onCompleted: chooseProject.open()
                                     }
                                     Text{
                                         height: parent.height
@@ -320,6 +341,7 @@ Item {
                                     onClicked: {
                                         dataShaped['rows'].splice(row, 1)
                                         dataSet.remove(row)  
+                                        root.checkData()
                                     }
                                 }
                             }
