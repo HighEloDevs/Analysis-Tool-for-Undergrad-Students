@@ -1,108 +1,217 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
-import "../colors.js" as Colors
 import Qt.labs.qmlmodels 1.0
 import QtQuick.Window 2.12
 import QtQuick.Layouts 1.12
 import "../controls"
+import "../colors.js" as Colors
 
 Item {
-    // Rectangle {
-    //     id: bg
-    //     color: Colors.color3
-    //     anchors.fill: parent
+    id: root
+    
+    Column{
+        anchors.fill: parent
+        
+        TableMultiPlot{
+            id: multiPlotTable
+            width: parent.width
+            height: root.height / 2
+        }
+        
+        Rectangle{
+            id: optionsBg
+            width: root.width
+            height: root.height - multiPlotTable.height
+            color: Colors.color2
+            
+            ScrollView {
+                id: scrollView
+                anchors.fill: parent
+                contentWidth: root.width
+                clip: true
+                
+                GridLayout{
+                    id: gridLayout
+                    anchors.fill: parent
+                    anchors.rightMargin: 15
+                    anchors.leftMargin: 15
+                    rowSpacing: 0
+                    columnSpacing: 2
+                    rows: 6
+                    columns: 3
+                    
+                    TextInputCustom{
+                        id: title
+                        Layout.columnSpan: 2
+                        Layout.fillWidth: true
+                        focusColor: Colors.mainColor2
+                        title: 'Título do Gráfico'
+                        textHolder: ''
+                        defaultColor: '#fff'
+                        textColor: '#fff'
+                    }
+                    CheckBoxCustom{
+                        id: grid
+                        Layout.alignment: Qt.AlignHCenter
+                        w: 25
+                        texto: 'Grade'
+                    }
+                    
+                    TextInputCustom{
+                        id: xaxis
+                        Layout.columnSpan: 2
+                        Layout.fillWidth: true
+                        focusColor: Colors.mainColor2
+                        title: 'Título do Eixo X'
+                        textHolder: ''
+                        defaultColor: '#fff'
+                        textColor: '#fff'
+                    }
+                    CheckBoxCustom{
+                        id: logx
+                        Layout.alignment: Qt.AlignHCenter
+                        w: 25
+                        texto: 'Log X'
+                        checked: false
+                    }
+                    
+                    Rectangle{
+                        Layout.columnSpan: 3
+                        Layout.fillWidth: true
+                        height: 50
+                        color: 'transparent'
+                        RowLayout{
+                            anchors.fill: parent
+                            TextInputCustom{
+                                id: xmin
+                                Layout.fillWidth: true
+                                focusColor: Colors.mainColor2
+                                title: 'X Mínimo'
+                                textHolder: ''
+                                defaultColor: '#fff'
+                                textColor: '#fff'
+                            }
+                            TextInputCustom{
+                                id: xmax
+                                Layout.fillWidth: true
+                                focusColor: Colors.mainColor2
+                                title: 'X Máximo'
+                                textHolder: ''
+                                defaultColor: '#fff'
+                                textColor: '#fff'
+                            }
+                            TextInputCustom{
+                                id: xdiv
+                                Layout.fillWidth: true
+                                focusColor: Colors.mainColor2
+                                title: 'Intervalos em X'
+                                textHolder: ''
+                                defaultColor: '#fff'
+                                textColor: '#fff'
+                            }
+                        }
+                    }
+                    
+                    TextInputCustom{
+                        id: yaxis
+                        Layout.columnSpan: 2
+                        Layout.fillWidth: true
+                        focusColor: Colors.mainColor2
+                        title: 'Título do Eixo Y'
+                        textHolder: ''
+                        defaultColor: '#fff'
+                        textColor: '#fff'
+                    }
+                    CheckBoxCustom{
+                        id: logy
+                        Layout.alignment: Qt.AlignHCenter
+                        w: 25
+                        texto: 'Log Y'
+                        checked: false
+                    }
+                    
+                    Rectangle{
+                        Layout.columnSpan: 3
+                        Layout.fillWidth: true
+                        height: 50
+                        color: 'transparent'
+                        RowLayout{
+                            anchors.fill: parent
+                            TextInputCustom{
+                                id: ymin
+                                Layout.fillWidth: true
+                                focusColor: Colors.mainColor2
+                                title: 'Y Mínimo'
+                                textHolder: ''
+                                defaultColor: '#fff'
+                                textColor: '#fff'
+                            }
+                            TextInputCustom{
+                                id: ymax
+                                Layout.fillWidth: true
+                                focusColor: Colors.mainColor2
+                                title: 'Y Máximo'
+                                textHolder: ''
+                                defaultColor: '#fff'
+                                textColor: '#fff'
+                            }
+                            TextInputCustom{
+                                id: ydiv
+                                Layout.fillWidth: true
+                                focusColor: Colors.mainColor2
+                                title: 'Intervalos em Y'
+                                textHolder: ''
+                                defaultColor: '#fff'
+                                textColor: '#fff'
+                            }
+                        }
+                    }
+                    
+                    TextButton{
+                        Layout.columnSpan: 3
+                        Layout.alignment: Qt.AlignHCenter
+                        width: 50
+                        height: 30
+                        texto: 'PLOT / ATUALIZAR'
+                        
+                        primaryColor: Colors.color3
+                        hoverColor: Colors.c_button_hover
+                        clickColor: Colors.c_button_active
 
-    //     TableView {
-    //         anchors.fill: parent
-    //         interactive: false
-    //         pixelAligned: false
-    //         clip: false
-    //         anchors.rightMargin: 0
-    //         anchors.bottomMargin: 0
-    //         anchors.leftMargin: 0
-    //         anchors.topMargin: 0
-    //         columnSpacing: 1
-    //         rowSpacing: 1
-    //         boundsBehavior: Flickable.StopAtBounds
-
-    //         model: TableModel {
-    //             TableModelColumn { display: "checked" }
-    //             TableModelColumn { display: "amount" }
-    //             TableModelColumn { display: "fruitType" }
-    //             TableModelColumn { display: "fruitPrice" }
-
-    //             // Each row is one type of fruit that can be ordered
-    //             rows: [
-    //                 {
-    //                     checked: true,
-    //                     amount: 1,
-    //                     fruitType: "Arquivos",
-    //                     fruitPrice: 1.50
-    //                 },
-    //             ]
-    //         }
-
-    //         delegate: DelegateChooser {
-    //             DelegateChoice {
-    //                 column: 0
-    //                 delegate: CheckBox {
-    //                     checked: model.display
-    //                     onToggled: model.display = checked
-    //                 }
-    //             }
-    //             DelegateChoice {
-    //                 column: 1
-    //                 delegate: SpinBox {
-    //                     value: model.display
-    //                     onValueModified: model.display = value
-    //                 }
-    //             }
-    //             DelegateChoice {
-    //                 delegate: TextField {
-    //                     text: model.display
-    //                     readOnly: true
-    //                     selectByMouse: true
-    //                     implicitWidth: 140
-    //                     onAccepted: model.display = text
-    //                 }
-    //             }
-    //         }
-    //     }
-    // }
-
-    Table{
-        id: table
-        width: 300
-        height: parent.height/3
-
-        headerModel: [
-            {text: '<b>X</b>', width: 0.25},
-            {text: '<b>Y</b>', width: 0.25},
-            {text: '<b>Sigma Y</b>', width: 0.25},
-            {text: '<b>Sigma X</b>', width: 0.25},
-        ]
-
-        dataModel: [
-            [1, 1, 1, 1],
-            [1, 1, 1, 1],
-            [1, 1, 1, 1],
-            [1, 1, 1, 1],
-            [1, 1, 1, 1],
-            [1, 1, 1, 1],
-            [1, 1, 1, 1],
-            [1, 1, 1, 1],
-            [1, 1, 1, 1],
-            [1, 1, 1, 1],
-            [1, 1, 1, 1],
-        ]
-
-        onClicked: {
-            print(row)
-            print(dataModel)
-            dataModel.push([2, 2, 2, 2])
+                        enabled: multiPlotTable.hasData
+                        
+                        onClicked:{
+                            let data = multiPlotTable.dataShaped
+                            data['options']['title'] = title.text
+                            data['options']['xaxis'] = xaxis.text
+                            data['options']['yaxis'] = yaxis.text
+                            data['options']['xmin'] = Number(xmin.text)
+                            data['options']['xmax'] = Number(xmax.text)
+                            data['options']['xdiv'] = Number(xdiv.text)
+                            data['options']['ymin'] = Number(ymin.text)
+                            data['options']['ymax'] = Number(ymax.text)
+                            data['options']['ydiv'] = Number(ydiv.text)
+                            data['options']['logx'] = logx.checkState
+                            data['options']['logy'] = logy.checkState
+                            data['options']['grid'] = grid.checkState
+                            multiplot.getData(multiPlotTable.dataShaped)
+                        }
+                    }
+                }
+            }
         }
     }
+    
+    Connections{
+        target: multiplot
+        function onSetData(data){
+            multiPlotTable.fillRow(data)
+        }
 
+        function onRemoveRow(row){
+            multiPlotTable.removeRow(row)
+        }
+    }
 }
 
 /*##^##

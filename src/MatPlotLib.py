@@ -9,6 +9,8 @@ MatPlotLib Class
 """
 from matplotlib_backend_qtquick.backend_qtquick import NavigationToolbar2QtQuick
 from matplotlib_backend_qtquick.qt_compat import QtCore
+from .Model_multiplot import MultiModel
+import numpy as np
 
 class DisplayBridge(QtCore.QObject):
     """ A bridge class to interact with the plot in python
@@ -20,28 +22,36 @@ class DisplayBridge(QtCore.QObject):
         super().__init__(parent)
 
         # The figure, canvas, toolbar and axes
-        self.figure = None
-        self.canvas = None
+        self.figure  = None
+        self.canvas  = None
         self.toolbar = None
-        self.axes = None
-        self.ax1 = ''
-        self.ax2 = ''
+        self.axes    = None
+        self.ax1     = ''
+        self.ax2     = ''
 
         # Options
-        self.sigma_x = False
-        self.sigma_y = False
-        self.log_x = False
-        self.log_y = False
-        self.legend = False
-        self.grid = False
-        self.residuals = False
-        self.symbol_color = ''
-        self.symbol_size = 3
-        self.symbol = ''
-        self.curve_color = ''
+        self.sigma_x         = False
+        self.sigma_y         = False
+        self.log_x           = False
+        self.log_y           = False
+        self.legend          = False
+        self.grid            = False
+        self.residuals       = False
+        self.symbol_color    = ''
+        self.symbol_size     = 3
+        self.symbol          = ''
+        self.curve_color     = ''
         self.curve_thickness = 2
-        self.curve_style = ''
-        self.expression = ''
+        self.curve_style     = ''
+        self.expression      = ''
+        self.xmin            = 0.
+        self.xmax            = 0.
+        self.xdiv            = 0.
+        self.ymin            = 0.
+        self.ymax            = 0.
+        self.ydiv            = 0.
+        self.resmin          = 0.
+        self.resmax          = 0. 
 
         # This is used to display the coordinates of the mouse in the window
         self._coordinates = ""
@@ -49,22 +59,30 @@ class DisplayBridge(QtCore.QObject):
     def updateWithCanvas(self, canvas):
         """ initialize with the canvas for the figure
         """
-        self.canvas = canvas
-        self.figure = self.canvas.figure
+        self.canvas  = canvas
+        self.figure  = self.canvas.figure
         self.toolbar = NavigationToolbar2QtQuick(canvas=canvas)
-        self.axes = self.figure.add_subplot(111)
+        self.axes    = self.figure.add_subplot(111)
         self.axes.grid(False)
         canvas.draw_idle()
 
         # Connect for displaying the coordinates
         self.figure.canvas.mpl_connect('motion_notify_event', self.on_motion)
 
-    def Plot(self, model, residuals, grid):
+    def Plot(self, model, residuals, grid, xmin, xmax, xdiv, ymin, ymax, ydiv, resmin, resmax):
         # Data Predicted by the model and residuals
-        px, py, y_r = None, None, None
+        px, py, y_r    = None, None, None
 
         self.residuals = residuals
-        self.grid = grid
+        self.grid      = grid
+        self.xmin      = xmin
+        self.xmax      = xmax
+        self.xdiv      = xdiv
+        self.ymin      = ymin
+        self.ymax      = ymax
+        self.ydiv      = ydiv
+        self.resmin    = resmin
+        self.resmax    = resmax
 
         if model.has_data:
 
@@ -74,7 +92,7 @@ class DisplayBridge(QtCore.QObject):
                 
                 # Getting fitted data
                 px, py = model.get_predict()
-                y_r = model.get_residuals()
+                y_r    = model.get_residuals()
 
             # Plotting if the model is valid
             if model.isvalid:
@@ -86,7 +104,40 @@ class DisplayBridge(QtCore.QObject):
 
                 if residuals:
                     self.ax1, self.ax2 = self.figure.subplots(2, 1, sharex=True, gridspec_kw={'height_ratios': [3, 1.0]})
-                    self.figure.subplots_adjust(left = None, bottom = None, right = None, top = None, wspace = None, hspace = 0) 
+                    self.figure.subplots_adjust(left = None, bottom = None, right = None, top = None, wspace = None, hspace = 0)
+
+                    if self.xdiv != 0. and (self.xmax != 0. or self.xmin != 0.):
+                        self.ax1.set_xticks(np.linspace(self.xmin, self.xmax, self.xdiv + 1))
+                        self.ax2.set_xticks(np.linspace(self.xmin, self.xmax, self.xdiv + 1))
+                        self.ax1.set_xlim(left = self.xmin, right = self.xmax)
+                        self.ax2.set_xlim(left = self.xmin, right = self.xmax)
+                    else:
+                        if self.xmin == 0. and self.xmax != 0.:
+                            self.ax1.set_xlim(left = None, right = self.xmax)
+                            self.ax2.set_xlim(left = None, right = self.xmax)
+                        elif self.xmin != 0. and self.xmax == 0.:
+                            self.ax1.set_xlim(left = self.xmin, right = None)
+                            self.ax2.set_xlim(left = self.xmin, right = None)
+                        elif self.xmin != 0. and self.xmax != 0.:
+                            self.ax1.set_xlim(left = self.xmin, right = self.xmax)
+                            self.ax2.set_xlim(left = self.xmin, right = self.xmax)
+                    
+                    if self.ydiv != 0. and (self.ymax != 0. or self.ymin != 0.):
+                        self.ax1.set_yticks(np.linspace(self.ymin, self.ymax, self.ydiv + 1))
+                        self.ax2.set_yticks(np.linspace(self.ymin, self.ymax, self.ydiv + 1))
+                        self.ax1.set_ylim(bottom = self.ymin, top = self.ymax)
+                    else:
+                        if self.ymin == 0. and self.ymax != 0.:
+                            self.ax1.set_ylim(bottom = None, top = self.ymax)
+                        elif self.ymin != 0. and self.ymax == 0.:
+                            self.ax1.set_ylim(bottom = self.ymin, top = None)
+                        elif self.ymin != 0. and self.ymax != 0.:
+                            self.ax1.set_ylim(bottom = self.ymin, top = self.ymax)
+                    
+                    if self.resmin != 0. or self.resmax != 0.:
+                        self.ax2.set_ylim(bottom = self.resmin, top = self.resmax)
+
+
 
                     if grid:
                         self.ax1.grid(True)
@@ -118,6 +169,7 @@ class DisplayBridge(QtCore.QObject):
                     # Setting titles
                     self.ax1.set_title(str(model.eixos[2][0]))
                     self.ax1.set(ylabel = str(model.eixos[1][0]))
+                    self.ax2.set(ylabel = "Resíduos")
                     self.ax2.set(xlabel = str(model.eixos[0][0]))
                 else:
                     self.axes = self.figure.add_subplot(111)
@@ -128,6 +180,29 @@ class DisplayBridge(QtCore.QObject):
                         self.axes.set_yscale('log')
                     if self.log_x:
                         self.axes.set_xscale('log')
+
+                    if self.xdiv != 0. and (self.xmax != 0. or self.xmin != 0.):
+                        self.axes.set_xticks(np.linspace(self.xmin, self.xmax, self.xdiv + 1))
+                        self.axes.set_xlim(left = self.xmin, right = self.xmax)
+
+                    else:
+                        if self.xmin == 0. and self.xmax != 0.:
+                            self.axes.set_xlim(left = None, right = self.xmax)
+                        elif self.xmin != 0. and self.xmax == 0.:
+                            self.axes.set_xlim(left = self.xmin, right = None)
+                        elif self.xmin != 0. and self.xmax != 0.:
+                            self.axes.set_xlim(left = self.xmin, right = self.xmax)
+                    
+                    if self.ydiv != 0. and (self.ymax != 0. or self.ymin != 0.):
+                        self.axes.set_yticks(np.linspace(self.ymin, self.ymax, self.ydiv + 1))
+                        self.axes.set_ylim(bottom = self.ymin, top = self.ymax)
+                    else:
+                        if self.ymin == 0. and self.ymax != 0.:
+                            self.axes.set_ylim(bottom = None, top = self.ymax)
+                        elif self.ymin != 0. and self.ymax == 0.:
+                            self.axes.set_ylim(bottom = self.ymin, top = None)
+                        elif self.ymin != 0. and self.ymax != 0.:
+                            self.axes.set_ylim(bottom = self.ymin, top = self.ymax)
                     
                     # Making Plots
                     if model.mode == 2:
@@ -161,6 +236,29 @@ class DisplayBridge(QtCore.QObject):
                 if self.log_x:
                     self.axes.set_xscale('log')
 
+                if self.xdiv != 0. and (self.xmax != 0. or self.xmin != 0.):
+                    self.axes.set_xticks(np.linspace(self.xmin, self.xmax, self.xdiv + 1))
+                    self.axes.set_xlim(left = self.xmin, right = self.xmax)
+
+                else:
+                    if self.xmin == 0. and self.xmax != 0.:
+                        self.axes.set_xlim(left = None, right = self.xmax)
+                    elif self.xmin != 0. and self.xmax == 0.:
+                        self.axes.set_xlim(left = self.xmin, right = None)
+                    elif self.xmin != 0. and self.xmax != 0.:
+                        self.axes.set_xlim(left = self.xmin, right = self.xmax)
+                
+                if self.ydiv != 0. and (self.ymax != 0. or self.ymin != 0.):
+                    self.axes.set_yticks(np.linspace(self.ymin, self.ymax, self.ydiv + 1))
+                    self.axes.set_ylim(bottom = self.ymin, top = self.ymax)
+                else:
+                    if self.ymin == 0. and self.ymax != 0.:
+                        self.axes.set_ylim(bottom = None, top = self.ymax)
+                    elif self.ymin != 0. and self.ymax == 0.:
+                        self.axes.set_ylim(bottom = self.ymin, top = None)
+                    elif self.ymin != 0. and self.ymax != 0.:
+                        self.axes.set_ylim(bottom = self.ymin, top = self.ymax)
+
                 x, y, sy, sx = model.get_data()
 
                 # Making Plots
@@ -179,23 +277,23 @@ class DisplayBridge(QtCore.QObject):
                 self.axes.set(xlabel = str(model.eixos[0][0]))
 
         # Reseting parameters
-        px, py, y_r = None, None, None
+        px, py, y_r   = None, None, None
         model.isvalid = False
 
         self.canvas.draw_idle()
 
     def setStyle(self, log_x, log_y, symbol_color, symbol_size, symbol, curve_color, curve_thickness, curve_style, legend, expression):
         """Sets the style of the plot"""
-        self.log_x = bool(log_x)
-        self.log_y = bool(log_y)
-        self.symbol_color = symbol_color
-        self.symbol_size = symbol_size
-        self.symbol = symbol
-        self.curve_color = curve_color
+        self.log_x           = bool(log_x)
+        self.log_y           = bool(log_y)
+        self.symbol_color    = symbol_color
+        self.symbol_size     = symbol_size
+        self.symbol          = symbol
+        self.curve_color     = curve_color
         self.curve_thickness = curve_thickness
-        self.curve_style = curve_style
-        self.legend = bool(legend)
-        self.expression = expression
+        self.curve_style     = curve_style
+        self.legend          = bool(legend)
+        self.expression      = expression
     
     def setSigma(self, wsx, wsy):
         """Consider sigmas"""
@@ -231,20 +329,20 @@ class DisplayBridge(QtCore.QObject):
         self.canvas.draw_idle()
 
         # Options
-        self.sigma_x = False
-        self.sigma_y = False
-        self.log_x = False
-        self.log_y = False
-        self.legend = False
-        self.grid = False
-        self.residuals = False
-        self.symbol_color = ''
-        self.symbol_size = 3
-        self.symbol = ''
-        self.curve_color = ''
+        self.sigma_x         = False
+        self.sigma_y         = False
+        self.log_x           = False
+        self.log_y           = False
+        self.legend          = False
+        self.grid            = False
+        self.residuals       = False
+        self.symbol_color    = ''
+        self.symbol_size     = 3
+        self.symbol          = ''
+        self.curve_color     = ''
         self.curve_thickness = 2
-        self.curve_style = ''
-        self.expression = ''
+        self.curve_style     = ''
+        self.expression      = ''
 
         # This is used to display the coordinates of the mouse in the window
         self._coordinates = ""

@@ -9,10 +9,10 @@ Class Project Manager
 """
 
 import json
-from PySide2 import QtCore
 import pandas as pd
-from .Model import Model
+from matplotlib_backend_qtquick.qt_compat import QtCore
 from .MatPlotLib import DisplayBridge
+from .Model import Model
 
 class ProjectManager(QtCore.QObject):
     '''Manages the project and the options, saves the project using json'''
@@ -25,8 +25,8 @@ class ProjectManager(QtCore.QObject):
     fillDataTable = QtCore.Signal()
     fillParamsTable = QtCore.Signal()
     fillProjectName = QtCore.Signal(str, arguments=['projectName'])
-    clearTableData = QtCore.Signal()
     clearTableParams = QtCore.Signal()
+    clearTableData = QtCore.Signal()
     
 
     def __init__(self, displayBridge, model):
@@ -50,23 +50,23 @@ class ProjectManager(QtCore.QObject):
             'data' : None,
             'wsx' : True,
             'wsy' : True,
-            'log_x' : '',
-            'log_y' : '',
-            'legend' : '',
+            'log_x' : 0,
+            'log_y' : 0,
+            'legend' : 0,
             'symbol_color' : '',
             'symbol_size' : 3,
             'symbol' : '',
             'curve_color' : '',
             'curve_thickness' : 2,
             'curve_style' : '',
-            'grid' : '',
-            'residuals' : ''
+            'grid' : 0,
+            'residuals' : 0
         }   
         
     def __importOptions(self):
         '''Import all options from classes'''
         try:
-            data = self.model.data.to_json()
+            data = self.model.data_json.to_json(double_precision = 15)
         except:
             data = None
 
@@ -98,7 +98,16 @@ class ProjectManager(QtCore.QObject):
             'curve_thickness' : self.displayBridge.curve_thickness,
             'curve_style' : self.displayBridge.curve_style,
             'grid' : self.displayBridge.grid,
-            'residuals' : self.displayBridge.residuals
+            'residuals' : self.displayBridge.residuals,
+            'xmin' : self.displayBridge.xmin,
+            'xmax' : self.displayBridge.xmax,
+            'xdiv' : self.displayBridge.xdiv,
+            'ymin' : self.displayBridge.ymin,
+            'ymax' : self.displayBridge.ymax,
+            'ydiv' : self.displayBridge.ydiv,
+            'resmin' : self.displayBridge.resmin,
+            'resmax' : self.displayBridge.resmax,
+            'parameters': self.model.params.valuesdict()
         }
 
     def __clearOptions(self):
@@ -113,17 +122,17 @@ class ProjectManager(QtCore.QObject):
             'data' : None,
             'wsx' : True,
             'wsy' : True,
-            'log_x' : '',
-            'log_y' : '',
-            'legend' : '',
+            'log_x' : 0,
+            'log_y' : 0,
+            'legend' : 0,
             'symbol_color' : '',
             'symbol_size' : 3,
             'symbol' : '',
             'curve_color' : '',
             'curve_thickness' : 2,
             'curve_style' : '',
-            'grid' : '',
-            'residuals' : ''
+            'grid' : 0,
+            'residuals' : 0
         }
 
     @QtCore.Slot()
@@ -166,11 +175,14 @@ class ProjectManager(QtCore.QObject):
             'X':'Produto'
             }
 
+        # Reseting front-end
+        self.newProject()
+
         # Saving path
         self.path = QtCore.QUrl(path).toLocalFile()
         
         # Loading and setting up options
-        with open(self.path) as file:
+        with open(self.path, encoding='utf-8') as file:
             options = json.load(file)
         
         self.model.set_expression(options['expr'])
@@ -179,7 +191,7 @@ class ProjectManager(QtCore.QObject):
         self.model.set_y_axis(options['yaxis'])
         self.clearTableData.emit()
         if options['data'] != None:
-            self.model.load_data_json(pd.read_json(options['data']))
+            self.model.load_data_json(pd.read_json(options['data'], dtype = str))
         self.displayBridge.setStyle(  
                     options['log_x'],
                     options['log_y'],
@@ -192,7 +204,12 @@ class ProjectManager(QtCore.QObject):
                     options['legend'],
                     options['expr']
                     )
-        self.displayBridge.Plot(self.model, options['residuals'], options['grid'])
+        self.displayBridge.setSigma(options['wsx'], options['wsy'])
+        
+        self.displayBridge.Plot(self.model, options['residuals'], options['grid'],
+         options['xmin'], options['xmax'], options['xdiv'],
+         options['ymin'], options['ymax'], options['ydiv'],
+         options['resmin'],  options['resmax'])
 
         # Setting all options to frontend
         self.fillFuncPage.emit( options['expr'],
@@ -238,9 +255,7 @@ class ProjectManager(QtCore.QObject):
                                 self.opt['curve_color'],
                                 self.opt['curve_thickness'],
                                 'Sólido')
-        print(self.opt['p0'])
         self.fillProjectName.emit(self.opt['projectName'])
-        self.clearTableData.emit()
         self.clearTableParams.emit()
         self.model.reset()
         self.displayBridge.reset()

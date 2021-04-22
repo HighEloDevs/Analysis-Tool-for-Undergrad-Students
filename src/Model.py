@@ -9,26 +9,25 @@ Model Class
 """
 
 import numpy as np
-import matplotlib.pyplot as plt
 import pandas as pd
-from PySide2 import QtCore
-from PySide2.QtCore import Slot, Signal
-from copy import deepcopy
+from scipy.odr import ODR, Model as SciPyModel, Data, RealData
+from matplotlib_backend_qtquick.qt_compat import QtCore
 from lmfit.models import ExpressionModel
 from lmfit import Parameters
-from scipy.odr import ODR, Model as SciPyModel, Data, RealData
+from copy import deepcopy
 
 class Model(QtCore.QObject):
     """Class used for fit
     """
     # Signals
-    fillDataTable = Signal(str, str, str, str, str, arguments=['x', 'y', 'sy', 'sx', 'filename'])
-    fillParamsTable = Signal(str, str, str, arguments=['param', 'value', 'uncertainty'])
-    writeInfos = Signal(str, arguments='expr')
+    fillDataTable = QtCore.Signal(str, str, str, str, str, arguments=['x', 'y', 'sy', 'sx', 'filename'])
+    fillParamsTable = QtCore.Signal(str, float, float, arguments=['param', 'value', 'uncertainty'])
+    writeInfos = QtCore.Signal(str, arguments='expr')
 
     def __init__(self):
         super().__init__()
         self.data       = None
+        self.data_json  = None
         self.eixos      = [["Eixo x"], ["Eixo y"], ["Título"]]
         self.exp_model  = ""
         self.model      = None
@@ -43,83 +42,164 @@ class Model(QtCore.QObject):
         self.isvalid    = False
         self.has_sx     = True
         self.has_sy     = True
+        self.x          = None
+        self.y          = None
+        self.sy         = None
+        self.sx         = None
         
     def __str__(self):
         return self.report_fit
         
-    def load_data(self, data_path):
-        """ Loads the data from a given path. """
-        df = pd.read_csv(data_path, sep='\t', header=None, dtype = str).dropna()
-        for i in df.columns:
-            df[i] = [x.replace(',', '.') for x in df[i]]
-            df[i] = df[i].astype(float)
+    @QtCore.Slot(QtCore.QJsonValue)
+    def getData(self, data = None, path = ''):
+        """Getting data from table"""
+        df = pd.DataFrame.from_records(data.toVariant())
+        df.columns = ['x', 'y', 'sy', 'sx', 'bool']
+
+        # Removing not chosen rows
+        df = df[df['bool'] == 1]
+
+        # Dropping some useless columns
+        df = df.replace('', '0')
+        if df[df['sx'] != '0'].empty: del df['sx']
+        if df[df['sy'] != '0'].empty: del df['sy']
+        del df['bool']
+
         self.mode = len(df.columns) - 2
         self.has_sx     = True
         self.has_sy     = True
 
         # Naming columns
         if self.mode == 0:
-            df["sy"] = [1]*len(df[0])
-            df["sx"] = [1]*len(df[0])
-            self.has_sy = False
-            self.has_sx = False
+            self.data_json        = deepcopy(df)
+            self.has_sy           = False
+            self.has_sx           = False
+            df["sy"]              = 1
+            df["sx"]              = 1
         elif self.mode == 1:
-            df["sx"] = [1]*len(df[0])
-            self.has_sx = False
-        df.columns= ['x', 'y', 'sy', 'sx']
+            self.data_json        = deepcopy(df)
+            self.has_sx           = False
+            df["sx"]              = 1
+        else:
+            self.data_json         = deepcopy(df)
+
+        df.columns = ['x', 'y', 'sy', 'sx']
+
+        # Turn everything into number (str -> number)
+        df = df.astype(float)
+
         self.data     = deepcopy(df)
         self.has_data = True
+        self.x  = self.data["x"].to_numpy()
+        self.y  = self.data["y"].to_numpy()
+        self.sy = self.data["sy"].to_numpy()
+        self.sx = self.data["sx"].to_numpy()
+                
+    def load_data(self, data_path):
+        """ Loads the data from a given path. """
+        df = pd.read_csv(data_path, sep='\t', header=None, dtype = str).dropna()
+
+        for i in df.columns:
+            df[i] = [x.replace(',', '.') for x in df[i]]
+
+        df = df.replace('', '0')
+        
+        df[i] = df[i].astype(float)
+        self.mode = len(df.columns) - 2
+        self.has_sx     = True
+        self.has_sy     = True
+
+        # Naming columns
+        if self.mode == 0:
+            self.data_json        = deepcopy(df)
+            self.has_sy           = False
+            self.has_sx           = False
+            df["sy"]              = 1
+            df["sx"]              = 1
+        elif self.mode == 1:
+            self.data_json        = deepcopy(df)
+            self.has_sx           = False
+            df["sx"]              = 1
+        else:
+            self.data_json         = deepcopy(df)
+
+        df.columns    = ['x', 'y', 'sy', 'sx']
+        self.data     = deepcopy(df)
+        self.has_data = True
+
+        self.x  = self.data["x"].to_numpy()
+        self.y  = self.data["y"].to_numpy()
+        self.sy = self.data["sy"].to_numpy()
+        self.sx = self.data["sx"].to_numpy()
 
         x, y, sy, sx = self.get_data()  
 
         fileName = data_path.split('/')[-1]
         if self.has_sx and self.has_sy:
             for i in range(len(x)):
-                self.fillDataTable.emit("{:.2g}".format(x[i]), "{:.2g}".format(y[i]), "{:.2g}".format(sy[i]), "{:.2g}".format(sx[i]), fileName)
+                self.fillDataTable.emit(str(x[i]), str(y[i]), str(sy[i]), str(sx[i]), fileName)
         elif self.has_sx:
             for i in range(len(x)):
-                self.fillDataTable.emit("{:.2g}".format(x[i]), "{:.2g}".format(y[i]), "", "{:.2g}".format(sx[i]), fileName)
+                self.fillDataTable.emit(str(x[i]), str(y[i]), '0', str(sx[i]), fileName)
         elif self.has_sy:
             for i in range(len(x)):
-                self.fillDataTable.emit("{:.2g}".format(x[i]), "{:.2g}".format(y[i]), "{:.2g}".format(sy[i]), "", fileName)
+                self.fillDataTable.emit(str(x[i]), str(y[i]), str(sy[i]), '0', fileName)
         else:
             for i in range(len(x)):
-                self.fillDataTable.emit("{:.2g}".format(x[i]), "{:.2g}".format(y[i]), "", "", fileName)
+                self.fillDataTable.emit(str(x[i]), str(y[i]), '0', '0', fileName)
 
     def load_data_json(self, df):
         """ Loads the data """
+
         self.data = df
         self.mode = len(df.columns) - 2
         self.has_sx     = True
         self.has_sy     = True
 
-        x, y, sy, sx = df['x'], df['y'], df['sy'], df['sx']
-        fileName = 'Dados Carregados do Projeto'
-
         # Naming columns
         if self.mode == 0:
-            df["sy"] = [1]*len(df[0])
-            df["sx"] = [1]*len(df[0])
-            self.has_sy = False
-            self.has_sx = False
+            self.data_json        = deepcopy(df)
+            # self.data_json.colums = ['x', 'y']
+            df["sy"]              = 1
+            df["sx"]              = 1
+            self.has_sy           = False
+            self.has_sx           = False
         elif self.mode == 1:
-            df["sx"] = [1]*len(df[0])
-            self.has_sx = False
-
+            self.data_json        = deepcopy(df)
+            # self.data_json.colums = ['x', 'y', 'sy']
+            df["sx"]              = 1
+            self.has_sx           = False
+        else:
+            self.data_json         = deepcopy(df)
+            # self.data_json.columns = ['x', 'y', 'sy', 'sx']
+        df.columns    = ['x', 'y', 'sy', 'sx']
+        self.data     = deepcopy(df.astype(float))
         self.has_data = True
+
+        self.x  = self.data["x"].to_numpy()
+        self.y  = self.data["y"].to_numpy()
+        self.sy = self.data["sy"].to_numpy()
+        self.sx = self.data["sx"].to_numpy()
+
+        fileName = 'Dados Carregados do Projeto'
+
+        x  = df["x"].to_numpy()
+        y  = df["y"].to_numpy()
+        sy = df["sy"].to_numpy()
+        sx = df["sx"].to_numpy()
 
         if self.has_sx and self.has_sy:
             for i in range(len(x)):
-                self.fillDataTable.emit("{:.2g}".format(x[i]), "{:.2g}".format(y[i]), "{:.2g}".format(sy[i]), "{:.2g}".format(sx[i]), fileName)
+                self.fillDataTable.emit(x[i], y[i], sy[i], sx[i], fileName)
         elif self.has_sx:
             for i in range(len(x)):
-                self.fillDataTable.emit("{:.2g}".format(x[i]), "{:.2g}".format(y[i]), "", "{:.2g}".format(sx[i]), fileName)
+                self.fillDataTable.emit(x[i], y[i], 0, sx[i], fileName)
         elif self.has_sy:
             for i in range(len(x)):
-                self.fillDataTable.emit("{:.2g}".format(x[i]), "{:.2g}".format(y[i]), "{:.2g}".format(sy[i]), "", fileName)
+                self.fillDataTable.emit(x[i], y[i], sy[i], 0, fileName)
         else:
             for i in range(len(x)):
-                self.fillDataTable.emit("{:.2g}".format(x[i]), "{:.2g}".format(y[i]), "", "", fileName)
+                self.fillDataTable.emit(x[i], y[i], 0, 0, fileName)
         
     def set_x_axis(self, name = ""):
         """ Set new x label to the graph. """
@@ -145,12 +225,6 @@ class Model(QtCore.QObject):
         wsx = kargs.pop("wsx", True)
         wsy = kargs.pop("wsy", True)
 
-        mode = self.mode
-        # if wsx:
-        #     mode += 10
-        # if wsy:
-        #     mode += 20
-
         # Getting Model
         self.model = ExpressionModel(self.exp_model)
 
@@ -158,7 +232,6 @@ class Model(QtCore.QObject):
         self.coef = [i for i in self.model.param_names]
         
         # If there's no p0, everything is set to 1.0
-
         pi = list()   # Inital values
 
         if self.p0 is None:
@@ -172,35 +245,31 @@ class Model(QtCore.QObject):
                 except:
                     pi.append(1.0)
 
-        # Clearing p0
-        # self.p0 = None
-
         # Data
         x, y, sy, sx = self.get_data()
 
         data = None
-
         if self.mode == 0:
-            self.__fit_lm(x, y, sy, pi)
+            self.__fit_lm_wy(x, y, pi)
             self.__set_param_values_lm()
-            self.__set_report_lm()
+            self.__set_report_lm_special()
             
         elif self.mode == 1:
             if wsy:
                 self.__fit_lm_wy(x, y, pi)
                 self.__set_param_values_lm()
-                self.__set_report_lm()
+                self.__set_report_lm_special()
 
             else:
                 self.__fit_lm(x, y, sy, pi)
                 self.__set_param_values_lm()
-                self.__set_report_lm()
+                self.__set_report_lm_special()
 
         else:
             if wsx == True and wsy == True:
-                self.__fit_lm(x, y, 1, pi)
+                self.__fit_lm_wy(x, y, pi)
                 self.__set_param_values_lm()
-                self.__set_report_lm()
+                self.__set_report_lm_special()
             
             elif wsx:
                 self.__fit_lm(x, y, sy, pi)
@@ -223,7 +292,7 @@ class Model(QtCore.QObject):
         keys = list(params.keys())
             
         for i in range(len(keys)):
-            self.fillParamsTable.emit(keys[i], "{:.8g}".format(params[keys[i]][0]), "{:.8g}".format(params[keys[i]][1]))
+            self.fillParamsTable.emit(keys[i], params[keys[i]][0], params[keys[i]][1])
 
         self.writeInfos.emit(self.report_fit)
 
@@ -256,12 +325,14 @@ class Model(QtCore.QObject):
         
     def __set_param_values_lm(self):
         self.dict.clear()
+        self.params = Parameters()
         for i in range(len(self.coef)):
             self.params.add(self.coef[i], self.result.values[self.coef[i]])
-            self.dict.update({self.coef[i]: [self.result.values[self.coef[i]], np.sqrt(self.result.covar[i, i])]})       
+            self.dict.update({self.coef[i]: [self.result.values[self.coef[i]], np.sqrt(self.result.covar[i, i])]})
 
     def __set_param_values_ODR(self):
         self.dict.clear()
+        self.params = Parameters()
         for i in range(len(self.coef)):
             self.params.add(self.coef[i], self.result.beta[i])
             self.dict.update({self.coef[i]: [self.result.beta[i], np.sqrt(self.result.cov_beta[i, i])]})
@@ -271,7 +342,33 @@ class Model(QtCore.QObject):
         self.report_fit += "\nAjuste: y = %s\n"%self.exp_model
         self.report_fit += "\nNGL  = %d"%(len(self.data["x"]) - len(self.coef))
         self.report_fit += "\nChi² = %f"%self.result.chisqr
-        self.report_fit += "\nMatriz de covariância:\n" + str(self.result.covar) + "\n\n"
+        self.report_fit += "\nMatriz de covariância:\n\n" + str(self.result.covar) + "\n"
+        lista           = list(self.params.keys())
+        matriz_corr     = np.zeros((len(self.result.covar), len(self.result.covar)))
+        z = len(matriz_corr)
+        for i in range(z):
+            for j in range(z):
+                matriz_corr[i, j] = self.result.covar[i, j]/(self.dict[lista[i]][1]*self.dict[lista[j]][1])
+        matriz_corr = matriz_corr.round(3)
+        self.report_fit += "\nMatriz de correlação:\n\n" + str(matriz_corr) + "\n\n"
+        self.isvalid     = True
+    
+    def __set_report_lm_special(self):
+        ngl             = len(self.data["x"]) - len(self.coef)
+        self.report_fit = ""
+        self.report_fit += "\nAjuste: y = %s\n"%self.exp_model
+        self.report_fit += "\nNGL  = %d"%(ngl)
+        self.report_fit += "\nSomatória dos resíduos absolutos ao quadrado = %f\n"%self.result.chisqr
+        self.report_fit += "Incerteza considerada = %f\n"%(np.sqrt(self.result.chisqr/ngl))
+        self.report_fit += "\nMatriz de covariância:\n\n" + str(self.result.covar) + "\n"
+        lista           = list(self.params.keys())
+        matriz_corr     = np.zeros((len(self.result.covar), len(self.result.covar)))
+        z = len(matriz_corr)
+        for i in range(z):
+            for j in range(z):
+                matriz_corr[i, j] = self.result.covar[i, j]/(self.dict[lista[i]][1]*self.dict[lista[j]][1])
+        matriz_corr = matriz_corr.round(3)
+        self.report_fit += "\nMatriz de correlação:\n\n" + str(matriz_corr) + "\n\n"
         self.isvalid     = True
 
     def __set_report_ODR(self):
@@ -279,7 +376,15 @@ class Model(QtCore.QObject):
         self.report_fit += "\nAjuste: y = %s\n"%self.exp_model
         self.report_fit += "\nNGL  = %d"%(len(self.data["x"]) - len(self.coef))
         self.report_fit += "\nChi² = %f"%self.result.sum_square
-        self.report_fit += "\nMatriz de covariância:\n" + str(self.result.cov_beta) + "\n\n"
+        self.report_fit += "\nMatriz de covariância:\n\n" + str(self.result.cov_beta) + "\n"
+        lista           =list(self.params.keys())
+        matriz_corr     = np.zeros((len(self.result.cov_beta), len(self.result.cov_beta)))
+        z = len(matriz_corr)
+        for i in range(z):
+            for j in range(z):
+                matriz_corr[i, j] = self.result.cov_beta[i, j]/(self.dict[lista[i]][1]*self.dict[lista[j]][1])
+        matriz_corr = matriz_corr.round(3)
+        self.report_fit += "\nMatriz de correlação:\n\n" + str(matriz_corr) + "\n\n"
         self.isvalid     = True
         
     def get_coefficients(self):
@@ -292,7 +397,8 @@ class Model(QtCore.QObject):
         #     return self.data["x"].to_numpy(), self.data["y"].to_numpy()
         # elif self.mode == 1:
         #     return self.data["x"].to_numpy(), self.data["y"].to_numpy(), self.data["sy"].to_numpy()
-        return self.data["x"].to_numpy(), self.data["y"].to_numpy(), self.data["sy"].to_numpy(), self.data["sx"].to_numpy()
+        # return self.data["x"].to_numpy(), self.data["y"].to_numpy(), self.data["sy"].to_numpy(), self.data["sx"].to_numpy()
+        return self.x, self.y, self.sy, self.sx
         
     def get_predict(self, x_min = None, y_min = None):
         ''' Return the model prediction. '''
@@ -305,7 +411,7 @@ class Model(QtCore.QObject):
     
     def get_residuals(self):
         ''' Return residuals from adjust. '''
-        return self.data["y"].to_numpy() - self.model.eval(x = self.data["x"].to_numpy())
+        return self.y - self.model.eval(x = self.x)
 
     def reset(self):
         self.data       = None
@@ -323,5 +429,4 @@ class Model(QtCore.QObject):
         self.isvalid    = False
         self.has_sx     = True
         self.has_sy     = True
-        
-        
+        self.writeInfos.emit('')

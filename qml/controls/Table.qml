@@ -6,25 +6,28 @@ import "../colors.js" as Colors
 
 Item{
     id: root
-
     // Public Variables
     property variant headerModel: []
+    property variant headerKeys: headerModel.map(({text, width}) => text)
     property variant dataModel: []
-
-    // Signals
-    signal clicked(int row, variant rowData)
+    function addRow(rowObject) {
+        dataSet.insert(dataSet.count, rowObject)
+    }
+    function clear(){
+        dataSet.clear()
+    }
 
     // Private
     width: 300
-    height: 700
+    height: 200
 
     // Header
     Rectangle{
         id: header
         width: parent.width
         height: 30
-        color: Colors.color1
-        radius: 0.03 * root.width
+        color: Colors.color2
+        radius: 0
 
         // Half bottom of the header must be flat
         Rectangle{
@@ -51,97 +54,106 @@ Item{
                     text: modelData.text
                     anchors.verticalCenter: parent.verticalCenter
                     anchors.horizontalCenter: parent.horizontalCenter
-                    font.pixelSize: 15
+                    font.pixelSize: 14
+                    font.bold: true
                     color: 'white'
-                } 
+                }
             }
         }
     }
 
-    // Data
     Rectangle{
-        id: rectangle
+        id: table_bg
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.top: header.bottom
-        anchors.bottom: parent.bottom
+        anchors.bottom: footer.top
         anchors.topMargin: 0
-        anchors.bottomMargin: 20
+        anchors.bottomMargin: 0
         color: Colors.color1
 
-        Rectangle{
-            width: parent.width
-            height: 0.5 * parent.height
-            color: parent.color
-            anchors.bottom: parent.bottom
-            anchors.bottomMargin: -20
-            radius: 0.03 * root.width
-        }
-
         ScrollView{
-            id: dataTable
             anchors.fill: parent
-
+            clip: true
+            
             ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
             ScrollBar.vertical.policy: ScrollBar.AsNeeded
 
             ListView{
-                anchors{fill: parent}
-                interactive: contentHeight > height
+                id: dataTable
+                anchors.fill: parent
                 clip: true
+                interactive: true
 
                 model: dataModel
-
                 delegate: Item{
                     width: root.width
                     height: header.height
 
-                    opacity: !mouseArea.pressed? 1:0.3
-
-                    // Some variants
                     property int row: index
-                    property variant rowData: modelData
+                    property variant dataRow:   if(dataModel.get(row) == undefined){
+                                                    []
+                                                }else{
+                                                    Object.values(dataModel.get(row))
+                                                }
+                    
 
                     Row{
                         anchors.fill: parent
-
                         Repeater{
-                            model: rowData
+                            model: Object.keys(headerKeys)
 
-                            delegate: Item{
-                                width: headerModel[index].width * root.width
+                            delegate: Rectangle{
+                                width: headerModel[index].width * parent.width
                                 height: header.height
-
-                                Text{
-                                    x: root.width
-                                    text: modelData
+                                radius: 10
+                                color: 'transparent'
+                                TextEdit{
+                                    anchors.fill: parent
+                                    horizontalAlignment: TextEdit.AlignHCenter
+                                    verticalAlignment: TextEdit.AlignVCenter
+                                    readOnly: true
+                                    selectByMouse: true
+                                    font.pixelSize: 15
                                     color: 'white'
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    anchors.horizontalCenter: parent.horizontalCenter
-                                    font.pixelSize: 0.50 * parent.height
+                                    clip: true
+
+                                    text:   if(dataModel.get(row) == undefined){
+                                                ''
+                                            }else{
+                                                if(typeof dataRow[index] == 'number'){
+                                                    dataRow[index].toPrecision(5)
+                                                }else{
+                                                    dataRow[index]
+                                                }
+                                            }
                                 }
                             }
-                        }
-                    }
-                    MouseArea{
-                        id: mouseArea
-
-                        anchors.fill: parent
-
-                        onClicked: {
-                            root.clicked(row, rowData)
                         }
                     }
                 }
             }
         }
+
+    }
+
+    Rectangle{
+        id: footer
+        width: root.width
+        height: 15
+        color: Colors.color2
+        radius: 0
+
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 0
+
+        Rectangle{
+            width: parent.width
+            height: parent.height/2
+            color: parent.color
+            
+            anchors.top: parent.top
+            anchors.topMargin: 0
+        }
     }
 }
-
-
-
-/*##^##
-Designer {
-    D{i:0;formeditorZoom:1.33}
-}
-##^##*/

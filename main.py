@@ -7,18 +7,22 @@ Created on Fri Jan 29 17:10:06 2021
 Main File
 
 """
-from operator import mod
+
 import sys
 import os
-from PySide2 import QtGui, QtQml, QtCore
-from PySide2.QtCore import Qt, Slot, Signal
+import platform
+from matplotlib_backend_qtquick.qt_compat import QtGui, QtQml, QtCore
 from matplotlib_backend_qtquick.backend_qtquickagg import FigureCanvasQtQuickAgg
+from numpy.core.records import array
+from operator import mod
 from src.MatPlotLib import DisplayBridge
 from src.Model import Model
 from src.Calculators import CalculatorCanvas, interpreter_calculator, Plot
 from src.ProjectManager import ProjectManager
+from src.MultiPlot import Multiplot
+from src.UpdateChecker import UpdateChecker
 
-# Instantiating the display bridge || Global variable, fuck the world
+# Instantiating the display bridge || Global variable
 displayBridge = DisplayBridge()
 
 # Instantiating the fit class
@@ -26,20 +30,43 @@ model = Model()
 
 class Bridge(QtCore.QObject):
     # Signal to Properties page
-    signalPropPage = Signal()
+    signalPropPage = QtCore.Signal()
 
     # Signal to write infos
-    writeInfos = Signal(str, arguments='expr')
-    writeCalculator = Signal(str, arguments='expr')
+    writeInfos = QtCore.Signal(str, arguments='expr')
+    writeCalculator = QtCore.Signal(str, arguments='expr')
+    emitData = QtCore.Signal()
 
-    @Slot(str)
-    def loadData(self, file_path):
-        """Gets the path to data's file and fills the data's table"""
-        model.load_data(QtCore.QUrl(file_path).toLocalFile())
+    @QtCore.Slot(QtCore.QJsonValue)
+    def getProps(self, props):
+        self.emitData.emit()
+        props = props.toVariant()
 
-    @Slot(str, str, str, int, int, int, int, str, int, str, str, int, str, int)
-    def loadOptions(self, title, xaxis, yaxis, residuals, grid, log_x, log_y, symbol_color, symbol_size, symbol, curve_color, curve_thickness, curve_style, legend):
-        """Gets the input options and set them to the model"""
+        displayBridge.setSigma(props['sigmax'], props['sigmay'])
+
+        # Setting up initial parameters
+        p0_tmp = list()
+        p0 = props['p0']
+        if p0 != '':
+            # Anti-dummies system
+            p0 = p0.replace(';', ',')
+            p0 = p0.replace('/', ',')
+            for i in p0.split(','):
+                p0_tmp.append(float(i))
+            model.set_p0(p0_tmp)
+
+        # Anti-dummies system 2
+        expression = props['expr']
+        expression = expression.replace('^', '**')
+        expression = expression.replace('arctan', 'atan')
+        expression = expression.replace('arcsin', 'asin')
+        expression = expression.replace('arccos', 'acos')
+        expression = expression.replace('sen', 'sin')
+        
+        # Setting expression
+        if model.exp_model != expression:
+            model.set_expression(expression)
+
         curveStyles = {
             'Sólido':'-',
             'Tracejado':'--',
@@ -57,51 +84,38 @@ class Bridge(QtCore.QObject):
             'Produto':'X'
             }
 
-        # Setting style of the plot
-        model.set_title(title)
-        model.set_x_axis(xaxis)
-        model.set_y_axis(yaxis)
-        displayBridge.setStyle(log_x, log_y, symbol_color, symbol_size, symbols[symbol], curve_color, curve_thickness, curveStyles[curve_style], legend, model.exp_model.replace('**', '^'))
+        # Setting style of the plot 
+        model.set_title(props['titulo'])
+        model.set_x_axis(props['eixox'])
+        model.set_y_axis(props['eixoy'])
+        displayBridge.setStyle( props['logx'],
+                                props['logy'],
+                                props['markerColor'],
+                                props['markerSize'],
+                                symbols[props['marker']],
+                                props['curveColor'],
+                                props['curveThickness'],
+                                curveStyles[props['curveType']],
+                                props['legend'],
+                                model.exp_model.replace('**', '^'))
 
         # Making plot
-        displayBridge.Plot(model, residuals, grid)
-    
-    @Slot(str, str, int, int)
-    def loadExpression(self, expression, p0, wsx, wsy):
-        """Gets the expression and set it up"""
+        displayBridge.Plot(model, props['residuos'], props['grade'],
+         props['xmin'], props['xmax'], props['xdiv'],
+         props['ymin'], props['ymax'], props['ydiv'],
+         props['resMin'], props['resMax'])
 
-        displayBridge.setSigma(wsx, wsy)
+    @QtCore.Slot(str)
+    def loadData(self, file_path):
+        """Gets the path to data's file and fills the data's table"""
+        model.load_data(QtCore.QUrl(file_path).toLocalFile())
 
-        # Setting up initial parameters
-        p0_tmp = list()
-        if p0 != '':
-            # Anti-dummies system
-            p0 = p0.replace(';', ',')
-            p0 = p0.replace('/', ',')
-            for i in p0.split(','):
-                p0_tmp.append(float(i))
-            model.set_p0(p0_tmp)
-            print(p0_tmp)
-
-        # Anti-dummies system 2
-        expression = expression.replace('^', '**')
-        expression = expression.replace('arctan', 'atan')
-        expression = expression.replace('arcsin', 'asin')
-        expression = expression.replace('arccos', 'acos')
-        expression = expression.replace('sen', 'sin')
-        
-        # Setting expression
-        model.set_expression(expression)
-
-        # Emitting signal to load the options
-        self.signalPropPage.emit()
-
-    @Slot(str)
+    @QtCore.Slot(str)
     def savePlot(self, save_path):
         """Gets the path from input and save the actual plot"""
         displayBridge.figure.savefig(QtCore.QUrl(save_path).toLocalFile(), dpi = 400)
 
-    @Slot(str, str, str, str, str, str)
+    @QtCore.Slot(str, str, str, str, str, str)
     def calculator(self, function, opt1, nc, ngl, mean, std):
         functionDict = {
             'Chi²':0,
@@ -153,7 +167,9 @@ if __name__ == "__main__":
     engine = QtQml.QQmlApplicationEngine()
 
     # Creating bridge
-    bridge = Bridge()
+    bridge    = Bridge()
+    multiplot = Multiplot(displayBridge)
+    updater = UpdateChecker()
 
     # Project Manager
     projectMngr = ProjectManager(displayBridge, model)
@@ -164,10 +180,16 @@ if __name__ == "__main__":
     context.setContextProperty("backend", bridge)
     context.setContextProperty("model", model)
     context.setContextProperty("projectMngr", projectMngr)
+    context.setContextProperty("multiplot", multiplot)
+    context.setContextProperty("updater", updater)
     
     # Loading QML files
-    engine.load(QtCore.QUrl.fromLocalFile(os.path.join(os.path.dirname(__file__), "qml/main.qml")))
+    plat = platform.system()
 
+    if(plat == 'Darwin'):
+        engine.load(QtCore.QUrl.fromLocalFile(os.path.join(os.path.dirname(__file__), "qml/main_mac.qml")))
+    else:
+        engine.load(QtCore.QUrl.fromLocalFile(os.path.join(os.path.dirname(__file__), "qml/main_windows.qml")))
     # Updating canvasPlot with the plot
     win = engine.rootObjects()[0]
     displayBridge.updateWithCanvas(win.findChild(QtCore.QObject, "canvasPlot"))

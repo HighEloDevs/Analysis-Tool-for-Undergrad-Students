@@ -16,23 +16,134 @@ Window {
     width: 1500
     height: 800
 
-    minimumWidth: 1300
-    minimumHeight: 600
+    minimumWidth: 1000
+    minimumHeight: 400
 
     visible: true
     color: "#00000000"
     property alias btnCalcWidth: btnCalc.width
     property alias labelRightInfoText: labelRightInfo.text
 
-    // Removing Title Bar
-    flags: Qt.Window | Qt.FramelessWindowHint
-
     // Properties
     property int windowStatus: 0
-    property int windowMargin: 10
+    property int windowMargin: 0
     property int stackedPage: 0
 
-    
+    Popup {
+        id: updatePopup
+        anchors.centerIn: parent
+        width: 600
+        height: 500
+        modal: true
+        focus: true
+        closePolicy: Popup.CloseOnEscape
+        leftInset: 0
+        rightInset: 0
+        bottomInset: 0
+        topInset: 0
+
+        property string updateLog: ''
+        property string version: ''
+        property string link: ''
+
+        background: Rectangle{
+            anchors.fill: parent
+            color: Colors.color1
+            radius: 2
+
+            IconButton{
+                id: closeUpdateLogBtn
+
+                anchors.right: parent.right
+                anchors.rightMargin: -closeUpdateLogBtn.width/3
+                anchors.top: parent.top
+                anchors.topMargin: -closeUpdateLogBtn.width/3
+
+                width: 30
+                height: 30
+                r: 20
+                z: 1
+
+                primaryColor: Colors.color1
+                hoverColor: Colors.color1
+                clickColor: Colors.color3
+                iconColor: '#fff'
+                iconUrl: '../../images/icons/close-24px.svg'
+                iconWidth: 20
+
+                onClicked: updatePopup.close()
+            }
+
+            Rectangle{
+                id: titleBg
+                width: parent.width
+                height: 60
+                color: Colors.color2
+
+                Label{
+                    anchors.left: parent.left
+                    anchors.leftMargin: 15
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: 'Nova atualização disponível! v' + updatePopup.version
+                    color: '#fff'
+                    font.pixelSize: 20
+                }
+            }
+
+            ScrollView{
+                anchors.top: titleBg.bottom
+                anchors.topMargin: 15
+                anchors.left: parent.left
+                anchors.leftMargin: 0
+                anchors.right: parent.right
+                anchors.rightMargin: 0
+                anchors.bottom: popupFooter.top
+                anchors.bottomMargin: 15
+                contentWidth: logText.width
+                contentHeight: logText.height
+                clip: true
+
+                Text{
+                    id: logText
+                    width: updatePopup.width - 30
+                    anchors.left: parent.left
+                    anchors.leftMargin: 15
+                    color: '#fff'
+                    font.pixelSize: 15
+                    wrapMode: Text.WrapAnywhere
+                    text: updatePopup.updateLog
+                }
+            }
+
+            Rectangle{
+                id: popupFooter
+                anchors.bottom: parent.bottom
+                anchors.bottomMargin: 0
+                width: parent.width
+
+                color: Colors.color2
+                height: 40
+
+                IconTextButton{
+                    id: downloadBtn
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.right: parent.right
+                    anchors.rightMargin: 15
+                    primaryColor: '#004500'
+                    hoverColor: '#004500'
+                    clickColor: '#004500'
+
+                    width: 120
+                    height: 30
+                    texto: 'Download'
+
+                    iconUrl: '../../images/icons/get_app_black_24dp.svg'
+
+                    onClicked: Qt.openUrlExternally(updatePopup.link)
+                }
+            }
+        }
+    }
 
     // Internal Functions
     QtObject{
@@ -207,90 +318,90 @@ Window {
                     }
                 }
 
-                Rectangle {
-                    id: titleBar
-                    height: 35
-                    color: "#00000000"
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    anchors.top: parent.top
-                    anchors.rightMargin: 105
-                    anchors.leftMargin: 70
-                    anchors.topMargin: 0
+                // Rectangle {
+                //     id: titleBar
+                //     height: 35
+                //     color: "#00000000"
+                //     anchors.left: parent.left
+                //     anchors.right: parent.right
+                //     anchors.top: parent.top
+                //     anchors.rightMargin: 105
+                //     anchors.leftMargin: 70
+                //     anchors.topMargin: 0
 
-                    DragHandler{
-                        onActiveChanged: if(active){
-                                             mainWindow.startSystemMove()
-                                             internal.ifMaximizedWindowRestore()
-                                         }
-                    }
+                //     DragHandler{
+                //         onActiveChanged: if(active){
+                //                              mainWindow.startSystemMove()
+                //                              internal.ifMaximizedWindowRestore()
+                //                          }
+                //     }
 
-                    MouseArea{
-                        anchors.fill: parent
-                        onDoubleClicked: internal.maximizeRestore()
-                    }
+                //     MouseArea{
+                //         anchors.fill: parent
+                //         onDoubleClicked: internal.maximizeRestore()
+                //     }
 
-                    Image {
-                        id: iconApp
-                        width: 22
-                        height: 22
-                        anchors.left: parent.left
-                        anchors.top: parent.top
-                        anchors.bottom: parent.bottom
-                        source: ""
-                        anchors.leftMargin: 5
-                        anchors.bottomMargin: 0
-                        anchors.topMargin: 0
-                        fillMode: Image.PreserveAspectFit
-                    }
+                //     Image {
+                //         id: iconApp
+                //         width: 22
+                //         height: 22
+                //         anchors.left: parent.left
+                //         anchors.top: parent.top
+                //         anchors.bottom: parent.bottom
+                //         source: ""
+                //         anchors.leftMargin: 5
+                //         anchors.bottomMargin: 0
+                //         anchors.topMargin: 0
+                //         fillMode: Image.PreserveAspectFit
+                //     }
 
-                    Label {
-                        id: appTitle
-                        color: Colors.fontColor
-                        text: qsTr("Analysis Tool for Undergrad Students")
-                        anchors.left: iconApp.right
-                        anchors.right: parent.right
-                        anchors.top: parent.top
-                        anchors.bottom: parent.bottom
-                        horizontalAlignment: Text.AlignHCenter
-                        verticalAlignment: Text.AlignVCenter
-                        font.pointSize: 10
-                        anchors.leftMargin: 5
-                    }
-                }
+                //     Label {
+                //         id: appTitle
+                //         color: Colors.fontColor
+                //         text: qsTr("Analysis Tool for Undergrad Students")
+                //         anchors.left: iconApp.right
+                //         anchors.right: parent.right
+                //         anchors.top: parent.top
+                //         anchors.bottom: parent.bottom
+                //         horizontalAlignment: Text.AlignHCenter
+                //         verticalAlignment: Text.AlignVCenter
+                //         font.pointSize: 10
+                //         anchors.leftMargin: 5
+                //     }
+                // }
 
-                Row {
-                    id: rowBtns
-                    x: 910
-                    width: 105
-                    height: 35
-                    anchors.right: parent.right
-                    anchors.top: parent.top
-                    transformOrigin: Item.Center
-                    anchors.rightMargin: 0
-                    anchors.topMargin: 0
+                // Row {
+                //     id: rowBtns
+                //     x: 910
+                //     width: 105
+                //     height: 35
+                //     anchors.right: parent.right
+                //     anchors.top: parent.top
+                //     transformOrigin: Item.Center
+                //     anchors.rightMargin: 0
+                //     anchors.topMargin: 0
 
-                    TopBarButton {
-                        id: btnMinimize
-                        onClicked: {
-                            internal.restoreMargins()
-                            mainWindow.showMinimized()
-                        }
-                    }
+                //     TopBarButton {
+                //         id: btnMinimize
+                //         onClicked: {
+                //             internal.restoreMargins()
+                //             mainWindow.showMinimized()
+                //         }
+                //     }
 
-                    TopBarButton {
-                        id: btnMaximizeRestore
-                        btnIconSource: "../images/svg_images/maximize_icon.svg"
-                        onClicked: internal.maximizeRestore()
-                    }
+                //     TopBarButton {
+                //         id: btnMaximizeRestore
+                //         btnIconSource: "../images/svg_images/maximize_icon.svg"
+                //         onClicked: internal.maximizeRestore()
+                //     }
 
-                    TopBarButton {
-                        id: btnClose
-                        btnColorClicked: "#f00"
-                        btnIconSource: "../images/svg_images/close_icon.svg"
-                        onClicked: mainWindow.close()
-                    }
-                }
+                //     TopBarButton {
+                //         id: btnClose
+                //         btnColorClicked: "#f00"
+                //         btnIconSource: "../images/svg_images/close_icon.svg"
+                //         onClicked: mainWindow.close()
+                //     }
+                // }
 
             }
 
@@ -360,12 +471,12 @@ Window {
                                             btnMultiPlot.isActiveMenu = false
                                             btnCalc.isActiveMenu = false
                                             btnHist.isActiveMenu = false
-                                            btnExamples.isActiveMenu = false
+                                            // btnExamples.isActiveMenu = false
                                             btnInfos.isActiveMenu = false
 
                                             pageHome.visible = true
                                             pagePlots.visible = false
-                                            pageExamples.visible = false
+                                            // pageExamples.visible = false
                                             pageInfos.visible = false
 
                                             labelRightInfo.text = "| Início"
@@ -390,12 +501,12 @@ Window {
                                             btnMultiPlot.isActiveMenu = false
                                             btnCalc.isActiveMenu = false
                                             btnHist.isActiveMenu = false
-                                            btnExamples.isActiveMenu = false
+                                            // btnExamples.isActiveMenu = false
                                             btnInfos.isActiveMenu = false
 
                                             pageHome.visible = false
                                             pagePlots.visible = true
-                                            pageExamples.visible = false
+                                            // pageExamples.visible = false
                                             pageInfos.visible = false
 
                                             pagePlot.visible = true
@@ -425,12 +536,12 @@ Window {
                                             btnMultiPlot.isActiveMenu = true
                                             btnCalc.isActiveMenu = false
                                             btnHist.isActiveMenu = false
-                                            btnExamples.isActiveMenu = false
+                                            // btnExamples.isActiveMenu = false
                                             btnInfos.isActiveMenu = false
 
                                             pageHome.visible = false
                                             pagePlots.visible = true
-                                            pageExamples.visible = false
+                                            // pageExamples.visible = false
                                             pageInfos.visible = false
                                             pagePlot.visible = false
                                             pageMultiPlot.visible = true
@@ -458,12 +569,12 @@ Window {
                                             btnMultiPlot.isActiveMenu = false
                                             btnCalc.isActiveMenu = true
                                             btnHist.isActiveMenu = false
-                                            btnExamples.isActiveMenu = false
+                                            // btnExamples.isActiveMenu = false
                                             btnInfos.isActiveMenu = false
 
                                             pageHome.visible = false
                                             pagePlots.visible = true
-                                            pageExamples.visible = false
+                                            // pageExamples.visible = false
                                             pageInfos.visible = false
 
                                             pagePlot.visible = false
@@ -493,12 +604,12 @@ Window {
                                             btnMultiPlot.isActiveMenu = false
                                             btnCalc.isActiveMenu = false
                                             btnHist.isActiveMenu = true
-                                            btnExamples.isActiveMenu = false
+                                            // btnExamples.isActiveMenu = false
                                             btnInfos.isActiveMenu = false
 
                                             pageHome.visible = false
                                             pagePlots.visible = true
-                                            pageExamples.visible = false
+                                            // pageExamples.visible = false
                                             pageInfos.visible = false
                                             pagePlot.visible = false
                                             pageMultiPlot.visible = false
@@ -510,35 +621,35 @@ Window {
                                     }
                                 }
 
-                                LeftMenuButton {
-                                    id: btnExamples
-                                    btnIconSource: "../images/icons/file-18px.svg"
-                                    width: leftMenu.width
-                                    text: qsTr("Exemplos")
-                                    Layout.fillWidth: true
-                                    isActiveMenu: false
-                                    clip: false
+                                // LeftMenuButton {
+                                //     id: btnExamples
+                                //     btnIconSource: "../images/icons/file-18px.svg"
+                                //     width: leftMenu.width
+                                //     text: qsTr("Exemplos")
+                                //     Layout.fillWidth: true
+                                //     isActiveMenu: false
+                                //     clip: false
 
-                                    onClicked: {
-                                        if(stackedPage != 5){
-                                            stackedPage = 5
-                                            btnHome.isActiveMenu = false
-                                            btnPlot.isActiveMenu = false
-                                            btnMultiPlot.isActiveMenu = false
-                                            btnCalc.isActiveMenu = false
-                                            btnHist.isActiveMenu = false
-                                            btnExamples.isActiveMenu = true
-                                            btnInfos.isActiveMenu = false
+                                //     onClicked: {
+                                //         if(stackedPage != 5){
+                                //             stackedPage = 5
+                                //             btnHome.isActiveMenu = false
+                                //             btnPlot.isActiveMenu = false
+                                //             btnMultiPlot.isActiveMenu = false
+                                //             btnCalc.isActiveMenu = false
+                                //             btnHist.isActiveMenu = false
+                                //             btnExamples.isActiveMenu = true
+                                //             btnInfos.isActiveMenu = false
 
-                                            pageHome.visible = false
-                                            pagePlots.visible = false
-                                            pageExamples.visible = true
-                                            pageInfos.visible = false
+                                //             pageHome.visible = false
+                                //             pagePlots.visible = false
+                                //             pageExamples.visible = true
+                                //             pageInfos.visible = false
 
-                                            labelRightInfo.text = "| Exemplos"
-                                        }
-                                    }
-                                }
+                                //             labelRightInfo.text = "| Exemplos"
+                                //         }
+                                //     }
+                                // }
 
                                 Rectangle {
                                     id: rectangle1
@@ -566,12 +677,12 @@ Window {
                                             btnMultiPlot.isActiveMenu = false
                                             btnCalc.isActiveMenu = false
                                             btnHist.isActiveMenu = false
-                                            btnExamples.isActiveMenu = false
+                                            // btnExamples.isActiveMenu = false
                                             btnInfos.isActiveMenu = true
 
                                             pageHome.visible = false
                                             pagePlots.visible = false
-                                            pageExamples.visible = false
+                                            // pageExamples.visible = false
                                             pageInfos.visible = true
 
                                             labelRightInfo.text = "| Informações"
@@ -994,6 +1105,18 @@ Window {
         source: bg
         z: 0
     }
+
+    Connections{
+        target: updater
+        function onShowUpdate(updateLog, version, downloadUrl){
+            updatePopup.updateLog = updateLog
+            updatePopup.version = version
+            updatePopup.link = downloadUrl
+            updatePopup.open()
+        }
+    }
+
+    Component.onCompleted: updater.checkUpdate()
 }
 
 
@@ -1002,3 +1125,9 @@ Window {
 
 
 
+
+/*##^##
+Designer {
+    D{i:0;autoSize:true;height:480;width:640}
+}
+##^##*/

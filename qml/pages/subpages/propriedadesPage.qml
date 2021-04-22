@@ -4,10 +4,34 @@ import QtQuick.Layouts 1.11
 import QtQuick.Dialogs 1.3
 import QtGraphicalEffects 1.15
 import "../../colors.js" as Colors
+import "../../controls"
 
 Item {
-    width: 366
-    height: 598
+    id: root
+
+    property string titulo_text: titulo.text
+    property string eixox_text: eixox.text
+    property string eixoy_text: eixoy.text
+    property int residuals: switchResiduos.checkState
+    property int grid: switchGrade.checkState
+    property int logx: log_eixox.checkState
+    property int logy: log_eixoy.checkState
+    property string markerColor: rectColor.color
+    property int markerSize: size.value
+    property string marker: symbol.currentText
+    property string curveColor: rectColor_curve.color
+    property int curveThickness: thickness.value
+    property string curveType: type_curve.currentText
+    property int legend: switchLegend.checkState
+    property int xmin: Number(xmin.text)
+    property int xmax: Number(xmax.text)
+    property int xdiv: Number(xdiv.text)
+    property int ymin: Number(ymin.text)
+    property int ymax: Number(ymax.text)
+    property int ydiv: Number(ydiv.text)
+    property int resMin: Number(resMin.text)
+    property int resMax: Number(resMax.text)
+
     Rectangle {
         id: bg
         color: Colors.c_section
@@ -20,174 +44,206 @@ Item {
         ScrollView {
             id: scrollView
             anchors.fill: parent
+            rightPadding: 0
+            leftPadding: 0
+            anchors.rightMargin: 0
+            anchors.leftMargin: 0
+            anchors.bottomMargin: 0
             anchors.topMargin: 5
-            font.preferShaping: false
-            font.kerning: false
 
             ScrollBar.horizontal.policy: ScrollBar.AsNeeded
-            ScrollBar.vertical.policy: ScrollBar.AlwaysOn
+            ScrollBar.vertical.policy: ScrollBar.AsNeeded
+
+            contentWidth: root.width
+            contentHeight: gridLayout.height
 
             GridLayout {
                 id: gridLayout
-                anchors.fill: parent
+                // anchors.fill: parent
+                anchors.right: parent.right
+                anchors.left: parent.left
+                anchors.rightMargin: 15
+                anchors.leftMargin: 15
+                width: root.width
                 columnSpacing: 0
                 rowSpacing: 5
-                rows: 6
+                rows: 10
                 columns: 6
 
-                Label {
-                    id: label
-                    color: "#ffffff"
-                    text: qsTr("Título")
-                    Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-                    Layout.fillWidth: false
-                }
-
-                TextField {
+                TextInputCustom{
                     id: titulo
-                    height: 30
-                    Layout.rowSpan: 1
-                    Layout.columnSpan: 5
                     Layout.fillWidth: true
-                    placeholderText: qsTr("Título do Gráfico")
-                    selectByMouse: true
-
-                    background: Rectangle{
-                        radius: 5
-                        border.color: titulo.focus ? Colors.mainColor2:'#00000000'
-                        border.width: 2
-                    }
+                    Layout.columnSpan: 6
+                    focusColor: Colors.mainColor2
+                    title: 'Título do Gráfico'
+                    textHolder: ''
+                    defaultColor: '#fff'
+                    textColor: '#fff'
                 }
 
-                Label {
-                    id: label1
-                    color: "#ffffff"
-                    text: qsTr("Eixo X")
-                    Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-                }
-
-                TextField {
+                TextInputCustom{
                     id: eixox
-                    height: 30
                     Layout.fillWidth: true
-                    Layout.columnSpan: 3
-                    placeholderText: qsTr("Título de Eixo X")
-                    selectByMouse: true
-
-                    background: Rectangle{
-                        radius: 5
-                        border.color: eixox.focus ? Colors.mainColor2:'#00000000'
-                        border.width: 2
-                    }
+                    Layout.columnSpan: 5
+                    focusColor: Colors.mainColor2
+                    title: 'Eixo X'
+                    textHolder: 'Título do Eixo X'
+                    defaultColor: '#fff'
+                    textColor: '#fff'
                 }
 
-                Label {
-                    id: label6
-                    color: "#ffffff"
-                    text: qsTr("Log")
-                    Layout.columnSpan: 1
-                    Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-                    Layout.fillWidth: false
-                }
-
-                CheckBox {
+                CheckBoxCustom{
                     id: log_eixox
-                    Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-                    Layout.fillWidth: false
-                    Layout.columnSpan: 1
-                    display: AbstractButton.TextOnly
-                    tristate: false
+                    w: 25
+                    texto: 'Log X'
+                    checked: false
                 }
 
-                Label {
-                    id: label2
-                    color: "#ffffff"
-                    text: qsTr("Eixo Y")
-                    Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-                }
-
-                TextField {
-                    id: eixoy
-                    height: 30
+                Rectangle {
+                    color: "#00000000"
+                    Layout.preferredHeight: 50
                     Layout.fillWidth: true
-                    Layout.columnSpan: 3
-                    placeholderText: qsTr("Título do Eixo Y")
-                    selectByMouse: true
+                    Layout.columnSpan: 6
 
-                    background: Rectangle{
-                        radius: 5
-                        border.color: eixoy.focus ? Colors.mainColor2:'#00000000'
-                        border.width: 2
+                    RowLayout {
+                        anchors.fill: parent
+                        TextInputCustom{
+                            id: xmin
+                            Layout.fillWidth: true
+                            focusColor: Colors.mainColor2
+                            title: 'X Mínimo'
+                            textHolder: 'Menor valor de X no gráfico'
+                            defaultColor: '#fff'
+                            textColor: '#fff'
+                        }
+                        TextInputCustom{
+                            id: xmax
+                            Layout.fillWidth: true
+                            focusColor: Colors.mainColor2
+                            title: 'X Máximo'
+                            textHolder: 'Maior valor de X no gráfico'
+                            defaultColor: '#fff'
+                            textColor: '#fff'
+                        }
+                        TextInputCustom{
+                            id: xdiv
+                            Layout.fillWidth: true
+                            focusColor: Colors.mainColor2
+                            title: 'Intervalos em X'
+                            textHolder: 'Número de intervalos no eixo'
+                            defaultColor: '#fff'
+                            textColor: '#fff'
+                        }
                     }
                 }
 
-                Label {
-                    id: label9
-                    color: "#ffffff"
-                    text: qsTr("Log")
-                    horizontalAlignment: Text.AlignHCenter
-                    verticalAlignment: Text.AlignVCenter
-                    wrapMode: Text.NoWrap
-                    transformOrigin: Item.Center
-                    Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+                TextInputCustom{
+                    id: eixoy
+                    Layout.fillWidth: true
+                    Layout.columnSpan: 5
+                    focusColor: Colors.mainColor2
+                    title: 'Eixo Y'
+                    textHolder: 'Título do Eixo Y'
+                    defaultColor: '#fff'
+                    textColor: '#fff'
                 }
-
-                CheckBox {
+                
+                CheckBoxCustom{
                     id: log_eixoy
-                    Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-                    display: AbstractButton.TextOnly
-                    tristate: false
+                    w: 25
+                    texto: 'Log Y'
+                    checked: false
                 }
 
-                Label {
-                    id: label4
-                    color: "#ffffff"
-                    text: qsTr("Resíduos")
-                    Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-                    Layout.leftMargin: 10
-                    Layout.fillWidth: false
+                Rectangle {
+                    Layout.columnSpan: 6
+                    Layout.preferredHeight: 50
+                    Layout.fillWidth: true
+                    color: "#00000000"
+
+                    RowLayout {
+                        anchors.fill: parent
+                        TextInputCustom{
+                            id: ymin
+                            Layout.fillWidth: true
+                            focusColor: Colors.mainColor2
+                            title: 'Y Mínimo'
+                            textHolder: 'Menor valor de Y no gráfico'
+                            defaultColor: '#fff'
+                            textColor: '#fff'
+                        }
+                        TextInputCustom{
+                            id: ymax
+                            Layout.fillWidth: true
+                            focusColor: Colors.mainColor2
+                            title: 'Y Máximo'
+                            textHolder: 'Maior valor de Y no gráfico'
+                            defaultColor: '#fff'
+                            textColor: '#fff'
+                        }
+                        TextInputCustom{
+                            id: ydiv
+                            Layout.fillWidth: true
+                            focusColor: Colors.mainColor2
+                            title: 'Intervalos em Y'
+                            textHolder: 'Número de intervalos no eixo'
+                            defaultColor: '#fff'
+                            textColor: '#fff'
+                        }
+                    }
                 }
 
-                Switch {
+                CheckBoxCustom{
                     id: switchResiduos
-                    Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-                    Layout.fillWidth: false
+                    Layout.fillWidth: true
+                    Layout.columnSpan: 2
+                    w: 25
+                    texto: 'Resíduos'
+                    checked: false
                 }
 
-                Label {
-                    id: label5
-                    color: "#ffffff"
-                    text: qsTr("Grade")
-                    Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-                    Layout.fillWidth: false
-                }
-
-                Switch {
+                CheckBoxCustom{
                     id: switchGrade
-                    Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-                    Layout.fillWidth: false
+                    Layout.fillWidth: true
+                    Layout.columnSpan: 2
+                    w: 25
+                    texto: 'Grade'
+                    checked: false
                 }
 
-                Label {
-                    id: label7
-                    color: "#ffffff"
-                    text: qsTr("Legenda")
-                    horizontalAlignment: Text.AlignHCenter
-                    wrapMode: Text.NoWrap
-                    Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-                    Layout.fillWidth: false
-                }
-
-                Switch {
+                CheckBoxCustom{
                     id: switchLegend
-                    Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-                    Layout.fillWidth: false
+                    Layout.fillWidth: true
+                    Layout.columnSpan: 2
+                    w: 25
+                    texto: 'Legenda'
+                    checked: false
+                }
+
+                TextInputCustom{
+                    id: resMax
+                    Layout.fillWidth: true
+                    Layout.columnSpan: 3
+                    focusColor: Colors.mainColor2
+                    title: 'Resíduos - Y Máximo'
+                    textHolder: 'Y Máximo do gráfico de resíduos'
+                    defaultColor: '#fff'
+                    textColor: '#fff'
+                }
+
+                TextInputCustom{
+                    id: resMin
+                    Layout.fillWidth: true
+                    Layout.columnSpan: 3
+                    focusColor: Colors.mainColor2
+                    title: 'Resíduos - Y Mínimo'
+                    textHolder: 'Y Minimo do gráfico de resíduos'
+                    defaultColor: '#fff'
+                    textColor: '#fff'
                 }
 
                 GroupBox {
                     id: groupBox_pontos
-                    width: 200
-                    height: 100
                     Layout.columnSpan: 6
                     Layout.topMargin: 0
                     Layout.preferredHeight: 150
@@ -207,7 +263,6 @@ Item {
                     }
 
                     label: Label {
-                        //                        x: groupBox.leftPadding
                         width: groupBox_pontos.availableWidth
                         text: groupBox_pontos.title
                         color: "#ffffff"
@@ -231,20 +286,15 @@ Item {
                             Layout.fillWidth: true
                         }
 
-                        Button {
+                        TextButton{
                             id: btnColor
-                            height: 20
-                            Layout.preferredHeight: 30
-                            Layout.rowSpan: 1
-                            display: AbstractButton.TextOnly
-                            checkable: false
-                            checked: false
-                            Layout.fillHeight: false
                             Layout.fillWidth: true
-
-                            font.pointSize: 10
-                            font.bold: false
-
+                            primaryColor: Colors.c_button
+                            clickColor: Colors.c_button_active
+                            hoverColor: Colors.c_button_hover
+                            height: 20
+                            texto: 'Escolher Cor'
+                            
                             ColorDialog {
                                 id: colorDialog
                                 title: "Escolha uma cor para os pontos"
@@ -254,37 +304,7 @@ Item {
                                 }
                             }
 
-                            onClicked:{
-                                colorDialog.open()
-                            }
-
-                            QtObject{
-                                id: internal
-                                property var dynamicColor: if(btnColor.down){
-                                                               btnColor.down ? Colors.c_button_active : Colors.c_button
-                                                           } else {
-                                                               btnColor.hovered ? Colors.c_button_hover : Colors.c_button
-                                                           }
-
-                            }
-
-                            background: Rectangle{
-                                id: btnbg
-                                radius: 10
-                                color: internal.dynamicColor
-                            }
-
-                            contentItem: Item{
-                                anchors.fill: parent
-                                id: content
-
-                                Text{
-                                    color: "#ffffff"
-                                    text: "Escolher Cor"
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    anchors.horizontalCenter: parent.horizontalCenter
-                                }
-                            }
+                            onClicked: colorDialog.open()
                         }
 
                         Rectangle {
@@ -427,14 +447,15 @@ Item {
                             Layout.fillHeight: false
                         }
 
-                        Button {
+                        TextButton{
                             id: btnColor_curve
-                            height: 20
-                            Layout.preferredWidth: 120
-                            font.bold: false
                             Layout.fillWidth: true
-                            checked: false
-
+                            primaryColor: Colors.c_button
+                            clickColor: Colors.c_button_active
+                            hoverColor: Colors.c_button_hover
+                            height: 20
+                            texto: 'Escolher Cor'
+                            
                             ColorDialog {
                                 id: colorDialog1
                                 title: "Escolha uma cor para os pontos"
@@ -443,42 +464,7 @@ Item {
                                 }
                             }
 
-                            QtObject{
-                                id: internal2
-                                property var dynamicColor: if(btnColor_curve.down){
-                                                               btnColor_curve.down ? Colors.c_button_active : Colors.c_button
-                                                           } else {
-                                                               btnColor_curve.hovered ? Colors.c_button_hover : Colors.c_button
-                                                           }
-                            }
-
-                            background: Rectangle {
-                                id: btnbg1
-                                color: internal2.dynamicColor
-                                radius: 10
-                            }
-
-                            onClicked:{
-                                colorDialog1.open()
-                            }
-
-                            Layout.rowSpan: 1
-                            Layout.preferredHeight: 30
-                            display: AbstractButton.TextOnly
-                            Layout.fillHeight: false
-                            checkable: false
-
-                            contentItem: Item {
-                                id: content1
-                                anchors.fill: parent
-                                Text {
-                                    color: "#ffffff"
-                                    text: "Escolher Cor"
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    anchors.horizontalCenter: parent.horizontalCenter
-                                }
-                            }
-                            font.pointSize: 10
+                            onClicked: colorDialog1.open()
                         }
 
                         Rectangle {
@@ -504,15 +490,13 @@ Item {
 
                         SpinBox {
                             id: thickness
-                            width: 100
-                            height: 20
-                            Layout.columnSpan: 2
-                            value: 2
+                            Layout.fillHeight: false
                             Layout.fillWidth: true
+                            Layout.columnSpan: 2
+                            Layout.preferredHeight: 30
+                            value: 2
                             wrap: false
                             stepSize: 1
-                            Layout.preferredHeight: 30
-                            Layout.fillHeight: false
                             to: 10
                             from: 1
                         }
@@ -573,10 +557,7 @@ Item {
                     Layout.fillHeight: true
                     Layout.fillWidth: true
                 }
-
             }
-
-
         }
     }
 
@@ -592,9 +573,9 @@ Item {
         target: projectMngr
 
         function onFillPropPage(title, xaxis, log_x, yaxis, log_y, residuals, grid, legend, symbol_color, symbol_size, symbol_style, curve_color, curve_thickness, curve_style){
-            titulo.text = title
-            eixox.text = xaxis
-            eixoy.text = yaxis
+            titulo.displayText = title
+            eixox.displayText = xaxis
+            eixoy.displayText = yaxis
             switchResiduos.checked = residuals
             switchGrade.checked = grid
             log_eixox.checked = log_x
@@ -609,7 +590,9 @@ Item {
             switchLegend.checked = legend
         }
     }
-
 }
-
-
+/*##^##
+Designer {
+    D{i:0;autoSize:true;formeditorZoom:0.66;height:480;width:640}
+}
+##^##*/
