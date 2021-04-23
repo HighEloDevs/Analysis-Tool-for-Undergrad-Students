@@ -64,7 +64,7 @@ class Bridge(QtCore.QObject):
         expression = expression.replace('sen', 'sin')
         
         # Setting expression
-        if model.exp_model != expression:
+        if model._exp_model != expression:
             model.set_expression(expression)
 
         curveStyles = {
@@ -97,7 +97,7 @@ class Bridge(QtCore.QObject):
                                 props['curveThickness'],
                                 curveStyles[props['curveType']],
                                 props['legend'],
-                                model.exp_model.replace('**', '^'))
+                                model._exp_model.replace('**', '^'))
 
         # Making plot
         displayBridge.Plot(model, props['residuos'], props['grade'],
