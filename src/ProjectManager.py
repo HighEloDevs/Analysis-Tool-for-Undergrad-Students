@@ -66,13 +66,13 @@ class ProjectManager(QtCore.QObject):
     def __importOptions(self):
         '''Import all options from classes'''
         try:
-            data = self.model.data_json.to_json(double_precision = 15)
+            data = self.model._data_json.to_json(double_precision = 15)
         except:
             data = None
 
         p0 = ''
         try:
-            for i in self.model.p0:
+            for i in self.model._p0:
                 p0 += '{},'.format(i)
             p0 = p0[:-1]
         except:
@@ -80,11 +80,11 @@ class ProjectManager(QtCore.QObject):
 
         self.opt = {
             'projectName' : self.projectName,
-            'expr' : self.model.exp_model,
+            'expr' : self.model._exp_model,
             'p0' : p0,
-            'xaxis' : self.model.eixos[0][0],
-            'yaxis' : self.model.eixos[1][0],
-            'title' : self.model.eixos[2][0],
+            'xaxis' : self.model._eixos[0][0],
+            'yaxis' : self.model._eixos[1][0],
+            'title' : self.model._eixos[2][0],
             'data' : data,
             'wsx' : self.displayBridge.sigma_x,
             'wsy' : self.displayBridge.sigma_y,
@@ -107,7 +107,7 @@ class ProjectManager(QtCore.QObject):
             'ydiv' : self.displayBridge.ydiv,
             'resmin' : self.displayBridge.resmin,
             'resmax' : self.displayBridge.resmax,
-            'parameters': self.model.params.valuesdict()
+            'parameters': self.model._params.valuesdict()
         }
 
     def __clearOptions(self):
@@ -236,6 +236,7 @@ class ProjectManager(QtCore.QObject):
 
     @QtCore.Slot()
     def newProject(self):
+        print(self.opt)
         self.fillFuncPage.emit( self.opt['expr'],
                                 self.opt['p0'],
                                 self.opt['wsx'],
