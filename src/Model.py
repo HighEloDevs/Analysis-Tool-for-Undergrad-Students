@@ -226,7 +226,10 @@ class Model(QtCore.QObject):
         wsy = kargs.pop("wsy", True)
 
         # Getting Model
-        self.model = ExpressionModel(self.exp_model)
+        try:
+            self.model = ExpressionModel(self.exp_model)
+        except ValueError:
+            self.model = ExpressionModel(self.exp_model + " + 0*x")
 
         # Getting coefficients
         self.coef = [i for i in self.model.param_names]

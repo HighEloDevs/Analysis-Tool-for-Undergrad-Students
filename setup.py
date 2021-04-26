@@ -51,7 +51,7 @@ bdist_msi_options = {
 # SETUP CX FREEZE
 setup(
     name = 'Analysis Tool for Undergrad Students',
-    version = '2.0.0a1',
+    version = '2.2.0a1',
     description = 'Ferramenta para análise de dados',
     author = 'Leonardo Eiji Tamayose & Guilherme Ferrari Fortino',
     options = {

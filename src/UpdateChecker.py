@@ -21,7 +21,7 @@ class UpdateChecker(QtCore.QObject):
         super().__init__()
         
         # Actual version
-        self.__VERSION__  = '2.1.0a1'
+        self.__VERSION__  = '2.2.0a1'
         self.isUpdate = True
         
     @QtCore.Slot()
@@ -34,7 +34,7 @@ class UpdateChecker(QtCore.QObject):
             # Parsing .txt file
             versionTxt = requests.get(versionUrl, allow_redirects=True, stream=True).content.decode().split(':')
             version = versionTxt[1].split('\r\n')[0].strip()
-            downloadUrl = serverUrl + 'ATUS-' + version + '.exe'
+            downloadUrl = "https://drive.google.com/drive/folders/1MYXxqCy1s9AMsKC2fDVu1SK556CrAqCo?usp=sharing"
             updateLog = versionTxt[2]
             try:
                 version = version.strip()
