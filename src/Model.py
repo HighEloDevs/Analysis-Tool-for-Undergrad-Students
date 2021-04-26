@@ -117,7 +117,7 @@ class Model(QtCore.QObject):
         self._has_data = True
 
         fileName = data_path.split('/')[-1]
-        print(self._data["x"], self._data["y"])
+
         if self._has_sx and self._has_sy:
             for i in range(len(self._data["x"])):
                 self.fillDataTable.emit(str(self._data["x"][i]), str(self._data["y"][i]), str(self._data["sy"][i]), str(self._data["sx"][i]), fileName)
