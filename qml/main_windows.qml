@@ -32,6 +32,12 @@ Window {
     property int windowMargin: 0
     property int stackedPage: 0
 
+    PopupSaveFig{
+        width: 300
+        height: 400
+        id: poputSaveFig
+    }
+
     Popup {
         id: updatePopup
         anchors.centerIn: parent
@@ -941,7 +947,8 @@ Window {
                                                 isActiveMenu: false
 
                                                 onClicked:{
-                                                    fileSaver.open()
+                                                    // fileSaver.open()
+                                                    poputSaveFig.open()
                                                 }
 
                                                 FileDialog{
