@@ -1,6 +1,6 @@
 # Analysis Tool for Undergrad Students | ATUS
 
-[![DOI](https://zenodo.org/badge/334159419.svg)](https://zenodo.org/badge/latestdoi/334159419)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4723864.svg)](https://doi.org/10.5281/zenodo.4723864)
 
 Uma ferramenta desenvolvida por estudantes da Universidade de São Paulo, visando facilitar a análise de dados feita por estudantes da graduação.
 
