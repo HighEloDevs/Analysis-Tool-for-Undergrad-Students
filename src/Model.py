@@ -212,7 +212,7 @@ class Model(QtCore.QObject):
                 pi.append(1.0)
 
         else:
-            for i in range(len(self.model.param_names)):
+            for i in range(len(self._model.param_names)):
                 try:
                     pi.append(self.p0[i])
                 except:
