@@ -307,7 +307,7 @@ Window {
                         mipmap: true
                         autoTransform: true
                         asynchronous: false
-                        source: "../ATUS Logo Preto.svg"
+                        source: "../images/main_icon/ATUS_logo_preto.svg"
                         sourceSize.height: 55
                         sourceSize.width: 55
                         fillMode: Image.Pad
@@ -947,8 +947,8 @@ Window {
                                                 isActiveMenu: false
 
                                                 onClicked:{
-                                                    // fileSaver.open()
-                                                    poputSaveFig.open()
+                                                    fileSaver.open()
+                                                    // poputSaveFig.open()
                                                 }
 
                                                 FileDialog{
@@ -956,7 +956,7 @@ Window {
                                                     title: "Escolha um local para salvar a figura"
                                                     folder: shortcuts.desktop
                                                     selectExisting: false
-                                                    nameFilters: ["Arquivos de imagem (*.png)"]
+                                                    nameFilters: ["Arquivo de imagem .png (*.png)", "Arquivo de imagem .jpg (*.jpg)", "Arquivo de imagem .pdf (*.pdf)", "Arquivo de imagem .svg (*.svg)"]
                                                     onAccepted: {
                                                         backend.savePlot(fileSaver.fileUrl)
                                                     }
@@ -969,12 +969,12 @@ Window {
                                             Layout.fillHeight: true
                                             Layout.fillWidth: true
 
-                                            FigureCanvas {
-                                                    id: mplView
-                                                    objectName : "canvasPlot"
-                                                    dpi_ratio: Screen.devicePixelRatio
-                                                    anchors.fill: parent
-                                            }
+                                           FigureCanvas {
+                                                   id: mplView
+                                                   objectName : "canvasPlot"
+                                                   dpi_ratio: Screen.devicePixelRatio
+                                                   anchors.fill: parent
+                                           }
                                         }
 
                                         Rectangle {
@@ -1009,10 +1009,12 @@ Window {
                         Layout.fillWidth: true
 
                         Label {
-                            id: labelLeftInfo1
+                            id: labelVersion
                             color: Colors.fontColor
+                            anchors.verticalCenter: parent.verticalCenter
                             horizontalAlignment: Text.AlignLeft
                             verticalAlignment: Text.AlignVCenter
+                            leftPadding: 10
                         }
 
                         MouseArea {
@@ -1140,11 +1142,11 @@ Window {
         }
     }
 
-    Component.onCompleted: updater.checkUpdate()
+    Component.onCompleted: {
+        updater.checkUpdate()
+        labelVersion.text = updater.getVersion()
+        // print(updater.getVersion())
+    }
 }
 
-/*##^##
-Designer {
-    D{i:0;formeditorZoom:0.9}D{i:16}
-}
-##^##*/
+

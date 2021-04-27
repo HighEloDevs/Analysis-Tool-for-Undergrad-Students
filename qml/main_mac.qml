@@ -302,7 +302,7 @@ Window {
                         mipmap: true
                         autoTransform: true
                         asynchronous: false
-                        source: "../ATUS Logo Preto.svg"
+                        source: "../images/main_icon/ATUS_logo_preto.svg"
                         sourceSize.height: 55
                         sourceSize.width: 55
                         fillMode: Image.Pad
@@ -932,7 +932,7 @@ Window {
                                                     title: "Escolha um local para salvar a figura"
                                                     folder: shortcuts.desktop
                                                     selectExisting: false
-                                                    nameFilters: ["Arquivos de imagem (*.png)"]
+                                                    nameFilters: ["Arquivo de imagem .png (*.png)", "Arquivo de imagem .jpg (*.jpg)", "Arquivo de imagem .pdf (*.pdf)", "Arquivo de imagem .svg (*.svg)"]
                                                     onAccepted: {
                                                         backend.savePlot(fileSaver.fileUrl)
                                                     }

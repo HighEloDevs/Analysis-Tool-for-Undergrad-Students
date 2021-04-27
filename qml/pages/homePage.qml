@@ -12,7 +12,7 @@ Item {
         Image {
             id: image
             anchors.fill: parent
-            source: "../../images/ATUS_Docs/ATUS Logos Cinzas/ATUS Logo Cinza 2 Tagline.svg"
+            source: "../../images/main_icon/ATUS_Logo_Cinza_2_Tagline.png"
             anchors.rightMargin: 20
             anchors.leftMargin: 20
             anchors.bottomMargin: 20

@@ -15,13 +15,15 @@ import requests
 
 class UpdateChecker(QtCore.QObject):
 
-    showUpdate = QtCore.Signal(str, str, str, arguments=['updateLog', 'version', 'downloadUrl'])
+    showUpdate = QtCore.Signal(str, str, str, str, arguments=['updateLog', 'version', 'downloadUrl'])
 
     def __init__(self) -> None:
         super().__init__()
         
         # Actual version
-        self.__VERSION__  = '2.1.0a1'
+        with open('./version.txt') as version:
+            self.__VERSION__  = version.read()
+            version.close()
         self.isUpdate = True
         
     @QtCore.Slot()
@@ -53,3 +55,7 @@ class UpdateChecker(QtCore.QObject):
 
         except error:
             print(error)
+    
+    @QtCore.Slot(result=str)
+    def getVersion(self):
+        return self.__VERSION__
