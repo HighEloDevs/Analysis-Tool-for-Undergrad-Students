@@ -146,7 +146,7 @@ class Model(QtCore.QObject):
             df["sx"]               = 1
             self._has_sy           = False
             self._has_sx           = False
-        elif self.mode == 1:
+        elif self._mode == 1:
             self._data_json         = deepcopy(df)
             df["sx"]               = 1
             self._has_sx           = False

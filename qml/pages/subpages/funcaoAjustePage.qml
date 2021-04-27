@@ -152,7 +152,6 @@ Item {
         target: model
 
         function onFillParamsTable(param, value, uncertainty){
-            // tableParamsModel.appendRow({"Parâmetros" : param, "Valor": value, "Incerteza" : uncertainty})
             tableParams.addRow({"parametro": param, "valor": value, "incerteza": uncertainty})
         }
 
@@ -165,8 +164,8 @@ Item {
         target: projectMngr
 
         function onFillFuncPage(expr, pi, sx, sy){
-            expression.displayText = expr
-            p0.displayText = pi
+            expression.text = expr
+            p0.text = pi
             switch_sigmax.checked = sx
             switch_sigmay.checked = sy
         }
