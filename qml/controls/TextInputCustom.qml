@@ -18,8 +18,8 @@ Item{
     property color textColor: '#000'
     property string title: 'Título do TextInput'
     property string textHolder: 'Placeholder'
-    property string text: textInput.text
-    property string displayText: ''
+    property alias text: textInput.text
+
 
     Rectangle{
         id: bg
@@ -47,7 +47,6 @@ Item{
                 selectByMouse: true
                 clip: true
                 color: textColor
-                text: root.displayText
             }
 
             IconButton{
@@ -63,7 +62,7 @@ Item{
                 iconUrl: '../../images/icons/close_black_24dp.svg'
                 visible: textInput.text != ''
 
-                onClicked: textInput.clear()
+                onClicked: textInput.text = ""
             }
         }
         

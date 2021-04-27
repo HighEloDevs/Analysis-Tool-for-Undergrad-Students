@@ -59,7 +59,6 @@ Item {
 
             GridLayout {
                 id: gridLayout
-                // anchors.fill: parent
                 anchors.right: parent.right
                 anchors.left: parent.left
                 anchors.rightMargin: 15
@@ -221,17 +220,6 @@ Item {
                 }
 
                 TextInputCustom{
-                    id: resMax
-                    Layout.fillWidth: true
-                    Layout.columnSpan: 3
-                    focusColor: Colors.mainColor2
-                    title: 'Resíduos - Y Máximo'
-                    textHolder: 'Y Máximo do gráfico de resíduos'
-                    defaultColor: '#fff'
-                    textColor: '#fff'
-                }
-
-                TextInputCustom{
                     id: resMin
                     Layout.fillWidth: true
                     Layout.columnSpan: 3
@@ -242,6 +230,17 @@ Item {
                     textColor: '#fff'
                 }
 
+                TextInputCustom{
+                    id: resMax
+                    Layout.fillWidth: true
+                    Layout.columnSpan: 3
+                    focusColor: Colors.mainColor2
+                    title: 'Resíduos - Y Máximo'
+                    textHolder: 'Y Máximo do gráfico de resíduos'
+                    defaultColor: '#fff'
+                    textColor: '#fff'
+                }
+                
                 GroupBox {
                     id: groupBox_pontos
                     Layout.columnSpan: 6
@@ -572,10 +571,10 @@ Item {
     Connections{
         target: projectMngr
 
-        function onFillPropPage(title, xaxis, log_x, yaxis, log_y, residuals, grid, legend, symbol_color, symbol_size, symbol_style, curve_color, curve_thickness, curve_style){
-            titulo.displayText = title
-            eixox.displayText = xaxis
-            eixoy.displayText = yaxis
+        function onFillPropPage(title, xaxis, log_x, yaxis, log_y, residuals, grid, legend, symbol_color, symbol_size, symbol_style, curve_color, curve_thickness, curve_style, xMin, xMax, xDiv, yMin, yMax, yDiv, resmin, resmax){
+            titulo.text = title
+            eixox.text = xaxis
+            eixoy.text = yaxis
             switchResiduos.checked = residuals
             switchGrade.checked = grid
             log_eixox.checked = log_x
@@ -588,6 +587,14 @@ Item {
             thickness.value = curve_thickness
             type_curve.currentIndex = type_curve.find(curve_style)
             switchLegend.checked = legend
+            xmin.text = xMin == '0' ? '': xMin
+            xmax.text = xMax == '0' ? '': xMax
+            xdiv.text = xDiv == '0' ? '': xDiv
+            ymin.text = yMin == '0' ? '': yMin
+            ymax.text = yMax == '0' ? '': yMax
+            ydiv.text = yDiv == '0' ? '': yDiv
+            resMin.text = resmin == '0' ? '': resmin 
+            resMax.text = resmax == '0' ? '': resmax
         }
     }
 }
