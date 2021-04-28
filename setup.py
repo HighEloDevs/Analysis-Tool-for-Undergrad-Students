@@ -11,7 +11,8 @@ files = [
     'icon.ico',
     'images/',
     'qml/',
-    'src/'
+    'src/',
+    'version.txt'
 ]
 
 # Packages to include

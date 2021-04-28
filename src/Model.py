@@ -210,16 +210,14 @@ class Model(QtCore.QObject):
         if self._p0 is None:
             for i in range(len(self._model.param_names)):
                 pi.append(1.0)
-
         else:
             for i in range(len(self._model.param_names)):
                 try:
-                    pi.append(self.p0[i])
+                    pi.append(float(self._p0[i]))
                 except:
                     pi.append(1.0)
 
         # Data
-        
         x, y, sy, sx = self.data
 
         data = None

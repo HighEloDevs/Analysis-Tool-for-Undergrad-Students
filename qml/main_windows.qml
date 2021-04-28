@@ -1145,6 +1145,7 @@ Window {
     Component.onCompleted: {
         updater.checkUpdate()
         labelVersion.text = updater.getVersion()
+        mainWindow.showMaximized()
         // print(updater.getVersion())
     }
 }
