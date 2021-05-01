@@ -6,20 +6,7 @@ Uma ferramenta desenvolvida por estudantes da Universidade de São Paulo, visand
 
 ![image](https://user-images.githubusercontent.com/48266854/113489486-eef77000-949a-11eb-988b-9d2ec7da7462.png)
 
-## Índice
-[Características](#caracteristicas)
-
-[Tecnlogias utilizadas](#tecnologias)
-
-[Licensa](#licensa)
-
-<a name="caracteristicas"/></a>
-## Características
-
-
-<a name="tecnologias"/></a>
-## Tecnologias Utilizadas
-
+Instruções para instalação podem ser encontradas [aqui](https://highelodevs.github.io/Analysis-Tool-for-Undergrad-Students/).
 
 <a name="licensa"/></a>
 ## Licensa
