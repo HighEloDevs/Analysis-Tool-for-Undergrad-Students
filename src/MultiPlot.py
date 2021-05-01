@@ -141,26 +141,26 @@ class Multiplot(QtCore.QObject):
     def Plot_sx_sy(self, df, options):
         if options['label'] != '':
             self.displayBridge.axes.errorbar(df['x'], df['y'], yerr=df['sy'], xerr = df['sx'],
-            ecolor = options['markerColor'], capsize = 0, elinewidth = 1, ms = 2, marker = '.', color = options['markerColor'], ls = 'none', label = '${}$'.format(options['label']))
+            ecolor = options['markerColor'], capsize = 0, elinewidth = 1, ms = 3, marker = '.', color = options['markerColor'], ls = 'none', label = '${}$'.format(options['label']))
         else:
             self.displayBridge.axes.errorbar(df['x'], df['y'], yerr=df['sy'], xerr = df['sx'],
-            ecolor = options['markerColor'], capsize = 0, elinewidth = 1, ms = 2, marker = '.', color = options['markerColor'], ls = 'none')
+            ecolor = options['markerColor'], capsize = 0, elinewidth = 1, ms = 3, marker = '.', color = options['markerColor'], ls = 'none')
     
     def Plot_sy(self, df, options):
         if options['label'] != '':
             self.displayBridge.axes.errorbar(df['x'], df['y'], yerr=df['sy'],
-            ecolor = options['markerColor'], capsize = 0, elinewidth = 1, ms = 2, marker = '.', color = options['markerColor'], ls = 'none', label = '${}$'.format(options['label']))
+            ecolor = options['markerColor'], capsize = 0, elinewidth = 1, ms = 3, marker = '.', color = options['markerColor'], ls = 'none', label = '${}$'.format(options['label']))
         else:
             self.displayBridge.axes.errorbar(df['x'], df['y'], yerr=df['sy'],
-            ecolor = options['markerColor'], capsize = 0, elinewidth = 1, ms = 2, marker = '.', color = options['markerColor'], ls = 'none')
+            ecolor = options['markerColor'], capsize = 0, elinewidth = 1, ms = 3, marker = '.', color = options['markerColor'], ls = 'none')
     
     def Plot_op(self, df, options):
         if options['label'] != '':
             self.displayBridge.axes.errorbar(df['x'], df['y'],
-            ecolor = options['markerColor'], capsize = 0, elinewidth = 1, ms = 2, marker = '.', color = options['markerColor'], ls = 'none', label = '${}$'.format(options['label']))
+            ecolor = options['markerColor'], capsize = 0, elinewidth = 1, ms = 3, marker = '.', color = options['markerColor'], ls = 'none', label = '${}$'.format(options['label']))
         else:
             self.displayBridge.axes.errorbar(df['x'], df['y'],
-            ecolor = options['markerColor'], capsize = 0, elinewidth = 1, ms = 2, marker = '.', color = options['markerColor'], ls = 'none')
+            ecolor = options['markerColor'], capsize = 0, elinewidth = 1, ms = 3, marker = '.', color = options['markerColor'], ls = 'none')
     
     def Func_plot(self, options, model, params):
         px = np.linspace(self.Multi_Model.min_x, self.Multi_Model.max_x, 1000)

@@ -21,8 +21,8 @@ class ProjectManager(QtCore.QObject):
     # Some Signals
     saveAsSignal = QtCore.Signal()
     fillFuncPage = QtCore.Signal(str, str, int, int, arguments=['expr', 'pi', 'sx', 'sy'])
-    fillPropPage = QtCore.Signal(str, str, int, str, int, int, int, int, str, int, str, str, int, str,
-                                arguments=['title', 'xaxis', 'log_x', 'yaxis', 'log_y', 'residuals', 'grid', 'legend', 'symbol_color', 'symbol_size', 'symbol_style', 'curve_color', 'curve_thickness', 'curve_style'])
+    fillPropPage = QtCore.Signal(str, str, int, str, int, int, int, int, str, int, str, str, int, str, str, str, str, str, str, str, str, str,
+                                arguments=['title', 'xaxis', 'log_x', 'yaxis', 'log_y', 'residuals', 'grid', 'legend', 'symbol_color', 'symbol_size', 'symbol_style', 'curve_color', 'curve_thickness', 'curve_style', 'xMin', 'xMax', 'xDiv', 'yMin', 'yMax', 'yDiv', 'resmin', 'resmax'])
     fillDataTable = QtCore.Signal()
     fillParamsTable = QtCore.Signal()
     fillProjectName = QtCore.Signal(str, arguments=['projectName'])
@@ -61,6 +61,14 @@ class ProjectManager(QtCore.QObject):
             'curve_thickness' : 2,
             'curve_style' : '',
             'grid' : 0,
+            'xmin' : '',
+            'xmax' : '',
+            'xdiv' : '',
+            'ymin' : '',
+            'ymax' : '',
+            'ydiv' : '',
+            'resmin' : '',
+            'resmax' : '',
             'residuals' : 0
         }   
         
@@ -133,6 +141,14 @@ class ProjectManager(QtCore.QObject):
             'curve_thickness' : 2,
             'curve_style' : '',
             'grid' : 0,
+            'xmin' : '',
+            'xmax' : '',
+            'xdiv' : '',
+            'ymin' : '',
+            'ymax' : '',
+            'ydiv' : '',
+            'resmin' : '',
+            'resmax' : '',
             'residuals' : 0
         }
 
@@ -198,6 +214,8 @@ class ProjectManager(QtCore.QObject):
         self.model.set_title(options['title'])
         self.model.set_x_axis(options['xaxis'])
         self.model.set_y_axis(options['yaxis'])
+        self.model.set_p0(options['p0'].split(','))
+        # print(options['p0'].split(','))
         self.clearTableData.emit()
         if options['data'] != None:
             self.model.load_data_json(pd.read_json(options['data'], dtype = str))
@@ -239,7 +257,16 @@ class ProjectManager(QtCore.QObject):
                                 symbols[options['symbol']],
                                 options['curve_color'],
                                 options['curve_thickness'],
-                                curveStyles[options['curve_style']])
+                                curveStyles[options['curve_style']],
+                                str(options['xmin']),
+                                str(options['xmax']),
+                                str(options['xdiv']),
+                                str(options['ymin']),
+                                str(options['ymax']),
+                                str(options['ydiv']),
+                                str(options['resmin']),
+                                str(options['resmax']),
+                                )
 
         self.fillProjectName.emit(options['projectName'])
 
@@ -263,7 +290,16 @@ class ProjectManager(QtCore.QObject):
                                 'Círculo',
                                 self.opt['curve_color'],
                                 self.opt['curve_thickness'],
-                                'Sólido')
+                                'Sólido',
+                                self.opt['xmin'],
+                                self.opt['xmax'],
+                                self.opt['xdiv'],
+                                self.opt['ymin'],
+                                self.opt['ymax'],
+                                self.opt['ydiv'],
+                                self.opt['resmin'],
+                                self.opt['resmax']
+                                )
         self.fillProjectName.emit(self.opt['projectName'])
         self.clearTableParams.emit()
         self.model.reset()

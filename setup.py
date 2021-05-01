@@ -2,15 +2,17 @@ import sys
 import os
 from cx_Freeze import setup, Executable
 
+with open('./version.txt') as version:
+    __VERSION__  = version.read()
+    version.close()
+
 # Files and folders to include
 files = [
-    'ATUS Icon 3.svg',
-    'ATUS Icon 3.png',
     'icon.ico',
-    'ATUS Logo Preto.svg',
     'images/',
     'qml/',
-    'src/'
+    'src/',
+    'version.txt'
 ]
 
 # Packages to include
@@ -50,8 +52,8 @@ bdist_msi_options = {
 
 # SETUP CX FREEZE
 setup(
-    name = 'Analysis Tool for Undergrad Students',
-    version = '2.0.0a1',
+    name = 'ATUS',
+    version = __VERSION__,
     description = 'Ferramenta para análise de dados',
     author = 'Leonardo Eiji Tamayose & Guilherme Ferrari Fortino',
     options = {

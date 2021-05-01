@@ -146,7 +146,7 @@ class Model(QtCore.QObject):
             df["sx"]               = 1
             self._has_sy           = False
             self._has_sx           = False
-        elif self.mode == 1:
+        elif self._mode == 1:
             self._data_json         = deepcopy(df)
             df["sx"]               = 1
             self._has_sx           = False
@@ -210,16 +210,14 @@ class Model(QtCore.QObject):
         if self._p0 is None:
             for i in range(len(self._model.param_names)):
                 pi.append(1.0)
-
         else:
-            for i in range(len(self.model.param_names)):
+            for i in range(len(self._model.param_names)):
                 try:
-                    pi.append(self.p0[i])
+                    pi.append(float(self._p0[i]))
                 except:
                     pi.append(1.0)
 
         # Data
-        
         x, y, sy, sx = self.data
 
         data = None
