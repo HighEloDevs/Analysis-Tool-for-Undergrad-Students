@@ -89,69 +89,72 @@ class Model(QtCore.QObject):
     def load_data(self, data_path):
         """ Loads the data from a given path. """
         df = pd.read_csv(data_path, sep='\t', header=None, dtype = str).dropna()
+        self._data_json = deepcopy(df)
 
         for i in df.columns:
-            df[i] = [x.replace(',', '.') for x in df[i]]
-            df           = df.replace('', '0')
-            df[i]        = df[i].astype(float)
+            df[i]              = [x.replace(',', '.') for x in df[i]]
+            self._data_json[i] = [x.replace(',', '.') for x in self._data_json[i]]
+            df                 = df.replace('', '0')
+            df[i]              = df[i].astype(float)
         self._mode   = len(df.columns) - 2
         self._has_sx = True
         self._has_sy = True
 
         # Naming columns
         if self._mode == 0:
-            self._data_json = deepcopy(df)
-            self._has_sy    = False
-            self._has_sx    = False
-            df["sy"]        = 1
-            df["sx"]        = 1
+            self._has_sy = False
+            self._has_sx = False
+            self._data_json.columns = ['x', 'y']
+            df["sy"]     = 1
+            df["sx"]     = 1
         elif self._mode == 1:
-            self._data_json = deepcopy(df)
-            self._has_sx    = False
-            df["sx"]        = 1
+            self._has_sx = False
+            self._data_json.columns = ['x', 'y', 'sy']
+            df["sx"]     = 1
         else:
-            self._data_json = deepcopy(df)
+            self._data_json.columns = ['x', 'y', 'sy', 'sx']
 
-        df.columns    = ['x', 'y', 'sy', 'sx']
+
+        df.columns     = ['x', 'y', 'sy', 'sx']
         self._data     = deepcopy(df)
         self._has_data = True
-
-        fileName = data_path.split('/')[-1]
+        fileName       = data_path.split('/')[-1]
 
         if self._has_sx and self._has_sy:
             for i in range(len(self._data["x"])):
-                self.fillDataTable.emit(str(self._data["x"][i]), str(self._data["y"][i]), str(self._data["sy"][i]), str(self._data["sx"][i]), fileName)
+                self.fillDataTable.emit(self._data_json["x"][i], self._data_json["y"][i], self._data_json["sy"][i], self._data_json["sx"][i], fileName)
         elif self._has_sx:
             for i in range(len(self._data["x"])):
-                self.fillDataTable.emit(str(self._data["x"][i]), str(self._data["y"][i]), 0, str(self._data["sx"][i]), fileName)
+                self.fillDataTable.emit(self._data_json["x"][i], self._data_json["y"][i], str(0), self._data_json["sx"][i], fileName)
         elif self._has_sy:
             for i in range(len(self._data["x"])):
-                self.fillDataTable.emit(str(self._data["x"][i]), str(self._data["y"][i]), str(self._data["sy"][i]), 0, fileName)
+                self.fillDataTable.emit(self._data_json["x"][i], self._data_json["y"][i], self._data_json["sy"][i], str(0), fileName)
         else:
             for i in range(len(self._data["x"])):
-                self.fillDataTable.emit(str(self._data["x"][i]), str(self._data["y"][i]), 0, 0, fileName)
+                self.fillDataTable.emit(self._data_json["x"][i], self._data_json["y"][i], str(0), str(0), fileName)
 
     def load_data_json(self, df):
         """ Loads the data """
 
-        self._data       = df
-        self._mode       = len(df.columns) - 2
-        self._has_sx     = True
-        self._has_sy     = True
+
+        self._data_json = deepcopy(df)
+        self._mode      = len(df.columns) - 2
+        self._has_sx    = True
+        self._has_sy    = True
 
         # Naming columns
         if self._mode == 0:
-            self._data_json        = deepcopy(df)
-            df["sy"]               = 1
-            df["sx"]               = 1
-            self._has_sy           = False
-            self._has_sx           = False
+            self._has_sy            = False
+            self._has_sx            = False
+            self._data_json.columns = ['x', 'y']
+            df["sy"]                = 1
+            df["sx"]                = 1
         elif self._mode == 1:
-            self._data_json         = deepcopy(df)
-            df["sx"]               = 1
-            self._has_sx           = False
+            self._has_sx = False
+            self._data_json.columns = ['x', 'y', 'sy']
+            df["sx"]     = 1
         else:
-            self._data_json         = deepcopy(df)
+            self._data_json.columns = ['x', 'y', 'sy', 'sx']
         df.columns     = ['x', 'y', 'sy', 'sx']
         self._data     = deepcopy(df.astype(float))
         self._has_data = True
@@ -160,16 +163,16 @@ class Model(QtCore.QObject):
 
         if self._has_sx and self._has_sy:
             for i in range(len(self._data["x"])):
-                self.fillDataTable.emit(str(self._data["x"][i]), str(self._data["y"][i]), str(self._data["sy"][i]), str(self._data["sx"][i]), fileName)
+                self.fillDataTable.emit(self._data_json["x"][i], self._data_json["y"][i], self._data_json["sy"][i], self._data_json["sx"][i], fileName)
         elif self._has_sx:
             for i in range(len(self._data["x"])):
-                self.fillDataTable.emit(str(self._data["x"][i]), str(self._data["y"][i]), 0, str(self._data["sx"][i]), fileName)
+                self.fillDataTable.emit(self._data_json["x"][i], self._data_json["y"][i], str(0), self._data_json["sx"][i], fileName)
         elif self._has_sy:
             for i in range(len(self._data["x"])):
-                self.fillDataTable.emit(str(self._data["x"][i]), str(self._data["y"][i]), str(self._data["sy"][i]), 0, fileName)
+                self.fillDataTable.emit(self._data_json["x"][i], self._data_json["y"][i], self._data_json["sy"][i], str(0), fileName)
         else:
             for i in range(len(self._data["x"])):
-                self.fillDataTable.emit(str(self._data["x"][i]), str(self._data["y"][i]), 0, 0, fileName)
+                self.fillDataTable.emit(self._data_json["x"][i], self._data_json["y"][i], str(0), str(0), fileName)
         
     def set_x_axis(self, name = ""):
         """ Set new x label to the graph. """
