@@ -57,7 +57,7 @@ A instalação requer o uso do Python 3.7 - 3.9. Agora instale as dependências 
 
 ```
 pip install --upgrade pip
-pip install matplotlib scipy numpy pandas lmfit matplotlib_backend_qtquick operator requests json
+pip install matplotlib scipy numpy pandas lmfit matplotlib_backend_qtquick pyqt5 operator requests json
 ```
 
 Instale o git:
