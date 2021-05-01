@@ -1,37 +1,87 @@
-## Welcome to GitHub Pages
+## Analysis Tool for Undergrad Students
 
-You can use the [editor on GitHub](https://github.com/leoeiji/Analysis-Tool-for-Undergrad-Students---ATUS/edit/gh-pages/index.md) to maintain and preview the content for your website in Markdown files.
+O **A**nalysis **T**ool for **U**ndergrad **S**tudents (ATUS) foi desenvolvido por estudantes do Instituto de Física da USP com o objetivo de ser uma ferramenta _offline_ e gratuita de análise dados para, principalmente, as disciplinas experimentais do IFUSP.
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+### Características
 
-### Markdown
+- Pode ser usado no Windows 10, Linux (testado no Ubuntu 18.04+), e Mac;
+- Interface intuitiva;
+- Alta velocidade de execução;
+- Open source.
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+## Instalação
 
-```markdown
-Syntax highlighted code block
+#### Windows
 
-# Header 1
-## Header 2
-### Header 3
+O executável do programa pode ser encontrado [aqui](https://drive.google.com/drive/folders/1MYXxqCy1s9AMsKC2fDVu1SK556CrAqCo?usp=sharing).
 
-- Bulleted
-- List
+Após clicar no executável, esta tela pode surgir:
 
-1. Numbered
-2. List
+![image](https://user-images.githubusercontent.com/56280982/116792989-7b954e00-aa9a-11eb-8f22-6a04e0dae32e.png)
 
-**Bold** and _Italic_ and `Code` text
+Basta clicar em "Mais informações":
 
-[Link](url) and ![Image](src)
+![image](https://user-images.githubusercontent.com/56280982/116793031-b0a1a080-aa9a-11eb-93ce-44b679e6e8da.png)
+
+Agora executar:
+
+![image](https://user-images.githubusercontent.com/56280982/116793055-cfa03280-aa9a-11eb-9e79-c0256a9e0a4c.png)
+
+Agora a instalação segue normalmente. Clique em "OK":
+
+![image](https://user-images.githubusercontent.com/56280982/116793067-e3e42f80-aa9a-11eb-988e-d38d806edd9e.png)
+
+Aceita o termo e clique em "Avançar":
+
+![image](https://user-images.githubusercontent.com/56280982/116793075-f0688800-aa9a-11eb-94c1-d7af21a55307.png)
+
+Selecione onde deseja instalar e clique em "Avançar":
+
+![image](https://user-images.githubusercontent.com/56280982/116793088-01b19480-aa9b-11eb-9ec7-2bf1a05ef868.png)
+
+Selecione a opção de criar um atalho na área de trabalho (caso desejar) e clique em "Avançar":
+
+![image](https://user-images.githubusercontent.com/56280982/116793116-1e4dcc80-aa9b-11eb-9cfa-55b34f215c84.png)
+
+Clique em "Instalar":
+
+![image](https://user-images.githubusercontent.com/56280982/116793126-2a398e80-aa9b-11eb-97b0-ac1d7c9c5439.png)
+
+Pronto! Basta concluir a instalação:
+
+![image](https://user-images.githubusercontent.com/56280982/116793136-36255080-aa9b-11eb-9e07-7a2bd7db982c.png)
+
+#### Linux / Mac
+
+A instalação requer o uso do Python 3.7 - 3.9. Agora instale as dependências (bibliotecas do python) usando os seguintes comandos:
+
+```
+pip install --upgrade pip
+pip install matplotlib scipy numpy pandas lmfit matplotlib_backend_qtquick operator requests json
 ```
 
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
+Instale o git:
 
-### Jekyll Themes
+```
+sudo apt-get install git -y
+```
 
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/leoeiji/Analysis-Tool-for-Undergrad-Students---ATUS/settings/pages). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
+Escolha uma pasta de sua preferência e clone o repositório:
 
-### Support or Contact
+```
+git clone https://github.com/HighEloDevs/Analysis-Tool-for-Undergrad-Students.git
+```
 
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://support.github.com/contact) and we’ll help you sort it out.
+Em seguida entre na pasta e execute o "main.py" para começar a usar o ATUS:
+
+```
+cd Analysis-Tool-for-Undergrad-Students/
+python main.py
+```
+
+Atenção: caso não seja reconhecido o comando "pip" ou "python", use "pip3" no lugar do "pip" e "python3" no lugar de "python".
+
+
+### Contato
+
+Qualquer dúvida, comentário ou sugestão mande um e-mail para: atusdevs@gmail.com
