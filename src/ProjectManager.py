@@ -9,6 +9,7 @@ Class Project Manager
 """
 
 import json
+import platform
 import pandas as pd
 from matplotlib_backend_qtquick.qt_compat import QtCore
 from .MatPlotLib import DisplayBridge
@@ -140,8 +141,12 @@ class ProjectManager(QtCore.QObject):
         """ Saves all options to a already loaded path """
         self.__importOptions()
         if self.path != '':
-            with open(self.path, 'w', encoding='utf-8') as file:
-                json.dump(self.opt, file, ensure_ascii=False, indent=4)
+            if platform.system() == "Linux":
+                with open(self.path + ".json", 'w', encoding='utf-8') as file:
+                    json.dump(self.opt, file, ensure_ascii=False, indent=4)
+            else:
+                with open(self.path, 'w', encoding='utf-8') as file:
+                    json.dump(self.opt, file, ensure_ascii=False, indent=4)
         else:
             self.saveAsSignal.emit()
         self.__clearOptions()
@@ -151,8 +156,12 @@ class ProjectManager(QtCore.QObject):
         """ Saves all options to a given path """
         self.__importOptions()
         self.path = QtCore.QUrl(path).toLocalFile()
-        with open(self.path, 'w', encoding='utf-8') as file:
-            json.dump(self.opt, file, ensure_ascii=False, indent=4)
+        if platform.system() == "Linux":
+            with open(self.path + ".json", 'w', encoding='utf-8') as file:
+                json.dump(self.opt, file, ensure_ascii=False, indent=4)
+        else:
+            with open(self.path, 'w', encoding='utf-8') as file:
+                json.dump(self.opt, file, ensure_ascii=False, indent=4)
         self.__clearOptions() 
 
     @QtCore.Slot(str)
@@ -236,7 +245,6 @@ class ProjectManager(QtCore.QObject):
 
     @QtCore.Slot()
     def newProject(self):
-        print(self.opt)
         self.fillFuncPage.emit( self.opt['expr'],
                                 self.opt['p0'],
                                 self.opt['wsx'],
