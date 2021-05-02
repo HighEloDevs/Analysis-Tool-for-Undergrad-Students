@@ -35,9 +35,12 @@ Button{
     }
 
     contentItem: Text{
+        anchors.fill: parent
         text: texto
         color: textColor
         font.bold: true
+        // font.pixelSize: 12
+        fontSizeMode: Text.Fit
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
         elide: Text.ElideRight

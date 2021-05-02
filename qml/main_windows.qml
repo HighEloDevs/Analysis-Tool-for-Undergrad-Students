@@ -32,6 +32,12 @@ Window {
     property int windowMargin: 0
     property int stackedPage: 0
 
+    PopupSaveFig{
+        width: 300
+        height: 400
+        id: poputSaveFig
+    }
+
     Popup {
         id: updatePopup
         anchors.centerIn: parent
@@ -301,7 +307,7 @@ Window {
                         mipmap: true
                         autoTransform: true
                         asynchronous: false
-                        source: "../ATUS Logo Preto.svg"
+                        source: "../images/main_icon/ATUS_logo_preto.svg"
                         sourceSize.height: 55
                         sourceSize.width: 55
                         fillMode: Image.Pad
@@ -324,7 +330,7 @@ Window {
                     anchors.left: parent.left
                     anchors.right: parent.right
                     anchors.top: parent.top
-                    anchors.rightMargin: 140
+                    anchors.rightMargin: 285
                     anchors.leftMargin: 70
                     anchors.topMargin: 0
 
@@ -380,6 +386,25 @@ Window {
                     anchors.rightMargin: 0
                     anchors.topMargin: 0
 
+                    IconTextButton {
+                        id: siteBtn
+
+                        anchors.top: parent.top
+                        anchors.bottom: parent.bottom
+                        anchors.topMargin: 0
+                        anchors.bottomMargin: 0
+
+                        flat: false
+                        texto: "Documentação"
+                        iconUrl: qsTr("../../images/icons/ios_share_white_24dp.svg")
+
+                        primaryColor: 'transparent'
+                        clickColor: Colors.c_button_active
+                        hoverColor: Colors.c_button_hover
+
+                        onClicked: Qt.openUrlExternally("https://highelodevs.github.io/Analysis-Tool-for-Undergrad-Students/")
+                    }
+
                     IconButton{
                         width: 35
                         anchors.top: parent.top
@@ -418,6 +443,7 @@ Window {
                         btnIconSource: "../images/svg_images/close_icon.svg"
                         onClicked: mainWindow.close()
                     }
+
                 }
 
             }
@@ -942,6 +968,7 @@ Window {
 
                                                 onClicked:{
                                                     fileSaver.open()
+                                                    // poputSaveFig.open()
                                                 }
 
                                                 FileDialog{
@@ -949,7 +976,7 @@ Window {
                                                     title: "Escolha um local para salvar a figura"
                                                     folder: shortcuts.desktop
                                                     selectExisting: false
-                                                    nameFilters: ["Arquivos de imagem (*.png)"]
+                                                    nameFilters: ["Arquivo de imagem .png (*.png)", "Arquivo de imagem .jpg (*.jpg)", "Arquivo de imagem .pdf (*.pdf)", "Arquivo de imagem .svg (*.svg)"]
                                                     onAccepted: {
                                                         backend.savePlot(fileSaver.fileUrl)
                                                     }
@@ -962,12 +989,12 @@ Window {
                                             Layout.fillHeight: true
                                             Layout.fillWidth: true
 
-                                            FigureCanvas {
-                                                    id: mplView
-                                                    objectName : "canvasPlot"
-                                                    dpi_ratio: Screen.devicePixelRatio
-                                                    anchors.fill: parent
-                                            }
+                                           FigureCanvas {
+                                                   id: mplView
+                                                   objectName : "canvasPlot"
+                                                   dpi_ratio: Screen.devicePixelRatio
+                                                   anchors.fill: parent
+                                           }
                                         }
 
                                         Rectangle {
@@ -1002,10 +1029,12 @@ Window {
                         Layout.fillWidth: true
 
                         Label {
-                            id: labelLeftInfo1
+                            id: labelVersion
                             color: Colors.fontColor
+                            anchors.verticalCenter: parent.verticalCenter
                             horizontalAlignment: Text.AlignLeft
                             verticalAlignment: Text.AlignVCenter
+                            leftPadding: 10
                         }
 
                         MouseArea {
@@ -1133,11 +1162,12 @@ Window {
         }
     }
 
-    Component.onCompleted: updater.checkUpdate()
+    Component.onCompleted: {
+        updater.checkUpdate()
+        labelVersion.text = updater.getVersion()
+        mainWindow.showMaximized()
+        // print(updater.getVersion())
+    }
 }
 
-/*##^##
-Designer {
-    D{i:0;formeditorZoom:0.9}D{i:16}
-}
-##^##*/
+

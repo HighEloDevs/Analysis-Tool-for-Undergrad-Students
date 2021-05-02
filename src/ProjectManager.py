@@ -9,6 +9,7 @@ Class Project Manager
 """
 
 import json
+import platform
 import pandas as pd
 from matplotlib_backend_qtquick.qt_compat import QtCore
 from .MatPlotLib import DisplayBridge
@@ -74,13 +75,13 @@ class ProjectManager(QtCore.QObject):
     def __importOptions(self):
         '''Import all options from classes'''
         try:
-            data = self.model.data_json.to_json(double_precision = 15)
+            data = self.model._data_json.to_json(double_precision = 15)
         except:
             data = None
 
         p0 = ''
         try:
-            for i in self.model.p0:
+            for i in self.model._p0:
                 p0 += '{},'.format(i)
             p0 = p0[:-1]
         except:
@@ -88,11 +89,11 @@ class ProjectManager(QtCore.QObject):
 
         self.opt = {
             'projectName' : self.projectName,
-            'expr' : self.model.exp_model,
+            'expr' : self.model._exp_model,
             'p0' : p0,
-            'xaxis' : self.model.eixos[0][0],
-            'yaxis' : self.model.eixos[1][0],
-            'title' : self.model.eixos[2][0],
+            'xaxis' : self.model._eixos[0][0],
+            'yaxis' : self.model._eixos[1][0],
+            'title' : self.model._eixos[2][0],
             'data' : data,
             'wsx' : self.displayBridge.sigma_x,
             'wsy' : self.displayBridge.sigma_y,
@@ -115,7 +116,7 @@ class ProjectManager(QtCore.QObject):
             'ydiv' : self.displayBridge.ydiv,
             'resmin' : self.displayBridge.resmin,
             'resmax' : self.displayBridge.resmax,
-            'parameters': self.model.params.valuesdict()
+            'parameters': self.model._params.valuesdict()
         }
 
     def __clearOptions(self):
@@ -156,8 +157,12 @@ class ProjectManager(QtCore.QObject):
         """ Saves all options to a already loaded path """
         self.__importOptions()
         if self.path != '':
-            with open(self.path, 'w', encoding='utf-8') as file:
-                json.dump(self.opt, file, ensure_ascii=False, indent=4)
+            if platform.system() == "Linux":
+                with open(self.path + ".json", 'w', encoding='utf-8') as file:
+                    json.dump(self.opt, file, ensure_ascii=False, indent=4)
+            else:
+                with open(self.path, 'w', encoding='utf-8') as file:
+                    json.dump(self.opt, file, ensure_ascii=False, indent=4)
         else:
             self.saveAsSignal.emit()
         self.__clearOptions()
@@ -167,8 +172,12 @@ class ProjectManager(QtCore.QObject):
         """ Saves all options to a given path """
         self.__importOptions()
         self.path = QtCore.QUrl(path).toLocalFile()
-        with open(self.path, 'w', encoding='utf-8') as file:
-            json.dump(self.opt, file, ensure_ascii=False, indent=4)
+        if platform.system() == "Linux":
+            with open(self.path + ".json", 'w', encoding='utf-8') as file:
+                json.dump(self.opt, file, ensure_ascii=False, indent=4)
+        else:
+            with open(self.path, 'w', encoding='utf-8') as file:
+                json.dump(self.opt, file, ensure_ascii=False, indent=4)
         self.__clearOptions() 
 
     @QtCore.Slot(str)
@@ -205,6 +214,8 @@ class ProjectManager(QtCore.QObject):
         self.model.set_title(options['title'])
         self.model.set_x_axis(options['xaxis'])
         self.model.set_y_axis(options['yaxis'])
+        self.model.set_p0(options['p0'].split(','))
+        # print(options['p0'].split(','))
         self.clearTableData.emit()
         if options['data'] != None:
             self.model.load_data_json(pd.read_json(options['data'], dtype = str))

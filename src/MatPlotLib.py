@@ -84,23 +84,25 @@ class DisplayBridge(QtCore.QObject):
         self.resmin    = resmin
         self.resmax    = resmax
 
-        if model.has_data:
+        if model._has_data:
 
             # Fitting expression to data, if there's any expression
-            if model.exp_model != '':
+            if model._exp_model != '':
                 model.fit(wsx = not self.sigma_x, wsy = not self.sigma_y)
                 
                 # Getting fitted data
                 px, py = model.get_predict()
-                y_r    = model.get_residuals()
+                y_r    = model.residuo
+            else:
+                model._isvalid = False
 
             # Plotting if the model is valid
-            if model.isvalid:
+            if model._isvalid:
                 # Clearing the current plot
                 self.clearAxis()
 
                 # Getting data
-                x, y, sy, sx = model.get_data()
+                x, y, sy, sx = model.data
 
                 if residuals:
                     self.ax1, self.ax2 = self.figure.subplots(2, 1, sharex=True, gridspec_kw={'height_ratios': [3, 1.0]})
@@ -153,13 +155,13 @@ class DisplayBridge(QtCore.QObject):
                     if self.legend:
                         self.ax1.legend(frameon=False)
 
-                    if model.mode == 2:
+                    if model._mode == 2:
                         self.ax2.errorbar(x, y_r, yerr=sy, xerr = sx, ecolor = self.symbol_color, capsize = 0, elinewidth = 1, ms = self.symbol_size, marker = self.symbol, color = self.symbol_color, ls = 'none')
                         self.ax1.errorbar(x, y, yerr=sy, xerr=sx, ecolor = self.symbol_color, capsize = 0, elinewidth = 1, ms = self.symbol_size, marker = self.symbol, color = self.symbol_color, ls = 'none')
-                    elif model.has_sx:
+                    elif model._has_sx:
                         self.ax2.errorbar(x, y_r, xerr = sx, ecolor = self.symbol_color, capsize = 0, elinewidth = 1, ms = self.symbol_size, marker = self.symbol, color = self.symbol_color, ls = 'none')
                         self.ax1.errorbar(x, y, xerr=sx, ecolor = self.symbol_color, capsize = 0, elinewidth = 1, ms = self.symbol_size, marker = self.symbol, color = self.symbol_color, ls = 'none')
-                    elif model.has_sy:
+                    elif model._has_sy:
                         self.ax2.errorbar(x, y_r, yerr=sy, ecolor = self.symbol_color, capsize = 0, elinewidth = 1, ms = self.symbol_size, marker = self.symbol, color = self.symbol_color, ls = 'none')
                         self.ax1.errorbar(x, y, yerr=sy, ecolor = self.symbol_color, capsize = 0, elinewidth = 1, ms = self.symbol_size, marker = self.symbol, color = self.symbol_color, ls = 'none')
                     else:
@@ -167,10 +169,10 @@ class DisplayBridge(QtCore.QObject):
                         self.ax1.errorbar(x, y, ecolor = self.symbol_color, capsize = 0, elinewidth = 1, ms = self.symbol_size, marker = self.symbol, color = self.symbol_color, ls = 'none')
 
                     # Setting titles
-                    self.ax1.set_title(str(model.eixos[2][0]))
-                    self.ax1.set(ylabel = str(model.eixos[1][0]))
+                    self.ax1.set_title(str(model._eixos[2][0]))
+                    self.ax1.set(ylabel = str(model._eixos[1][0]))
                     self.ax2.set(ylabel = "Resíduos")
-                    self.ax2.set(xlabel = str(model.eixos[0][0]))
+                    self.ax2.set(xlabel = str(model._eixos[0][0]))
                 else:
                     self.axes = self.figure.add_subplot(111)
 
@@ -205,13 +207,13 @@ class DisplayBridge(QtCore.QObject):
                             self.axes.set_ylim(bottom = self.ymin, top = self.ymax)
                     
                     # Making Plots
-                    if model.mode == 2:
+                    if model._mode == 2:
                         self.axes.plot(px, py, lw = self.curve_thickness, color = self.curve_color, ls = self.curve_style, label = '${}$'.format(self.expression))
                         self.axes.errorbar(x, y, yerr=sy, xerr=sx, capsize = 0, elinewidth = 1, ecolor = self.symbol_color, ms = self.symbol_size, marker = self.symbol, color = self.symbol_color, ls = 'none')
-                    elif model.has_sx:
+                    elif model._has_sx:
                         self.axes.plot(px, py, lw = self.curve_thickness, color = self.curve_color, ls = self.curve_style, label = '${}$'.format(self.expression))
                         self.axes.errorbar(x, y, xerr=sx, capsize = 0, elinewidth = 1, ecolor = self.symbol_color, ms = self.symbol_size, marker = self.symbol, color = self.symbol_color, ls = 'none')
-                    elif model.has_sy:
+                    elif model._has_sy:
                         self.axes.plot(px, py, lw = self.curve_thickness, color = self.curve_color, ls = self.curve_style, label = '${}$'.format(self.expression))
                         self.axes.errorbar(x, y, yerr=sy, capsize = 0, elinewidth = 1, ecolor = self.symbol_color, ms = self.symbol_size, marker = self.symbol, color = self.symbol_color, ls = 'none')
                     else:
@@ -222,9 +224,9 @@ class DisplayBridge(QtCore.QObject):
                         self.axes.legend(frameon=False)
                     
                     # Setting titles
-                    self.axes.set_title(str(model.eixos[2][0]))
-                    self.axes.set(ylabel = str(model.eixos[1][0]))
-                    self.axes.set(xlabel = str(model.eixos[0][0]))
+                    self.axes.set_title(str(model._eixos[2][0]))
+                    self.axes.set(ylabel = str(model._eixos[1][0]))
+                    self.axes.set(xlabel = str(model._eixos[0][0]))
             else:
                 self.clearAxis()
                 self.axes = self.figure.add_subplot(111)
@@ -259,22 +261,22 @@ class DisplayBridge(QtCore.QObject):
                     elif self.ymin != 0. and self.ymax != 0.:
                         self.axes.set_ylim(bottom = self.ymin, top = self.ymax)
 
-                x, y, sy, sx = model.get_data()
+                x, y, sy, sx = model.data
 
                 # Making Plots
-                if model.has_sx and model.has_sy:
+                if model._has_sx and model._has_sy:
                     self.axes.errorbar(x, y, yerr=sy, xerr=sx, elinewidth = 1, ecolor = self.symbol_color, ms = self.symbol_size, marker = self.symbol, color = self.symbol_color, ls = 'none', capsize = 0)
-                elif model.has_sx:
+                elif model._has_sx:
                     self.axes.errorbar(x, y, xerr=sx, elinewidth = 1, ecolor = self.symbol_color, ms = self.symbol_size, marker = self.symbol, color = self.symbol_color, ls = 'none', capsize = 0)
-                elif model.has_sy:
+                elif model._has_sy:
                     self.axes.errorbar(x, y, yerr=sy, elinewidth = 1, ecolor = self.symbol_color, ms = self.symbol_size, marker = self.symbol, color = self.symbol_color, ls = 'none', capsize = 0)
                 else:
                     self.axes.errorbar(x, y, capsize = 0, elinewidth = 1, ecolor = self.symbol_color, ms = self.symbol_size, marker = self.symbol, color = self.symbol_color, ls = 'none')
 
                 # Setting titles
-                self.axes.set_title(str(model.eixos[2][0]))
-                self.axes.set(ylabel = str(model.eixos[1][0]))
-                self.axes.set(xlabel = str(model.eixos[0][0]))
+                self.axes.set_title(str(model._eixos[2][0]))
+                self.axes.set(ylabel = str(model._eixos[1][0]))
+                self.axes.set(xlabel = str(model._eixos[0][0]))
 
         # Reseting parameters
         px, py, y_r   = None, None, None

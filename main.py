@@ -64,7 +64,7 @@ class Bridge(QtCore.QObject):
         expression = expression.replace('sen', 'sin')
         
         # Setting expression
-        if model.exp_model != expression:
+        if model._exp_model != expression:
             model.set_expression(expression)
 
         curveStyles = {
@@ -97,7 +97,7 @@ class Bridge(QtCore.QObject):
                                 props['curveThickness'],
                                 curveStyles[props['curveType']],
                                 props['legend'],
-                                model.exp_model.replace('**', '^'))
+                                model._exp_model.replace('**', '^'))
 
         # Making plot
         displayBridge.Plot(model, props['residuos'], props['grade'],
@@ -163,7 +163,7 @@ if __name__ == "__main__":
     app.setOrganizationName("High Elo Devs")
     app.setOrganizationDomain("https://github.com/leoeiji/Analysis-Tool-for-Undergrad-Students---ATUS")
     app.setApplicationName("Analysis Tool for Undergrad Students")
-    app.setWindowIcon(QtGui.QIcon(os.path.join(os.path.dirname(__file__), "ATUS Icon 3.png")))
+    app.setWindowIcon(QtGui.QIcon(os.path.join(os.path.dirname(__file__), "images/main_icon/ATUS_icon.png")))
     engine = QtQml.QQmlApplicationEngine()
 
     # Creating bridge

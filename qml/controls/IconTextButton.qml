@@ -30,7 +30,7 @@ Button{
     }
 
     background: Rectangle{
-        radius: 10
+        radius: 0
         color: dynamicColor
     }
 
