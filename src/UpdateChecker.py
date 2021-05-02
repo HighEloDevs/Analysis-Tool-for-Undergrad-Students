@@ -15,7 +15,7 @@ import requests
 
 class UpdateChecker(QtCore.QObject):
 
-    showUpdate = QtCore.Signal(str, str, str, str, arguments=['updateLog', 'version', 'downloadUrl'])
+    showUpdate = QtCore.Signal(str, str, str, arguments=['updateLog', 'version', 'downloadUrl'])
 
     def __init__(self) -> None:
         super().__init__()

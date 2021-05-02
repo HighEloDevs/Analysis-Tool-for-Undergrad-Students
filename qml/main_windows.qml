@@ -330,7 +330,7 @@ Window {
                     anchors.left: parent.left
                     anchors.right: parent.right
                     anchors.top: parent.top
-                    anchors.rightMargin: 140
+                    anchors.rightMargin: 285
                     anchors.leftMargin: 70
                     anchors.topMargin: 0
 
@@ -386,6 +386,25 @@ Window {
                     anchors.rightMargin: 0
                     anchors.topMargin: 0
 
+                    IconTextButton {
+                        id: siteBtn
+
+                        anchors.top: parent.top
+                        anchors.bottom: parent.bottom
+                        anchors.topMargin: 0
+                        anchors.bottomMargin: 0
+
+                        flat: false
+                        texto: "Documentação"
+                        iconUrl: qsTr("../../images/icons/ios_share_white_24dp.svg")
+
+                        primaryColor: 'transparent'
+                        clickColor: Colors.c_button_active
+                        hoverColor: Colors.c_button_hover
+
+                        onClicked: Qt.openUrlExternally("https://highelodevs.github.io/Analysis-Tool-for-Undergrad-Students/")
+                    }
+
                     IconButton{
                         width: 35
                         anchors.top: parent.top
@@ -424,6 +443,7 @@ Window {
                         btnIconSource: "../images/svg_images/close_icon.svg"
                         onClicked: mainWindow.close()
                     }
+
                 }
 
             }
