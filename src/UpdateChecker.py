@@ -55,7 +55,7 @@ class UpdateChecker(QtCore.QObject):
 
         except error:
             print(error)
-    
+
     @QtCore.Slot(result=str)
     def getVersion(self):
         return self.__VERSION__
