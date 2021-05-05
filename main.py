@@ -55,9 +55,9 @@ if __name__ == "__main__":
     engine = QtQml.QQmlApplicationEngine()
 
     # Creating singlePlot
-    singlePlot    = Bridge(displayBridge, model)
-    multiplot = Multiplot(displayBridge)
-    updater = UpdateChecker()
+    singlePlot      = Bridge(displayBridge, model)
+    multiplot       = Multiplot(displayBridge)
+    updater         = UpdateChecker()
 
     # Project Manager
     projectMngr = ProjectManager(displayBridge, model)

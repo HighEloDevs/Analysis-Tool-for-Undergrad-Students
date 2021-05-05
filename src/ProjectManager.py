@@ -172,12 +172,12 @@ class ProjectManager(QtCore.QObject):
         """ Saves all options to a already loaded path """
         self.__importOptions()
         if self.path != '':
-            if platform.system() == "Linux":
-                with open(self.path + ".json", 'w', encoding='utf-8') as file:
-                    json.dump(self.opt, file, ensure_ascii=False, indent=4)
-            else:
-                with open(self.path, 'w', encoding='utf-8') as file:
-                    json.dump(self.opt, file, ensure_ascii=False, indent=4)
+            # if platform.system() == "Linux":
+            #     with open(self.path + ".json", 'w', encoding='utf-8') as file:
+            #         json.dump(self.opt, file, ensure_ascii=False, indent=4)
+            # else:
+            with open(self.path, 'w', encoding='utf-8') as file:
+                json.dump(self.opt, file, ensure_ascii=False, indent=4)
         else:
             self.saveAsSignal.emit()
         self.__clearOptions()
