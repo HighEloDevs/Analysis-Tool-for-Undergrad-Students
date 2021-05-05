@@ -7,7 +7,6 @@ import QtQuick.Layouts 1.11
 import Canvas 1.0
 
 import "controls"
-import "widgets"
 import "."
 import "colors.js" as Colors
 
@@ -38,120 +37,11 @@ Window {
         id: poputSaveFig
     }
 
-    Popup {
+    PopupUpdate {
         id: updatePopup
         anchors.centerIn: parent
-        width: 600
-        height: 500
-        modal: true
-        focus: true
-        closePolicy: Popup.CloseOnEscape
-        leftInset: 0
-        rightInset: 0
-        bottomInset: 0
-        topInset: 0
-
-        property string updateLog: ''
-        property string version: ''
-        property string link: ''
-
-        background: Rectangle{
-            anchors.fill: parent
-            color: Colors.color1
-            radius: 2
-
-            IconButton{
-                id: closeUpdateLogBtn
-
-                anchors.right: parent.right
-                anchors.rightMargin: -closeUpdateLogBtn.width/3
-                anchors.top: parent.top
-                anchors.topMargin: -closeUpdateLogBtn.width/3
-
-                width: 30
-                height: 30
-                r: 20
-                z: 1
-
-                primaryColor: Colors.color1
-                hoverColor: Colors.color1
-                clickColor: Colors.color3
-                iconColor: '#fff'
-                iconUrl: '../../images/icons/close-24px.svg'
-                iconWidth: 20
-
-                onClicked: updatePopup.close()
-            }
-
-            Rectangle{
-                id: titleBg
-                width: parent.width
-                height: 60
-                color: Colors.color2
-
-                Label{
-                    anchors.left: parent.left
-                    anchors.leftMargin: 15
-                    anchors.verticalCenter: parent.verticalCenter
-                    text: 'Nova atualização disponível! v' + updatePopup.version
-                    color: '#fff'
-                    font.pixelSize: 20
-                }
-            }
-
-            ScrollView{
-                anchors.top: titleBg.bottom
-                anchors.topMargin: 15
-                anchors.left: parent.left
-                anchors.leftMargin: 0
-                anchors.right: parent.right
-                anchors.rightMargin: 0
-                anchors.bottom: popupFooter.top
-                anchors.bottomMargin: 15
-                contentWidth: logText.width
-                contentHeight: logText.height
-                clip: true
-
-                Text{
-                    id: logText
-                    width: updatePopup.width - 30
-                    anchors.left: parent.left
-                    anchors.leftMargin: 15
-                    color: '#fff'
-                    font.pixelSize: 15
-                    wrapMode: Text.WrapAnywhere
-                    text: updatePopup.updateLog
-                }
-            }
-
-            Rectangle{
-                id: popupFooter
-                anchors.bottom: parent.bottom
-                anchors.bottomMargin: 0
-                width: parent.width
-
-                color: Colors.color2
-                height: 40
-
-                IconTextButton{
-                    id: downloadBtn
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.right: parent.right
-                    anchors.rightMargin: 15
-                    primaryColor: '#004500'
-                    hoverColor: '#004500'
-                    clickColor: '#004500'
-
-                    width: 120
-                    height: 30
-                    texto: 'Download'
-
-                    iconUrl: '../../images/icons/get_app_black_24dp.svg'
-
-                    onClicked: Qt.openUrlExternally(updatePopup.link)
-                }
-            }
-        }
+        width: mainWindow.width/3
+        height: mainWindow.height/2
     }
 
     // Internal Functions
@@ -1154,10 +1044,12 @@ Window {
 
     Connections{
         target: updater
-        function onShowUpdate(updateLog, version, downloadUrl){
-            updatePopup.updateLog = updateLog
-            updatePopup.version = version
-            updatePopup.link = downloadUrl
+        function onShowUpdate(infos){
+            updatePopup.updateLog = infos['body']
+            updatePopup.version = infos['tag_name']
+            updatePopup.exeLink = infos['assets'][0]['browser_download_url']
+            updatePopup.tarLink = infos['tarball_url']
+            updatePopup.zipLink = infos['zipball_url']
             updatePopup.open()
         }
     }
@@ -1166,7 +1058,6 @@ Window {
         updater.checkUpdate()
         labelVersion.text = updater.getVersion()
         mainWindow.showMaximized()
-        // print(updater.getVersion())
     }
 }
 

@@ -15,6 +15,7 @@ Button{
     property string iconUrl: '../../images/icons/chart-18px.svg'
     property int    textSize: 14
     property int    iconWidth: 20
+    property int    r: 0
 
     property color  dynamicColor: if(root.down){
                                     root.down ? clickColor : primaryColor
@@ -30,7 +31,7 @@ Button{
     }
 
     background: Rectangle{
-        radius: 0
+        radius: root.r
         color: dynamicColor
     }
 

@@ -190,6 +190,7 @@ if __name__ == "__main__":
         engine.load(QtCore.QUrl.fromLocalFile(os.path.join(os.path.dirname(__file__), "qml/main_mac.qml")))
     else:
         engine.load(QtCore.QUrl.fromLocalFile(os.path.join(os.path.dirname(__file__), "qml/main_windows.qml")))
+        
     # Updating canvasPlot with the plot
     win = engine.rootObjects()[0]
     displayBridge.updateWithCanvas(win.findChild(QtCore.QObject, "canvasPlot"))
