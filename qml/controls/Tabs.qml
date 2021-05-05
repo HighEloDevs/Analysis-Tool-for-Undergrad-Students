@@ -110,7 +110,7 @@ Item {
 
                 onClicked: {
                     pageFunc.clearTableParams()
-                    backend.getProps({
+                    plot.getProps({
                         expr: pageFunc.expr,
                         p0:  pageFunc.initParams,
                         sigmax: pageFunc.sigmax,

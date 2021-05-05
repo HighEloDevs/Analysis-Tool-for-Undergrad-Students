@@ -172,7 +172,7 @@ Item {
                                 nameFilters: ["Arquivos de Texto (*.txt)"]
                                 onAccepted:{
                                     table.clear()
-                                    backend.loadData(fileOpen.fileUrl)
+                                    plot.loadData(fileOpen.fileUrl)
                                 }
                             }
 
@@ -235,7 +235,7 @@ Item {
     }
 
     Connections{
-        target: backend
+        target: plot
         function onEmitData(){
             model.getData(table.dataShaped)
         }
