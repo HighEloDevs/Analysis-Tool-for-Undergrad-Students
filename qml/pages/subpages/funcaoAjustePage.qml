@@ -54,6 +54,7 @@ Item {
                 textHolder: 'Ex.: 0, 32, 4.3, 23.4'
                 defaultColor: '#fff'
                 textColor: '#fff'
+                validator: RegExpValidator{regExp: /^[0-9.,]+$/}
             }
 
             RowLayout {

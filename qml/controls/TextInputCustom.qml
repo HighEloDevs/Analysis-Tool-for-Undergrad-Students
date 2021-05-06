@@ -9,8 +9,6 @@ Item{
     id: root
     width: 200
     height: 50
-    // Fixed height
-    // implicitHeight: 50
 
     // Some properties
     property color focusColor: '#f0f'
@@ -18,8 +16,8 @@ Item{
     property color textColor: '#000'
     property string title: 'Título do TextInput'
     property string textHolder: 'Placeholder'
-    property alias text: textInput.text
-
+    property alias text: textInput.text 
+    property alias validator: textInput.validator
 
     Rectangle{
         id: bg
