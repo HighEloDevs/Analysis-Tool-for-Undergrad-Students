@@ -23,14 +23,14 @@ Item {
     property int curveThickness: thickness.value
     property string curveType: type_curve.currentText
     property int legend: switchLegend.checkState
-    property int xmin: Number(xmin.text)
-    property int xmax: Number(xmax.text)
+    property double xmin: Number(xmin.text)
+    property double xmax: Number(xmax.text)
     property int xdiv: Number(xdiv.text)
-    property int ymin: Number(ymin.text)
-    property int ymax: Number(ymax.text)
+    property double ymin: Number(ymin.text)
+    property double ymax: Number(ymax.text)
     property int ydiv: Number(ydiv.text)
-    property int resMin: Number(resMin.text)
-    property int resMax: Number(resMax.text)
+    property double resMin: Number(resMin.text)
+    property double resMax: Number(resMax.text)
 
     Rectangle {
         id: bg
