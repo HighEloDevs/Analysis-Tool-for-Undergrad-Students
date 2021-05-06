@@ -86,11 +86,15 @@ Item{
         anchors.bottom: footer.top
         anchors.topMargin: 0
         anchors.bottomMargin: 0
-        color: Colors.color1
+        color: Colors.color3
+        border.width: 2
+        border.color: header.color
 
         ScrollView{
             id: dataTable
             anchors.fill: parent
+            anchors.topMargin: 5
+            anchors.bottomMargin: 5
             antialiasing: true
             focus: true
             clip: true

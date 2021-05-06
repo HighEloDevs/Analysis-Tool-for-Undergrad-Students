@@ -23,14 +23,14 @@ Item {
     property int curveThickness: thickness.value
     property string curveType: type_curve.currentText
     property int legend: switchLegend.checkState
-    property int xmin: Number(xmin.text)
-    property int xmax: Number(xmax.text)
+    property double xmin: Number(xmin.text)
+    property double xmax: Number(xmax.text)
     property int xdiv: Number(xdiv.text)
-    property int ymin: Number(ymin.text)
-    property int ymax: Number(ymax.text)
+    property double ymin: Number(ymin.text)
+    property double ymax: Number(ymax.text)
     property int ydiv: Number(ydiv.text)
-    property int resMin: Number(resMin.text)
-    property int resMax: Number(resMax.text)
+    property double resMin: Number(resMin.text)
+    property double resMax: Number(resMax.text)
 
     Rectangle {
         id: bg
@@ -114,6 +114,7 @@ Item {
                             textHolder: 'Menor valor de X no gráfico'
                             defaultColor: '#fff'
                             textColor: '#fff'
+                            validator: RegExpValidator{regExp: /^[0-9.-]+$/}
                         }
                         TextInputCustom{
                             id: xmax
@@ -123,6 +124,7 @@ Item {
                             textHolder: 'Maior valor de X no gráfico'
                             defaultColor: '#fff'
                             textColor: '#fff'
+                            validator: RegExpValidator{regExp: /^[0-9.-]+$/}
                         }
                         TextInputCustom{
                             id: xdiv
@@ -132,6 +134,7 @@ Item {
                             textHolder: 'Número de intervalos no eixo'
                             defaultColor: '#fff'
                             textColor: '#fff'
+                            validator: RegExpValidator{regExp: /^[0-9]$/}
                         }
                     }
                 }
@@ -170,6 +173,7 @@ Item {
                             textHolder: 'Menor valor de Y no gráfico'
                             defaultColor: '#fff'
                             textColor: '#fff'
+                            validator: RegExpValidator{regExp: /^[0-9.-]+$/}
                         }
                         TextInputCustom{
                             id: ymax
@@ -179,6 +183,7 @@ Item {
                             textHolder: 'Maior valor de Y no gráfico'
                             defaultColor: '#fff'
                             textColor: '#fff'
+                            validator: RegExpValidator{regExp: /^[0-9.-]+$/}
                         }
                         TextInputCustom{
                             id: ydiv
@@ -188,6 +193,7 @@ Item {
                             textHolder: 'Número de intervalos no eixo'
                             defaultColor: '#fff'
                             textColor: '#fff'
+                            validator: RegExpValidator{regExp: /^[0-9]$/}
                         }
                     }
                 }
@@ -228,6 +234,7 @@ Item {
                     textHolder: 'Y Minimo do gráfico de resíduos'
                     defaultColor: '#fff'
                     textColor: '#fff'
+                    validator: RegExpValidator{regExp: /^[0-9.-]+$/}
                 }
 
                 TextInputCustom{
@@ -239,6 +246,7 @@ Item {
                     textHolder: 'Y Máximo do gráfico de resíduos'
                     defaultColor: '#fff'
                     textColor: '#fff'
+                    validator: RegExpValidator{regExp: /^[0-9.-]+$/}
                 }
                 
                 GroupBox {
@@ -561,10 +569,10 @@ Item {
     }
 
     Connections{
-        target: backend
+        target: plot
 
         function onSignalPropPage(){
-            backend.loadOptions(titulo.text, eixox.text, eixoy.text, switchResiduos.position, switchGrade.position, log_eixox.checkState, log_eixoy.checkState, rectColor.color, size.value, symbol.currentText, rectColor_curve.color, thickness.value, type_curve.currentText, switchLegend.position)
+            plot.loadOptions(titulo.text, eixox.text, eixoy.text, switchResiduos.position, switchGrade.position, log_eixox.checkState, log_eixoy.checkState, rectColor.color, size.value, symbol.currentText, rectColor_curve.color, thickness.value, type_curve.currentText, switchLegend.position)
         }
     }
 

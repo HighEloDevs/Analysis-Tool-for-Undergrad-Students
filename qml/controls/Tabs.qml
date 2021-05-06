@@ -103,7 +103,6 @@ Item {
                 Layout.topMargin: 5
                 Layout.fillWidth: true
                 texto: 'PLOT / ATUALIZAR'
-                textSize: 10
                 primaryColor: Colors.c_button
                 clickColor: Colors.c_button_active
                 hoverColor: Colors.c_button_hover
@@ -111,7 +110,7 @@ Item {
 
                 onClicked: {
                     pageFunc.clearTableParams()
-                    backend.getProps({
+                    plot.getProps({
                         expr: pageFunc.expr,
                         p0:  pageFunc.initParams,
                         sigmax: pageFunc.sigmax,

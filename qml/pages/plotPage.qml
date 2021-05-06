@@ -5,7 +5,6 @@ import QtQuick.Window 2.12
 import QtQuick.Layouts 1.12
 import QtQuick.Dialogs 1.3
 
-import "../widgets"
 import "../controls"
 import "../colors.js" as Colors
 
@@ -140,35 +139,6 @@ Item {
                         }
                     }
 
-                    // RowLayout {
-                    //     id: projectName_layout
-                    //     width: 100
-                    //     height: 100
-                    //     Layout.preferredHeight: 35
-                    //     spacing: 10
-                    //     Layout.fillWidth: true
-
-                    //     Label {
-                    //         id: label
-                    //         width: 50
-                    //         color: "#ffffff"
-                    //         text: qsTr("Projeto")
-                    //     }
-
-                    //     TextField {
-                    //         id: nomeProjeto
-                    //         height: 25
-                    //         Layout.fillWidth: true
-                    //         placeholderText: qsTr("Identificação do Projeto")
-
-                    //         background: Rectangle{
-                    //             radius: 5
-                    //             border.color: nomeProjeto.focus ? Colors.mainColor2:'#00000000'
-                    //             border.width: 2
-                    //         }
-                    //     }
-                    // }
-
                     TextInputCustom{
                         id: nomeProjeto
                         Layout.fillWidth: true
@@ -181,17 +151,15 @@ Item {
 
                     RowLayout {
                         id: dataBtns_layout
-                        width: 100
-                        height: 100
                         Layout.preferredHeight: 35
                         Layout.fillWidth: true
 
                         TextButton{
                             id: btnUpload
-                            width: 90
-                            height: 25
+                            Layout.fillWidth: true
+                            // width: 90
+                            // height: 25
                             texto: 'Escolher Dados'
-                            textSize: 10
                             primaryColor: Colors.c_button
                             clickColor: Colors.c_button_active
                             hoverColor: Colors.c_button_hover
@@ -201,10 +169,10 @@ Item {
                                 title: "Escolha o arquivo com seus dados"
                                 folder: shortcuts.desktop
                                 selectMultiple: false
-                                nameFilters: ["Arquivos de Texto (*.txt)"]
+                                nameFilters: ["Arquivos de Texto (*.txt)", "Arquivos de Texto (*.csv)", "Arquivos de Texto (*.tsv)"]
                                 onAccepted:{
                                     table.clear()
-                                    backend.loadData(fileOpen.fileUrl)
+                                    plot.loadData(fileOpen.fileUrl)
                                 }
                             }
 
@@ -267,7 +235,7 @@ Item {
     }
 
     Connections{
-        target: backend
+        target: plot
         function onEmitData(){
             model.getData(table.dataShaped)
         }

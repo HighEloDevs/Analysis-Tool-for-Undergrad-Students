@@ -35,15 +35,16 @@ Button{
     }
 
     contentItem: Text{
-        anchors.fill: parent
+        width: parent.width
+        height: parent.height
         text: texto
         color: textColor
         font.bold: true
-        // font.pixelSize: 12
+        font.pointSize: 10
+        minimumPointSize: 5
         fontSizeMode: Text.Fit
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
-        elide: Text.ElideRight
         opacity: dynamicOpacity
     }
 }

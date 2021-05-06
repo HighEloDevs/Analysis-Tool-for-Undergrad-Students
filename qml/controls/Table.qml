@@ -70,7 +70,9 @@ Item{
         anchors.bottom: footer.top
         anchors.topMargin: 0
         anchors.bottomMargin: 0
-        color: Colors.color1
+        color: Colors.color3
+        border.width: 2
+        border.color: header.color
 
         ScrollView{
             anchors.fill: parent

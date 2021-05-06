@@ -16,7 +16,7 @@ files = [
 ]
 
 # Packages to include
-packages = [
+includes = [
     'os',
     'platform',
     'sys',
@@ -40,14 +40,19 @@ target = Executable(
 
 # Dependencies are automatically detected, but it might need fine tuning.
 build_exe_options = {
-    'packages': packages,
-    'excludes': ["tkinter"],
+    'packages': includes,
+    'excludes': ["tkinter",
+                'sympy',
+                'asyncio',
+                'atomicwrites'
+                'botocore',
+                'cryptography',
+                'markupsafe',
+                'sqlite3',
+                'shiboken2',
+                'test'
+                ],
     'include_files': files
-}
-
-bdist_msi_options = {
-    'add_to_path': False,
-    'initial_target_dir': r'[ProgramFilesFolder]\%s' % ('High Elo Devs'),
 }
 
 # SETUP CX FREEZE
@@ -57,8 +62,7 @@ setup(
     description = 'Ferramenta para análise de dados',
     author = 'Leonardo Eiji Tamayose & Guilherme Ferrari Fortino',
     options = {
-        'build_exe': build_exe_options,
-        'bdist_msi': bdist_msi_options,
+        'build_exe': build_exe_options
     },
     executables = [target]
 )

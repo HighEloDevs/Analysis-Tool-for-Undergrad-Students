@@ -233,7 +233,7 @@ Item {
                         }
 
                         onClicked:{
-                            backend.calculator(comboFunc.currentText, comboMethod.currentText, nivelConfianca.text, ngl.text, mean.text, std.text)
+                            plot.calculator(comboFunc.currentText, comboMethod.currentText, nivelConfianca.text, ngl.text, mean.text, std.text)
                         }
                     }
 
@@ -265,7 +265,7 @@ Item {
     }
 
     Connections{
-        target: backend
+        target: plot
 
         function onWriteCalculator(expr){
             infos.text = expr
