@@ -43,10 +43,6 @@ class UpdateChecker(QtCore.QObject):
         
     @QtCore.Slot()
     def checkUpdate(self):
-        # Check for Updates
-        serverUrl = 'http://atusserver.s3-sa-east-1.amazonaws.com/'
-        versionUrl = serverUrl + 'version.txt'
-
         # GitHub API url
         gitHubApiUrl = 'https://api.github.com/repos/HighEloDevs/Analysis-Tool-for-Undergrad-Students/releases/latest'
         response = requests.get(gitHubApiUrl)
