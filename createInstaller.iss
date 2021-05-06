@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "Analysis Tool for Undergrad Students"
-#define MyAppVersion "1.0b1"
+#define MyAppVersion "1.1b1"
 #define MyAppPublisher "High Elo Devs"
 #define MyAppURL "https://github.com/leoeiji/Analysis-Tool-for-Undergrad-Students---ATUS"
 #define MyAppExeName "main.exe"
@@ -24,10 +24,10 @@ AppUpdatesURL={#MyAppURL}
 DefaultDirName={autopf}\{#MyAppName}
 ChangesAssociations=yes
 DisableProgramGroupPage=yes
-LicenseFile=C:\Users\leoei\OneDrive\Documents\LICENSE
+LicenseFile=C:\Users\leoei\OneDrive\Documents\GitHub\Analysis-Tool-for-Undergrad-Students---ATUS\LICENSE
 ; Uncomment the following line to run in non administrative install mode (install for current user only.)
 ;PrivilegesRequired=lowest
-OutputDir=C:\Users\leoei\OneDrive\Documents\GitHub\Analysis-Tool-for-Undergrad-Students---ATUS\instaladores
+OutputDir=C:\Users\leoei\Documents\GitHub\Analysis-Tool-for-Undergrad-Students---ATUS\instaladores
 OutputBaseFilename=ATUS-{#MyAppVersion}
 SetupIconFile=C:\Users\leoei\OneDrive\Documents\GitHub\Analysis-Tool-for-Undergrad-Students---ATUS\icon.ico
 Compression=lzma
@@ -42,8 +42,8 @@ Name: "brazilianportuguese"; MessagesFile: "compiler:Languages\BrazilianPortugue
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "C:\Users\leoei\OneDrive\Documents\GitHub\Analysis-Tool-for-Undergrad-Students---ATUS\build\exe.win-amd64-3.9\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\leoei\OneDrive\Documents\GitHub\Analysis-Tool-for-Undergrad-Students---ATUS\build\exe.win-amd64-3.9\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "C:\Users\leoei\Documents\GitHub\Analysis-Tool-for-Undergrad-Students---ATUS\build\exe.win-amd64-3.9\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\leoei\Documents\GitHub\Analysis-Tool-for-Undergrad-Students---ATUS\build\exe.win-amd64-3.9\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Registry]
