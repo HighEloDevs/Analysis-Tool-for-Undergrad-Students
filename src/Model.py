@@ -51,6 +51,7 @@ class Model(QtCore.QObject):
         self._coef       = list()
         self._params     = Parameters()
         self._dict       = dict()
+        self._dict2      = dict()
         self._p0         = None
         self._mode       = 0
         self._has_data   = False
@@ -103,7 +104,11 @@ class Model(QtCore.QObject):
                 
     def load_data(self, data_path):
         """ Loads the data from a given path. """
-        df = pd.read_csv(data_path, sep='\t', header=None, dtype = str).dropna()
+        df = None
+        if data_path[-3:] == "csv":
+            df = pd.read_csv(data_path, sep=',', header=None, dtype = str).dropna()
+        else:
+            df = pd.read_csv(data_path, sep='\t', header=None, dtype = str).dropna()
         self._data_json = deepcopy(df)
 
         for i in df.columns:
@@ -316,9 +321,13 @@ class Model(QtCore.QObject):
     def __set_param_values_lm(self):
         self._dict.clear()
         self._params = Parameters()
+        ngl          = len(self._data["x"]) - len(self._coef)
+        inc_cons     = np.sqrt(self._result.chisqr/ngl)
+        # inc_cons_q   = inc_cons**2
         for i in range(len(self._coef)):
             self._params.add(self._coef[i], self._result.values[self._coef[i]])
-            self._dict.update({self._coef[i]: [self._result.values[self._coef[i]], np.sqrt(self._result.covar[i, i])]})
+            self._dict.update({self._coef[i]: [self._result.values[self._coef[i]], np.sqrt(self._result.covar[i, i])*inc_cons]})
+            self._dict2.update({self._coef[i]: [self._result.values[self._coef[i]], np.sqrt(self._result.covar[i, i])]})
 
     def __set_param_values_ODR(self):
         self._dict.clear()
@@ -345,18 +354,20 @@ class Model(QtCore.QObject):
     
     def __set_report_lm_special(self):
         ngl               = len(self._data["x"]) - len(self._coef)
+        inc_considerada   = np.sqrt(self._result.chisqr/ngl)
+        inc_considerada_q = inc_considerada**2
         self._report_fit  = ""
         self._report_fit += "\nAjuste: y = %s\n"%self._exp_model
         self._report_fit += "\nNGL  = %d"%(ngl)
         self._report_fit += "\nSomatória dos resíduos absolutos ao quadrado = %f\n"%self._result.chisqr
-        self._report_fit += "Incerteza considerada = %f\n"%(np.sqrt(self._result.chisqr/ngl))
+        self._report_fit += "Incerteza considerada = %f\n"%inc_considerada
         self._report_fit += "\nMatriz de covariância:\n\n" + str(self._result.covar) + "\n"
         lista             = list(self._params.keys())
         matriz_corr       = np.zeros((len(self._result.covar), len(self._result.covar)))
         z                 = range(len(matriz_corr))
         for i in z:
             for j in z:
-                matriz_corr[i, j] = self._result.covar[i, j]/(self._dict[lista[i]][1]*self._dict[lista[j]][1])
+                matriz_corr[i, j] = self._result.covar[i, j]/(self._dict2[lista[i]][1]*self._dict2[lista[j]][1])
         matriz_corr       = matriz_corr.round(3)
         self._report_fit += "\nMatriz de correlação:\n\n" + str(matriz_corr) + "\n\n"
         self._isvalid     = True
