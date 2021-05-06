@@ -4,7 +4,7 @@
 #define MyAppName "Analysis Tool for Undergrad Students"
 #define MyAppVersion "1.1b1"
 #define MyAppPublisher "High Elo Devs"
-#define MyAppURL "https://github.com/leoeiji/Analysis-Tool-for-Undergrad-Students---ATUS"
+#define MyAppURL "https://github.com/HighEloDevs/Analysis-Tool-for-Undergrad-Students"
 #define MyAppExeName "main.exe"
 #define MyAppAssocName MyAppName + " File"
 #define MyAppAssocExt ".myp"
@@ -24,12 +24,12 @@ AppUpdatesURL={#MyAppURL}
 DefaultDirName={autopf}\{#MyAppName}
 ChangesAssociations=yes
 DisableProgramGroupPage=yes
-LicenseFile=C:\Users\leoei\OneDrive\Documents\GitHub\Analysis-Tool-for-Undergrad-Students---ATUS\LICENSE
+LicenseFile=C:\Users\leoei\Documents\GitHub\Analysis-Tool-for-Undergrad-Students\LICENSE
 ; Uncomment the following line to run in non administrative install mode (install for current user only.)
 ;PrivilegesRequired=lowest
-OutputDir=C:\Users\leoei\Documents\GitHub\Analysis-Tool-for-Undergrad-Students---ATUS\instaladores
+OutputDir=C:\Users\leoei\Documents\GitHub\Analysis-Tool-for-Undergrad-Students\instaladores
 OutputBaseFilename=ATUS-{#MyAppVersion}
-SetupIconFile=C:\Users\leoei\OneDrive\Documents\GitHub\Analysis-Tool-for-Undergrad-Students---ATUS\icon.ico
+SetupIconFile=C:\Users\leoei\Documents\GitHub\Analysis-Tool-for-Undergrad-Students\icon.ico
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
@@ -42,8 +42,8 @@ Name: "brazilianportuguese"; MessagesFile: "compiler:Languages\BrazilianPortugue
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "C:\Users\leoei\Documents\GitHub\Analysis-Tool-for-Undergrad-Students---ATUS\build\exe.win-amd64-3.9\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\leoei\Documents\GitHub\Analysis-Tool-for-Undergrad-Students---ATUS\build\exe.win-amd64-3.9\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "C:\Users\leoei\Documents\GitHub\Analysis-Tool-for-Undergrad-Students\build\exe.win-amd64-3.9\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\leoei\Documents\GitHub\Analysis-Tool-for-Undergrad-Students\build\exe.win-amd64-3.9\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Registry]

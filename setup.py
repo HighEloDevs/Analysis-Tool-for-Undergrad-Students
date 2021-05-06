@@ -34,7 +34,7 @@ includes = [
 # TARGET
 target = Executable(
     script="main.py",
-    # base="Win32GUI",
+    base="Win32GUI",
     icon="icon.ico"
 )
 
