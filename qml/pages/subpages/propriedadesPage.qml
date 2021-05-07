@@ -134,7 +134,7 @@ Item {
                             textHolder: 'Número de intervalos no eixo'
                             defaultColor: '#fff'
                             textColor: '#fff'
-                            validator: RegExpValidator{regExp: /^[0-9]$/}
+                            validator: RegExpValidator{regExp: /^[0-9]+$/}
                         }
                     }
                 }
@@ -193,7 +193,7 @@ Item {
                             textHolder: 'Número de intervalos no eixo'
                             defaultColor: '#fff'
                             textColor: '#fff'
-                            validator: RegExpValidator{regExp: /^[0-9]$/}
+                            validator: RegExpValidator{regExp: /^[0-9]+$/}
                         }
                     }
                 }
