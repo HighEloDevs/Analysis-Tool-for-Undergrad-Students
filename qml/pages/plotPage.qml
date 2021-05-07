@@ -169,7 +169,7 @@ Item {
                                 title: "Escolha o arquivo com seus dados"
                                 folder: shortcuts.desktop
                                 selectMultiple: false
-                                nameFilters: ["Arquivos de Texto (*.txt)", "Arquivos de Texto (*.csv)", "Arquivos de Texto (*.tsv)"]
+                                nameFilters: ["Arquivos txt (*.txt)", "Arquivos csv (*.csv)", "Arquivos tsv (*.tsv)"]
                                 onAccepted:{
                                     table.clear()
                                     plot.loadData(fileOpen.fileUrl)
