@@ -824,7 +824,7 @@ Window {
                                                     selectExisting: false
                                                     nameFilters: ["Arquivo de imagem .png (*.png)", "Arquivo de imagem .jpg (*.jpg)", "Arquivo de imagem .pdf (*.pdf)", "Arquivo de imagem .svg (*.svg)"]
                                                     onAccepted: {
-                                                        backend.savePlot(fileSaver.fileUrl)
+                                                        plot.savePlot(fileSaver.fileUrl)
                                                     }
                                                 }
                                             }
