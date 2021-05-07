@@ -74,7 +74,7 @@ Window {
             {
                 mainWindow.showNormal()
                 windowStatus = 0
-                windowMargin = 10
+                windowMargin = 0
                 btnMaximizeRestore.btnIconSource = "../images/svg_images/maximize_icon.svg"
                 resetResizeBorders()
             }
@@ -92,7 +92,7 @@ Window {
 
         function restoreMargins(){
             windowStatus = 0
-            windowMargin = 10
+            windowMargin = 0
             btnMaximizeRestore.btnIconSource = "../images/svg_images/maximize_icon.svg"
             resetResizeBorders()
         }
