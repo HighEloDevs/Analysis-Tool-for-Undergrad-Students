@@ -24,12 +24,9 @@ SOFTWARE.
 """
 
 import json
-import matplotlib.pyplot as plt
+import numpy as np
 from matplotlib_backend_qtquick.qt_compat import QtCore
 from .Model_multiplot import MultiModel
-from .MatPlotLib import DisplayBridge
-from lmfit import Parameters
-import numpy as np
 
 class Multiplot(QtCore.QObject):
     """Backend for multiplot page"""

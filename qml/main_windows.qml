@@ -12,12 +12,10 @@ import "colors.js" as Colors
 
 Window {
     id: mainWindow
-    width: 1500
-    height: 800
 
     minimumWidth: 1000
     minimumHeight: 600
-
+    visibility: Window.Maximized
     visible: true
     color: "#00000000"
     property alias btnCalcWidth: btnCalc.width
@@ -74,7 +72,7 @@ Window {
             {
                 mainWindow.showNormal()
                 windowStatus = 0
-                windowMargin = 10
+                windowMargin = 0
                 btnMaximizeRestore.btnIconSource = "../images/svg_images/maximize_icon.svg"
                 resetResizeBorders()
             }
@@ -92,7 +90,7 @@ Window {
 
         function restoreMargins(){
             windowStatus = 0
-            windowMargin = 10
+            windowMargin = 0
             btnMaximizeRestore.btnIconSource = "../images/svg_images/maximize_icon.svg"
             resetResizeBorders()
         }
@@ -771,7 +769,7 @@ Window {
                                                 anchors.leftMargin: 0
 
                                                 onClicked: {
-                                                    displayBridge.back();
+                                                    canvas.back();
                                                 }
 
                                             }
@@ -786,7 +784,7 @@ Window {
                                                 anchors.leftMargin: 0
 
                                                 onClicked: {
-                                                    displayBridge.home();
+                                                    canvas.home();
                                                 }
 
                                             }
@@ -800,7 +798,7 @@ Window {
                                                 anchors.leftMargin: 0
 
                                                 onClicked: {
-                                                    displayBridge.forward();
+                                                    canvas.forward();
                                                 }
                                             }
 
@@ -819,7 +817,7 @@ Window {
                                                         zoomBtn.checked = false;
                                                         zoomBtn.isActiveMenu = false;
                                                     }
-                                                    displayBridge.pan();
+                                                    canvas.pan();
                                                     panBtn.isActiveMenu = true;
                                                 }
 
@@ -842,7 +840,7 @@ Window {
                                                         panBtn.isActiveMenu = false;
                                                     }
                                                     zoomBtn.isActiveMenu = true;
-                                                    displayBridge.zoom();
+                                                    canvas.zoom();
                                                 }
                                             }
 
@@ -868,7 +866,7 @@ Window {
                                                     selectExisting: false
                                                     nameFilters: ["Arquivo de imagem .png (*.png)", "Arquivo de imagem .jpg (*.jpg)", "Arquivo de imagem .pdf (*.pdf)", "Arquivo de imagem .svg (*.svg)"]
                                                     onAccepted: {
-                                                        plot.savePlot(fileSaver.fileUrl)
+                                                        singlePlot.savePlot(fileSaver.fileUrl)
                                                     }
                                                 }
                                             }
@@ -896,7 +894,7 @@ Window {
                                             TextInput {
                                                 id: location
                                                 readOnly: true
-                                                text: displayBridge.coordinates
+                                                text: canvas.coordinates
                                                 anchors.verticalCenter: parent.verticalCenter
                                                 anchors.left: parent.left
                                                 anchors.leftMargin: 10
@@ -1057,7 +1055,7 @@ Window {
     Component.onCompleted: {
         updater.checkUpdate()
         labelVersion.text = updater.getVersion()
-        mainWindow.showMaximized()
+        // mainWindow.showMaximized()
     }
 }
 

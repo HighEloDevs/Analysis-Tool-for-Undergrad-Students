@@ -569,11 +569,11 @@ Item {
     }
 
     Connections{
-        target: plot
+        target: singlePlot
 
-        function onSignalPropPage(){
-            plot.loadOptions(titulo.text, eixox.text, eixoy.text, switchResiduos.position, switchGrade.position, log_eixox.checkState, log_eixoy.checkState, rectColor.color, size.value, symbol.currentText, rectColor_curve.color, thickness.value, type_curve.currentText, switchLegend.position)
-        }
+        // function onSignalPropPage(){
+        //     singlePlot.loadOptions(titulo.text, eixox.text, eixoy.text, switchResiduos.position, switchGrade.position, log_eixox.checkState, log_eixoy.checkState, rectColor.color, size.value, symbol.currentText, rectColor_curve.color, thickness.value, type_curve.currentText, switchLegend.position)
+        // }
     }
 
     Connections{

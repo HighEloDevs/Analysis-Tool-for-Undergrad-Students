@@ -233,7 +233,7 @@ Item {
                         }
 
                         onClicked:{
-                            plot.calculator(comboFunc.currentText, comboMethod.currentText, nivelConfianca.text, ngl.text, mean.text, std.text)
+                            singlePlot.calculator(comboFunc.currentText, comboMethod.currentText, nivelConfianca.text, ngl.text, mean.text, std.text)
                         }
                     }
 
@@ -265,7 +265,7 @@ Item {
     }
 
     Connections{
-        target: plot
+        target: singlePlot
 
         function onWriteCalculator(expr){
             infos.text = expr

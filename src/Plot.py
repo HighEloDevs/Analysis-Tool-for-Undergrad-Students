@@ -23,21 +23,20 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-from matplotlib_backend_qtquick.qt_compat import QtGui, QtQml, QtCore
-from src.Calculators import CalculatorCanvas, interpreter_calculator, Plot
+from matplotlib_backend_qtquick.qt_compat import QtCore
+from src.Calculators import interpreter_calculator, Plot
 
-class Bridge(QtCore.QObject):
-    # Signal to Properties page
-    signalPropPage = QtCore.Signal()
+class SinglePlot(QtCore.QObject):
+    '''Class that controls the single-plot page'''
 
     # Signal to write infos
-    writeInfos = QtCore.Signal(str, arguments='expr')
+    writeInfos      = QtCore.Signal(str, arguments='expr')
     writeCalculator = QtCore.Signal(str, arguments='expr')
-    emitData = QtCore.Signal()
+    emitData        = QtCore.Signal()
 
-    def __init__(self, displayBridge, model):
+    def __init__(self, canvas, model):
         super().__init__()
-        self.displayBridge = displayBridge
+        self.canvas = canvas
         self.model = model
 
     @QtCore.Slot(QtCore.QJsonValue)
@@ -45,7 +44,9 @@ class Bridge(QtCore.QObject):
         self.emitData.emit()
         props = props.toVariant()
 
-        self.displayBridge.setSigma(props['sigmax'], props['sigmay'])
+        print(props)
+
+        self.canvas.setSigma(props['sigmax'], props['sigmay'])
 
         # Setting up initial parameters
         p0_tmp = list()
@@ -91,22 +92,23 @@ class Bridge(QtCore.QObject):
         self.model.set_title(props['titulo'])
         self.model.set_x_axis(props['eixox'])
         self.model.set_y_axis(props['eixoy'])
-        self.displayBridge.setStyle( props['logx'],
-                                props['logy'],
-                                props['markerColor'],
-                                props['markerSize'],
-                                symbols[props['marker']],
-                                props['curveColor'],
-                                props['curveThickness'],
-                                curveStyles[props['curveType']],
-                                props['legend'],
-                                self.model._exp_model.replace('**', '^'))
+        self.canvas.setStyle(props['logx'],
+                                    props['logy'],
+                                    props['markerColor'],
+                                    props['markerSize'],
+                                    symbols[props['marker']],
+                                    props['curveColor'],
+                                    props['curveThickness'],
+                                    curveStyles[props['curveType']],
+                                    props['legend'],
+                                    self.model._exp_model.replace('**', '^'))
 
         # Making plot
-        self.displayBridge.Plot(self.model, props['residuos'], props['grade'],
-         props['xmin'], props['xmax'], props['xdiv'],
-         props['ymin'], props['ymax'], props['ydiv'],
-         props['resMin'], props['resMax'])
+        self.canvas.Plot(self.model, props['residuos'], props['grade'],
+                                props['xmin'], props['xmax'], props['xdiv'],
+                                props['ymin'], props['ymax'], props['ydiv'],
+                                props['resMin'], props['resMax'])
+        print(self.model._data)
 
     @QtCore.Slot(str)
     def loadData(self, file_path):
@@ -116,7 +118,7 @@ class Bridge(QtCore.QObject):
     @QtCore.Slot(str)
     def savePlot(self, save_path):
         """Gets the path from input and save the actual plot"""
-        self.displayBridge.figure.savefig(QtCore.QUrl(save_path).toLocalFile(), dpi = 400)
+        self.canvas.figure.savefig(QtCore.QUrl(save_path).toLocalFile(), dpi = 400)
 
     @QtCore.Slot(str, str, str, str, str, str)
     def calculator(self, function, opt1, nc, ngl, mean, std):
@@ -153,5 +155,5 @@ class Bridge(QtCore.QObject):
             pass
 
         s, x, y, x_area, y_area = interpreter_calculator(functionDict[function], methodDict[opt1], nc, ngl, mean, std)
-        Plot(self.displayBridge, x, y, x_area, y_area)
+        Plot(self.canvas, x, y, x_area, y_area)
         self.writeCalculator.emit(s)

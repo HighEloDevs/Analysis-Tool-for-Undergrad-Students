@@ -172,7 +172,7 @@ Item {
                                 nameFilters: ["Arquivos txt (*.txt)", "Arquivos csv (*.csv)", "Arquivos tsv (*.tsv)"]
                                 onAccepted:{
                                     table.clear()
-                                    plot.loadData(fileOpen.fileUrl)
+                                    singlePlot.loadData(fileOpen.fileUrl)
                                 }
                             }
 
@@ -235,7 +235,7 @@ Item {
     }
 
     Connections{
-        target: plot
+        target: singlePlot
         function onEmitData(){
             model.getData(table.dataShaped)
         }
