@@ -28,8 +28,6 @@ import os
 import platform
 from matplotlib_backend_qtquick.qt_compat import QtGui, QtQml, QtCore
 from matplotlib_backend_qtquick.backend_qtquickagg import FigureCanvasQtQuickAgg
-from numpy.core.records import array
-from operator import mod
 from src.Plot import SinglePlot 
 from src.MatPlotLib import MPLCanvas
 from src.Model import Model

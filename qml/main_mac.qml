@@ -12,12 +12,10 @@ import "colors.js" as Colors
 
 Window {
     id: mainWindow
-    width: 1500
-    height: 800
 
     minimumWidth: 1000
     minimumHeight: 400
-
+    visibility: Window.Maximized
     visible: true
     color: "#00000000"
     property alias btnCalcWidth: btnCalc.width
