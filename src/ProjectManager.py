@@ -27,8 +27,6 @@ import json
 import platform
 import pandas as pd
 from matplotlib_backend_qtquick.qt_compat import QtCore
-from .MatPlotLib import DisplayBridge
-from .Model import Model
 
 class ProjectManager(QtCore.QObject):
     '''Manages the project and the options, saves the project using json'''

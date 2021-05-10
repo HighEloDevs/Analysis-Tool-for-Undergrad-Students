@@ -27,7 +27,7 @@ from matplotlib_backend_qtquick.qt_compat import QtCore
 from .Model_multiplot import MultiModel
 import numpy as np
 
-class DisplayBridge(QtCore.QObject):
+class MPLCanvas(QtCore.QObject):
     """ A bridge class to interact with the plot in python
     """
     # Some signals for the frontend

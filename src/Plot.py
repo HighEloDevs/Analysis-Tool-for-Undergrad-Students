@@ -26,19 +26,20 @@ SOFTWARE.
 from matplotlib_backend_qtquick.qt_compat import QtGui, QtQml, QtCore
 from src.Calculators import CalculatorCanvas, interpreter_calculator, Plot
 
-class Bridge(QtCore.QObject):
-    # Signal to Properties page
-    signalPropPage = QtCore.Signal()
+class SinglePlot(QtCore.QObject):
+    '''Class that controls the single-plot page'''
 
     # Signal to write infos
-    writeInfos = QtCore.Signal(str, arguments='expr')
+    writeInfos      = QtCore.Signal(str, arguments='expr')
     writeCalculator = QtCore.Signal(str, arguments='expr')
-    emitData = QtCore.Signal()
+    emitData        = QtCore.Signal()
 
     def __init__(self, displayBridge, model):
         super().__init__()
         self.displayBridge = displayBridge
         self.model = model
+
+        singlePlotData = {}
 
     @QtCore.Slot(QtCore.QJsonValue)
     def getProps(self, props):

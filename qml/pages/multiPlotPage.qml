@@ -194,7 +194,7 @@ Item {
                             data['options']['logx'] = logx.checkState
                             data['options']['logy'] = logy.checkState
                             data['options']['grid'] = grid.checkState
-                            multiplot.getData(multiPlotTable.dataShaped)
+                            multiPlot.getData(multiPlotTable.dataShaped)
                         }
                     }
                 }
@@ -203,7 +203,7 @@ Item {
     }
     
     Connections{
-        target: multiplot
+        target: multiPlot
         function onSetData(data){
             multiPlotTable.fillRow(data)
         }
