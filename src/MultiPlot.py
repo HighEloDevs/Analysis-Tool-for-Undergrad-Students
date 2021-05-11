@@ -106,7 +106,7 @@ class Multiplot(QtCore.QObject):
         if self.logx == 2:
             self.displayBridge.axes.set_xscale('log')
         if self.xdiv != 0. and (self.xmax != 0. or self.xmin != 0.):
-            self.displayBridge.axes.set_xticks(np.linspace(self.xmin, self.xmax, self.xdiv))
+            self.displayBridge.axes.set_xticks(np.linspace(self.xmin, self.xmax, self.xdiv + 1))
             self.displayBridge.axes.set_xlim(left = self.xmin, right = self.xmax)
         else:
             if self.xmin == 0. and self.xmax != 0.:
@@ -117,7 +117,7 @@ class Multiplot(QtCore.QObject):
                 self.displayBridge.axes.set_xlim(left = self.xmin, right = self.xmax)
         
         if self.ydiv != 0. and (self.ymax != 0. or self.ymin != 0.):
-            self.displayBridge.axes.set_yticks(np.linspace(self.ymin, self.ymax, self.ydiv))
+            self.displayBridge.axes.set_yticks(np.linspace(self.ymin, self.ymax, self.ydiv + 1))
             self.displayBridge.axes.set_ylim(bottom = self.ymin, top = self.ymax)
         else:
             if self.ymin == 0. and self.ymax != 0.:
@@ -153,7 +153,7 @@ class Multiplot(QtCore.QObject):
     def Plot_sx_sy(self, df, options):
         if options['label'] != '':
             self.displayBridge.axes.errorbar(df['x'], df['y'], yerr=df['sy'], xerr = df['sx'],
-            ecolor = options['markerColor'], capsize = 0, elinewidth = 1, ms = 3, marker = '.', color = options['markerColor'], ls = 'none', label = '${}$'.format(options['label']))
+            ecolor = options['markerColor'], capsize = 0, elinewidth = 1, ms = 3, marker = '.', color = options['markerColor'], ls = 'none', label = options['label'])
         else:
             self.displayBridge.axes.errorbar(df['x'], df['y'], yerr=df['sy'], xerr = df['sx'],
             ecolor = options['markerColor'], capsize = 0, elinewidth = 1, ms = 3, marker = '.', color = options['markerColor'], ls = 'none')
@@ -161,7 +161,7 @@ class Multiplot(QtCore.QObject):
     def Plot_sy(self, df, options):
         if options['label'] != '':
             self.displayBridge.axes.errorbar(df['x'], df['y'], yerr=df['sy'],
-            ecolor = options['markerColor'], capsize = 0, elinewidth = 1, ms = 3, marker = '.', color = options['markerColor'], ls = 'none', label = '${}$'.format(options['label']))
+            ecolor = options['markerColor'], capsize = 0, elinewidth = 1, ms = 3, marker = '.', color = options['markerColor'], ls = 'none', label = options['label'])
         else:
             self.displayBridge.axes.errorbar(df['x'], df['y'], yerr=df['sy'],
             ecolor = options['markerColor'], capsize = 0, elinewidth = 1, ms = 3, marker = '.', color = options['markerColor'], ls = 'none')
@@ -169,7 +169,7 @@ class Multiplot(QtCore.QObject):
     def Plot_op(self, df, options):
         if options['label'] != '':
             self.displayBridge.axes.errorbar(df['x'], df['y'],
-            ecolor = options['markerColor'], capsize = 0, elinewidth = 1, ms = 3, marker = '.', color = options['markerColor'], ls = 'none', label = '${}$'.format(options['label']))
+            ecolor = options['markerColor'], capsize = 0, elinewidth = 1, ms = 3, marker = '.', color = options['markerColor'], ls = 'none', label = options['label'])
         else:
             self.displayBridge.axes.errorbar(df['x'], df['y'],
             ecolor = options['markerColor'], capsize = 0, elinewidth = 1, ms = 3, marker = '.', color = options['markerColor'], ls = 'none')
@@ -178,6 +178,6 @@ class Multiplot(QtCore.QObject):
         px = np.linspace(self.Multi_Model.min_x, self.Multi_Model.max_x, 1000)
         py = model.eval(x = px, params = params)
         if options['label'] != '':
-            self.displayBridge.axes.plot(px, py, lw = 2, color = options['markerColor'], ls = options['curve'], label = '${}$'.format(options['label']))
+            self.displayBridge.axes.plot(px, py, lw = 2, color = options['markerColor'], ls = options['curve'], label = options['label'])
         else:
             self.displayBridge.axes.plot(px, py, lw = 2, color = options['markerColor'], ls = options['curve'])

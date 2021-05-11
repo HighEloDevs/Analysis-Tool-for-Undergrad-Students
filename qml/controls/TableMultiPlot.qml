@@ -194,7 +194,7 @@ Item {
                                             selectMultiple: false
                                             nameFilters: ["Arquivos JSON (*.json)"]
                                             onAccepted: {
-                                                multiplot.loadData(fileUrl, row)
+                                                multiPlot.loadData(fileUrl, row)
                                                 root.checkData()
                                             }
                                             onRejected: {
