@@ -12,23 +12,23 @@ Item {
     property string titulo_text: titulo.text
     property string eixox_text: eixox.text
     property string eixoy_text: eixoy.text
-    property int residuals: switchResiduos.checkState
-    property int grid: switchGrade.checkState
-    property int logx: log_eixox.checkState
-    property int logy: log_eixoy.checkState
+    property int    residuals: switchResiduos.checkState
+    property int    grid: switchGrade.checkState
+    property int    logx: log_eixox.checkState
+    property int    logy: log_eixoy.checkState
     property string markerColor: rectColor.color
-    property int markerSize: size.value
+    property int    markerSize: size.value
     property string marker: symbol.currentText
     property string curveColor: rectColor_curve.color
-    property int curveThickness: thickness.value
+    property int    curveThickness: thickness.value
     property string curveType: type_curve.currentText
-    property int legend: switchLegend.checkState
+    property int    legend: switchLegend.checkState
     property double xmin: Number(xmin.text)
     property double xmax: Number(xmax.text)
-    property int xdiv: Number(xdiv.text)
+    property int    xdiv: Number(xdiv.text)
     property double ymin: Number(ymin.text)
     property double ymax: Number(ymax.text)
-    property int ydiv: Number(ydiv.text)
+    property int    ydiv: Number(ydiv.text)
     property double resMin: Number(resMin.text)
     property double resMax: Number(resMax.text)
 

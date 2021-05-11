@@ -54,11 +54,3 @@ class MultiModel(QtCore.QObject):
                 self.parameters.append(0)
             self.min_x = np.minimum(self.min_x, df['x'].min())
             self.max_x = np.maximum(self.max_x, df['x'].max())
-        # print(self.dfs[0]['x'][0])
-    
-
-        
-
-        
-
-        

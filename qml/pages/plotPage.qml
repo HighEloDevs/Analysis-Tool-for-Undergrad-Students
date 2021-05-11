@@ -235,6 +235,51 @@ Item {
     }
 
     Connections{
+        target: middleTabs.btnSinglePlot
+        function onClicked() {
+            let pageProp = middleTabs.pageProp
+            let pageFunc = middleTabs.pageFunc
+            let plotData = {
+                id: nomeProjeto.text,
+                canvasProps: {
+                    symbol_color :      pageProp.markerColor,
+                    symbol_size :       pageProp.markerSize,
+                    symbol :            pageProp.maker,
+                    curve_color :       pageProp.curveColor,
+                    curve_thickness :   pageProp.curveThickness,
+                    curve_style :       pageProp.curveType,
+                },
+                dataProps: {
+                    xaxis :     pageProp.eixox_text,
+                    yaxis :     pageProp.eixoy_text,
+                    title :     pageProp.titulo_text,
+                    log_x :     pageProp.logx,
+                    log_y :     pageProp.logy,
+                    legend :    pageProp.legend,
+                    grid :      pageProp.grid,
+                    residuals : pageProp.residuals,
+                    xmin :      pageProp.xmin,
+                    xmax :      pageProp.xmax,
+                    xdiv :      pageProp.xdiv,
+                    ymin :      pageProp.ymin,
+                    ymax :      pageProp.ymax,
+                    ydiv :      pageProp.ydiv,
+                    resmin :    pageProp.resMin,
+                    resmax :    pageProp.resMax,
+                },
+                fitProps: {
+                    expr: pageFunc.expr,
+                    p0:   pageFunc.initParams,
+                    wsx:  pageFunc.sigmax,
+                    wsy:  pageFunc.sigmay
+                },
+                data: table.dataShaped
+            }
+            singlePlot.getPlotData(plotData)
+        }
+    }
+
+    Connections{
         target: singlePlot
         function onEmitData(){
             model.getData(table.dataShaped)

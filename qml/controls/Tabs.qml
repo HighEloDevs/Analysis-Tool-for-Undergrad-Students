@@ -15,6 +15,7 @@ Item {
 
     property alias pageFunc: pageFuncaoAjuste.item
     property alias pageProp: pageProps.item
+    property alias btnSinglePlot: btnSinglePlot
     property bool isPlotable: false
 
     Rectangle {
@@ -95,7 +96,7 @@ Item {
             }
 
             TextButton{
-                id: btnPlot
+                id: btnSinglePlot
                 height: 25
                 Layout.rightMargin: 10
                 Layout.leftMargin: 10

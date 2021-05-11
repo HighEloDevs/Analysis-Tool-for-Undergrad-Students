@@ -23,6 +23,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
+from matplotlib.pyplot import plot
 from matplotlib_backend_qtquick.qt_compat import QtCore
 from src.Calculators import interpreter_calculator, Plot
 
@@ -40,11 +41,23 @@ class SinglePlot(QtCore.QObject):
         self.model = model
 
     @QtCore.Slot(QtCore.QJsonValue)
+    def getPlotData(self, plotData):
+        plotData =    plotData.toVariant()
+        id =          plotData['id']
+        canvasProps = plotData['canvasProps']
+        dataProps =   plotData['dataProps']
+        fitProps =    plotData['fitProps']
+        data =        plotData['data']
+        print(id)
+        print(canvasProps)
+        print(dataProps)
+        print(fitProps)
+        print(data)
+
+    @QtCore.Slot(QtCore.QJsonValue)
     def getProps(self, props):
         self.emitData.emit()
         props = props.toVariant()
-
-        print(props)
 
         self.canvas.setSigma(props['sigmax'], props['sigmay'])
 
@@ -108,7 +121,6 @@ class SinglePlot(QtCore.QObject):
                                 props['xmin'], props['xmax'], props['xdiv'],
                                 props['ymin'], props['ymax'], props['ydiv'],
                                 props['resMin'], props['resMax'])
-        print(self.model._data)
 
     @QtCore.Slot(str)
     def loadData(self, file_path):

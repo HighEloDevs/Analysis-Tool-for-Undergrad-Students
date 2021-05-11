@@ -51,14 +51,14 @@ if __name__ == "__main__":
     canvas          = MPLCanvas()
     model           = Model() 
     singlePlot      = SinglePlot(canvas, model)
-    multiplot       = Multiplot(canvas)
+    multiPlot       = Multiplot(canvas)
     updater         = UpdateChecker()
     projectMngr     = ProjectManager(canvas, model)
 
     # Creating 'link' between front-end and back-end
     context = engine.rootContext()
     context.setContextProperty("singlePlot", singlePlot)
-    context.setContextProperty("multiPlot", multiplot)
+    context.setContextProperty("multiPlot", multiPlot)
     context.setContextProperty("canvas", canvas)
     context.setContextProperty("model", model)
     context.setContextProperty("projectMngr", projectMngr)
