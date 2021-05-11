@@ -57,13 +57,13 @@ A instalação requer o uso do Python 3.7 - 3.9. Agora instale as dependências 
 
 ```
 pip install --upgrade pip
-pip install matplotlib scipy numpy pandas lmfit matplotlib_backend_qtquick pyqt5 requests json
+pip install matplotlib scipy numpy pandas lmfit matplotlib_backend_qtquick pyqt5 requests
 ```
 
 Instale o git:
 
 ```
-sudo apt-get install git -y
+sudo apt-get install git
 ```
 
 Escolha uma pasta de sua preferência e clone o repositório:
