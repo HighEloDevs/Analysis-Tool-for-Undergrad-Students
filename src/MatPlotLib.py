@@ -91,12 +91,9 @@ class MPLCanvas(QtCore.QObject):
         if model._has_data:
 
             # Fitting expression to data, if there's any expression
-            if model._exp_model != '' and model._isvalid == True:
+            if model._exp_model != '':
                 model.fit(wsx = not self.sigma_x, wsy = not self.sigma_y)
-                
-                # Getting fitted data
-                px, py = model.get_predict()
-                y_r    = model.residuo
+
             else:
                 model._isvalid = False
 
@@ -107,6 +104,8 @@ class MPLCanvas(QtCore.QObject):
 
                 # Getting data
                 x, y, sy, sx = model.data
+                px, py       = model.get_predict()
+                y_r          = model.residuo
 
                 if self.residuals:
                     self.ax1, self.ax2 = self.figure.subplots(2, 1, sharex=True, gridspec_kw={'height_ratios': [3, 1.0]})

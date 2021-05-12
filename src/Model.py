@@ -270,24 +270,24 @@ class Model(QtCore.QObject):
         data = None
         if self._mode == 0:
             self.__fit_lm_wy(x, y, pi)
-            self.__set_param_values_lm()
+            self.__set_param_values_lm_special()
             self.__set_report_lm_special()
             
         elif self._mode == 1:
             if wsy:
                 self.__fit_lm_wy(x, y, pi)
-                self.__set_param_values_lm()
+                self.__set_param_values_lm_special()
                 self.__set_report_lm_special()
 
             else:
                 self.__fit_lm(x, y, sy, pi)
                 self.__set_param_values_lm()
-                self.__set_report_lm_special()
+                self.__set_report_lm()
 
         else:
             if wsx == True and wsy == True:
                 self.__fit_lm_wy(x, y, pi)
-                self.__set_param_values_lm()
+                self.__set_param_values_lm_special()
                 self.__set_report_lm_special()
             
             elif wsx:
@@ -348,6 +348,17 @@ class Model(QtCore.QObject):
         return self._dict
         
     def __set_param_values_lm(self):
+        self._dict.clear()
+        self._params = Parameters()
+        ngl          = len(self._data["x"]) - len(self._coef)
+        inc_cons     = np.sqrt(self._result.chisqr/ngl)
+        # inc_cons_q   = inc_cons**2
+        for i in range(len(self._coef)):
+            self._params.add(self._coef[i], self._result.values[self._coef[i]])
+            # self._dict.update({self._coef[i]: [self._result.values[self._coef[i]], np.sqrt(self._result.covar[i, i])*inc_cons]})
+            self._dict.update({self._coef[i]: [self._result.values[self._coef[i]], np.sqrt(self._result.covar[i, i])]})
+    
+    def __set_param_values_lm_special(self):
         self._dict.clear()
         self._params = Parameters()
         ngl          = len(self._data["x"]) - len(self._coef)
