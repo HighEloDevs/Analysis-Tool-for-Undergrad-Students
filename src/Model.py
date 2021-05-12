@@ -134,6 +134,7 @@ class Model(QtCore.QObject):
                 try:
                     df = pd.read_csv(data_path, sep=',', header=None, dtype = str).dropna()
                 except pd.errors.ParserError as error:
+                    # Separação de colunas de arquivos csv são com vírgula (","). Rever dados de entrada.
                     print(error)
                     return None
                 # except ValueError as error:
@@ -143,6 +144,7 @@ class Model(QtCore.QObject):
                 try:
                     df = pd.read_csv(data_path, sep='\t', header=None, dtype = str).dropna()
                 except pd.errors.ParserError as error:
+                    # Separação de colunas de arquivos txt e tsv são com tab. Rever dados de entrada.
                     print(error)
                     return None
                 # except ValueError as error:
@@ -164,6 +166,7 @@ class Model(QtCore.QObject):
             try:
                 df[i] = df[i].astype(float)
             except ValueError as error:
+                # Há células não numéricas. A entrada de dados só permite entrada de números. Rever arquivo de entrada.
                 print(error)
                 return None
 
@@ -187,7 +190,12 @@ class Model(QtCore.QObject):
             self._data_json.columns = ['x', 'y', 'sy']
             df["sx"]     = 1
         else:
-            self._data_json.columns = ['x', 'y', 'sy', 'sx']
+            try:
+                self._data_json.columns = ['x', 'y', 'sy', 'sx']
+            except ValueError as error:
+                # Há mais do que 4 colunas. Rever entrada de dados.
+                print(error)
+                return None
 
         df.columns     = ['x', 'y', 'sy', 'sx']
         self._data     = deepcopy(df)
@@ -324,7 +332,12 @@ class Model(QtCore.QObject):
         params = Parameters()
         for i in range(len(self._coef)):
             params.add(self._coef[i], pi[i])
-        self._result = self._model.fit(data = y, x = x, params = params, scale_covar=False)
+        try:
+            self._result = self._model.fit(data = y, x = x, params = params, scale_covar=False)
+        except ValueError as error:
+            # A função ajustada gera valores não numéricos, rever ajuste
+            print(error)
+            return None
         
     def get_params(self):
         ''' Retorna um dicionário onde as keys são os parâmetros e que retornam uma lista com [valor, incerteza]. '''
@@ -373,16 +386,22 @@ class Model(QtCore.QObject):
         self._report_fit += "\nNGL  = %d"%(ngl)
         self._report_fit += "\nSomatória dos resíduos absolutos ao quadrado = %f\n"%self._result.chisqr
         self._report_fit += "Incerteza considerada = %f\n"%inc_considerada
-        self._report_fit += "\nMatriz de covariância:\n\n" + str(self._result.covar*inc_considerada_q) + "\n"
-        lista             = list(self._params.keys())
-        matriz_corr       = np.zeros((len(self._result.covar), len(self._result.covar)))
-        z                 = range(len(matriz_corr))
-        for i in z:
-            for j in z:
-                matriz_corr[i, j] = self._result.covar[i, j]/(self._dict2[lista[i]][1]*self._dict2[lista[j]][1])
-        matriz_corr       = matriz_corr.round(3)
-        self._report_fit += "\nMatriz de correlação:\n\n" + str(matriz_corr) + "\n\n"
-        self._isvalid     = True
+        try:
+            self._report_fit += "\nMatriz de covariância:\n\n" + str(self._result.covar*inc_considerada_q) + "\n"
+            lista             = list(self._params.keys())
+            matriz_corr       = np.zeros((len(self._result.covar), len(self._result.covar)))
+            z                 = range(len(matriz_corr))
+            for i in z:
+                for j in z:
+                    matriz_corr[i, j] = self._result.covar[i, j]/(self._dict2[lista[i]][1]*self._dict2[lista[j]][1])
+            matriz_corr       = matriz_corr.round(3)
+            self._report_fit += "\nMatriz de correlação:\n\n" + str(matriz_corr) + "\n\n"
+            self._isvalid     = True
+        except TypeError as error:
+            # A função ajustada provavelmente não possui parâmetros para serem ajustados. Rever ajuste.
+            print(error)
+            return None
+            
 
     def __set_report_ODR(self):
         self._report_fit  = ""
