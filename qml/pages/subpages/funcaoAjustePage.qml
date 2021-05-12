@@ -43,6 +43,7 @@ Item {
                 textHolder: 'Função a ser ajustada'
                 defaultColor: '#fff'
                 textColor: '#fff'
+                validator: RegExpValidator{regExp: /^[0-9a-zA-Z.()*^_+-/]+$/}
             }
 
             TextInputCustom{

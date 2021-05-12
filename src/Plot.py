@@ -23,7 +23,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-from matplotlib.pyplot import plot
 from matplotlib_backend_qtquick.qt_compat import QtCore
 from src.Calculators import interpreter_calculator, Plot
 
@@ -48,89 +47,35 @@ class SinglePlot(QtCore.QObject):
         dataProps =   plotData['dataProps']
         fitProps =    plotData['fitProps']
         data =        plotData['data']
-        print(id)
-        print(canvasProps)
-        print(dataProps)
-        print(fitProps)
-        print(data)
 
-    @QtCore.Slot(QtCore.QJsonValue)
-    def getProps(self, props):
-        self.emitData.emit()
-        props = props.toVariant()
+        # Loading data from the table
+        self.model.loadDataTable(data)
 
-        self.canvas.setSigma(props['sigmax'], props['sigmay'])
+        # Getting function to fit
+        # Anti-dummies system
+        expr = fitProps['expr']
+        expr = expr.replace('^', '**')
+        expr = expr.replace('arctan', 'atan')
+        expr = expr.replace('arcsin', 'asin')
+        expr = expr.replace('arccos', 'acos')
+        expr = expr.replace('sen', 'sin')
 
-        # Setting up initial parameters
-        p0_tmp = list()
-        p0 = props['p0']
-        if p0 != '':
-            # Anti-dummies system
+        # Setting expression
+        if self.model._exp_model != expr:
+            self.model.set_expression(expr)
+
+        # Getting initial parameters
+        if fitProps['p0'] != '':
+            p0 = fitProps['p0']
             p0 = p0.replace(';', ',')
             p0 = p0.replace('/', ',')
-            for i in p0.split(','):
-                p0_tmp.append(float(i))
-            self.model.set_p0(p0_tmp)
-
-        # Anti-dummies system 2
-        expression = props['expr']
-        expression = expression.replace('^', '**')
-        expression = expression.replace('arctan', 'atan')
-        expression = expression.replace('arcsin', 'asin')
-        expression = expression.replace('arccos', 'acos')
-        expression = expression.replace('sen', 'sin')
-        
-        # Setting expression
-        if self.model._exp_model != expression:
-            self.model.set_expression(expression)
-
-        curveStyles = {
-            'Sólido':'-',
-            'Tracejado':'--',
-            'Ponto-Tracejado':'-.'
-            }
-        symbols = {
-            'Círculo':'o',
-            'Triângulo':'^',
-            'Quadrado':'s',
-            'Pentagono':'p',
-            'Octagono':'8',
-            'Cruz':'P',
-            'Estrela':'*',
-            'Diamante':'d',
-            'Produto':'X'
-            }
+            p0 = list(map(lambda x: float(x), p0.split(',')))
+            self.model.set_p0(p0)
 
         # Setting style of the plot 
-        self.model.set_title(props['titulo'])
-        self.model.set_x_axis(props['eixox'])
-        self.model.set_y_axis(props['eixoy'])
-        self.canvas.setStyle(props['logx'],
-                                    props['logy'],
-                                    props['markerColor'],
-                                    props['markerSize'],
-                                    symbols[props['marker']],
-                                    props['curveColor'],
-                                    props['curveThickness'],
-                                    curveStyles[props['curveType']],
-                                    props['legend'],
-                                    self.model._exp_model.replace('**', '^'))
-
-        # Making plot
-        self.canvas.Plot(self.model, props['residuos'], props['grade'],
-                                props['xmin'], props['xmax'], props['xdiv'],
-                                props['ymin'], props['ymax'], props['ydiv'],
-                                props['resMin'], props['resMax'])
-
-    @QtCore.Slot(str)
-    def loadData(self, file_path):
-        """Gets the path to data's file and fills the data's table"""
-        self.model.load_data(QtCore.QUrl(file_path).toLocalFile())
-
-    @QtCore.Slot(str)
-    def savePlot(self, save_path):
-        """Gets the path from input and save the actual plot"""
-        self.canvas.figure.savefig(QtCore.QUrl(save_path).toLocalFile(), dpi = 400)
+        self.canvas.setCanvasProps(canvasProps, expr)
+        self.canvas.setDataProps(dataProps, fitProps)
+        self.canvas.Plot(self.model)
 
     @QtCore.Slot(str, str, str, str, str, str)
     def calculator(self, function, opt1, nc, ngl, mean, std):

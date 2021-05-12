@@ -25,8 +25,9 @@ SOFTWARE.
 
 import numpy as np
 import pandas as pd
+from io import StringIO
 from scipy.odr import ODR, Model as SciPyModel, Data, RealData
-from matplotlib_backend_qtquick.qt_compat import QtCore
+from matplotlib_backend_qtquick.qt_compat import QtCore, QtGui
 from lmfit.models import ExpressionModel
 from lmfit import Parameters
 from copy import deepcopy
@@ -63,9 +64,9 @@ class Model(QtCore.QObject):
         return self._report_fit
         
     @QtCore.Slot(QtCore.QJsonValue)
-    def getData(self, data = None, path = ''):
+    def loadDataTable(self, data = None):
         """Getting data from table"""
-        df = pd.DataFrame.from_records(data.toVariant())
+        df = pd.DataFrame.from_records(data)
         df.columns = ['x', 'y', 'sy', 'sx', 'bool']
 
         # Removing not chosen rows
@@ -101,21 +102,57 @@ class Model(QtCore.QObject):
 
         self._data     = deepcopy(df)
         self._has_data = True
+
+    @QtCore.Slot()
+    def loadDataClipboard(self):
+        # Instantiating clipboard
+        clipboard = QtGui.QGuiApplication.clipboard()
+        clipboardText = clipboard.mimeData().text()
+        try:
+            # Creating a dataframe from the string
+            df = pd.read_csv(StringIO(clipboardText), sep = '\t', header = None, dtype = str).dropna()
+            # Replacing all commas for dots
+            for i in df.columns:
+                df[i] = [x.replace(',', '.') for x in df[i]]
+                df[i] = df[i].astype(str)
+            self.load_data(df=df)
+        except Exception:
+            print(Exception)
                 
-    def load_data(self, data_path):
-        """ Loads the data from a given path. """
-        df = None
-        if data_path[-3:] == "csv":
-            df = pd.read_csv(data_path, sep=',', header=None, dtype = str).dropna()
-        else:
-            df = pd.read_csv(data_path, sep='\t', header=None, dtype = str).dropna()
+    @QtCore.Slot(str)
+    def load_data(self, data_path='', df=None):
+        """ Loads the data from a given path or from a given dataframe """
+
+        # Name of the loaded file
+        fileName = 'Dados Carregados do Projeto'
+
+        # If no dataframe passed, loading data from the given path
+        if df is None:
+            # Loading from .csv or (.txt and .tsv)
+            data_path = QtCore.QUrl(data_path).toLocalFile()
+            if data_path[-3:] == "csv":
+                df = pd.read_csv(data_path, sep=',', header=None, dtype = str).dropna()
+            else:
+                df = pd.read_csv(data_path, sep='\t', header=None, dtype = str).dropna()
+            # Getting file name
+            fileName = data_path.split('/')[-1]
+            
+        # Saving the dataframe in the class
         self._data_json = deepcopy(df)
 
+        # Applying some filters over the df
         for i in df.columns:
+            # Replacing comma for dots
             df[i]              = [x.replace(',', '.') for x in df[i]]
             self._data_json[i] = [x.replace(',', '.') for x in self._data_json[i]]
-            df                 = df.replace('', '0')
+            # df                 = df.replace('', '0')
+            # Converting everything to float
             df[i]              = df[i].astype(float)
+
+        # Getting mode:
+        # mode = 2 -> no uncertainties
+        # mode = 1 -> no uncertainty on x
+        # mode = 0 -> both variables has uncertainties
         self._mode   = len(df.columns) - 2
         self._has_sx = True
         self._has_sy = True
@@ -134,66 +171,23 @@ class Model(QtCore.QObject):
         else:
             self._data_json.columns = ['x', 'y', 'sy', 'sx']
 
-
         df.columns     = ['x', 'y', 'sy', 'sx']
         self._data     = deepcopy(df)
         self._has_data = True
-        fileName       = data_path.split('/')[-1]
-
-        if self._has_sx and self._has_sy:
-            for i in range(len(self._data["x"])):
-                self.fillDataTable.emit(self._data_json["x"][i], self._data_json["y"][i], self._data_json["sy"][i], self._data_json["sx"][i], fileName)
-        elif self._has_sx:
-            for i in range(len(self._data["x"])):
-                self.fillDataTable.emit(self._data_json["x"][i], self._data_json["y"][i], str(0), self._data_json["sx"][i], fileName)
-        elif self._has_sy:
-            for i in range(len(self._data["x"])):
-                self.fillDataTable.emit(self._data_json["x"][i], self._data_json["y"][i], self._data_json["sy"][i], str(0), fileName)
-        else:
-            for i in range(len(self._data["x"])):
-                self.fillDataTable.emit(self._data_json["x"][i], self._data_json["y"][i], str(0), str(0), fileName)
-
-    def load_data_json(self, df):
-        """ Loads the data """
-
-
-        self._data_json = deepcopy(df)
-        self._mode      = len(df.columns) - 2
-        self._has_sx    = True
-        self._has_sy    = True
-
-        # Naming columns
-        if self._mode == 0:
-            self._has_sy            = False
-            self._has_sx            = False
-            self._data_json.columns = ['x', 'y']
-            df["sy"]                = 1
-            df["sx"]                = 1
-        elif self._mode == 1:
-            self._has_sx = False
-            self._data_json.columns = ['x', 'y', 'sy']
-            df["sx"]     = 1
-        else:
-            self._data_json.columns = ['x', 'y', 'sy', 'sx']
-        df.columns     = ['x', 'y', 'sy', 'sx']
-        self._data     = deepcopy(df.astype(float))
-        self._has_data = True
-
-        fileName = 'Dados Carregados do Projeto'
-
-        if self._has_sx and self._has_sy:
-            for i in range(len(self._data["x"])):
-                self.fillDataTable.emit(self._data_json["x"][i], self._data_json["y"][i], self._data_json["sy"][i], self._data_json["sx"][i], fileName)
-        elif self._has_sx:
-            for i in range(len(self._data["x"])):
-                self.fillDataTable.emit(self._data_json["x"][i], self._data_json["y"][i], str(0), self._data_json["sx"][i], fileName)
-        elif self._has_sy:
-            for i in range(len(self._data["x"])):
-                self.fillDataTable.emit(self._data_json["x"][i], self._data_json["y"][i], self._data_json["sy"][i], str(0), fileName)
-        else:
-            for i in range(len(self._data["x"])):
-                self.fillDataTable.emit(self._data_json["x"][i], self._data_json["y"][i], str(0), str(0), fileName)
         
+        if self._has_sx and self._has_sy:
+            for i in range(len(self._data["x"])):
+                self.fillDataTable.emit(self._data_json["x"][i], self._data_json["y"][i], self._data_json["sy"][i], self._data_json["sx"][i], fileName)
+        elif self._has_sx:
+            for i in range(len(self._data["x"])):
+                self.fillDataTable.emit(self._data_json["x"][i], self._data_json["y"][i], str(0), self._data_json["sx"][i], fileName)
+        elif self._has_sy:
+            for i in range(len(self._data["x"])):
+                self.fillDataTable.emit(self._data_json["x"][i], self._data_json["y"][i], self._data_json["sy"][i], str(0), fileName)
+        else:
+            for i in range(len(self._data["x"])):
+                self.fillDataTable.emit(self._data_json["x"][i], self._data_json["y"][i], str(0), str(0), fileName)
+
     def set_x_axis(self, name = ""):
         """ Set new x label to the graph. """
         self._eixos[0] = [name]
@@ -361,7 +355,7 @@ class Model(QtCore.QObject):
         self._report_fit += "\nNGL  = %d"%(ngl)
         self._report_fit += "\nSomatória dos resíduos absolutos ao quadrado = %f\n"%self._result.chisqr
         self._report_fit += "Incerteza considerada = %f\n"%inc_considerada
-        self._report_fit += "\nMatriz de covariância:\n\n" + str(self._result.covar) + "\n"
+        self._report_fit += "\nMatriz de covariância:\n\n" + str(self._result.covar*inc_considerada_q) + "\n"
         lista             = list(self._params.keys())
         matriz_corr       = np.zeros((len(self._result.covar), len(self._result.covar)))
         z                 = range(len(matriz_corr))

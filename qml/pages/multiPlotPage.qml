@@ -55,6 +55,7 @@ Item {
                         Layout.alignment: Qt.AlignHCenter
                         w: 25
                         texto: 'Grade'
+                        checked: false
                     }
                     
                     TextInputCustom{
@@ -90,6 +91,7 @@ Item {
                                 textHolder: ''
                                 defaultColor: '#fff'
                                 textColor: '#fff'
+                                validator: RegExpValidator{regExp: /^[0-9.-]+$/}
                             }
                             TextInputCustom{
                                 id: xmax
@@ -99,6 +101,7 @@ Item {
                                 textHolder: ''
                                 defaultColor: '#fff'
                                 textColor: '#fff'
+                                validator: RegExpValidator{regExp: /^[0-9.-]+$/}
                             }
                             TextInputCustom{
                                 id: xdiv
@@ -108,6 +111,7 @@ Item {
                                 textHolder: ''
                                 defaultColor: '#fff'
                                 textColor: '#fff'
+                                validator: RegExpValidator{regExp: /^[0-9]+$/}
                             }
                         }
                     }
@@ -145,6 +149,7 @@ Item {
                                 textHolder: ''
                                 defaultColor: '#fff'
                                 textColor: '#fff'
+                                validator: RegExpValidator{regExp: /^[0-9.-]+$/}
                             }
                             TextInputCustom{
                                 id: ymax
@@ -154,6 +159,7 @@ Item {
                                 textHolder: ''
                                 defaultColor: '#fff'
                                 textColor: '#fff'
+                                validator: RegExpValidator{regExp: /^[0-9.-]+$/}
                             }
                             TextInputCustom{
                                 id: ydiv
@@ -163,6 +169,7 @@ Item {
                                 textHolder: ''
                                 defaultColor: '#fff'
                                 textColor: '#fff'
+                                validator: RegExpValidator{regExp: /^[0-9]+$/}
                             }
                         }
                     }

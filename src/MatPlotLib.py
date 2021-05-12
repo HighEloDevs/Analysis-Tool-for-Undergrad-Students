@@ -45,6 +45,7 @@ class MPLCanvas(QtCore.QObject):
         self.ax2     = ''
 
         # Options
+        self.axisTitle       = []
         self.sigma_x         = False
         self.sigma_y         = False
         self.log_x           = False
@@ -84,20 +85,8 @@ class MPLCanvas(QtCore.QObject):
         # Connect for displaying the coordinates
         self.figure.canvas.mpl_connect('motion_notify_event', self.on_motion)
 
-    def Plot(self, model, residuals, grid, xmin, xmax, xdiv, ymin, ymax, ydiv, resmin, resmax):
-        # Data Predicted by the model and residuals
+    def Plot(self, model):
         px, py, y_r    = None, None, None
-
-        self.residuals = residuals
-        self.grid      = grid
-        self.xmin      = xmin
-        self.xmax      = xmax
-        self.xdiv      = xdiv
-        self.ymin      = ymin
-        self.ymax      = ymax
-        self.ydiv      = ydiv
-        self.resmin    = resmin
-        self.resmax    = resmax
 
         if model._has_data:
 
@@ -119,7 +108,7 @@ class MPLCanvas(QtCore.QObject):
                 # Getting data
                 x, y, sy, sx = model.data
 
-                if residuals:
+                if self.residuals:
                     self.ax1, self.ax2 = self.figure.subplots(2, 1, sharex=True, gridspec_kw={'height_ratios': [3, 1.0]})
                     self.figure.subplots_adjust(left = None, bottom = None, right = None, top = None, wspace = None, hspace = 0)
 
@@ -156,7 +145,7 @@ class MPLCanvas(QtCore.QObject):
 
 
 
-                    if grid:
+                    if self.grid:
                         self.ax1.grid(True)
                         self.ax2.grid(True)
                     if self.log_y:
@@ -184,14 +173,14 @@ class MPLCanvas(QtCore.QObject):
                         self.ax1.errorbar(x, y, ecolor = self.symbol_color, capsize = 0, elinewidth = 1, ms = self.symbol_size, marker = self.symbol, color = self.symbol_color, ls = 'none')
 
                     # Setting titles
-                    self.ax1.set_title(str(model._eixos[2][0]))
-                    self.ax1.set(ylabel = str(model._eixos[1][0]))
+                    self.ax1.set_title(str(self.axisTitle[0]))
+                    self.ax1.set(xlabel = str(self.axisTitle[1]))
+                    self.ax1.set(ylabel = str(self.axisTitle[2]))
                     self.ax2.set(ylabel = "Resíduos")
-                    self.ax2.set(xlabel = str(model._eixos[0][0]))
                 else:
                     self.axes = self.figure.add_subplot(111)
 
-                    if grid:
+                    if self.grid:
                         self.axes.grid(True)
                     if self.log_y:
                         self.axes.set_yscale('log')
@@ -239,14 +228,14 @@ class MPLCanvas(QtCore.QObject):
                         self.axes.legend(frameon=False)
                     
                     # Setting titles
-                    self.axes.set_title(str(model._eixos[2][0]))
-                    self.axes.set(ylabel = str(model._eixos[1][0]))
-                    self.axes.set(xlabel = str(model._eixos[0][0]))
+                    self.axes.set_title(str(self.axisTitle[0]))
+                    self.axes.set(xlabel = str(self.axisTitle[1]))
+                    self.axes.set(ylabel = str(self.axisTitle[2]))
             else:
                 self.clearAxis()
                 self.axes = self.figure.add_subplot(111)
 
-                if grid:
+                if self.grid:
                     self.axes.grid(True)
                 if self.log_y:
                     self.axes.set_yscale('log')
@@ -289,42 +278,15 @@ class MPLCanvas(QtCore.QObject):
                     self.axes.errorbar(x, y, capsize = 0, elinewidth = 1, ecolor = self.symbol_color, ms = self.symbol_size, marker = self.symbol, color = self.symbol_color, ls = 'none')
 
                 # Setting titles
-                self.axes.set_title(str(model._eixos[2][0]))
-                self.axes.set(ylabel = str(model._eixos[1][0]))
-                self.axes.set(xlabel = str(model._eixos[0][0]))
+                self.axes.set_title(str(self.axisTitle[0]))
+                self.axes.set(xlabel = str(self.axisTitle[1]))
+                self.axes.set(ylabel = str(self.axisTitle[2]))
 
         # Reseting parameters
         px, py, y_r   = None, None, None
         model.isvalid = False
 
         self.canvas.draw_idle()
-
-    def setStyle(self, log_x, log_y, symbol_color, symbol_size, symbol, curve_color, curve_thickness, curve_style, legend, expression):
-        """Sets the style of the plot"""
-        self.log_x           = bool(log_x)
-        self.log_y           = bool(log_y)
-        self.symbol_color    = symbol_color
-        self.symbol_size     = symbol_size
-        self.symbol          = symbol
-        self.curve_color     = curve_color
-        self.curve_thickness = curve_thickness
-        self.curve_style     = curve_style
-        self.legend          = bool(legend)
-        self.expression      = expression
-    
-    def setSigma(self, wsx, wsy):
-        """Consider sigmas"""
-        self.sigma_x = bool(wsx)
-        self.sigma_y = bool(wsy)
-
-    def getCoordinates(self):
-        """Gets the cordinates in the plot"""
-        return self._coordinates
-    
-    def setCoordinates(self, coordinates):
-        """Sets the cordinates"""
-        self._coordinates = coordinates
-        self.coordinatesChanged.emit(self._coordinates)
 
     def clearAxis(self):
         """Clear the current plot in the axis"""
@@ -337,6 +299,33 @@ class MPLCanvas(QtCore.QObject):
             self.ax2.remove()
         except:
             pass
+
+    def setCanvasProps(self, props, expr):
+        self.log_x      = bool(props['log_x'])
+        self.log_y      = bool(props['log_y'])
+        self.legend     = bool(props['legend'])
+        self.residuals  = bool(props['residuals'])
+        self.grid       = bool(props['grid'])
+        self.xmin       = props['xmin']
+        self.xmax       = props['xmax']
+        self.xdiv       = props['xdiv']
+        self.ymin       = props['ymin']
+        self.ymax       = props['ymax']
+        self.ydiv       = props['ydiv']
+        self.resmin     = props['resmin']
+        self.resmax     = props['resmax']
+        self.axisTitle  = [props['title'], props['xaxis'], props['yaxis']]
+        self.expression = expr
+
+    def setDataProps(self, dataProps, fitProps):
+        self.symbol_color    = dataProps['marker_color']
+        self.symbol_size     = dataProps['marker_size']
+        self.symbol          = dataProps['marker']
+        self.curve_color     = dataProps['curve_color']
+        self.curve_thickness = dataProps['curve_thickness']
+        self.curve_style     = dataProps['curve_style']
+        self.sigma_x         = bool(fitProps['wsx'])
+        self.sigma_y         = bool(fitProps['wsy'])
 
     def reset(self):
         '''Resets the class'''
@@ -364,9 +353,23 @@ class MPLCanvas(QtCore.QObject):
         # This is used to display the coordinates of the mouse in the window
         self._coordinates = ""
     
+    def getCoordinates(self):
+        """Gets the cordinates in the plot"""
+        return self._coordinates
+    
+    def setCoordinates(self, coordinates):
+        """Sets the cordinates"""
+        self._coordinates = coordinates
+        self.coordinatesChanged.emit(self._coordinates)
+
     coordinates = QtCore.Property(str, getCoordinates, setCoordinates, notify=coordinatesChanged)
 
     # The toolbar commands
+    @QtCore.Slot(str)
+    def savePlot(self, save_path):
+        """Gets the path from input and save the actual plot"""
+        self.canvas.figure.savefig(QtCore.QUrl(save_path).toLocalFile(), dpi = 400)
+
     @QtCore.Slot()
     def pan(self, *args):
         self.toolbar.pan(*args)

@@ -12,6 +12,14 @@ Item {
     width: 704
     height: 693
 
+    Shortcut {
+        sequence: "Ctrl+Space"
+        onActivated: {
+            table.clear()
+            model.loadDataClipboard()
+        }
+    }
+
     Rectangle {
         id: bg
         color: Colors.color3
@@ -172,7 +180,7 @@ Item {
                                 nameFilters: ["Arquivos txt (*.txt)", "Arquivos csv (*.csv)", "Arquivos tsv (*.tsv)"]
                                 onAccepted:{
                                     table.clear()
-                                    singlePlot.loadData(fileOpen.fileUrl)
+                                    model.load_data(fileOpen.fileUrl)
                                 }
                             }
 
@@ -237,19 +245,35 @@ Item {
     Connections{
         target: middleTabs.btnSinglePlot
         function onClicked() {
+            let markers = {
+                'Círculo':'o',
+                'Triângulo':'^',
+                'Quadrado':'s',
+                'Pentagono':'p',
+                'Octagono':'8',
+                'Cruz':'P',
+                'Estrela':'*',
+                'Diamante':'d',
+                'Produto':'X'
+                }
+            let curveStyles = {
+                'Sólido':'-',
+                'Tracejado':'--',
+                'Ponto-Tracejado':'-.'
+                }
             let pageProp = middleTabs.pageProp
             let pageFunc = middleTabs.pageFunc
             let plotData = {
                 id: nomeProjeto.text,
-                canvasProps: {
-                    symbol_color :      pageProp.markerColor,
-                    symbol_size :       pageProp.markerSize,
-                    symbol :            pageProp.maker,
+                dataProps: {
+                    marker_color :      pageProp.markerColor,
+                    marker_size :       pageProp.markerSize,
+                    marker :            markers[pageProp.marker],
                     curve_color :       pageProp.curveColor,
                     curve_thickness :   pageProp.curveThickness,
-                    curve_style :       pageProp.curveType,
+                    curve_style :       curveStyles[pageProp.curveType],
                 },
-                dataProps: {
+                canvasProps: {
                     xaxis :     pageProp.eixox_text,
                     yaxis :     pageProp.eixoy_text,
                     title :     pageProp.titulo_text,
@@ -275,6 +299,7 @@ Item {
                 },
                 data: table.dataShaped
             }
+            pageFunc.clearTableParams()
             singlePlot.getPlotData(plotData)
         }
     }
@@ -282,7 +307,7 @@ Item {
     Connections{
         target: singlePlot
         function onEmitData(){
-            model.getData(table.dataShaped)
+            model.loadDataTable(table.dataShaped)
         }
     }
 

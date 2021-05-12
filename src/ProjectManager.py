@@ -170,10 +170,6 @@ class ProjectManager(QtCore.QObject):
         """ Saves all options to a already loaded path """
         self.__importOptions()
         if self.path != '':
-            # if platform.system() == "Linux":
-            #     with open(self.path + ".json", 'w', encoding='utf-8') as file:
-            #         json.dump(self.opt, file, ensure_ascii=False, indent=4)
-            # else:
             with open(self.path, 'w', encoding='utf-8') as file:
                 json.dump(self.opt, file, ensure_ascii=False, indent=4)
         else:
@@ -231,7 +227,7 @@ class ProjectManager(QtCore.QObject):
         # print(options['p0'].split(','))
         self.clearTableData.emit()
         if options['data'] != None:
-            self.model.load_data_json(pd.read_json(options['data'], dtype = str))
+            self.model.load_data(df=pd.read_json(options['data'], dtype = str))
         self.displayBridge.setStyle(  
                     options['log_x'],
                     options['log_y'],
