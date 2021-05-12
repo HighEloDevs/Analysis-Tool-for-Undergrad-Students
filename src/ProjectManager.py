@@ -36,11 +36,11 @@ class ProjectManager(QtCore.QObject):
     fillFuncPage = QtCore.Signal(str, str, int, int, arguments=['expr', 'pi', 'sx', 'sy'])
     fillPropPage = QtCore.Signal(str, str, int, str, int, int, int, int, str, int, str, str, int, str, str, str, str, str, str, str, str, str,
                                 arguments=['title', 'xaxis', 'log_x', 'yaxis', 'log_y', 'residuals', 'grid', 'legend', 'symbol_color', 'symbol_size', 'symbol_style', 'curve_color', 'curve_thickness', 'curve_style', 'xMin', 'xMax', 'xDiv', 'yMin', 'yMax', 'yDiv', 'resmin', 'resmax'])
-    fillDataTable = QtCore.Signal()
-    fillParamsTable = QtCore.Signal()
-    fillProjectName = QtCore.Signal(str, arguments=['projectName'])
+    fillDataTable    = QtCore.Signal()
+    fillParamsTable  = QtCore.Signal()
+    fillProjectName  = QtCore.Signal(str, arguments=['projectName'])
     clearTableParams = QtCore.Signal()
-    clearTableData = QtCore.Signal()
+    clearTableData   = QtCore.Signal()
     
 
     def __init__(self, displayBridge, model):

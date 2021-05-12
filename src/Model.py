@@ -131,9 +131,23 @@ class Model(QtCore.QObject):
             # Loading from .csv or (.txt and .tsv)
             data_path = QtCore.QUrl(data_path).toLocalFile()
             if data_path[-3:] == "csv":
-                df = pd.read_csv(data_path, sep=',', header=None, dtype = str).dropna()
+                try:
+                    df = pd.read_csv(data_path, sep=',', header=None, dtype = str).dropna()
+                except pd.errors.ParserError as error:
+                    print(error)
+                    return None
+                # except ValueError as error:
+                #     print(error)
+                #     return None
             else:
-                df = pd.read_csv(data_path, sep='\t', header=None, dtype = str).dropna()
+                try:
+                    df = pd.read_csv(data_path, sep='\t', header=None, dtype = str).dropna()
+                except pd.errors.ParserError as error:
+                    print(error)
+                    return None
+                # except ValueError as error:
+                #     print(error)
+                #     return None
             # Getting file name
             fileName = data_path.split('/')[-1]
             
@@ -147,7 +161,11 @@ class Model(QtCore.QObject):
             self._data_json[i] = [x.replace(',', '.') for x in self._data_json[i]]
             # df                 = df.replace('', '0')
             # Converting everything to float
-            df[i]              = df[i].astype(float)
+            try:
+                df[i] = df[i].astype(float)
+            except ValueError as error:
+                print(error)
+                return None
 
         # Getting mode:
         # mode = 2 -> no uncertainties

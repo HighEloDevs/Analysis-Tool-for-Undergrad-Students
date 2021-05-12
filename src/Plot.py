@@ -37,16 +37,16 @@ class SinglePlot(QtCore.QObject):
     def __init__(self, canvas, model):
         super().__init__()
         self.canvas = canvas
-        self.model = model
+        self.model  = model
 
     @QtCore.Slot(QtCore.QJsonValue)
     def getPlotData(self, plotData):
-        plotData =    plotData.toVariant()
-        id =          plotData['id']
+        plotData    = plotData.toVariant()
+        id          = plotData['id']
         canvasProps = plotData['canvasProps']
-        dataProps =   plotData['dataProps']
-        fitProps =    plotData['fitProps']
-        data =        plotData['data']
+        dataProps   = plotData['dataProps']
+        fitProps    = plotData['fitProps']
+        data        = plotData['data']
 
         # Loading data from the table
         self.model.loadDataTable(data)
