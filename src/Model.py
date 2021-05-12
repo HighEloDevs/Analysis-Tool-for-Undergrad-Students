@@ -243,6 +243,10 @@ class Model(QtCore.QObject):
             self._model = ExpressionModel(self._exp_model)
         except ValueError:
             self._model = ExpressionModel(self._exp_model + " + 0*x")
+        except SyntaxError as error:
+            # Expressão de ajuste escrita de forma errada. Rever função de ajuste.
+            print(error)
+            return None
 
         # Getting coefficients
         self._coef = [i for i in self._model.param_names]

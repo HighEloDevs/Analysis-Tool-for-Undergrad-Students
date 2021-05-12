@@ -91,7 +91,7 @@ class MPLCanvas(QtCore.QObject):
         if model._has_data:
 
             # Fitting expression to data, if there's any expression
-            if model._exp_model != '':
+            if model._exp_model != '' and model._isvalid == True:
                 model.fit(wsx = not self.sigma_x, wsy = not self.sigma_y)
                 
                 # Getting fitted data
