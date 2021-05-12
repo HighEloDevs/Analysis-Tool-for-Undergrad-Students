@@ -72,9 +72,10 @@ Item {
                             hoverColor: Colors.c_button_hover
 
                             onClicked: {
-                                projectMngr.newProject()
                                 table.clear()
+                                middleTabs.pageFunc.clearTableParams()
                                 label_fileName.text = 'Dados não selecionados'
+                                singlePlot.new()
                             }
                         }
 
@@ -96,7 +97,8 @@ Item {
                                 nameFilters: ["Arquivos JSON (*.json)"]
                                 onAccepted:{
                                     table.clear()
-                                    projectMngr.loadProject(projectOpen.fileUrl)
+                                    middleTabs.pageFunc.clearTableParams()  
+                                    singlePlot.load(projectOpen.fileUrl)
                                 }
                             }
 
@@ -114,8 +116,64 @@ Item {
                             hoverColor: Colors.c_button_hover
 
                             onClicked: {
-                                projectMngr.setProjectName(nomeProjeto.text)
-                                projectMngr.save()
+                                let markers = {
+                                    'Círculo':'o',
+                                    'Triângulo':'^',
+                                    'Quadrado':'s',
+                                    'Pentagono':'p',
+                                    'Octagono':'8',
+                                    'Cruz':'P',
+                                    'Estrela':'*',
+                                    'Diamante':'d',
+                                    'Produto':'X'
+                                    }
+                                let curveStyles = {
+                                    'Sólido':'-',
+                                    'Tracejado':'--',
+                                    'Ponto-Tracejado':'-.'
+                                    }
+                                let pageProp = middleTabs.pageProp
+                                let pageFunc = middleTabs.pageFunc
+                                let plotData = {
+                                    id: nomeProjeto.text,
+                                    dataProps: {
+                                        marker_color :      String(pageProp.markerColor.color),
+                                        marker_size :       pageProp.markerSize.value,
+                                        marker :            markers[pageProp.marker.currentText],
+                                        curve_color :       String(pageProp.curveColor.color),
+                                        curve_thickness :   pageProp.curveThickness.value,
+                                        curve_style :       curveStyles[pageProp.curveType.currentText],
+                                    },
+                                    canvasProps: {
+                                        xaxis :     pageProp.eixox_text.text,
+                                        yaxis :     pageProp.eixoy_text.text,
+                                        title :     pageProp.titulo_text.text,
+                                        log_x :     pageProp.logx.checked,
+                                        log_y :     pageProp.logy.checked,
+                                        legend :    pageProp.legend.checked,
+                                        grid :      pageProp.grid.checked,
+                                        residuals : pageProp.residuals.checked,
+                                        xmin :      Number(pageProp.xmin.text),
+                                        xmax :      Number(pageProp.xmax.text),
+                                        xdiv :      Number(pageProp.xdiv.text),
+                                        ymin :      Number(pageProp.ymin.text),
+                                        ymax :      Number(pageProp.ymax.text),
+                                        ydiv :      Number(pageProp.ydiv.text),
+                                        resmin :    Number(pageProp.resMin.text),
+                                        resmax :    Number(pageProp.resMax.text),
+                                    },
+                                    fitProps: {
+                                        expr: pageFunc.expr.text,
+                                        p0:   pageFunc.initParams.text,
+                                        wsx:  pageFunc.sigmax.checked,
+                                        wsy:  pageFunc.sigmay.checked,
+                                    },
+                                    data: table.dataShaped
+                                }
+                                let saveAs = singlePlot.save(plotData)
+                                if (saveAs){
+                                    projectSaver.open()
+                                }
                             }
                         }
 
@@ -136,8 +194,61 @@ Item {
                                 selectExisting: false
                                 nameFilters: ["Arquivo JSON (*.json)"]
                                 onAccepted: {
-                                    projectMngr.setProjectName(nomeProjeto.text)
-                                    projectMngr.saveAs(projectSaver.fileUrl)
+                                    let markers = {
+                                    'Círculo':'o',
+                                    'Triângulo':'^',
+                                    'Quadrado':'s',
+                                    'Pentagono':'p',
+                                    'Octagono':'8',
+                                    'Cruz':'P',
+                                    'Estrela':'*',
+                                    'Diamante':'d',
+                                    'Produto':'X'
+                                    }
+                                let curveStyles = {
+                                    'Sólido':'-',
+                                    'Tracejado':'--',
+                                    'Ponto-Tracejado':'-.'
+                                    }
+                                let pageProp = middleTabs.pageProp
+                                let pageFunc = middleTabs.pageFunc
+                                let plotData = {
+                                    id: nomeProjeto.text,
+                                    dataProps: {
+                                        marker_color :      String(pageProp.markerColor.color),
+                                        marker_size :       pageProp.markerSize.value,
+                                        marker :            markers[pageProp.marker.currentText],
+                                        curve_color :       String(pageProp.curveColor.color),
+                                        curve_thickness :   pageProp.curveThickness.value,
+                                        curve_style :       curveStyles[pageProp.curveType.currentText],
+                                    },
+                                    canvasProps: {
+                                        xaxis :     pageProp.eixox_text.text,
+                                        yaxis :     pageProp.eixoy_text.text,
+                                        title :     pageProp.titulo_text.text,
+                                        log_x :     pageProp.logx.checked,
+                                        log_y :     pageProp.logy.checked,
+                                        legend :    pageProp.legend.checked,
+                                        grid :      pageProp.grid.checked,
+                                        residuals : pageProp.residuals.checked,
+                                        xmin :      Number(pageProp.xmin.text),
+                                        xmax :      Number(pageProp.xmax.text),
+                                        xdiv :      Number(pageProp.xdiv.text),
+                                        ymin :      Number(pageProp.ymin.text),
+                                        ymax :      Number(pageProp.ymax.text),
+                                        ydiv :      Number(pageProp.ydiv.text),
+                                        resmin :    Number(pageProp.resMin.text),
+                                        resmax :    Number(pageProp.resMax.text),
+                                    },
+                                    fitProps: {
+                                        expr: pageFunc.expr.text,
+                                        p0:   pageFunc.initParams.text,
+                                        wsx:  pageFunc.sigmax.checked,
+                                        wsy:  pageFunc.sigmay.checked,
+                                    },
+                                    data: table.dataShaped
+                                }
+                                    singlePlot.saveAs(fileUrl, plotData)
                                 }
                             }
 
@@ -220,7 +331,6 @@ Item {
                     anchors.bottomMargin: 0
                     Layout.fillWidth: true
                 }
-
             }
 
             Tabs{
@@ -236,9 +346,9 @@ Item {
     Connections{
         target: model
 
-        function onFillDataTable(x, y, sy, sx, fileName){
+        function onFillDataTable(x, y, sy, sx, isEditable, fileName){
             label_fileName.text = fileName
-            table.addRow(x, y, sy, sx, false)
+            table.addRow(x, y, sy, sx, Boolean(Number(isEditable)))
         }
     }
 
@@ -266,36 +376,36 @@ Item {
             let plotData = {
                 id: nomeProjeto.text,
                 dataProps: {
-                    marker_color :      pageProp.markerColor,
-                    marker_size :       pageProp.markerSize,
-                    marker :            markers[pageProp.marker],
-                    curve_color :       pageProp.curveColor,
-                    curve_thickness :   pageProp.curveThickness,
-                    curve_style :       curveStyles[pageProp.curveType],
+                    marker_color :      String(pageProp.markerColor.color),
+                    marker_size :       pageProp.markerSize.value,
+                    marker :            markers[pageProp.marker.currentText],
+                    curve_color :       String(pageProp.curveColor.color),
+                    curve_thickness :   pageProp.curveThickness.value,
+                    curve_style :       curveStyles[pageProp.curveType.currentText],
                 },
                 canvasProps: {
-                    xaxis :     pageProp.eixox_text,
-                    yaxis :     pageProp.eixoy_text,
-                    title :     pageProp.titulo_text,
-                    log_x :     pageProp.logx,
-                    log_y :     pageProp.logy,
-                    legend :    pageProp.legend,
-                    grid :      pageProp.grid,
-                    residuals : pageProp.residuals,
-                    xmin :      pageProp.xmin,
-                    xmax :      pageProp.xmax,
-                    xdiv :      pageProp.xdiv,
-                    ymin :      pageProp.ymin,
-                    ymax :      pageProp.ymax,
-                    ydiv :      pageProp.ydiv,
-                    resmin :    pageProp.resMin,
-                    resmax :    pageProp.resMax,
+                    xaxis :     pageProp.eixox_text.text,
+                    yaxis :     pageProp.eixoy_text.text,
+                    title :     pageProp.titulo_text.text,
+                    log_x :     pageProp.logx.checked,
+                    log_y :     pageProp.logy.checked,
+                    legend :    pageProp.legend.checked,
+                    grid :      pageProp.grid.checked,
+                    residuals : pageProp.residuals.checked,
+                    xmin :      Number(pageProp.xmin.text),
+                    xmax :      Number(pageProp.xmax.text),
+                    xdiv :      Number(pageProp.xdiv.text),
+                    ymin :      Number(pageProp.ymin.text),
+                    ymax :      Number(pageProp.ymax.text),
+                    ydiv :      Number(pageProp.ydiv.text),
+                    resmin :    Number(pageProp.resMin.text),
+                    resmax :    Number(pageProp.resMax.text),
                 },
                 fitProps: {
-                    expr: pageFunc.expr,
-                    p0:   pageFunc.initParams,
-                    wsx:  pageFunc.sigmax,
-                    wsy:  pageFunc.sigmay
+                    expr: pageFunc.expr.text,
+                    p0:   pageFunc.initParams.text,
+                    wsx:  pageFunc.sigmax.checked,
+                    wsy:  pageFunc.sigmay.checked,
                 },
                 data: table.dataShaped
             }
@@ -306,23 +416,122 @@ Item {
 
     Connections{
         target: singlePlot
-        function onEmitData(){
-            model.loadDataTable(table.dataShaped)
+
+        function onPlot(){
+            let markers = {
+                'Círculo':'o',
+                'Triângulo':'^',
+                'Quadrado':'s',
+                'Pentagono':'p',
+                'Octagono':'8',
+                'Cruz':'P',
+                'Estrela':'*',
+                'Diamante':'d',
+                'Produto':'X'
+                }
+            let curveStyles = {
+                'Sólido':'-',
+                'Tracejado':'--',
+                'Ponto-Tracejado':'-.'
+                }
+            let pageProp = middleTabs.pageProp
+            let pageFunc = middleTabs.pageFunc
+            let plotData = {
+                id: nomeProjeto.text,
+                dataProps: {
+                    marker_color :      String(pageProp.markerColor.color),
+                    marker_size :       pageProp.markerSize.value,
+                    marker :            markers[pageProp.marker.currentText],
+                    curve_color :       String(pageProp.curveColor.color),
+                    curve_thickness :   pageProp.curveThickness.value,
+                    curve_style :       curveStyles[pageProp.curveType.currentText],
+                },
+                canvasProps: {
+                    xaxis :     pageProp.eixox_text.text,
+                    yaxis :     pageProp.eixoy_text.text,
+                    title :     pageProp.titulo_text.text,
+                    log_x :     pageProp.logx.checked,
+                    log_y :     pageProp.logy.checked,
+                    legend :    pageProp.legend.checked,
+                    grid :      pageProp.grid.checked,
+                    residuals : pageProp.residuals.checked,
+                    xmin :      Number(pageProp.xmin.text),
+                    xmax :      Number(pageProp.xmax.text),
+                    xdiv :      Number(pageProp.xdiv.text),
+                    ymin :      Number(pageProp.ymin.text),
+                    ymax :      Number(pageProp.ymax.text),
+                    ydiv :      Number(pageProp.ydiv.text),
+                    resmin :    Number(pageProp.resMin.text),
+                    resmax :    Number(pageProp.resMax.text),
+                },
+                fitProps: {
+                    expr: pageFunc.expr.text,
+                    p0:   pageFunc.initParams.text,
+                    wsx:  pageFunc.sigmax.checked,
+                    wsy:  pageFunc.sigmay.checked,
+                },
+                data: table.dataShaped
+            }
+            pageFunc.clearTableParams()
+            singlePlot.getPlotData(plotData)
+        }
+
+        function onFillPlotPageSignal(props){
+            let markers = {
+                'o':'Círculo',
+                '^':'Triângulo',
+                's':'Quadrado',
+                'p':'Pentagono',
+                '8':'Octagono',
+                'P':'Cruz',
+                '*':'Estrela',
+                'd':'Diamante',
+                'X':'Produto',
+                }
+            let curveStyles = {
+                '-' :'Sólido',
+                '--':'Tracejado',
+                '-.':'Ponto-Tracejado'
+                }
+
+            // Getting pages
+            let pageProp                    = middleTabs.pageProp
+            let pageFunc                    = middleTabs.pageFunc
+
+            // Filling project name
+            nomeProjeto.text                = props['id']
+
+            // Filling propriedadesPage.qml
+            pageProp.markerColor.color      = props['dataProps']['marker_color'] 
+            pageProp.markerSize.value       = props['dataProps']['marker_size']
+            pageProp.marker.currentIndex    = pageProp.marker.find(markers[props['dataProps']['marker']])
+            pageProp.curveColor.color       = props['dataProps']['curve_color']
+            pageProp.curveThickness.value   = props['dataProps']['curve_thickness']
+            pageProp.curveType.currentIndex = pageProp.curveType.find(curveStyles[props['dataProps']['curve_style']])
+            pageProp.eixox_text.text        = props['canvasProps']['xaxis']
+            pageProp.eixoy_text.text        = props['canvasProps']['yaxis']
+            pageProp.titulo_text.text       = props['canvasProps']['title']
+            pageProp.logx.checked           = props['canvasProps']['log_x']
+            pageProp.logy.checked           = props['canvasProps']['log_y']
+            pageProp.legend.checked         = props['canvasProps']['legend']
+            pageProp.grid.checked           = props['canvasProps']['grid']
+            pageProp.residuals.checked      = props['canvasProps']['residuals']
+            pageProp.xmin.text              = props['canvasProps']['xmin'] == '0' ? '' : props['canvasProps']['xmin']
+            pageProp.xmax.text              = props['canvasProps']['xmax'] == '0' ? '' : props['canvasProps']['xmax']
+            pageProp.xdiv.text              = props['canvasProps']['xdiv'] == '0' ? '' : props['canvasProps']['xdiv']
+            pageProp.ymin.text              = props['canvasProps']['ymin'] == '0' ? '' : props['canvasProps']['ymin']
+            pageProp.ymax.text              = props['canvasProps']['ymax'] == '0' ? '' : props['canvasProps']['ymax']
+            pageProp.ydiv.text              = props['canvasProps']['ydiv'] == '0' ? '' : props['canvasProps']['ydiv']
+            pageProp.resMin.text            = props['canvasProps']['resmin'] == '0' ? '' : props['canvasProps']['resmin']
+            pageProp.resMax.text            = props['canvasProps']['resmax'] == '0' ? '' : props['canvasProps']['resmax']
+
+            // Filling funcaoAjustePage.qml
+            pageFunc.expr.text              = props['fitProps']['expr']
+            pageFunc.initParams.text        = props['fitProps']['p0']
+            pageFunc.sigmax.checked         = props['fitProps']['wsx']
+            pageFunc.sigmay.checked         = props['fitProps']['wsy']
         }
     }
-
-    Connections{
-        target: projectMngr
-
-        function onSaveAsSignal(){
-            projectSaver.open()
-        }
-
-        function onFillProjectName(projectName){
-            nomeProjeto.text = projectName
-        }
-    }
-
 }
 
 /*##^##

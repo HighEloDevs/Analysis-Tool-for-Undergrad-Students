@@ -9,28 +9,28 @@ import "../../controls"
 Item {
     id: root
 
-    property string titulo_text: titulo.text
-    property string eixox_text: eixox.text
-    property string eixoy_text: eixoy.text
-    property int    residuals: switchResiduos.checkState
-    property int    grid: switchGrade.checkState
-    property int    logx: log_eixox.checkState
-    property int    logy: log_eixoy.checkState
-    property string markerColor: rectColor.color
-    property int    markerSize: size.value
-    property string marker: symbol.currentText
-    property string curveColor: rectColor_curve.color
-    property int    curveThickness: thickness.value
-    property string curveType: type_curve.currentText
-    property int    legend: switchLegend.checkState
-    property double xmin: Number(xmin.text)
-    property double xmax: Number(xmax.text)
-    property int    xdiv: Number(xdiv.text)
-    property double ymin: Number(ymin.text)
-    property double ymax: Number(ymax.text)
-    property int    ydiv: Number(ydiv.text)
-    property double resMin: Number(resMin.text)
-    property double resMax: Number(resMax.text)
+    property alias titulo_text:    titulo
+    property alias eixox_text:     eixox
+    property alias eixoy_text:     eixoy
+    property alias residuals:      switchResiduos
+    property alias grid:           switchGrade
+    property alias logx:           log_eixox
+    property alias logy:           log_eixoy
+    property alias markerColor:    rectColor
+    property alias markerSize:     size
+    property alias marker:         symbol
+    property alias curveColor:     rectColor_curve
+    property alias curveThickness: thickness
+    property alias curveType:      type_curve
+    property alias legend:         switchLegend
+    property alias xmin:           xmin
+    property alias xmax:           xmax
+    property alias xdiv:           xdiv
+    property alias ymin:           ymin
+    property alias ymax:           ymax
+    property alias ydiv:           ydiv
+    property alias resMin:         resMin 
+    property alias resMax:         resMax 
 
     Rectangle {
         id: bg
@@ -307,7 +307,6 @@ Item {
                                 title: "Escolha uma cor para os pontos"
                                 onAccepted: {
                                     rectColor.color = colorDialog.color
-                                    iconOverlay.color = rectColor.color
                                 }
                             }
 
@@ -379,10 +378,6 @@ Item {
                                 ListElement { text: "Diamante" }
                                 ListElement { text: "Produto" }
                             }
-
-                            onActivated: {
-                                icons.source = "../../../images/symbols/" + symbol.currentText + ".png"
-                            }
                         }
 
                         Rectangle{
@@ -394,7 +389,7 @@ Item {
                             Image {
                                 id: icons
                                 anchors.fill: parent
-                                source: "../../../images/symbols/Círculo.png"
+                                source: symbol.currentText == '' ? "../../../images/symbols/Círculo.png" : "../../../images/symbols/" + symbol.currentText + ".png"
                                 fillMode: Image.PreserveAspectFit
                                 mirror: false
                                 mipmap: true
@@ -413,7 +408,7 @@ Item {
                                 id: iconOverlay
                                 anchors.fill: parent
                                 source: icons
-                                color: "#000000"
+                                color: rectColor.color
                                 anchors.verticalCenter: parent.verticalCenter
                                 antialiasing: true
                                 width: icons.width
@@ -566,14 +561,6 @@ Item {
                 }
             }
         }
-    }
-
-    Connections{
-        target: singlePlot
-
-        // function onSignalPropPage(){
-        //     singlePlot.loadOptions(titulo.text, eixox.text, eixoy.text, switchResiduos.position, switchGrade.position, log_eixox.checkState, log_eixoy.checkState, rectColor.color, size.value, symbol.currentText, rectColor_curve.color, thickness.value, type_curve.currentText, switchLegend.position)
-        // }
     }
 
     Connections{

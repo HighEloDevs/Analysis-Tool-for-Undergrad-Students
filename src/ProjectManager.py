@@ -224,7 +224,6 @@ class ProjectManager(QtCore.QObject):
         self.model.set_x_axis(options['xaxis'])
         self.model.set_y_axis(options['yaxis'])
         self.model.set_p0(options['p0'].split(','))
-        # print(options['p0'].split(','))
         self.clearTableData.emit()
         if options['data'] != None:
             self.model.load_data(df=pd.read_json(options['data'], dtype = str))

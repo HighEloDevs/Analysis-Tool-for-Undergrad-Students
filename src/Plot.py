@@ -25,19 +25,62 @@ SOFTWARE.
 
 from matplotlib_backend_qtquick.qt_compat import QtCore
 from src.Calculators import interpreter_calculator, Plot
+import json
+import platform
 
 class SinglePlot(QtCore.QObject):
     '''Class that controls the single-plot page'''
 
     # Signal to write infos
-    writeInfos      = QtCore.Signal(str, arguments='expr')
-    writeCalculator = QtCore.Signal(str, arguments='expr')
-    emitData        = QtCore.Signal()
+    writeCalculator       = QtCore.Signal(str, arguments='expr')
+    fillPlotPageSignal    = QtCore.Signal(QtCore.QJsonValue, arguments='props')
+    plot                  = QtCore.Signal()
+    # writeInfos      = QtCore.Signal(str, arguments='expr')
+    # emitData        = QtCore.Signal()
 
     def __init__(self, canvas, model):
         super().__init__()
         self.canvas = canvas
         self.model  = model
+        self.path   = ''
+
+        # Default properties for the singlePlot page
+        self.props = {
+            'id': '',
+            'dataProps': {
+                'marker_color'    : '#000',
+                'marker_size'     : 3,
+                'marker'          : 'o',
+                'curve_color'     : '#000',
+                'curve_thickness' : 3,
+                'curve_style'     : '-',
+            },
+            'canvasProps': {
+                'xaxis'     : '',
+                'yaxis'     : '',
+                'title'     : '',
+                'log_x'     : False,
+                'log_y'     : False,
+                'legend'    : False,
+                'grid'      : False,
+                'residuals' : False,
+                'xmin'      : '',
+                'xmax'      : '',
+                'xdiv'      : '',
+                'ymin'      : '',
+                'ymax'      : '',
+                'ydiv'      : '',
+                'resmin'    : '',
+                'resmax'    : '',
+            },
+            'fitProps': {
+                'expr' : '',
+                'p0'   : '',
+                'wsx'  : True,
+                'wsy'  : True,
+            },
+            'data': []
+        }
 
     @QtCore.Slot(QtCore.QJsonValue)
     def getPlotData(self, plotData):
@@ -76,6 +119,76 @@ class SinglePlot(QtCore.QObject):
         self.canvas.setCanvasProps(canvasProps, expr)
         self.canvas.setDataProps(dataProps, fitProps)
         self.canvas.Plot(self.model)
+
+    def fillPlotPage(self, props=None):
+        # If no properties passed, emit the default values
+        if props is None:
+            self.fillPlotPageSignal.emit(QtCore.QJsonValue.fromVariant(self.props))
+        else:
+            self.fillPlotPageSignal.emit(QtCore.QJsonValue.fromVariant(props))
+        
+    @QtCore.Slot()
+    def new(self):
+        # Reseting canvas and model
+        self.model.reset()
+        self.canvas.reset()
+
+        # Fill singlePlot page with default values
+        self.fillPlotPage()
+
+        # Reseting path
+        self.path = ''
+
+    @QtCore.Slot(str)
+    def load(self, path):
+        # Reseting frontend
+        self.new()
+
+        # Getting path
+        self.path = QtCore.QUrl(path).toLocalFile()
+
+        # Getting props
+        with open(self.path, encoding='utf-8') as file:
+            props = json.load(file)
+            file.close()
+
+        # Loading data from the table
+        self.model.load_data(df_array=props['data'])
+        self.fillPlotPage(props)
+        # self.plot.emit()
+
+    @QtCore.Slot(QtCore.QJsonValue, result=int)
+    def save(self, props):
+        # If there's no path for saving, saveAs()
+        if self.path == '':
+            return 1
+
+        # Getting properties
+        props = props.toVariant()
+
+        if platform.system() == "Linux":
+            with open(self.path + ".json", 'w', encoding='utf-8') as file:
+                json.dump(props, file, ensure_ascii=False, indent=4)
+        else:
+            with open(self.path, 'w', encoding='utf-8') as file:
+                json.dump(props, file, ensure_ascii=False, indent=4)
+
+        return 0
+    
+    @QtCore.Slot(str, QtCore.QJsonValue)
+    def saveAs(self, path, props):
+        # Getting path
+        self.path = QtCore.QUrl(path).toLocalFile()
+
+        # Getting properties
+        props = props.toVariant()
+
+        if platform.system() == "Linux":
+            with open(self.path + ".json", 'w', encoding='utf-8') as file:
+                json.dump(props, file, ensure_ascii=False, indent=4)
+        else:
+            with open(self.path, 'w', encoding='utf-8') as file:
+                json.dump(props, file, ensure_ascii=False, indent=4)
 
     @QtCore.Slot(str, str, str, str, str, str)
     def calculator(self, function, opt1, nc, ngl, mean, std):

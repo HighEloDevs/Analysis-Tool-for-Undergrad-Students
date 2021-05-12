@@ -36,7 +36,7 @@ class Model(QtCore.QObject):
     """Class used for fit
     """
     # Signals
-    fillDataTable = QtCore.Signal(str, str, str, str, str, arguments=['x', 'y', 'sy', 'sx', 'filename'])
+    fillDataTable = QtCore.Signal(str, str, str, str, str, str, arguments=['x', 'y', 'sy', 'sx', 'filename'])
     fillParamsTable = QtCore.Signal(str, float, float, arguments=['param', 'value', 'uncertainty'])
     writeInfos = QtCore.Signal(str, arguments='expr')
 
@@ -44,7 +44,6 @@ class Model(QtCore.QObject):
         super().__init__()
         self._data       = None
         self._data_json  = None
-        self._eixos      = [["Eixo x"], ["Eixo y"], ["Título"]]
         self._exp_model  = ""
         self._model      = None
         self._report_fit = ""
@@ -120,14 +119,14 @@ class Model(QtCore.QObject):
             print(Exception)
                 
     @QtCore.Slot(str)
-    def load_data(self, data_path='', df=None):
+    def load_data(self, data_path='', df=None, df_array=None):
         """ Loads the data from a given path or from a given dataframe """
 
         # Name of the loaded file
         fileName = 'Dados Carregados do Projeto'
 
         # If no dataframe passed, loading data from the given path
-        if df is None:
+        if df is None and df_array is None:
             # Loading from .csv or (.txt and .tsv)
             data_path = QtCore.QUrl(data_path).toLocalFile()
             if data_path[-3:] == "csv":
@@ -152,6 +151,15 @@ class Model(QtCore.QObject):
                 #     return None
             # Getting file name
             fileName = data_path.split('/')[-1]
+        elif df is None:
+            df = pd.DataFrame.from_records(df_array)
+            df.columns = ['x', 'y', 'sy', 'sx', 'bool']
+            df = df.replace('', '0')
+            if df[df['sx'] != '0'].empty: del df['sx']
+            if df[df['sy'] != '0'].empty: del df['sy']
+
+            bools = df['bool'].astype(str)
+            del df['bool']
             
         # Saving the dataframe in the class
         self._data_json = deepcopy(df)
@@ -201,30 +209,32 @@ class Model(QtCore.QObject):
         self._data     = deepcopy(df)
         self._has_data = True
         
-        if self._has_sx and self._has_sy:
-            for i in range(len(self._data["x"])):
-                self.fillDataTable.emit(self._data_json["x"][i], self._data_json["y"][i], self._data_json["sy"][i], self._data_json["sx"][i], fileName)
-        elif self._has_sx:
-            for i in range(len(self._data["x"])):
-                self.fillDataTable.emit(self._data_json["x"][i], self._data_json["y"][i], str(0), self._data_json["sx"][i], fileName)
-        elif self._has_sy:
-            for i in range(len(self._data["x"])):
-                self.fillDataTable.emit(self._data_json["x"][i], self._data_json["y"][i], self._data_json["sy"][i], str(0), fileName)
+        if df_array is None:
+            if self._has_sx and self._has_sy:
+                for i in range(len(self._data["x"])):
+                    self.fillDataTable.emit(self._data_json["x"][i], self._data_json["y"][i], self._data_json["sy"][i], self._data_json["sx"][i], '1', fileName)
+            elif self._has_sx:
+                for i in range(len(self._data["x"])):
+                    self.fillDataTable.emit(self._data_json["x"][i], self._data_json["y"][i], str(0), self._data_json["sx"][i], '1', fileName)
+            elif self._has_sy:
+                for i in range(len(self._data["x"])):
+                    self.fillDataTable.emit(self._data_json["x"][i], self._data_json["y"][i], self._data_json["sy"][i], str(0), '1', fileName)
+            else:
+                for i in range(len(self._data["x"])):
+                    self.fillDataTable.emit(self._data_json["x"][i], self._data_json["y"][i], str(0), str(0), '1', fileName)
         else:
-            for i in range(len(self._data["x"])):
-                self.fillDataTable.emit(self._data_json["x"][i], self._data_json["y"][i], str(0), str(0), fileName)
-
-    def set_x_axis(self, name = ""):
-        """ Set new x label to the graph. """
-        self._eixos[0] = [name]
-    
-    def set_y_axis(self, name = ""):
-        """ Set new y label to the graph. """
-        self._eixos[1] = [name]
-
-    def set_title(self, name = ""):
-        """ Set new title to the graph. """
-        self._eixos[2] = [name]
+            if self._has_sx and self._has_sy:
+                for i in range(len(self._data["x"])):
+                    self.fillDataTable.emit(self._data_json["x"][i], self._data_json["y"][i], self._data_json["sy"][i], self._data_json["sx"][i], bools[i], fileName)
+            elif self._has_sx:
+                for i in range(len(self._data["x"])):
+                    self.fillDataTable.emit(self._data_json["x"][i], self._data_json["y"][i], str(0), self._data_json["sx"][i], bools[i], fileName)
+            elif self._has_sy:
+                for i in range(len(self._data["x"])):
+                    self.fillDataTable.emit(self._data_json["x"][i], self._data_json["y"][i], self._data_json["sy"][i], str(0), bools[i], fileName)
+            else:
+                for i in range(len(self._data["x"])):
+                    self.fillDataTable.emit(self._data_json["x"][i], self._data_json["y"][i], str(0), str(0), bools[i], fileName)
 
     def set_p0(self, p0):
         self._p0 = p0
@@ -460,7 +470,6 @@ class Model(QtCore.QObject):
     
     def reset(self):
         self._data       = None
-        self._eixos      = [["Eixo x"], ["Eixo y"], ["Título"]]
         self._exp_model  = ""
         self._model      = None
         self._report_fit = ""

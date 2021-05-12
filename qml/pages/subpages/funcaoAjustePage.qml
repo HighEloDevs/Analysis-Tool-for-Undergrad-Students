@@ -9,14 +9,14 @@ Item {
     width: 366
     height: 598
 
-    property string expr: expression.text
-    property string initParams: p0.text
-    property int sigmax: switch_sigmax.checkState
-    property int sigmay: switch_sigmay.checkState
+    property alias expr: expression
+    property alias initParams: p0
+    property alias sigmax: switch_sigmax
+    property alias sigmay: switch_sigmay
 
     // Functions
     function clearTableParams(){
-            tableParams.clear()
+        tableParams.clear()
     }
 
     Rectangle {
