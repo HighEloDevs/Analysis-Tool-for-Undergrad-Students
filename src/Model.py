@@ -93,8 +93,12 @@ class Model(QtCore.QObject):
             df["sx"]           = 1
         else:
             self._data_json    = deepcopy(df)
-
-        df.columns = ['x', 'y', 'sy', 'sx']
+        try:
+            df.columns = ['x', 'y', 'sy', 'sx']
+        except ValueError as error:
+            # Há mais do que 4 colunas. Rever entrada de dados.
+            print(error)
+            return None
 
         # Turn everything into number (str -> number)
         df = df.astype(float)
@@ -126,7 +130,7 @@ class Model(QtCore.QObject):
         fileName = 'Dados Carregados do Projeto'
 
         # If no dataframe passed, loading data from the given path
-        if df is None and df_array is None:
+        if len(data_path) > 0:
             # Loading from .csv or (.txt and .tsv)
             data_path = QtCore.QUrl(data_path).toLocalFile()
             if data_path[-3:] == "csv":
@@ -136,9 +140,6 @@ class Model(QtCore.QObject):
                     # Separação de colunas de arquivos csv são com vírgula (","). Rever dados de entrada.
                     print(error)
                     return None
-                # except ValueError as error:
-                #     print(error)
-                #     return None
             else:
                 try:
                     df = pd.read_csv(data_path, sep='\t', header=None, dtype = str).dropna()
@@ -146,15 +147,12 @@ class Model(QtCore.QObject):
                     # Separação de colunas de arquivos txt e tsv são com tab. Rever dados de entrada.
                     print(error)
                     return None
-                # except ValueError as error:
-                #     print(error)
-                #     return None
             # Getting file name
             fileName = data_path.split('/')[-1]
         elif df is None:
             df = pd.DataFrame.from_records(df_array)
             df.columns = ['x', 'y', 'sy', 'sx', 'bool']
-            df = df.replace('', '0')
+            # df = df.replace('', '0')
             if df[df['sx'] != '0'].empty: del df['sx']
             if df[df['sy'] != '0'].empty: del df['sy']
 
@@ -280,30 +278,35 @@ class Model(QtCore.QObject):
         data = None
         if self._mode == 0:
             self.__fit_lm_wy(x, y, pi)
-            self.__set_param_values_lm_special()
-            self.__set_report_lm_special()
+            if (self._result is None) == False:
+                self.__set_param_values_lm_special()
+                self.__set_report_lm_special()
             
         elif self._mode == 1:
             if wsy:
                 self.__fit_lm_wy(x, y, pi)
-                self.__set_param_values_lm_special()
-                self.__set_report_lm_special()
+                if (self._result is None) == False:
+                    self.__set_param_values_lm_special()
+                    self.__set_report_lm_special()
 
             else:
                 self.__fit_lm(x, y, sy, pi)
-                self.__set_param_values_lm()
-                self.__set_report_lm()
+                if (self._result is None) == False:
+                    self.__set_param_values_lm()
+                    self.__set_report_lm()
 
         else:
             if wsx == True and wsy == True:
                 self.__fit_lm_wy(x, y, pi)
-                self.__set_param_values_lm_special()
-                self.__set_report_lm_special()
+                if (self._result is None) == False:
+                    self.__set_param_values_lm_special()
+                    self.__set_report_lm_special()
             
             elif wsx:
                 self.__fit_lm(x, y, sy, pi)
-                self.__set_param_values_lm()
-                self.__set_report_lm()
+                if (self._result is None) == False:
+                    self.__set_param_values_lm()
+                    self.__set_report_lm()
             
             elif wsy:
                 data = RealData(x, y, sx = sx)
@@ -340,7 +343,12 @@ class Model(QtCore.QObject):
         params = Parameters()
         for i in range(len(self._coef)):
             params.add(self._coef[i], pi[i])
-        self._result = self._model.fit(data = y, x = x, weights = 1/sy, params = params, scale_covar=False)
+        try:
+            self._result = self._model.fit(data = y, x = x, weights = 1/sy, params = params, scale_covar=False)
+        except ValueError as error:
+            # A função ajustada gera valores não numéricos, rever ajuste
+            print(error)
+            return None
     
     def __fit_lm_wy(self, x, y, pi):
         params = Parameters()
@@ -373,12 +381,13 @@ class Model(QtCore.QObject):
         self._params = Parameters()
         ngl          = len(self._data["x"]) - len(self._coef)
         inc_cons     = np.sqrt(self._result.chisqr/ngl)
-        # inc_cons_q   = inc_cons**2
         for i in range(len(self._coef)):
             self._params.add(self._coef[i], self._result.values[self._coef[i]])
             self._dict.update({self._coef[i]: [self._result.values[self._coef[i]], np.sqrt(self._result.covar[i, i])*inc_cons]})
             self._dict2.update({self._coef[i]: [self._result.values[self._coef[i]], np.sqrt(self._result.covar[i, i])]})
-
+        # else:
+        #     print("is none")
+        #     return None
     def __set_param_values_ODR(self):
         self._dict.clear()
         self._params = Parameters()

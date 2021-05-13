@@ -112,7 +112,6 @@ class SinglePlot(QtCore.QObject):
             p0 = fitProps['p0']
             p0 = p0.replace(';', ',')
             p0 = p0.replace('/', ',')
-            p0 = list(map(lambda x: float(x), p0.split(',')))
             self.model.set_p0(p0)
 
         # Setting style of the plot 
