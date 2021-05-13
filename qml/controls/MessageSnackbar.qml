@@ -100,7 +100,7 @@ Popup{
     enter: Transition {
         NumberAnimation { property: "opacity"; from: 0.0; to: 1.0; duration: 200 }
     }
-    onOpened: {
-        progressBarAnimation.running= true
+    onAboutToShow: {
+        progressBarAnimation.restart()
     }
 }
