@@ -45,6 +45,7 @@ Popup{
                 id: progressBarAnimation
                 target: progressBar
                 property: "width"
+                from: 0
                 to: bg.width
                 duration: root.timer
             }
@@ -61,7 +62,7 @@ Popup{
             text: root.message
             color: '#fff'
             font.pointSize: 13
-            minimumPointSize: 8
+            minimumPointSize: 10
             fontSizeMode: Text.Fit
             maximumLineCount: 2
             wrapMode: Text.Wrap
