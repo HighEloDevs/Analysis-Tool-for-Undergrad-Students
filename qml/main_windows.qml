@@ -29,10 +29,8 @@ Window {
     property int windowMargin: 0
     property int stackedPage: 0
 
-    PopupSaveFig{
-        width: 300
-        height: 400
-        id: poputSaveFig
+    MessageSnackbar{
+        id: messageSnackbar
     }
 
     PopupUpdate {
@@ -1052,10 +1050,25 @@ Window {
         }
     }
 
+    Connections{
+        target: messageHandler
+
+        function onShowMessage(message, type){
+            console.log(message, type)
+            messageSnackbar.message = message
+            messageSnackbar.type    = type
+            if(type === 'error'){
+                messageSnackbar.timer = 8000
+            } else if(type === 'warn'){
+                messageSnackbar.timer = 4000
+            }
+            messageSnackbar.open()
+        }
+    }
+
     Component.onCompleted: {
         updater.checkUpdate()
         labelVersion.text = updater.getVersion()
-        // mainWindow.showMaximized()
     }
 }
 

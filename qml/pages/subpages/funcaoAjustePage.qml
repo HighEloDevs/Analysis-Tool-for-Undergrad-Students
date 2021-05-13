@@ -161,21 +161,6 @@ Item {
             infos.text = expr
         }
     }
-    
-    Connections{
-        target: projectMngr
-
-        function onFillFuncPage(expr, pi, sx, sy){
-            expression.text = expr
-            p0.text = pi
-            switch_sigmax.checked = sx
-            switch_sigmay.checked = sy
-        }
-
-        function onClearTableParams(){
-            tableParams.clear()
-        }
-    }
 }
 
 /*##^##

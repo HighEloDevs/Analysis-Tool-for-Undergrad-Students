@@ -23,17 +23,17 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-import sys
 import os
+import sys
 import platform
+from src.Model import Model
+from src.Plot import SinglePlot 
+from src.MultiPlot import Multiplot
+from src.MatPlotLib import MPLCanvas
+from src.UpdateChecker import UpdateChecker
+from src.MessageHandler import MessageHandler
 from matplotlib_backend_qtquick.qt_compat import QtGui, QtQml, QtCore
 from matplotlib_backend_qtquick.backend_qtquickagg import FigureCanvasQtQuickAgg
-from src.Plot import SinglePlot 
-from src.MatPlotLib import MPLCanvas
-from src.Model import Model
-from src.ProjectManager import ProjectManager
-from src.MultiPlot import Multiplot
-from src.UpdateChecker import UpdateChecker
 
 if __name__ == "__main__":
     # Matplotlib stuff
@@ -48,12 +48,12 @@ if __name__ == "__main__":
     app.setWindowIcon(QtGui.QIcon(os.path.join(os.path.dirname(__file__), "images/main_icon/ATUS_icon.png")))
     engine = QtQml.QQmlApplicationEngine()
 
+    messageHandler  = MessageHandler()
     canvas          = MPLCanvas()
     model           = Model() 
     singlePlot      = SinglePlot(canvas, model)
     multiPlot       = Multiplot(canvas)
     updater         = UpdateChecker()
-    projectMngr     = ProjectManager(canvas, model)
 
     # Creating 'link' between front-end and back-end
     context = engine.rootContext()
@@ -61,8 +61,8 @@ if __name__ == "__main__":
     context.setContextProperty("multiPlot", multiPlot)
     context.setContextProperty("canvas", canvas)
     context.setContextProperty("model", model)
-    context.setContextProperty("projectMngr", projectMngr)
     context.setContextProperty("updater", updater)
+    context.setContextProperty("messageHandler", messageHandler)
     
     # Loading QML files
     plat = platform.system()
@@ -75,8 +75,8 @@ if __name__ == "__main__":
     # Updating canvasPlot with the plot
     win = engine.rootObjects()[0]
     canvas.updateWithCanvas(win.findChild(QtCore.QObject, "canvasPlot"))
-    
-    # Stopping program if PySide fails loading the file
+
+    # Stopping program if PyQt fails loading the file
     if not engine.rootObjects():
         sys.exit(-1)    
 
