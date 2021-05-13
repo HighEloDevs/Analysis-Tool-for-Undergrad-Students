@@ -29,8 +29,6 @@ Popup{
         id: bg
         anchors.fill: parent
         color: dynamicColor
-        smooth: true
-        clip: true
         radius: 2
 
         Rectangle{
@@ -53,16 +51,24 @@ Popup{
         }
     }
 
-    contentItem: RowLayout{
-        anchors.centerIn: parent
+    contentItem: RowLayout{ 
         Text{
             Layout.fillWidth: true
+            Layout.fillHeight: true
+            Layout.alignment: Qt.AlignVCenter
+
+            verticalAlignment: Text.AlignVCenter
             text: root.message
             color: '#fff'
-            font.pointSize: 11
+            font.pointSize: 13
+            minimumPointSize: 8
+            fontSizeMode: Text.Fit
+            maximumLineCount: 2
             wrapMode: Text.Wrap
         }
         TextButton{
+            Layout.fillHeight: true
+            Layout.alignment: Qt.AlignVCenter
             primaryColor: root.dynamicColor
             hoverColor: root.dynamicColor
             clickColor: root.dynamicColor
