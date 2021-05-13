@@ -48,6 +48,20 @@ Popup{
                 from: 0
                 to: bg.width
                 duration: root.timer
+
+                onFinished:{
+                    root.close()
+                }
+            }
+        }
+
+        MouseArea{
+            anchors.fill: parent
+            onPressed: {
+                progressBarAnimation.paused = true
+            }
+            onReleased: {
+                progressBarAnimation.paused = false 
             }
         }
     }
@@ -80,12 +94,6 @@ Popup{
         }
     }
 
-    Timer {
-        id: popupClose
-        interval: root.timer
-        onTriggered: root.close()
-    }
-
     exit: Transition {
         NumberAnimation { property: "opacity"; from: 1.0; to: 0.0; duration: 200 }
     }
@@ -93,7 +101,6 @@ Popup{
         NumberAnimation { property: "opacity"; from: 0.0; to: 1.0; duration: 200 }
     }
     onOpened: {
-        popupClose.running = true
         progressBarAnimation.running= true
     }
 }
