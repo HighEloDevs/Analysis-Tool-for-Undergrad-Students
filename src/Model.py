@@ -40,8 +40,9 @@ class Model(QtCore.QObject):
     fillParamsTable = QtCore.Signal(str, float, float, arguments=['param', 'value', 'uncertainty'])
     writeInfos = QtCore.Signal(str, arguments='expr')
 
-    def __init__(self):
+    def __init__(self, messageHandler):
         super().__init__()
+        self._msgHandler = messageHandler
         self._data       = None
         self._data_json  = None
         self._exp_model  = ""
@@ -96,8 +97,9 @@ class Model(QtCore.QObject):
         try:
             df.columns = ['x', 'y', 'sy', 'sx']
         except ValueError as error:
+            self._msgHandler.raiseError("Há mais do que 4 colunas. Rever entrada de dados.")
             # Há mais do que 4 colunas. Rever entrada de dados.
-            print(error)
+            # print(error)
             return None
 
         # Turn everything into number (str -> number)
@@ -137,15 +139,17 @@ class Model(QtCore.QObject):
                 try:
                     df = pd.read_csv(data_path, sep=',', header=None, dtype = str).dropna()
                 except pd.errors.ParserError as error:
+                    self._msgHandler.raiseError("Separação de colunas de arquivos csv são com vírgula (","). Rever dados de entrada.")
                     # Separação de colunas de arquivos csv são com vírgula (","). Rever dados de entrada.
-                    print(error)
+                    # print(error)
                     return None
             else:
                 try:
                     df = pd.read_csv(data_path, sep='\t', header=None, dtype = str).dropna()
                 except pd.errors.ParserError as error:
+                    self._msgHandler.raiseError("Separação de colunas de arquivos txt e tsv são com tab. Rever dados de entrada.")
                     # Separação de colunas de arquivos txt e tsv são com tab. Rever dados de entrada.
-                    print(error)
+                    # print(error)
                     return None
             # Getting file name
             fileName = data_path.split('/')[-1]
@@ -172,6 +176,7 @@ class Model(QtCore.QObject):
             try:
                 df[i] = df[i].astype(float)
             except ValueError as error:
+                self._msgHandler.raiseError("A entrada de dados só permite entrada de números. Rever arquivo de entrada.")
                 # Há células não numéricas. A entrada de dados só permite entrada de números. Rever arquivo de entrada.
                 print(error)
                 return None

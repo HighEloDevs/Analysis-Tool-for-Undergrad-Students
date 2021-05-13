@@ -50,7 +50,7 @@ if __name__ == "__main__":
 
     messageHandler  = MessageHandler()
     canvas          = MPLCanvas()
-    model           = Model() 
+    model           = Model(messageHandler) 
     singlePlot      = SinglePlot(canvas, model)
     multiPlot       = Multiplot(canvas)
     updater         = UpdateChecker()
@@ -76,7 +76,7 @@ if __name__ == "__main__":
     win = engine.rootObjects()[0]
     canvas.updateWithCanvas(win.findChild(QtCore.QObject, "canvasPlot"))
 
-    messageHandler.raiseSuccess('deu ruim')
+    # messageHandler.raiseSuccess('deu ruim')
 
     # Stopping program if PyQt fails loading the file
     if not engine.rootObjects():
