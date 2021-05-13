@@ -122,6 +122,8 @@ class Model(QtCore.QObject):
                 df[i] = df[i].astype(str)
             self.load_data(df=df)
         except Exception:
+            self._msgHandler.raiseError("Falha ao carregar clipboard. Rever dados de entrada.")
+            # Falha ao carregar clipboard. Rever dados de entrada.
             print(Exception)
                 
     @QtCore.Slot(str)
@@ -178,7 +180,7 @@ class Model(QtCore.QObject):
             except ValueError as error:
                 self._msgHandler.raiseError("A entrada de dados só permite entrada de números. Rever arquivo de entrada.")
                 # Há células não numéricas. A entrada de dados só permite entrada de números. Rever arquivo de entrada.
-                print(error)
+                # print(error)
                 return None
 
         # Getting mode:
@@ -204,8 +206,9 @@ class Model(QtCore.QObject):
             try:
                 self._data_json.columns = ['x', 'y', 'sy', 'sx']
             except ValueError as error:
+                self._msgHandler.raiseError("Há mais do que 4 colunas. Rever entrada de dados.")
                 # Há mais do que 4 colunas. Rever entrada de dados.
-                print(error)
+                # print(error)
                 return None
 
         df.columns     = ['x', 'y', 'sy', 'sx']
@@ -257,8 +260,9 @@ class Model(QtCore.QObject):
         except ValueError:
             self._model = ExpressionModel(self._exp_model + " + 0*x")
         except SyntaxError as error:
+            self._msgHandler.raiseError("Expressão de ajuste escrita de forma errada. Rever função de ajuste.")
             # Expressão de ajuste escrita de forma errada. Rever função de ajuste.
-            print(error)
+            # print(error)
             return None
 
         # Getting coefficients
@@ -351,8 +355,9 @@ class Model(QtCore.QObject):
         try:
             self._result = self._model.fit(data = y, x = x, weights = 1/sy, params = params, scale_covar=False)
         except ValueError as error:
-            # A função ajustada gera valores não numéricos, rever ajuste
-            print(error)
+            self._msgHandler.raiseError("A função ajustada gera valores não numéricos, rever ajuste.")
+            # A função ajustada gera valores não numéricos, rever ajuste.
+            # print(error)
             return None
     
     def __fit_lm_wy(self, x, y, pi):
@@ -362,8 +367,9 @@ class Model(QtCore.QObject):
         try:
             self._result = self._model.fit(data = y, x = x, params = params, scale_covar=False)
         except ValueError as error:
+            self._msgHandler.raiseError("A função ajustada gera valores não numéricos, rever ajuste.")
             # A função ajustada gera valores não numéricos, rever ajuste
-            print(error)
+            # print(error)
             return None
         
     def get_params(self):
@@ -437,8 +443,9 @@ class Model(QtCore.QObject):
             self._report_fit += "\nMatriz de correlação:\n\n" + str(matriz_corr) + "\n\n"
             self._isvalid     = True
         except TypeError as error:
+            self._msgHandler.raiseError("A função ajustada provavelmente não possui parâmetros para serem ajustados. Rever ajuste.")
             # A função ajustada provavelmente não possui parâmetros para serem ajustados. Rever ajuste.
-            print(error)
+            # print(error)
             return None
             
 
@@ -491,6 +498,7 @@ class Model(QtCore.QObject):
         self._coef       = list()
         self._params     = Parameters()
         self._dict       = dict()
+        self._dict2      = dict()
         self._p0         = None
         self._mode       = 0
         self._has_data   = False
