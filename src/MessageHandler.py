@@ -42,5 +42,5 @@ class MessageHandler(QtCore.QObject):
     def raiseError(self, message=''):
         self.showMessage.emit(message, 'error')
 
-    def raiseSuccess(self, message=''):
+    def w(self, message=''):
         self.showMessage.emit(message, 'success')

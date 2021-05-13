@@ -24,7 +24,6 @@ SOFTWARE.
 """
 from matplotlib_backend_qtquick.backend_qtquick import NavigationToolbar2QtQuick
 from matplotlib_backend_qtquick.qt_compat import QtCore
-from .Model_multiplot import MultiModel
 import numpy as np
 
 class MPLCanvas(QtCore.QObject):

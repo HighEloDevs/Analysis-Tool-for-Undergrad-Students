@@ -6,8 +6,8 @@ import QtQuick.Dialogs 1.3
 import QtQuick.Layouts 1.11
 import Canvas 1.0
 
-import "controls"
 import "."
+import "controls"
 import "colors.js" as Colors
 
 Window {
@@ -25,6 +25,10 @@ Window {
     property int windowStatus: 0
     property int windowMargin: 0
     property int stackedPage: 0
+
+    MessageSnackbar{
+        id: messageSnackbar
+    }
 
     PopupUpdate {
         id: updatePopup
@@ -205,92 +209,6 @@ Window {
                         antialiasing: true
                     }
                 }
-
-                // Rectangle {
-                //     id: titleBar
-                //     height: 35
-                //     color: "#00000000"
-                //     anchors.left: parent.left
-                //     anchors.right: parent.right
-                //     anchors.top: parent.top
-                //     anchors.rightMargin: 105
-                //     anchors.leftMargin: 70
-                //     anchors.topMargin: 0
-
-                //     DragHandler{
-                //         onActiveChanged: if(active){
-                //                              mainWindow.startSystemMove()
-                //                              internal.ifMaximizedWindowRestore()
-                //                          }
-                //     }
-
-                //     MouseArea{
-                //         anchors.fill: parent
-                //         onDoubleClicked: internal.maximizeRestore()
-                //     }
-
-                //     Image {
-                //         id: iconApp
-                //         width: 22
-                //         height: 22
-                //         anchors.left: parent.left
-                //         anchors.top: parent.top
-                //         anchors.bottom: parent.bottom
-                //         source: ""
-                //         anchors.leftMargin: 5
-                //         anchors.bottomMargin: 0
-                //         anchors.topMargin: 0
-                //         fillMode: Image.PreserveAspectFit
-                //     }
-
-                //     Label {
-                //         id: appTitle
-                //         color: Colors.fontColor
-                //         text: qsTr("Analysis Tool for Undergrad Students")
-                //         anchors.left: iconApp.right
-                //         anchors.right: parent.right
-                //         anchors.top: parent.top
-                //         anchors.bottom: parent.bottom
-                //         horizontalAlignment: Text.AlignHCenter
-                //         verticalAlignment: Text.AlignVCenter
-                //         font.pointSize: 10
-                //         anchors.leftMargin: 5
-                //     }
-                // }
-
-                // Row {
-                //     id: rowBtns
-                //     x: 910
-                //     width: 105
-                //     height: 35
-                //     anchors.right: parent.right
-                //     anchors.top: parent.top
-                //     transformOrigin: Item.Center
-                //     anchors.rightMargin: 0
-                //     anchors.topMargin: 0
-
-                //     TopBarButton {
-                //         id: btnMinimize
-                //         onClicked: {
-                //             internal.restoreMargins()
-                //             mainWindow.showMinimized()
-                //         }
-                //     }
-
-                //     TopBarButton {
-                //         id: btnMaximizeRestore
-                //         btnIconSource: "../images/svg_images/maximize_icon.svg"
-                //         onClicked: internal.maximizeRestore()
-                //     }
-
-                //     TopBarButton {
-                //         id: btnClose
-                //         btnColorClicked: "#f00"
-                //         btnIconSource: "../images/svg_images/close_icon.svg"
-                //         onClicked: mainWindow.close()
-                //     }
-                // }
-
             }
 
             Rectangle {
@@ -995,6 +913,21 @@ Window {
     }
 
     Connections{
+    target: messageHandler
+
+        function onShowMessage(message, type){
+            messageSnackbar.message = message
+            messageSnackbar.type    = type
+            if(type === 'error'){
+                messageSnackbar.timer = 8000
+            } else if(type === 'warn'){
+                messageSnackbar.timer = 4000
+            }
+            messageSnackbar.open()
+        }
+    }
+
+    Connections{
         target: updater
         function onShowUpdate(infos){
             updatePopup.updateLog = infos['body']
@@ -1008,13 +941,6 @@ Window {
 
     Component.onCompleted: updater.checkUpdate()
 }
-
-
-
-
-
-
-
 
 /*##^##
 Designer {

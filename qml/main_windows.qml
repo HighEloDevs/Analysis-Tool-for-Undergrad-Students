@@ -1054,7 +1054,6 @@ Window {
         target: messageHandler
 
         function onShowMessage(message, type){
-            console.log(message, type)
             messageSnackbar.message = message
             messageSnackbar.type    = type
             if(type === 'error'){

@@ -25,12 +25,12 @@ SOFTWARE.
 
 import numpy as np
 import pandas as pd
-from io import StringIO
-from scipy.odr import ODR, Model as SciPyModel, Data, RealData
 from matplotlib_backend_qtquick.qt_compat import QtCore, QtGui
+from scipy.odr import ODR, Model as SciPyModel, RealData
 from lmfit.models import ExpressionModel
 from lmfit import Parameters
 from copy import deepcopy
+from io import StringIO
 
 class Model(QtCore.QObject):
     """Class used for fit

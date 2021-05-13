@@ -23,11 +23,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-from matplotlib_backend_qtquick.backend_qtquick import NavigationToolbar2QtQuick
-from matplotlib_backend_qtquick.qt_compat import QtCore
 import numpy as np
-from numpy import array
+from matplotlib_backend_qtquick.qt_compat import QtCore
 from scipy.stats import chi2, norm, t
+from numpy import array
 
 def calc_chi2_sim(ngl, nc):
     return array([chi2.ppf(0.5 - nc/2, ngl), chi2.ppf(0.5 + nc/2, ngl)])

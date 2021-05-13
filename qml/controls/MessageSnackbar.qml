@@ -8,10 +8,10 @@ import "../controls"
 Popup{
     id: root
     width: 400
-    height: 60
+    height: 50
     closePolicy: Popup.CloseOnEscape
     transformOrigin: Popup.Right
-    x: parent.width - width - 50
+    x: parent.width - width - 30
     y: parent.height - 100
 
     property int    timer        : 3000

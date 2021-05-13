@@ -23,7 +23,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-from os import error
 from matplotlib_backend_qtquick.qt_compat import QtCore
 import requests
 
