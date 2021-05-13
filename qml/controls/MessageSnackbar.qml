@@ -26,12 +26,35 @@ Popup{
                                     }
         
     background: Rectangle{
-        color: dynamicColor
+        id: bg
         anchors.fill: parent
-        radius: 5
+        color: dynamicColor
+        smooth: true
+        clip: true
+        radius: 2
+
+        Rectangle{
+            id: progressBar
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: 0
+            color: '#fff'
+            radius: 20
+            height: 2
+            width: 0
+            x: 0
+
+            PropertyAnimation { 
+                id: progressBarAnimation
+                target: progressBar
+                property: "width"
+                to: bg.width
+                duration: root.timer
+            }
+        }
     }
 
     contentItem: RowLayout{
+        anchors.centerIn: parent
         Text{
             Layout.fillWidth: true
             text: root.message
@@ -52,7 +75,7 @@ Popup{
 
     Timer {
         id: popupClose
-        interval: 5000
+        interval: root.timer
         onTriggered: root.close()
     }
 
@@ -62,6 +85,8 @@ Popup{
     enter: Transition {
         NumberAnimation { property: "opacity"; from: 0.0; to: 1.0; duration: 200 }
     }
-
-    Component.onCompleted: popupClose.running = true
+    onOpened: {
+        popupClose.running = true
+        progressBarAnimation.running= true
+    }
 }

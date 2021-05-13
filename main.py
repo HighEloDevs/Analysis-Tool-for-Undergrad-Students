@@ -76,6 +76,8 @@ if __name__ == "__main__":
     win = engine.rootObjects()[0]
     canvas.updateWithCanvas(win.findChild(QtCore.QObject, "canvasPlot"))
 
+    messageHandler.raiseError('deu ruim')
+
     # Stopping program if PyQt fails loading the file
     if not engine.rootObjects():
         sys.exit(-1)    
