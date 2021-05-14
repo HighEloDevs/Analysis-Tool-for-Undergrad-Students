@@ -2,9 +2,7 @@ title: ATUS
 author:
   name: Equipe ATUS
   email: atusdevs@gmail.com
+  
+show_excerpts: false
 
 theme: minima
-
-plugins:
- - jekyll-feed
- - jekyll-seo-tag
