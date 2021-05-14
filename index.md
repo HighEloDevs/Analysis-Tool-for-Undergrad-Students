@@ -1,6 +1,6 @@
 layout: page
 title: "index"
-permalink: /https://highelodevs.github.io/Analysis-Tool-for-Undergrad-Students//
+permalink: /
 
 ## Analysis Tool for Undergrad Students
 
