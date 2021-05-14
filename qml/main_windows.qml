@@ -4,7 +4,7 @@ import QtQuick.Controls 2.15
 import QtGraphicalEffects 1.15
 import QtQuick.Dialogs 1.3
 import QtQuick.Layouts 1.11
-import Canvas 1.0
+// import Canvas 1.0
 
 import "controls"
 import "."
@@ -169,7 +169,6 @@ Window {
                         anchors.rightMargin: 10
                         anchors.leftMargin: 0
                         anchors.topMargin: 0
-
                     }
                 }
 
@@ -249,7 +248,7 @@ Window {
                     Label {
                         id: appTitle
                         color: Colors.fontColor
-                        text: qsTr("Analysis Tool for Undergrad Students")
+                        text: qsTr("")
                         anchors.left: iconApp.right
                         anchors.right: parent.right
                         anchors.top: parent.top
@@ -261,12 +260,13 @@ Window {
                     }
                 }
 
-                Row {
+                RowLayout {
                     id: rowBtns
                     height: 35
                     anchors.left: titleBar.right
                     anchors.right: parent.right
                     anchors.top: parent.top
+                    layoutDirection: Qt.LeftToRight
                     anchors.leftMargin: 0
                     transformOrigin: Item.Center
                     anchors.rightMargin: 0
@@ -274,15 +274,14 @@ Window {
 
                     IconTextButton {
                         id: siteBtn
+                        Layout.fillHeight: true
 
-                        anchors.top: parent.top
-                        anchors.bottom: parent.bottom
-                        anchors.topMargin: 0
-                        anchors.bottomMargin: 0
+                        Layout.fillWidth: true
 
                         flat: false
                         texto: "Documentação"
                         iconUrl: qsTr("../../images/icons/ios_share_white_24dp.svg")
+                        textSize: 12
 
                         primaryColor: 'transparent'
                         clickColor: Colors.c_button_active
@@ -293,13 +292,10 @@ Window {
 
                     IconButton{
                         width: 35
-                        anchors.top: parent.top
-                        anchors.bottom: parent.bottom
-                        anchors.topMargin: 0
-                        anchors.bottomMargin: 0
-                        r: 0
+                        Layout.fillHeight: true
                         iconUrl: '../../images/icons/github-36px.svg'
                         iconWidth: 22
+                        r: 0
 
                         primaryColor: 'transparent'
                         clickColor: Colors.c_button_active
@@ -854,7 +850,6 @@ Window {
 
                                                 onClicked:{
                                                     fileSaver.open()
-                                                    // poputSaveFig.open()
                                                 }
 
                                                 FileDialog{
@@ -875,12 +870,12 @@ Window {
                                             Layout.fillHeight: true
                                             Layout.fillWidth: true
 
-                                           FigureCanvas {
-                                                   id: mplView
-                                                   objectName : "canvasPlot"
-                                                   dpi_ratio: Screen.devicePixelRatio
-                                                   anchors.fill: parent
-                                           }
+                                        //    FigureCanvas {
+                                        //            id: mplView
+                                        //            objectName : "canvasPlot"
+                                        //            dpi_ratio: Screen.devicePixelRatio
+                                        //            anchors.fill: parent
+                                        //    }
                                         }
 
                                         Rectangle {
@@ -911,7 +906,7 @@ Window {
                     Rectangle {
                         id: footer1
                         color: Colors.color2
-                        Layout.preferredHeight: 25
+                        Layout.preferredHeight: 20
                         Layout.fillWidth: true
 
                         Label {
@@ -928,7 +923,7 @@ Window {
                             x: 1183
                             y: 0
                             width: 25
-                            height: 25
+                            height: 20
                             anchors.right: parent.right
                             anchors.bottom: parent.bottom
                             anchors.rightMargin: 0
@@ -938,8 +933,11 @@ Window {
                             Image {
                                 id: image
                                 width: 25
-                                height: 25
+                                height: 20
                                 source: "../images/svg_images/resize_icon.svg"
+                                autoTransform: false
+                                smooth: true
+                                mipmap: false
                                 fillMode: Image.PreserveAspectFit
                             }
 
@@ -1072,3 +1070,9 @@ Window {
 }
 
 
+
+/*##^##
+Designer {
+    D{i:0;autoSize:true;height:480;width:640}
+}
+##^##*/
