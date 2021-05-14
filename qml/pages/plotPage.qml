@@ -66,7 +66,7 @@ Item {
     })
 
     Shortcut {
-        sequence: "Ctrl+Space"
+        sequences: ["Ctrl+B", "Ctrl+Space"]
         onActivated: {
             table.clear()
             model.loadDataClipboard()
