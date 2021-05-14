@@ -177,7 +177,7 @@ Item{
                                             anchors.fill: parent
                                             anchors.rightMargin: 5
                                             anchors.leftMargin: 5
-                                            font.pixelSize: 13
+                                            font.pixelSize: 12
                                             color: 'white'
                                             clip: true
                                             selectByMouse: true
@@ -186,7 +186,7 @@ Item{
                                             verticalAlignment: TextEdit.AlignVCenter
                                             wrapMode: TextInput.WrapAnywhere
                                             readOnly: !edit
-                                            inputMethodHints: Qt.ImhDigitsOnly
+                                            validator: RegExpValidator{regExp: /^[\-]?[0-9]+([\.]?[0-9]+)?$/}
 
                                             Keys.onReturnPressed: {
                                                 let keys = ['x_v', 'y_v', 'sy', 'sx']
