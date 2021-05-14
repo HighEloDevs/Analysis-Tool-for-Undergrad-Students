@@ -9,5 +9,5 @@ Uma ferramenta desenvolvida por estudantes da Universidade de São Paulo, visand
 Instruções para instalação podem ser encontradas [aqui](https://highelodevs.github.io/Analysis-Tool-for-Undergrad-Students/).
 
 <a name="licensa"/></a>
-## Licensa
+## Licença
 MIT
