@@ -217,29 +217,29 @@ class Model(QtCore.QObject):
         
         if df_array is None:
             if self._has_sx and self._has_sy:
-                for i in range(len(self._data["x"])):
+                for i in self._data_json.index:
                     self.fillDataTable.emit(self._data_json["x"][i], self._data_json["y"][i], self._data_json["sy"][i], self._data_json["sx"][i], '1', fileName)
             elif self._has_sx:
-                for i in range(len(self._data["x"])):
+                for i in self._data_json.index:
                     self.fillDataTable.emit(self._data_json["x"][i], self._data_json["y"][i], str(0), self._data_json["sx"][i], '1', fileName)
             elif self._has_sy:
-                for i in range(len(self._data["x"])):
+                for i in self._data_json.index:
                     self.fillDataTable.emit(self._data_json["x"][i], self._data_json["y"][i], self._data_json["sy"][i], str(0), '1', fileName)
             else:
-                for i in range(len(self._data["x"])):
+                for i in self._data_json.index:
                     self.fillDataTable.emit(self._data_json["x"][i], self._data_json["y"][i], str(0), str(0), '1', fileName)
         else:
             if self._has_sx and self._has_sy:
-                for i in range(len(self._data["x"])):
+                for i in self._data_json.index:
                     self.fillDataTable.emit(self._data_json["x"][i], self._data_json["y"][i], self._data_json["sy"][i], self._data_json["sx"][i], bools[i], fileName)
             elif self._has_sx:
-                for i in range(len(self._data["x"])):
+                for i in self._data_json.index:
                     self.fillDataTable.emit(self._data_json["x"][i], self._data_json["y"][i], str(0), self._data_json["sx"][i], bools[i], fileName)
             elif self._has_sy:
-                for i in range(len(self._data["x"])):
+                for i in self._data_json.index:
                     self.fillDataTable.emit(self._data_json["x"][i], self._data_json["y"][i], self._data_json["sy"][i], str(0), bools[i], fileName)
             else:
-                for i in range(len(self._data["x"])):
+                for i in self._data_json.index:
                     self.fillDataTable.emit(self._data_json["x"][i], self._data_json["y"][i], str(0), str(0), bools[i], fileName)
 
     def set_p0(self, p0):
@@ -359,6 +359,11 @@ class Model(QtCore.QObject):
             # A função ajustada gera valores não numéricos, rever ajuste.
             # print(error)
             return None
+        except TypeError as error:
+            self._msgHandler.raiseError("A função ajustada possui algum termo inválido, rever ajuste.")
+            # A função ajustada possui algum termo inválido, rever ajuste.
+            # print(error)
+            return None
     
     def __fit_lm_wy(self, x, y, pi):
         params = Parameters()
@@ -368,7 +373,12 @@ class Model(QtCore.QObject):
             self._result = self._model.fit(data = y, x = x, params = params, scale_covar=False)
         except ValueError as error:
             self._msgHandler.raiseError("A função ajustada gera valores não numéricos, rever ajuste.")
-            # A função ajustada gera valores não numéricos, rever ajuste
+            # A função ajustada gera valores não numéricos, rever ajuste.
+            # print(error)
+            return None
+        except TypeError as error:
+            self._msgHandler.raiseError("A função ajustada possui algum termo inválido, rever ajuste.")
+            # A função ajustada possui algum termo inválido, rever ajuste.
             # print(error)
             return None
         
