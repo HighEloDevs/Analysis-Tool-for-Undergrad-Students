@@ -1,3 +1,7 @@
+---
+layout: home
+---
+
 ## Analysis Tool for Undergrad Students
 
 O **A**nalysis **T**ool for **U**ndergrad **S**tudents (ATUS) foi desenvolvido por estudantes do Instituto de Física da USP com o objetivo de ser uma ferramenta _offline_ e gratuita de análise dados para, principalmente, as disciplinas experimentais do IFUSP.
