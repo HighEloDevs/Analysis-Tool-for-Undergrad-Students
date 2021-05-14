@@ -1,1 +1,10 @@
+title: ATUS
+author:
+  name: Equipe ATUS
+  email: atusdevs@gmail.com
+
 theme: minima
+
+plugins:
+ - jekyll-feed
+ - jekyll-seo-tag
