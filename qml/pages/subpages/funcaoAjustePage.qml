@@ -40,7 +40,7 @@ Item {
                 Layout.columnSpan: 4
                 focusColor: Colors.mainColor2
                 title: 'Expressão | y(x) ='
-                textHolder: 'Função a ser ajustada'
+                textHolder: 'Função a ser ajustada. Ex.: a*x + b'
                 defaultColor: '#fff'
                 textColor: '#fff'
                 validator: RegExpValidator{regExp: /^[0-9a-zA-Z.()*^_+-/ ]+$/}

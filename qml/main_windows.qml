@@ -25,7 +25,7 @@ Window {
     flags: Qt.Window | Qt.FramelessWindowHint
 
     // Properties
-    property int windowStatus: 0
+    property int windowStatus: 1
     property int windowMargin: 0
     property int stackedPage: 0
 
@@ -319,7 +319,7 @@ Window {
 
                     TopBarButton {
                         id: btnMaximizeRestore
-                        btnIconSource: "../images/svg_images/maximize_icon.svg"
+                        btnIconSource: "../images/svg_images/restore_icon.svg"
                         onClicked: internal.maximizeRestore()
                     }
 

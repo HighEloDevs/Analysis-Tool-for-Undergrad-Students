@@ -35,8 +35,6 @@ class SinglePlot(QtCore.QObject):
     writeCalculator       = QtCore.Signal(str, arguments='expr')
     fillPlotPageSignal    = QtCore.Signal(QtCore.QJsonValue, arguments='props')
     plot                  = QtCore.Signal()
-    # writeInfos      = QtCore.Signal(str, arguments='expr')
-    # emitData        = QtCore.Signal()
 
     def __init__(self, canvas, model):
         super().__init__()

@@ -37,7 +37,7 @@ Button{
             anchors.horizontalCenter: parent.horizontalCenter
             source: iconUrl
             mipmap: true
-            // smooth: true
+            smooth: true
             fillMode: Image.PreserveAspectFit
         }
 

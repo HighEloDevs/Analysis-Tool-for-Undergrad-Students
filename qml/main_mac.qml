@@ -14,7 +14,7 @@ Window {
     id: mainWindow
 
     minimumWidth: 1000
-    minimumHeight: 400
+    minimumHeight: 600
     visibility: Window.Maximized
     visible: true
     color: "#00000000"
@@ -124,10 +124,6 @@ Window {
                 anchors.rightMargin: 0
                 anchors.leftMargin: 0
                 anchors.topMargin: 0
-
-                // ToggleButton{
-                //     onClicked: animationMenu.running = true
-                // }
 
                 Rectangle {
                     id: topBarDescription
@@ -791,11 +787,20 @@ Window {
                         Layout.fillWidth: true
 
                         Label {
-                            id: labelLeftInfo1
+                            id: labelVersion
                             color: Colors.fontColor
+                            anchors.verticalCenter: parent.verticalCenter
                             horizontalAlignment: Text.AlignLeft
                             verticalAlignment: Text.AlignVCenter
+                            leftPadding: 10
                         }
+
+                        // Label {
+                        //     id: labelLeftInfo1
+                        //     color: Colors.fontColor
+                        //     horizontalAlignment: Text.AlignLeft
+                        //     verticalAlignment: Text.AlignVCenter
+                        // }
 
                         MouseArea {
                             id: resizeBottomRight
@@ -939,7 +944,10 @@ Window {
         }
     }
 
-    Component.onCompleted: updater.checkUpdate()
+    Component.onCompleted: {
+        updater.checkUpdate()
+        labelVersion.text = updater.getVersion()
+    }
 }
 
 /*##^##

@@ -114,7 +114,7 @@ Item {
                             textHolder: 'Menor valor de X no gráfico'
                             defaultColor: '#fff'
                             textColor: '#fff'
-                            validator: RegExpValidator{regExp: /^[0-9]+([\.\-]?[0-9]+)?$/}
+                            validator: RegExpValidator{regExp: /^[\-]?[0-9]+([\.]?[0-9]+)?$/}
                         }
                         TextInputCustom{
                             id: xmax
@@ -124,7 +124,7 @@ Item {
                             textHolder: 'Maior valor de X no gráfico'
                             defaultColor: '#fff'
                             textColor: '#fff'
-                            validator: RegExpValidator{regExp: /^[0-9]+([\.\-]?[0-9]+)?$/}
+                            validator: RegExpValidator{regExp: /^[\-]?[0-9]+([\.]?[0-9]+)?$/}
                         }
                         TextInputCustom{
                             id: xdiv
@@ -173,7 +173,7 @@ Item {
                             textHolder: 'Menor valor de Y no gráfico'
                             defaultColor: '#fff'
                             textColor: '#fff'
-                            validator: RegExpValidator{regExp: /^[0-9]+([\.\-]?[0-9]+)?$/}
+                            validator: RegExpValidator{regExp: /^[\-]?[0-9]+([\.]?[0-9]+)?$/}
                         }
                         TextInputCustom{
                             id: ymax
@@ -183,7 +183,7 @@ Item {
                             textHolder: 'Maior valor de Y no gráfico'
                             defaultColor: '#fff'
                             textColor: '#fff'
-                            validator: RegExpValidator{regExp: /^[0-9]+([\.\-]?[0-9]+)?$/}
+                            validator: RegExpValidator{regExp: /^[\-]?[0-9]+([\.]?[0-9]+)?$/}
                         }
                         TextInputCustom{
                             id: ydiv
@@ -235,7 +235,7 @@ Item {
                     defaultColor: '#fff'
                     textColor: '#fff'
                     // validator: RegExpValidator{regExp: /^[0-9.-]+$/}
-                    validator: RegExpValidator{regExp: /^[0-9]+([\.\-]?[0-9]+)?$/}
+                    validator: RegExpValidator{regExp: /^[\-]?[0-9]+([\.]?[0-9]+)?$/}
                 }
 
                 TextInputCustom{
@@ -247,7 +247,8 @@ Item {
                     textHolder: 'Y Máximo do gráfico de resíduos'
                     defaultColor: '#fff'
                     textColor: '#fff'
-                    validator: RegExpValidator{regExp: /^[0-9]+([\.\-]?[0-9]+)?$/}
+                    // validator: RegExpValidator{regExp: /^[0-9]+([\.\-]?[0-9]+)?$/}
+                    validator: RegExpValidator{regExp: /^[\-]?[0-9]+([\.]?[0-9]+)?$/}
                 }
                 
                 GroupBox {
