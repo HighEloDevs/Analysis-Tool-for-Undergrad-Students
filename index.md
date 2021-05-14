@@ -1,8 +1,6 @@
----
-title: index
-layout: template
-filename: index.md
---- 
+layout: page
+title: "index"
+permalink: /https://highelodevs.github.io/Analysis-Tool-for-Undergrad-Students//
 
 ## Analysis Tool for Undergrad Students
 
