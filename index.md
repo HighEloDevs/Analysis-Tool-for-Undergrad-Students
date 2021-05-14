@@ -1,6 +1,8 @@
+---
 layout: page
 title: "index"
 permalink: /
+---
 
 ## Analysis Tool for Undergrad Students
 
