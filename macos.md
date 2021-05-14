@@ -30,5 +30,4 @@ cd Analysis-Tool-for-Undergrad-Students/
 python main.py
 ```
 
-
-Atenção: caso não seja reconhecido o comando "pip" ou "python", use "pip3" no lugar do "pip" e "python3" no lugar de "python".
+**Atenção: caso não seja reconhecido o comando "pip" ou "python", use "pip3" no lugar do "pip" e "python3" no lugar de "python".**
