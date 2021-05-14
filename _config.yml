@@ -1,7 +1,9 @@
 title: ATUS
 author:
-  name: Equipe ATUS
-  email: atusdevs@gmail.com
+  name: GitHub User
+  email: your-email@domain.com
+description: > # this means to ignore newlines until "show_excerpts:"
+  Uma ferramenta desenvolvida por estudantes da Universidade de São Paulo, visando facilitar a análise de dados feita por estudantes da graduação.
   
 show_excerpts: false
 
