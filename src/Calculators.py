@@ -26,7 +26,7 @@ SOFTWARE.
 import numpy as np
 from matplotlib_backend_qtquick.qt_compat import QtCore
 from scipy.stats import chi2, norm, t
-from numpy import array
+from numpy import array, trapz
 
 def calc_chi2_sim(ngl, nc):
     return array([chi2.ppf(0.5 - nc/2, ngl), chi2.ppf(0.5 + nc/2, ngl)])
@@ -37,23 +37,23 @@ def calc_chi2_lim_inf(ngl, nc):
 def calc_chi2_lim_sup(ngl, nc):
     return chi2.ppf(nc, ngl)
 
-def calc_gauss_sim(media, dp, nc):
+def calc_gauss_sim(nc):
     return array([norm.ppf(0.5 - nc/2), norm.ppf(0.5 + nc/2)])
 
-def calc_gauss_lim_inf(media, dp, nc):
+def calc_gauss_lim_inf(nc):
     return norm.ppf(1 - nc)
 
-def calc_gauss_lim_sup(media, dp, nc):
+def calc_gauss_lim_sup(nc):
     return norm.ppf(nc)
 
-def calc_t_sim(media, dp, ngl, nc):
-    return array([t.ppf(0.5 - nc/2, df = ngl)*dp + media, t.ppf(0.5 + nc/2, df = ngl)*dp + media])
+def calc_t_sim(ngl, nc):
+    return array([t.ppf(0.5 - nc/2, df = ngl), t.ppf(0.5 + nc/2, df = ngl)])
 
-def calc_t_lim_inf(media, dp, ngl, nc):
-    return chi2.ppf(1 - nc, df = ngl)*dp + media
+def calc_t_lim_inf(ngl, nc):
+    return chi2.ppf(1 - nc, df = ngl)
 
-def calc_t_lim_sup(media, dp, ngl, nc):
-    return chi2.ppf(nc, df = ngl)*dp + media
+def calc_t_lim_sup(ngl, nc):
+    return chi2.ppf(nc, df = ngl)
 
 def calc_chi2r_sim(ngl, nc):
     return [chi2.ppf(0.5 - nc/2, ngl)/ngl, chi2.ppf(0.5 + nc/2, ngl)/ngl]
@@ -137,45 +137,55 @@ def interpreter_calculator(f, opt, nc, ngl, mean, std):
         x_plot = (x_plot * std) + mean
 
         if opt == 0:
-            result = calc_gauss_sim(mean, std, nc)
+            result = calc_gauss_sim(nc)
             s      = "Limite inferior = %f \n Limite superior  = %f"%(result[0]*std + mean, result[1]*std + mean)
             x_area = np.linspace(result[0], result[1], 350)
             y_area = norm.pdf(x_area)
             x_area = x_area*std + mean
-            return s, x_plot, y_plot, x_area, y_area
+            return s, x_plot, y_plot/std, x_area, y_area/std
 
         elif opt == 1:
-            result = calc_gauss_lim_inf(mean, std, nc)
+            result = calc_gauss_lim_inf(nc)
             s      = "Limite inferior = %f \n Limite superior = inf"%(result*std + mean)
             x_area = np.linspace(result, norm.ppf(lim_sup), 350)
             y_area = norm.pdf(x_area)
             x_area = x_area*std + mean
-            return s, x_plot, y_plot, x_area, y_area
+            return s, x_plot, y_plot/std, x_area, y_area/std
 
-        result = calc_gauss_lim_sup(mean, std, nc)
+        result = calc_gauss_lim_sup(nc)
         s      = "Limite inferior = -inf \n Limite superior = %f"%(result*std + mean)
         x_area = np.linspace(result, norm.ppf(lim_inf), 350)
         y_area = norm.pdf(x_area)
         x_area = x_area*std + mean
-        return s, x_plot, y_plot, x_area, y_area
+        return s, x_plot, y_plot/std, x_area, y_area/std
 
     # If it's Student:    
-    x_plot = np.linspace(t.ppf(lim_inf, df = ngl)*std + mean, t.ppf(lim_sup, df = ngl)*std + mean)
-    y_plot = t.pdf(x_plot)
+    x_plot = np.linspace(t.ppf(lim_inf, df = ngl), t.ppf(lim_sup, df = ngl), 350)
+    y_plot = t.pdf(x_plot, df = ngl)
+    x_plot = (x_plot * std) + mean
 
     if opt == 0:
-        result = calc_t_sim(mean, std, ngl, nc)
-        s      = "Limite inferior = %f \n Limite superior  = %f"%(result[0], result[1])
-        return s, x_plot, y_plot, (result[0], result[1])
+        result = calc_t_sim(ngl, nc)
+        s      = "Limite inferior = %f \n Limite superior  = %f"%(result[0]*std + mean, result[1]*std + mean)
+        x_area = np.linspace(result[0], result[1], 350)
+        y_area = t.pdf(x_area, df = ngl)
+        x_area = x_area*std + mean
+        return s, x_plot, y_plot/std, x_area, y_area/std
     
     elif opt == 1:
-            result = calc_t_lim_inf(mean, std, ngl, nc)
-            s      = "Limite inferior = %f \n Limite superior = inf"%result
-            return s, x_plot, y_plot, (result, -1) 
+            result = calc_t_lim_inf(ngl, nc)
+            s      = "Limite inferior = %f \n Limite superior = inf"%(result*std + mean)
+            x_area = np.linspace(result, t.ppf(lim_sup, df = ngl), 350)
+            y_area = t.pdf(x_area)
+            x_area = x_area*std + mean
+            return s, x_plot, y_plot/std, x_area, y_area/std
 
-    result = calc_t_lim_sup(mean, std, ngl, nc)
-    s      = "Limite inferior = -inf \n Limite superior = %f"%result
-    return s, x_plot, y_plot, (-1, result)
+    result = calc_t_lim_sup(ngl, nc)
+    s      = "Limite inferior = -inf \n Limite superior = %f"%(result*std + mean)
+    x_area = np.linspace(result, t.ppf(lim_inf, df = ngl), 350)
+    y_area = t.pdf(x_area, df = ngl)
+    x_area = x_area*std + mean
+    return s, x_plot, y_plot/std, x_area, y_area/std
 
 class CalculatorCanvas(QtCore.QObject):
     """ A bridge class to interact with the plot in python
