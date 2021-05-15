@@ -83,7 +83,7 @@ class SinglePlot(QtCore.QObject):
     @QtCore.Slot(QtCore.QJsonValue)
     def getPlotData(self, plotData):
         plotData    = plotData.toVariant()
-        id          = plotData['id']
+        # id          = plotData['id']
         canvasProps = plotData['canvasProps']
         dataProps   = plotData['dataProps']
         fitProps    = plotData['fitProps']
@@ -147,7 +147,7 @@ class SinglePlot(QtCore.QObject):
         # Getting props
         with open(self.path, encoding='utf-8') as file:
             props = json.load(file)
-            file.close()
+            # file.close()
 
         # Loading data from the table
         self.model.load_data(df_array=props['data'])

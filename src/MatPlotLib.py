@@ -24,6 +24,7 @@ SOFTWARE.
 """
 from matplotlib_backend_qtquick.backend_qtquick import NavigationToolbar2QtQuick
 from matplotlib_backend_qtquick.qt_compat import QtCore
+# from matplotlib.ticker import (MultipleLocator, AutoMinorLocator)
 import numpy as np
 
 class MPLCanvas(QtCore.QObject):
@@ -144,8 +145,10 @@ class MPLCanvas(QtCore.QObject):
 
 
                     if self.grid:
-                        self.ax1.grid(True)
-                        self.ax2.grid(True)
+                        self.ax1.grid(True,  which='major')
+                        # self.ax1.grid(True, which='minor', alpha = 0.3)
+                        self.ax2.grid(True,  which='major')
+                        # self.ax2.grid(True, which='minor', alpha = 0.3)
                     if self.log_y:
                         self.ax1.set_yscale('log')
                     if self.log_x:
@@ -170,6 +173,9 @@ class MPLCanvas(QtCore.QObject):
                         self.ax2.errorbar(x, y_r, ecolor = self.symbol_color, capsize = 0, elinewidth = 1, ms = self.symbol_size, marker = self.symbol, color = self.symbol_color, ls = 'none')
                         self.ax1.errorbar(x, y, ecolor = self.symbol_color, capsize = 0, elinewidth = 1, ms = self.symbol_size, marker = self.symbol, color = self.symbol_color, ls = 'none')
 
+                    self.ax1.minorticks_on()
+                    self.ax2.minorticks_on()
+
                     # Setting titles
                     self.ax1.set_title(str(self.axisTitle[0]))
                     self.ax1.set(xlabel = str(self.axisTitle[1]))
@@ -179,7 +185,8 @@ class MPLCanvas(QtCore.QObject):
                     self.axes = self.figure.add_subplot(111)
 
                     if self.grid:
-                        self.axes.grid(True)
+                        self.axes.grid(True,  which='major')
+                        # self.axes.grid(True, which='minor', alpha = 0.3)
                     if self.log_y:
                         self.axes.set_yscale('log')
                     if self.log_x:
@@ -225,6 +232,8 @@ class MPLCanvas(QtCore.QObject):
                     if self.legend:
                         self.axes.legend(frameon=False)
                     
+                    self.axes.minorticks_on()
+
                     # Setting titles
                     self.axes.set_title(str(self.axisTitle[0]))
                     self.axes.set(xlabel = str(self.axisTitle[1]))
@@ -234,7 +243,8 @@ class MPLCanvas(QtCore.QObject):
                 self.axes = self.figure.add_subplot(111)
 
                 if self.grid:
-                    self.axes.grid(True)
+                    self.axes.grid(True, which='major')
+                    # self.axes.grid(True, which='minor', alpha = 0.3)
                 if self.log_y:
                     self.axes.set_yscale('log')
                 if self.log_x:
@@ -274,6 +284,10 @@ class MPLCanvas(QtCore.QObject):
                     self.axes.errorbar(x, y, yerr=sy, elinewidth = 1, ecolor = self.symbol_color, ms = self.symbol_size, marker = self.symbol, color = self.symbol_color, ls = 'none', capsize = 0)
                 else:
                     self.axes.errorbar(x, y, capsize = 0, elinewidth = 1, ecolor = self.symbol_color, ms = self.symbol_size, marker = self.symbol, color = self.symbol_color, ls = 'none')
+
+                self.axes.minorticks_on()
+                # self.axes.twinx()
+                # self.axes.twiny()
 
                 # Setting titles
                 self.axes.set_title(str(self.axisTitle[0]))

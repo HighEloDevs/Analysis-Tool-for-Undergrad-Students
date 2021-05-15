@@ -267,6 +267,8 @@ class Model(QtCore.QObject):
 
         # Getting coefficients
         self._coef = [i for i in self._model.param_names]
+
+        print(self._model)
         
         # If there's no p0, everything is set to 1.0
         pi = list()   # Inital values
@@ -344,7 +346,7 @@ class Model(QtCore.QObject):
                 param.add(self._model.param_names[i], value=a[i])
             return self._model.eval(x=x, params=param)
         model = SciPyModel(f)
-        myodr = ODR(data, model, beta0 = pi)
+        myodr = ODR(data, model, beta0 = pi, maxit = 120)
         self._result = myodr.run()
         
 
@@ -353,7 +355,7 @@ class Model(QtCore.QObject):
         for i in range(len(self._coef)):
             params.add(self._coef[i], pi[i])
         try:
-            self._result = self._model.fit(data = y, x = x, weights = 1/sy, params = params, scale_covar=False)
+            self._result = self._model.fit(data = y, x = x, weights = 1/sy, params = params, scale_covar=False, max_nfev = 120)
         except ValueError as error:
             self._msgHandler.raiseError("A função ajustada gera valores não numéricos, rever ajuste.")
             # A função ajustada gera valores não numéricos, rever ajuste.
@@ -370,7 +372,7 @@ class Model(QtCore.QObject):
         for i in range(len(self._coef)):
             params.add(self._coef[i], pi[i])
         try:
-            self._result = self._model.fit(data = y, x = x, params = params, scale_covar=False)
+            self._result = self._model.fit(data = y, x = x, params = params, scale_covar=False, max_nfev = 120)
         except ValueError as error:
             self._msgHandler.raiseError("A função ajustada gera valores não numéricos, rever ajuste.")
             # A função ajustada gera valores não numéricos, rever ajuste.
@@ -399,6 +401,7 @@ class Model(QtCore.QObject):
     
     def __set_param_values_lm_special(self):
         self._dict.clear()
+        self._dict2.clear()
         self._params = Parameters()
         ngl          = len(self._data["x"]) - len(self._coef)
         inc_cons     = np.sqrt(self._result.chisqr/ngl)
