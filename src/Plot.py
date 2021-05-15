@@ -46,7 +46,7 @@ class SinglePlot(QtCore.QObject):
 
         # Default properties for the singlePlot page
         self.props = {
-            'id': 'ATUS',
+            'id': '',
             'dataProps': {
                 'marker_color'    : '#000',
                 'marker_size'     : 3,
