@@ -25,6 +25,7 @@ SOFTWARE.
 
 from matplotlib_backend_qtquick.qt_compat import QtCore
 from src.Calculators import interpreter_calculator, Plot
+import pandas as pd
 import json
 import platform
 
@@ -150,15 +151,52 @@ class SinglePlot(QtCore.QObject):
             props = json.load(file)
 
         if "key" in props:
+            # Loading data from the table
+            self.model.load_data(df_array=props['data'])
             if props["key"][0] != "2":
                 self.msg.raiseWarn("O carregamento de arquivos antigos está limitado à uma versão anterior. Adaptação feita automaticamente.")
         else:
             self.msg.raiseWarn("O carregamento de arquivos antigos está limitado à uma versão anterior. Adaptação feita automaticamente.")
+            props = self.loadOldJson(props)
+            self.model.load_data(df=props['data'])
 
-        # Loading data from the table
-        self.model.load_data(df_array=props['data'])
         self.fillPlotPage(props)
         # self.plot.emit()
+
+    def loadOldJson(self, props):
+        props_tmp = self.props.copy()
+
+        # Shaping old json into the new one
+        props_tmp['id']                           = props['projectName']
+        props_tmp['dataProps']['marker_color']    = props['symbol_color']
+        props_tmp['dataProps']['marker_size']     = props['symbol_size']
+        props_tmp['dataProps']['marker']          = props['symbol']
+        props_tmp['dataProps']['curve_color']     = props['curve_color']
+        props_tmp['dataProps']['curve_thickness'] = props['curve_thickness']
+        props_tmp['dataProps']['curve_style']     = props['curve_style']
+        props_tmp['canvasProps']['xaxis']         = props['xaxis']
+        props_tmp['canvasProps']['yaxis']         = props['yaxis']
+        props_tmp['canvasProps']['title']         = props['title']
+        props_tmp['canvasProps']['log_x']         = props['log_x']
+        props_tmp['canvasProps']['log_y']         = props['log_y']
+        props_tmp['canvasProps']['legend']        = props['legend']
+        props_tmp['canvasProps']['grid']          = props['grid']
+        props_tmp['canvasProps']['residuals']     = props['residuals']
+        props_tmp['canvasProps']['xmin']          = props['xmin']
+        props_tmp['canvasProps']['xmax']          = props['xmax']
+        props_tmp['canvasProps']['xdiv']          = props['xdiv']
+        props_tmp['canvasProps']['ymin']          = props['ymin']
+        props_tmp['canvasProps']['ymax']          = props['ymax']
+        props_tmp['canvasProps']['ydiv']          = props['ydiv']
+        props_tmp['canvasProps']['resmin']        = props['resmin']
+        props_tmp['canvasProps']['resmax']        = props['resmax']
+        props_tmp['fitProps']['expr']             = props['expr']
+        props_tmp['fitProps']['p0']               = props['p0']
+        props_tmp['fitProps']['wsx']              = props['wsx']
+        props_tmp['fitProps']['wsy']              = props['wsy']
+        props_tmp['data']                         = pd.read_json(props['data'], dtype=str)
+
+        return props_tmp
 
     @QtCore.Slot(QtCore.QJsonValue, result=int)
     def save(self, props):

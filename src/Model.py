@@ -268,7 +268,7 @@ class Model(QtCore.QObject):
         # Getting coefficients
         self._coef = [i for i in self._model.param_names]
 
-        print(self._model)
+        # print(self._model)
         
         # If there's no p0, everything is set to 1.0
         pi = list()   # Inital values
