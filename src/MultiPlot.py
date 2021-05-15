@@ -100,7 +100,7 @@ class Multiplot(QtCore.QObject):
 
     def Plot(self):
         self.displayBridge.reset()
-        # self.displayBridge.axes = self.displayBridge.figure.add_subplot(111)
+
         if self.grid == 2:
             self.displayBridge.axes.grid(True)
         if self.logy == 2:
@@ -150,7 +150,7 @@ class Multiplot(QtCore.QObject):
         self.displayBridge.axes.set_title(self.title)
         self.displayBridge.axes.set(xlabel = self.xaxis, ylabel = self.yaxis)
         handles, labels = self.displayBridge.axes.get_legend_handles_labels()
-        # print(handles, labels)
+
         if len(handles) > 1:
             by_label = dict(zip(np.array(labels, dtype=object)[::-1], np.array(handles, dtype=object)[::-1]))
             self.displayBridge.axes.legend(by_label.values(), by_label.keys())

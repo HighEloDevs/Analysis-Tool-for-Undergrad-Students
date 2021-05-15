@@ -62,7 +62,7 @@ Item {
                                 ListElement { text: "Chi²" }
                                 // ListElement { text: "Chi² Reduzido" }
                                 ListElement { text: "Gaussiana" }
-                                // ListElement { text: "Student" }
+                                ListElement { text: "Student" }
                         }
 
                         onActivated: {
@@ -81,11 +81,11 @@ Item {
                                 std.enabled = true
                                 nivelConfianca.enabled = true
                                 ngl.enabled = false
-                            // } else if(comboFunc.currentText == "Student"){
-                            //     mean.enabled = true
-                            //     std.enabled = true
-                            //     nivelConfianca.enabled = true
-                            //     ngl.enabled = true
+                            } else if(comboFunc.currentText == "Student"){
+                                mean.enabled = true
+                                std.enabled = true
+                                nivelConfianca.enabled = true
+                                ngl.enabled = true
                             }
                         }
                     }
