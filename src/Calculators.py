@@ -26,7 +26,7 @@ SOFTWARE.
 import numpy as np
 from matplotlib_backend_qtquick.qt_compat import QtCore
 from scipy.stats import chi2, norm, t
-from numpy import array, trapz
+from numpy import array
 
 def calc_chi2_sim(ngl, nc):
     return array([chi2.ppf(0.5 - nc/2, ngl), chi2.ppf(0.5 + nc/2, ngl)])
