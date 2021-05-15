@@ -51,7 +51,7 @@ if __name__ == "__main__":
     messageHandler  = MessageHandler()
     canvas          = MPLCanvas()
     model           = Model(messageHandler) 
-    singlePlot      = SinglePlot(canvas, model)
+    singlePlot      = SinglePlot(canvas, model, messageHandler)
     multiPlot       = Multiplot(canvas)
     updater         = UpdateChecker()
 

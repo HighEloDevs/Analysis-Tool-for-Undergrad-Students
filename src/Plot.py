@@ -36,15 +36,16 @@ class SinglePlot(QtCore.QObject):
     fillPlotPageSignal    = QtCore.Signal(QtCore.QJsonValue, arguments='props')
     plot                  = QtCore.Signal()
 
-    def __init__(self, canvas, model):
+    def __init__(self, canvas, model, messageHandler):
         super().__init__()
         self.canvas = canvas
         self.model  = model
         self.path   = ''
+        self.msg    = messageHandler
 
         # Default properties for the singlePlot page
         self.props = {
-            'id': '',
+            'id': 'ATUS',
             'dataProps': {
                 'marker_color'    : '#000',
                 'marker_size'     : 3,
@@ -147,7 +148,12 @@ class SinglePlot(QtCore.QObject):
         # Getting props
         with open(self.path, encoding='utf-8') as file:
             props = json.load(file)
-            # file.close()
+
+        if "key" in props:
+            if props["key"][0] != "2":
+                self.msg.raiseWarn("O carregamento de arquivos antigos está limitado à uma versão anterior. Adaptação feita automaticamente.")
+        else:
+            self.msg.raiseWarn("O carregamento de arquivos antigos está limitado à uma versão anterior. Adaptação feita automaticamente.")
 
         # Loading data from the table
         self.model.load_data(df_array=props['data'])

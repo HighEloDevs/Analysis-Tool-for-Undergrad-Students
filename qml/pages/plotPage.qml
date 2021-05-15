@@ -28,7 +28,7 @@ Item {
         'Ponto-Tracejado':'-.'
     })
     property var plotData: ({
-        key: 'ATUS_JSON_2.0b1',
+        key: '2-b',
         id: nomeProjeto.text,
         dataProps: {
             marker_color    : String(pageProp.markerColor.color),
