@@ -74,10 +74,11 @@ class SinglePlot(QtCore.QObject):
                 'resmax'    : '',
             },
             'fitProps': {
-                'expr' : '',
-                'p0'   : '',
-                'wsx'  : True,
-                'wsy'  : True,
+                'expr'       : '',
+                'p0'         : '',
+                'wsx'        : True,
+                'wsy'        : True,
+                'parameters' : {}
             },
             'data': []
         }
@@ -194,6 +195,7 @@ class SinglePlot(QtCore.QObject):
         props_tmp['fitProps']['p0']               = props['p0']
         props_tmp['fitProps']['wsx']              = props['wsx']
         props_tmp['fitProps']['wsy']              = props['wsy']
+        props_tmp['fitProps']['parameters']       = props['parameters']
         props_tmp['data']                         = pd.read_json(props['data'], dtype=str)
 
         return props_tmp
@@ -224,6 +226,7 @@ class SinglePlot(QtCore.QObject):
 
         # Getting properties
         props = props.toVariant()
+        props['fitProps']['parameters'] = self.model._params.valuesdict()
 
         if platform.system() == "Linux":
             with open(self.path + ".json", 'w', encoding='utf-8') as file:
