@@ -167,7 +167,8 @@ class SinglePlot(QtCore.QObject):
             return 1
 
         # Getting properties
-        props = props.toVariant()
+        props                           = props.toVariant()
+        props["fitProps"]["parameters"] = self.model._params.valuesdict()
 
         if platform.system() == "Linux":
             with open(self.path + ".json", 'w', encoding='utf-8') as file:

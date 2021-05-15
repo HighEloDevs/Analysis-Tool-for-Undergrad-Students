@@ -13,6 +13,7 @@ Popup{
     transformOrigin: Popup.Right
     x: parent.width - width - 30
     y: parent.height - 100
+    focus: false
 
     property int    timer        : 3000
     property string message      : ''

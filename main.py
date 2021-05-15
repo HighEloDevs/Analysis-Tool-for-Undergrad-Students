@@ -52,7 +52,7 @@ if __name__ == "__main__":
     canvas          = MPLCanvas()
     model           = Model(messageHandler) 
     singlePlot      = SinglePlot(canvas, model, messageHandler)
-    multiPlot       = Multiplot(canvas)
+    multiPlot       = Multiplot(canvas, messageHandler)
     updater         = UpdateChecker()
 
     # Creating 'link' between front-end and back-end

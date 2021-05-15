@@ -34,9 +34,10 @@ class Multiplot(QtCore.QObject):
     setData = QtCore.Signal(QtCore.QJsonValue, arguments='data')
     removeRow = QtCore.Signal(int, arguments='row')
 
-    def __init__(self, displayBridge):
+    def __init__(self, displayBridge, messageHandler):
         super().__init__()
         self.displayBridge = displayBridge
+        self.msg           = messageHandler
         self.Multi_Model   = None
         self.grid          = 0.
         self.xmin          = 0.
@@ -65,15 +66,16 @@ class Multiplot(QtCore.QObject):
             self.setData.emit(QtCore.QJsonValue.fromVariant({
                 'row': row,
                 'data': data['data'],
-                'params': data['parameters'],
+                'params': data["fitProps"]['parameters'],
                 'fileName': QtCore.QUrl(fileUrl).toLocalFile().split('/')[-1],
-                'projectName': data['projectName'],
-                'expr': data['expr'],
-                'p0': data['p0'],
-                'symbolColor': data['symbol_color'],
-                'curve': curveStyles[data['curve_style']]
+                'projectName': data['id'],
+                'expr': data["fitProps"]['expr'],
+                'p0': data["fitProps"]['p0'],
+                'symbolColor': data["dataProps"]["marker_color"],
+                'curve': curveStyles[data["dataProps"]['curve_style']]
             }))
         except:
+            self.msg.raiseError("Erro ao carregar arquivo. Verificar arquivo de entrada.")
             self.removeRow.emit(row)
 
     @QtCore.Slot(QtCore.QJsonValue)
@@ -126,28 +128,34 @@ class Multiplot(QtCore.QObject):
                 self.displayBridge.axes.set_ylim(bottom = self.ymin, top = None)
             elif self.ymin != 0. and self.ymax != 0.:
                 self.displayBridge.axes.set_ylim(bottom = self.ymin, top = self.ymax)
+        
+        self.displayBridge.axes.minorticks_on()
 
         for i in range(len(self.Multi_Model.models)):
-            if self.Multi_Model.num_cols[i] == 4:
-                if self.Multi_Model.arquivos[i]['func'] == True and self.Multi_Model.models[i] != 0.:
-                    self.Func_plot(self.Multi_Model.arquivos[i], self.Multi_Model.models[i], self.Multi_Model.parameters[i])
-                if self.Multi_Model.arquivos[i]['marker'] == True:
-                    self.Plot_sx_sy(self.Multi_Model.dfs[i], self.Multi_Model.arquivos[i])
-            elif self.Multi_Model.num_cols[i] == 3:
-                if self.Multi_Model.arquivos[i]['func'] == True and self.Multi_Model.models[i] != 0.:
-                    self.Func_plot(self.Multi_Model.arquivos[i], self.Multi_Model.models[i], self.Multi_Model.parameters[i])
-                if self.Multi_Model.arquivos[i]['marker'] == True:
-                    self.Plot_sy(self.Multi_Model.dfs[i], self.Multi_Model.arquivos[i])
-            else:
-                if self.Multi_Model.arquivos[i]['func'] == True and self.Multi_Model.models[i] != 0.:
-                    self.Func_plot(self.Multi_Model.arquivos[i], self.Multi_Model.models[i], self.Multi_Model.parameters[i])
-                if self.Multi_Model.arquivos[i]['marker'] == True:
-                    self.Plot_op(self.Multi_Model.dfs[i], self.Multi_Model.arquivos[i])
+            # if self.Multi_Model.num_cols[i] == 4:
+            if self.Multi_Model.arquivos[i]['func'] == True and self.Multi_Model.models[i] != 0.:
+                self.Func_plot(self.Multi_Model.arquivos[i], self.Multi_Model.models[i], self.Multi_Model.parameters[i])
+            if self.Multi_Model.arquivos[i]['marker'] == True:
+                self.Plot_sx_sy(self.Multi_Model.dfs[i], self.Multi_Model.arquivos[i])
+            # elif self.Multi_Model.num_cols[i] == 3:
+            #     if self.Multi_Model.arquivos[i]['func'] == True and self.Multi_Model.models[i] != 0.:
+            #         self.Func_plot(self.Multi_Model.arquivos[i], self.Multi_Model.models[i], self.Multi_Model.parameters[i])
+            #     if self.Multi_Model.arquivos[i]['marker'] == True:
+            #         self.Plot_sy(self.Multi_Model.dfs[i], self.Multi_Model.arquivos[i])
+            # else:
+            #     if self.Multi_Model.arquivos[i]['func'] == True and self.Multi_Model.models[i] != 0.:
+            #         self.Func_plot(self.Multi_Model.arquivos[i], self.Multi_Model.models[i], self.Multi_Model.parameters[i])
+            #     if self.Multi_Model.arquivos[i]['marker'] == True:
+            #         self.Plot_op(self.Multi_Model.dfs[i], self.Multi_Model.arquivos[i])
         self.displayBridge.axes.set_title(self.title)
         self.displayBridge.axes.set(xlabel = self.xaxis, ylabel = self.yaxis)
         handles, labels = self.displayBridge.axes.get_legend_handles_labels()
-        if len(handles) > 0:
+        # print(handles, labels)
+        if len(handles) > 1:
             by_label = dict(zip(np.array(labels, dtype=object)[::-1], np.array(handles, dtype=object)[::-1]))
+            self.displayBridge.axes.legend(by_label.values(), by_label.keys())
+        elif len(handles) == 1:
+            by_label = dict(zip(labels, handles))
             self.displayBridge.axes.legend(by_label.values(), by_label.keys())
 
     def Plot_sx_sy(self, df, options):
@@ -158,7 +166,7 @@ class Multiplot(QtCore.QObject):
             self.displayBridge.axes.errorbar(df['x'], df['y'], yerr=df['sy'], xerr = df['sx'],
             ecolor = options['markerColor'], capsize = 0, elinewidth = 1, ms = 3, marker = '.', color = options['markerColor'], ls = 'none')
     
-    def Plot_sy(self, df, options):
+    def Plot_sy(self, df, options): # Depreciada
         if options['label'] != '':
             self.displayBridge.axes.errorbar(df['x'], df['y'], yerr=df['sy'],
             ecolor = options['markerColor'], capsize = 0, elinewidth = 1, ms = 3, marker = '.', color = options['markerColor'], ls = 'none', label = options['label'])
@@ -166,7 +174,7 @@ class Multiplot(QtCore.QObject):
             self.displayBridge.axes.errorbar(df['x'], df['y'], yerr=df['sy'],
             ecolor = options['markerColor'], capsize = 0, elinewidth = 1, ms = 3, marker = '.', color = options['markerColor'], ls = 'none')
     
-    def Plot_op(self, df, options):
+    def Plot_op(self, df, options): # Depreciada
         if options['label'] != '':
             self.displayBridge.axes.errorbar(df['x'], df['y'],
             ecolor = options['markerColor'], capsize = 0, elinewidth = 1, ms = 3, marker = '.', color = options['markerColor'], ls = 'none', label = options['label'])
