@@ -47,7 +47,7 @@ class MultiModel(QtCore.QObject):
         self.models     = []
         self.parameters = []
         for arquivo, df in zip(arquivos, self.dfs):
-            if arquivo['expr'] != '':
+            if arquivo['expr'] != '' and len(arquivo['params']) > 0:
                 self.models.append(ExpressionModel(arquivo['expr']))
                 parametros = Parameters()
                 for parametro in arquivo['params'].keys():
