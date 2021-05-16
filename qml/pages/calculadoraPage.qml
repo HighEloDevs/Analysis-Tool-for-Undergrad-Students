@@ -60,7 +60,7 @@ Item {
 
                         model: ListModel {
                                 ListElement { text: "Chi²" }
-                                // ListElement { text: "Chi² Reduzido" }
+                                ListElement { text: "Chi² Reduzido" }
                                 ListElement { text: "Gaussiana" }
                                 ListElement { text: "Student" }
                         }
@@ -71,11 +71,11 @@ Item {
                                 std.enabled = false
                                 nivelConfianca.enabled = true
                                 ngl.enabled = true
-                            // } else if(comboFunc.currentText == 'Chi² Reduzido'){
-                            //     mean.enabled = false
-                            //     std.enabled = false
-                            //     nivelConfianca.enabled = true
-                            //     ngl.enabled = true
+                            } else if(comboFunc.currentText == 'Chi² Reduzido'){
+                                mean.enabled = false
+                                std.enabled = false
+                                nivelConfianca.enabled = true
+                                ngl.enabled = true
                             } else if(comboFunc.currentText == "Gaussiana"){
                                 mean.enabled = true
                                 std.enabled = true

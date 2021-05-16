@@ -56,13 +56,13 @@ def calc_t_lim_sup(ngl, nc):
     return chi2.ppf(nc, df = ngl)
 
 def calc_chi2r_sim(ngl, nc):
-    return [chi2.ppf(0.5 - nc/2, ngl)/ngl, chi2.ppf(0.5 + nc/2, ngl)/ngl]
+    return [chi2.ppf(0.5 - nc/2, ngl), chi2.ppf(0.5 + nc/2, ngl)]
 
 def calc_chi2r_lim_inf(ngl, nc):
-    return chi2.ppf(1 - nc, ngl)/ngl
+    return chi2.ppf(1 - nc, ngl)
 
 def calc_chi2r_lim_sup(ngl, nc):
-    return chi2.ppf(nc, ngl)/ngl
+    return chi2.ppf(nc, ngl)
 
 def interpreter_calculator(f, opt, nc, ngl, mean, std):
     ''' Return the plot string and the arrays for the graph plot.
@@ -103,31 +103,30 @@ def interpreter_calculator(f, opt, nc, ngl, mean, std):
         # If it's Red Chi²
         x_plot = np.linspace(chi2.ppf(lim_inf, ngl), chi2.ppf(lim_sup, ngl), 350)
         y_plot = chi2.pdf(x_plot, ngl)
-        x_plot = x_plot/chi2.ppf(0.5, ngl)
-        # y_plot = y_plot/chi2.pdf(chi2.ppf(0.5, ngl), ngl)
+        x_plot = x_plot/ngl
+        y_plot = y_plot*ngl
 
         if opt == 0:
             result = calc_chi2r_sim(ngl, nc)
-            s      = "Limite inferior = %f \n Limite superior  = %f"%(result[0], result[1])
+            s      = "Limite inferior = %f \n Limite superior  = %f"%(result[0]/ngl, result[1]/ngl)
             x_area = np.linspace(result[0], result[1], 350)
-            y_area = chi2.pdf(x_area, ngl)
-            x_area = x_area/chi2.ppf(0.5, ngl)
-            print(x_area[0], x_plot[0])
+            y_area = chi2.pdf(x_area, ngl)*ngl
+            x_area = x_area/ngl
             return s, x_plot, y_plot, x_area, y_area
 
         elif opt == 1:
             result = calc_chi2r_lim_inf(ngl, nc)
-            s      = "Limite inferior = %f \n Limite superior = inf"%result
+            s      = "Limite inferior = %f \n Limite superior = inf"%(result/ngl)
             x_area = np.linspace(result, chi2.ppf(lim_sup, ngl), 350)
-            y_area = chi2.pdf(x_area, ngl)
-            x_area = x_area/chi2.ppf(0.5, ngl)
+            y_area = chi2.pdf(x_area, ngl)*ngl
+            x_area = x_area/ngl
             return s, x_plot, y_plot, x_area, y_area 
 
         result = calc_chi2r_lim_sup(ngl, nc)
-        s      = "Limite inferior = -inf \n Limite superior = %f"%result
+        s      = "Limite inferior = -inf \n Limite superior = %f"%(result/ngl)
         x_area = np.linspace(chi2.ppf(lim_inf, ngl), result, 350)
-        y_area = chi2.pdf(x_area, ngl)
-        x_area = x_area/chi2.ppf(0.5, ngl)
+        y_area = chi2.pdf(x_area, ngl)*ngl
+        x_area = x_area/ngl
         return s, x_plot, y_plot, x_area, y_area
 
     elif f == 2:
