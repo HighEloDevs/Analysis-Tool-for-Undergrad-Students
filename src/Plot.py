@@ -268,7 +268,12 @@ class SinglePlot(QtCore.QObject):
             std = float(std)
         except:
             pass
-
+        if std <= 0:
+            self.msg.raiseError("Desvio padrão deve ser sempre maior que zero. Rever desvio padrão.")
+            return None
+        if ngl >= 1:
+            self.msg.raiseError("Número de graus de liberdade deve ser sempre menor que 1. Rever número de graus de liberdade.")
+            return None
         s, x, y, x_area, y_area = interpreter_calculator(functionDict[function], methodDict[opt1], nc, ngl, mean, std)
         Plot(self.canvas, x, y, x_area, y_area)
         self.writeCalculator.emit(s)
