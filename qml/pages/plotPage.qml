@@ -47,20 +47,22 @@ Item {
             legend    : pageProp.legend.checked,
             grid      : pageProp.grid.checked,
             residuals : pageProp.residuals.checked,
-            xmin      : Number(pageProp.xmin.text),
-            xmax      : Number(pageProp.xmax.text),
-            xdiv      : Number(pageProp.xdiv.text),
-            ymin      : Number(pageProp.ymin.text),
-            ymax      : Number(pageProp.ymax.text),
-            ydiv      : Number(pageProp.ydiv.text),
-            resmin    : Number(pageProp.resMin.text),
-            resmax    : Number(pageProp.resMax.text),
+            xmin      : pageProp.xmin.text,
+            xmax      : pageProp.xmax.text,
+            xdiv      : pageProp.xdiv.text,
+            ymin      : pageProp.ymin.text,
+            ymax      : pageProp.ymax.text,
+            ydiv      : pageProp.ydiv.text,
+            resmin    : pageProp.resMin.text,
+            resmax    : pageProp.resMax.text,
         },
         fitProps: {
             expr : pageFunc.expr.text,
             p0   : pageFunc.initParams.text,
             wsx  : pageFunc.sigmax.checked,
             wsy  : pageFunc.sigmay.checked,
+            xmin : pageFunc.xmin.text,
+            xmax : pageFunc.xmax.text,
         },
         data : table.dataShaped
     })
@@ -356,20 +358,30 @@ Item {
             pageProp.legend.checked         = props['canvasProps']['legend']
             pageProp.grid.checked           = props['canvasProps']['grid']
             pageProp.residuals.checked      = props['canvasProps']['residuals']
-            pageProp.xmin.text              = props['canvasProps']['xmin'] == '0' ? '' : props['canvasProps']['xmin']
-            pageProp.xmax.text              = props['canvasProps']['xmax'] == '0' ? '' : props['canvasProps']['xmax']
-            pageProp.xdiv.text              = props['canvasProps']['xdiv'] == '0' ? '' : props['canvasProps']['xdiv']
-            pageProp.ymin.text              = props['canvasProps']['ymin'] == '0' ? '' : props['canvasProps']['ymin']
-            pageProp.ymax.text              = props['canvasProps']['ymax'] == '0' ? '' : props['canvasProps']['ymax']
-            pageProp.ydiv.text              = props['canvasProps']['ydiv'] == '0' ? '' : props['canvasProps']['ydiv']
-            pageProp.resMin.text            = props['canvasProps']['resmin'] == '0' ? '' : props['canvasProps']['resmin']
-            pageProp.resMax.text            = props['canvasProps']['resmax'] == '0' ? '' : props['canvasProps']['resmax']
+            // pageProp.xmin.text              = props['canvasProps']['xmin'] == '0' ? '' : props['canvasProps']['xmin']
+            pageProp.xmin.text              = props['canvasProps']['xmin']
+            // pageProp.xmax.text              = props['canvasProps']['xmax'] == '0' ? '' : props['canvasProps']['xmax']
+            pageProp.xmax.text              = props['canvasProps']['xmax']
+            // pageProp.xdiv.text              = props['canvasProps']['xdiv'] == '0' ? '' : props['canvasProps']['xdiv']
+            pageProp.xdiv.text              = props['canvasProps']['xdiv']
+            // pageProp.ymin.text              = props['canvasProps']['ymin'] == '0' ? '' : props['canvasProps']['ymin']
+            pageProp.ymin.text              = props['canvasProps']['ymin']
+            // pageProp.ymax.text              = props['canvasProps']['ymax'] == '0' ? '' : props['canvasProps']['ymax']
+            pageProp.ymax.text              = props['canvasProps']['ymax']
+            // pageProp.ydiv.text              = props['canvasProps']['ydiv'] == '0' ? '' : props['canvasProps']['ydiv']
+            pageProp.ydiv.text              = props['canvasProps']['ydiv']
+            // pageProp.resMin.text            = props['canvasProps']['resmin'] == '0' ? '' : props['canvasProps']['resmin']
+            pageProp.resMin.text            = props['canvasProps']['resmin']
+            // pageProp.resMax.text            = props['canvasProps']['resmax'] == '0' ? '' : props['canvasProps']['resmax']
+            pageProp.resMax.text            = props['canvasProps']['resmax']
 
             // Filling funcaoAjustePage.qml
             pageFunc.expr.text              = props['fitProps']['expr']
             pageFunc.initParams.text        = props['fitProps']['p0']
             pageFunc.sigmax.checked         = props['fitProps']['wsx']
             pageFunc.sigmay.checked         = props['fitProps']['wsy']
+            pageFunc.xmin.text              = props['fitProps']['xmin']
+            pageFunc.xmax.text              = props['fitProps']['xmax']
         }
     }
 }

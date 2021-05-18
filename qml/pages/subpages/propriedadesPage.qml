@@ -55,7 +55,7 @@ Item {
             ScrollBar.vertical.policy: ScrollBar.AsNeeded
 
             contentWidth: root.width
-            contentHeight: gridLayout.height
+            contentHeight: 700
 
             GridLayout {
                 id: gridLayout
@@ -130,7 +130,7 @@ Item {
                             id: xdiv
                             Layout.fillWidth: true
                             focusColor: Colors.mainColor2
-                            title: 'Intervalos em X'
+                            title: 'Intervalos'
                             textHolder: 'Número de intervalos no eixo'
                             defaultColor: '#fff'
                             textColor: '#fff'
@@ -189,7 +189,7 @@ Item {
                             id: ydiv
                             Layout.fillWidth: true
                             focusColor: Colors.mainColor2
-                            title: 'Intervalos em Y'
+                            title: 'Intervalos'
                             textHolder: 'Número de intervalos no eixo'
                             defaultColor: '#fff'
                             textColor: '#fff'
@@ -234,7 +234,6 @@ Item {
                     textHolder: 'Y Minimo do gráfico de resíduos'
                     defaultColor: '#fff'
                     textColor: '#fff'
-                    // validator: RegExpValidator{regExp: /^[0-9.-]+$/}
                     validator: RegExpValidator{regExp: /^[\-]?[0-9]+([\.]?[0-9]+)?$/}
                 }
 
@@ -247,7 +246,6 @@ Item {
                     textHolder: 'Y Máximo do gráfico de resíduos'
                     defaultColor: '#fff'
                     textColor: '#fff'
-                    // validator: RegExpValidator{regExp: /^[0-9]+([\.\-]?[0-9]+)?$/}
                     validator: RegExpValidator{regExp: /^[\-]?[0-9]+([\.]?[0-9]+)?$/}
                 }
                 

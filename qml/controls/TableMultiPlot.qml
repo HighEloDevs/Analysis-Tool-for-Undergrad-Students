@@ -142,7 +142,7 @@ Item {
                         anchors.horizontalCenter: parent.horizontalCenter
                         text: modelData.title
                         color: 'white'
-                        font.pixelSize: 12
+                        font.pointSize: 9
                         font.bold: true
                     }
                 }

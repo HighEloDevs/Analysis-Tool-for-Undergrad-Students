@@ -252,7 +252,7 @@ Item {
 
                     Button {
                         id: btnCalcular
-                        text: qsTr("Calcular")
+                        text: qsTr("CALCULAR")
                         Layout.preferredHeight: 25
                         Layout.fillWidth: true
                         Layout.fillHeight: false

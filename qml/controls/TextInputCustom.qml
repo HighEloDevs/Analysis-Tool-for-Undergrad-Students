@@ -31,6 +31,7 @@ Item{
         height: 53
         anchors.fill: parent
         color: 'transparent'
+        clip: true
 
         RowLayout{
             id: row
@@ -73,13 +74,13 @@ Item{
             }
         }
         
-        Label{
+        Text{
             id: titleLabel
             anchors.top: parent.top
             anchors.topMargin: parent.height/2 - titleLabel.height/2
             anchors.left: parent.left
             anchors.leftMargin: 5
-            font.pixelSize: 14
+            font.pixelSize: 13
             text: title
             color: root.enabled ? defaultColor : disabledColor
 
@@ -92,12 +93,10 @@ Item{
                         anchors.topMargin: parent.height/2 - titleLabel.height*1.5
                         anchors.leftMargin: -(titleLabel.width - 0.7*titleLabel.width)/2 + 5
                         color: dynamicColor
-                        // textInput.focus? focusColor:defaultColor
                     }
                     PropertyChanges{
                         target: footer
                         color: dynamicColor
-                        // textInput.focus? focusColor:defaultColor
                     }
                     when: textInput.focus || textInput.text != ''
                 }

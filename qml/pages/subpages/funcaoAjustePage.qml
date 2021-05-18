@@ -13,6 +13,8 @@ Item {
     property alias initParams: p0
     property alias sigmax: switch_sigmax
     property alias sigmay: switch_sigmay
+    property alias xmin  : x_min
+    property alias xmax  : x_max
 
     // Functions
     function clearTableParams(){
@@ -56,6 +58,35 @@ Item {
                 defaultColor: '#fff'
                 textColor: '#fff'
                 validator: RegExpValidator{regExp: /^[0-9.,-]+$/}
+            }
+
+            RowLayout{
+                width: 100
+                height: 45
+                Layout.columnSpan: 4
+                Layout.fillWidth: true
+
+                TextInputCustom{
+                    id: x_min
+                    Layout.fillWidth: true
+                    focusColor: Colors.mainColor2
+                    title: 'Ajuste - X mín.'
+                    textHolder: 'Ex.: 0, 32, 4.3, 23.4'
+                    defaultColor: '#fff'
+                    textColor: '#fff'
+                    validator: RegExpValidator{regExp: /^[\-]?[0-9]+([\.]?[0-9]+)?$/}
+                }
+
+                TextInputCustom{
+                    id: x_max
+                    Layout.fillWidth: true
+                    focusColor: Colors.mainColor2
+                    title: 'Ajuste - X máx.'
+                    textHolder: 'Ex.: 0, 32, 4.3, 23.4'
+                    defaultColor: '#fff'
+                    textColor: '#fff'
+                    validator: RegExpValidator{regExp: /^[\-]?[0-9]+([\.]?[0-9]+)?$/}
+                }
             }
 
             RowLayout {
