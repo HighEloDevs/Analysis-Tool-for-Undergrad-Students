@@ -111,28 +111,6 @@ Item {
                         
                     }
 
-                    // Label {
-                    //     id: label1
-                    //     color: "#ffffff"
-                    //     text: qsTr("Nível de Confiança")
-                    //     Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-                    // }
-
-                    // TextField {
-                    //     id: nivelConfianca
-                    //     height: 30
-                    //     text: ""
-                    //     Layout.preferredHeight: 30
-                    //     Layout.fillWidth: true
-                    //     placeholderText: qsTr("Ex.: 0.95, 0.90")
-                    //     selectByMouse: true
-
-                    //     background: Rectangle{
-                    //         color: nivelConfianca.enabled? textDefaultColor : textDisabledColor
-                    //         radius: 10
-                    //     }
-                    // }
-
                     TextInputCustom{
                         id: nivelConfianca
                         Layout.fillWidth: true
@@ -145,29 +123,6 @@ Item {
                         validator: RegExpValidator{regExp: /^[0]+([\.]?[0-9]+)?$/}
                     }
 
-
-
-                    // Label {
-                    //     id: label3
-                    //     color: "#ffffff"
-                    //     text: qsTr("Número de Graus de Liberdade")
-                    //     Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-                    // }
-
-                    // TextField {
-                    //     id: ngl
-                    //     height: 30
-                    //     Layout.preferredHeight: 30
-                    //     Layout.fillWidth: true
-                    //     placeholderText: qsTr("Ex.: 30, 31, 32...")
-                    //     selectByMouse: true
-
-                    //     background: Rectangle{
-                    //         color: ngl.enabled? textDefaultColor : textDisabledColor
-                    //         radius: 10
-                    //     }
-                    // }
-
                     TextInputCustom{
                         id: ngl
                         Layout.fillWidth: true
@@ -179,28 +134,6 @@ Item {
                         textColor: '#fff'
                         validator: RegExpValidator{regExp: /^[1-9]+([0-9]+)?$/}
                     }
-
-                    // Label {
-                    //     id: label4
-                    //     color: "#ffffff"
-                    //     text: qsTr("Média")
-                    //     Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-                    // }
-
-                    // TextField {
-                    //     id: mean
-                    //     height: 30
-                    //     Layout.preferredHeight: 30
-                    //     Layout.fillWidth: true
-                    //     placeholderText: qsTr("Ex.: 1.0, 3.2, 4")
-                    //     selectByMouse: true
-                    //     enabled: false
-
-                    //     background: Rectangle{
-                    //         color: mean.enabled? textDefaultColor : textDisabledColor
-                    //         radius: 10
-                    //     }
-                    // }
 
                     TextInputCustom{
                         id: mean
@@ -215,27 +148,6 @@ Item {
                         enabled: false
                     }
 
-                    // Label {
-                    //     id: label5
-                    //     color: "#ffffff"
-                    //     text: qsTr("Desvio Padrão")
-                    //     Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-                    // }
-
-                    // TextField {
-                    //     id: std
-                    //     Layout.preferredHeight: 30
-                    //     Layout.fillWidth: true
-                    //     placeholderText: qsTr("Ex.: 1.0, 3.2, 4")
-                    //     selectByMouse: true
-                    //     enabled: false
-
-                    //     background: Rectangle{
-                    //         color: std.enabled? textDefaultColor : textDisabledColor
-                    //         radius: 10
-                    //     }
-                    // }
-
                     TextInputCustom{
                         id: std
                         Layout.fillWidth: true
@@ -249,39 +161,25 @@ Item {
                         enabled: false
                     }
 
-
-                    Button {
-                        id: btnCalcular
-                        text: qsTr("CALCULAR")
+                    TextButton{
+                        id: btnSinglePlot
                         Layout.preferredHeight: 25
                         Layout.fillWidth: true
-                        Layout.fillHeight: false
                         Layout.columnSpan: 2
-
-                        QtObject{
-                            id: internal
-
-                            property color dynamicColor: if(btnCalcular.down){
-                                       btnCalcular.down ? Colors.c_button_active : Colors.c_button
-                                   } else {
-                                       btnCalcular.hovered ? Colors.c_button_hover : Colors.c_button
-                                   }
-                        }
-
-                        background: Rectangle{
-                            radius: 10
-                            color: internal.dynamicColor
-                        }
-
-                        contentItem: Item{
-                            anchors.fill: parent
-                            id: content
-                            Text{
-                                color: "#ffffff"
-                                text: btnCalcular.text
-                                font: btnCalcular.font
-                                anchors.verticalCenter: parent.verticalCenter
-                                anchors.horizontalCenter: parent.horizontalCenter
+                        texto: 'CALCULAR / ATUALIZAR'
+                        primaryColor: Colors.c_button
+                        clickColor: Colors.c_button_active
+                        hoverColor: Colors.c_button_hover
+                        enabled: {
+                            if(comboFunc.currentText == "Chi²" || comboFunc.currentText == 'Chi² Reduzido'){
+                                if(nivelConfianca.text != '' && ngl.text != '') true
+                                else false
+                            } else if(comboFunc.currentText == "Gaussiana"){
+                                if(mean.text != '' && std.text != '' && nivelConfianca.text != '') true
+                                else false
+                            } else if(comboFunc.currentText == "Student"){
+                                if(mean.text != '' && std.text != '' && nivelConfianca.text != '' && ngl.text != '') true
+                                else false
                             }
                         }
 
