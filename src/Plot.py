@@ -92,7 +92,7 @@ class SinglePlot(QtCore.QObject):
         canvasProps = plotData['canvasProps']
         dataProps   = plotData['dataProps']
         fitProps    = plotData['fitProps']
-        for i in ["xmin", "xmax", "ymin", "ymax"]:
+        for i in ["xmin", "xmax", "ymin", "ymax", "resmin", "resmax"]:
             canvasProps[i] = self.mk_float(canvasProps[i])
         for i in ["xdiv", "ydiv"]:
             canvasProps[i] = self.mk_int(canvasProps[i])
