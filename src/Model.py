@@ -309,7 +309,7 @@ class Model(QtCore.QObject):
                 self.__fit_lm(x, y, sy, pi)
                 if (self._result is None) == False:
                     self.__set_param_values_lm(x)
-                    self.__set_report_lm()
+                    self.__set_report_lm(x)
 
         else:
             if wsx == True and wsy == True:
@@ -322,7 +322,7 @@ class Model(QtCore.QObject):
                 self.__fit_lm(x, y, sy, pi)
                 if (self._result is None) == False:
                     self.__set_param_values_lm(x)
-                    self.__set_report_lm()
+                    self.__set_report_lm(x)
             
             elif wsy:
                 data = RealData(x, y, sx = sx)
