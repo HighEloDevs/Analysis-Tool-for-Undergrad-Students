@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "Analysis Tool for Undergrad Students"
-#define MyAppVersion "1.1b1"
+#define MyAppVersion "2.0b"
 #define MyAppPublisher "High Elo Devs"
 #define MyAppURL "https://github.com/HighEloDevs/Analysis-Tool-for-Undergrad-Students"
 #define MyAppExeName "main.exe"

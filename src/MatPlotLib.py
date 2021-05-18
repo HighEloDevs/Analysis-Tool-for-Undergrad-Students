@@ -402,14 +402,17 @@ class MPLCanvas(QtCore.QObject):
         clipboard = QtGui.QGuiApplication.clipboard()
 
         # Saving image to a path   
-        path = os.path.join(os.path.dirname('main.py'), 'image.jpg')
-        self.canvas.figure.savefig(path, dpi = 400, transparent=False)
-
-        # Loading image as pixmap and saving to clipboard
-        pixmap = QtGui.QPixmap()
-        if pixmap.load(path):
-            clipboard.setImage(pixmap.toImage())
-            self.messageHandler.raiseSuccess('Copiado com sucesso para a área de transferência!')
+        try:
+            path = os.path.join(os.path.expanduser('~\Documents'), 'image.png')
+            self.canvas.figure.savefig(path, dpi = 400, transparent=False)
+            pixmap = QtGui.QPixmap()
+            # Loading image as pixmap and saving to clipboard
+            if pixmap.load(path):
+                clipboard.setImage(pixmap.toImage())
+                self.messageHandler.raiseSuccess('Copiado com sucesso para a área de transferência!')
+            os.remove(path)
+        except:
+            self.messageHandler.raiseError('Erro copiar para a área de transferência, contatar os desenvolvedores.')
 
     @QtCore.Slot()
     def pan(self, *args):

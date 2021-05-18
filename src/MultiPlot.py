@@ -216,14 +216,11 @@ class Multiplot(QtCore.QObject):
         dados              = data.toVariant()
         graph_options      = dados['canvasProps']
         projetos           = dados['rowsData']
-        # print(projetos[0].keys())
-        # return 0
         self.Multi_Model   = MultiModel(graph_options, projetos)
         self.grid          = graph_options['grid']
         self.logx          = graph_options['logx']
         self.logy          = graph_options['logy']
 
-        print(self.grid, self.logx, self.logy)
         self.xmin          = mk_float(graph_options['xmin'])
         self.xmax          = mk_float(graph_options['xmax'])
         self.xdiv          = mk_int(graph_options['xdiv'])
