@@ -32,6 +32,7 @@ CheckBox{
 
     contentItem: Text {
         text: texto
+        font.bold: true
         opacity: enabled ? 1.0 : 0.3
         color: 'white'
         verticalAlignment: Text.AlignVCenter

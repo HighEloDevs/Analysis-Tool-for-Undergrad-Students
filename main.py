@@ -49,7 +49,7 @@ if __name__ == "__main__":
     engine = QtQml.QQmlApplicationEngine()
 
     messageHandler  = MessageHandler()
-    canvas          = MPLCanvas()
+    canvas          = MPLCanvas(messageHandler)
     model           = Model(messageHandler) 
     singlePlot      = SinglePlot(canvas, model, messageHandler)
     multiPlot       = Multiplot(canvas, messageHandler)

@@ -859,7 +859,7 @@ Window {
                                                     selectExisting: false
                                                     nameFilters: ["Arquivo de imagem .png (*.png)", "Arquivo de imagem .jpg (*.jpg)", "Arquivo de imagem .pdf (*.pdf)", "Arquivo de imagem .svg (*.svg)"]
                                                     onAccepted: {
-                                                        canvas.savePlot(fileSaver.fileUrl)
+                                                        canvas.savePlot(fileSaver.fileUrl, bgTransparent.checked)
                                                     }
                                                 }
                                             }
@@ -880,7 +880,7 @@ Window {
 
                                         Rectangle {
                                             id: footer
-                                            height: 20
+                                            height: 25
                                             color: Colors.color2
                                             Layout.fillWidth: true
 
@@ -893,6 +893,42 @@ Window {
                                                 anchors.leftMargin: 10
                                                 color: Colors.fontColor
                                             }
+
+                                            RowLayout{
+                                                anchors.top: parent.top
+                                                anchors.bottom: parent.bottom
+                                                anchors.right: parent.right
+                                                anchors.rightMargin: 10
+                                                anchors.bottomMargin: 0
+                                                anchors.topMargin: 0
+                                                CheckBoxCustom{
+                                                    id: bgTransparent
+                                                    Layout.fillHeight: true
+                                                    texto: 'Fundo transparente'
+                                                    checked: false
+                                                }
+                                                IconTextButton{
+                                                    id: copyClipboard
+                                                    Layout.fillHeight: true
+                                                    texto: 'Copiar'
+                                                    textSize: 11
+                                                    primaryColor: 'transparent'
+                                                    hoverColor: 'transparent'
+                                                    clickColor: 'transparent'
+                                                    iconColor: enabled ? '#fff':'#707070'
+                                                    textColor: enabled ? '#fff':'#707070'
+                                                    iconUrl: '../../images/icons/content_copy_black_24dp.svg'
+                                                    iconWidth: 17
+                                                    enabled: !bgTransparent.checked
+
+                                                    onClicked: {
+                                                        canvas.copyToClipboard()
+                                                    }
+                                                }
+                                            }
+
+
+                                            
                                         }
 
                                     }
@@ -944,8 +980,8 @@ Window {
                             DragHandler{
                                 target: null
                                 onActiveChanged: if(active){
-                                                     mainWindow.startSystemResize(Qt.RightEdge | Qt.BottomEdge)
-                                                 }
+                                    mainWindow.startSystemResize(Qt.RightEdge | Qt.BottomEdge)
+                                }
                             }
 
                         }

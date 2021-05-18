@@ -22,9 +22,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
+from os import path
 from matplotlib_backend_qtquick.backend_qtquick import NavigationToolbar2QtQuick
-from matplotlib_backend_qtquick.qt_compat import QtCore
+from matplotlib_backend_qtquick.qt_compat import QtCore, QtGui
 import numpy as np
+import os
 
 class MPLCanvas(QtCore.QObject):
     """ A bridge class to interact with the plot in python
@@ -32,8 +34,10 @@ class MPLCanvas(QtCore.QObject):
     # Some signals for the frontend
     coordinatesChanged = QtCore.Signal(str)
 
-    def __init__(self, parent=None):
-        super().__init__(parent)
+    def __init__(self, messageHandler):
+        super().__init__()
+        
+        self.messageHandler = messageHandler
 
         # The figure, canvas, toolbar and axes
         self.figure  = None
@@ -376,10 +380,35 @@ class MPLCanvas(QtCore.QObject):
     coordinates = QtCore.Property(str, getCoordinates, setCoordinates, notify=coordinatesChanged)
 
     # The toolbar commands
-    @QtCore.Slot(str)
-    def savePlot(self, save_path):
+    @QtCore.Slot(str, bool)
+    def savePlot(self, save_path, transparent):
         """Gets the path from input and save the actual plot"""
-        self.canvas.figure.savefig(QtCore.QUrl(save_path).toLocalFile(), dpi = 400)
+        path = QtCore.QUrl(save_path).toLocalFile()
+
+        # Getting extension
+        extension = path.split('/')[-1].split('.')[1]
+
+        if transparent and extension != 'png':
+            self.messageHandler.raiseWarn('O fundo transparente funciona apenas na extesão .png')
+            self.canvas.figure.savefig(path, dpi = 400, transparent=transparent)
+        else:
+            self.canvas.figure.savefig(path, dpi = 400, transparent=transparent)
+
+    @QtCore.Slot()
+    def copyToClipboard(self):
+        '''Copy imagine to the clipboard'''
+        # Getting clipboard
+        clipboard = QtGui.QGuiApplication.clipboard()
+
+        # Saving image to a path   
+        path = os.path.join(os.path.dirname('main.py'), 'image.jpg')
+        self.canvas.figure.savefig(path, dpi = 400, transparent=False)
+
+        # Loading image as pixmap and saving to clipboard
+        pixmap = QtGui.QPixmap()
+        if pixmap.load(path):
+            clipboard.setImage(pixmap.toImage())
+            self.messageHandler.raiseSuccess('Copiado para a área de transferência!')
 
     @QtCore.Slot()
     def pan(self, *args):

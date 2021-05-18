@@ -12,60 +12,60 @@ Item {
     property alias pageProp: middleTabs.pageProp
     property alias pageFunc: middleTabs.pageFunc
     property var markers: ({
-        'Círculo':'o',
-        'Triângulo':'^',
-        'Quadrado':'s',
-        'Pentagono':'p',
-        'Octagono':'8',
-        'Cruz':'P',
-        'Estrela':'*',
-        'Diamante':'d',
-        'Produto':'X'
-    })
+                               'Círculo':'o',
+                               'Triângulo':'^',
+                               'Quadrado':'s',
+                               'Pentagono':'p',
+                               'Octagono':'8',
+                               'Cruz':'P',
+                               'Estrela':'*',
+                               'Diamante':'d',
+                               'Produto':'X'
+                           })
     property var curveStyles: ({
-        'Sólido':'-',
-        'Tracejado':'--',
-        'Ponto-Tracejado':'-.'
-    })
+                                   'Sólido':'-',
+                                   'Tracejado':'--',
+                                   'Ponto-Tracejado':'-.'
+                               })
     property var plotData: ({
-        key: '2-b',
-        id: nomeProjeto.text,
-        dataProps: {
-            marker_color    : String(pageProp.markerColor.color),
-            marker_size     : pageProp.markerSize.value,
-            marker          : markers[pageProp.marker.currentText],
-            curve_color     : String(pageProp.curveColor.color),
-            curve_thickness : pageProp.curveThickness.value,
-            curve_style     : curveStyles[pageProp.curveType.currentText],
-        },
-        canvasProps: {
-            xaxis     : pageProp.eixox_text.text,
-            yaxis     : pageProp.eixoy_text.text,
-            title     : pageProp.titulo_text.text,
-            log_x     : pageProp.logx.checked,
-            log_y     : pageProp.logy.checked,
-            legend    : pageProp.legend.checked,
-            grid      : pageProp.grid.checked,
-            residuals : pageProp.residuals.checked,
-            xmin      : pageProp.xmin.text,
-            xmax      : pageProp.xmax.text,
-            xdiv      : pageProp.xdiv.text,
-            ymin      : pageProp.ymin.text,
-            ymax      : pageProp.ymax.text,
-            ydiv      : pageProp.ydiv.text,
-            resmin    : pageProp.resMin.text,
-            resmax    : pageProp.resMax.text,
-        },
-        fitProps: {
-            expr : pageFunc.expr.text,
-            p0   : pageFunc.initParams.text,
-            wsx  : pageFunc.sigmax.checked,
-            wsy  : pageFunc.sigmay.checked,
-            xmin : pageFunc.xmin.text,
-            xmax : pageFunc.xmax.text,
-        },
-        data : table.dataShaped
-    })
+                                key: '2-b',
+                                id: nomeProjeto.text,
+                                dataProps: {
+                                    marker_color    : String(pageProp.markerColor.color),
+                                    marker_size     : pageProp.markerSize.value,
+                                    marker          : markers[pageProp.marker.currentText],
+                                    curve_color     : String(pageProp.curveColor.color),
+                                    curve_thickness : pageProp.curveThickness.value,
+                                    curve_style     : curveStyles[pageProp.curveType.currentText],
+                                },
+                                canvasProps: {
+                                    xaxis     : pageProp.eixox_text.text,
+                                    yaxis     : pageProp.eixoy_text.text,
+                                    title     : pageProp.titulo_text.text,
+                                    log_x     : pageProp.logx.checked,
+                                    log_y     : pageProp.logy.checked,
+                                    legend    : pageProp.legend.checked,
+                                    grid      : pageProp.grid.checked,
+                                    residuals : pageProp.residuals.checked,
+                                    xmin      : pageProp.xmin.text,
+                                    xmax      : pageProp.xmax.text,
+                                    xdiv      : pageProp.xdiv.text,
+                                    ymin      : pageProp.ymin.text,
+                                    ymax      : pageProp.ymax.text,
+                                    ydiv      : pageProp.ydiv.text,
+                                    resmin    : pageProp.resMin.text,
+                                    resmax    : pageProp.resMax.text,
+                                },
+                                fitProps: {
+                                    expr : pageFunc.expr.text,
+                                    p0   : pageFunc.initParams.text,
+                                    wsx  : pageFunc.sigmax.checked,
+                                    wsy  : pageFunc.sigmay.checked,
+                                    xmin : pageFunc.xmin.text,
+                                    xmax : pageFunc.xmax.text,
+                                },
+                                data : table.dataShaped
+                            })
 
     Shortcut {
         sequences: ["Ctrl+B", "Ctrl+Space"]
@@ -98,13 +98,13 @@ Item {
 
                 ColumnLayout {
                     id: leftPanel_layout
+                    width: 271
+                    height: 125
                     anchors.left: parent.left
                     anchors.right: parent.right
                     anchors.top: parent.top
-                    anchors.bottom: rectangle3.top
                     anchors.rightMargin: 5
                     anchors.leftMargin: 5
-                    anchors.bottomMargin: 5
                     anchors.topMargin: 5
                     spacing: 0
 
@@ -152,7 +152,7 @@ Item {
                                 nameFilters: ["Arquivos JSON (*.json)"]
                                 onAccepted:{
                                     table.clear()
-                                    middleTabs.pageFunc.clearTableParams()  
+                                    middleTabs.pageFunc.clearTableParams()
                                     singlePlot.load(projectOpen.fileUrl)
                                 }
                             }
@@ -257,29 +257,23 @@ Item {
                             text: qsTr("Dados não selecionados")
                         }
                     }
-
-                    TableData{
-                        id: table
-                        Layout.fillHeight: true
-                        Layout.fillWidth: true
-                        dataModel: ListModel{
-                            id: dataSet
-                        }
-                    }
                 }
 
-                Rectangle {
-                    id: rectangle3
-                    y: 648
-                    height: 20
-                    color: Colors.color2
+                TableData{
+                    id: table
                     anchors.left: parent.left
                     anchors.right: parent.right
+                    anchors.top: leftPanel_layout.bottom
                     anchors.bottom: parent.bottom
+                    anchors.topMargin: 0
                     anchors.rightMargin: 0
                     anchors.leftMargin: 0
                     anchors.bottomMargin: 0
+                    Layout.fillHeight: true
                     Layout.fillWidth: true
+                    dataModel: ListModel{
+                        id: dataSet
+                    }
                 }
             }
 
@@ -344,7 +338,7 @@ Item {
             nomeProjeto.text                = props['id']
 
             // Filling propriedadesPage.qml
-            pageProp.markerColor.color      = props['dataProps']['marker_color'] 
+            pageProp.markerColor.color      = props['dataProps']['marker_color']
             pageProp.markerSize.value       = props['dataProps']['marker_size']
             pageProp.marker.currentIndex    = pageProp.marker.find(markers[props['dataProps']['marker']])
             pageProp.curveColor.color       = props['dataProps']['curve_color']
@@ -388,6 +382,6 @@ Item {
 
 /*##^##
 Designer {
-    D{i:0;formeditorZoom:0.9}
+    D{i:0;autoSize:true;formeditorZoom:1.1;height:480;width:640}D{i:18}
 }
 ##^##*/

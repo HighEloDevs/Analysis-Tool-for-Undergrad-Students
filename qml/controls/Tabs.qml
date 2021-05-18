@@ -110,13 +110,6 @@ Item {
                 enabled: root.isPlotable
             }
 
-            Rectangle {
-                id: bottomBar
-                height: 20
-                color: Colors.color2
-                Layout.fillWidth: true
-            }
-
         }
 
     }
