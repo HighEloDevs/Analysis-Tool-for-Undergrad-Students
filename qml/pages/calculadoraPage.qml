@@ -142,7 +142,7 @@ Item {
                         textHolder: 'Ex.: 0.95, 0.90'
                         defaultColor: '#fff'
                         textColor: '#fff'
-                        validator: RegExpValidator{regExp: /^[\-]?[0-9]+([\.]?[0-9]+)?$/}
+                        validator: RegExpValidator{regExp: /^[0]+([\.]?[0-9]+)?$/}
                     }
 
 
@@ -177,7 +177,7 @@ Item {
                         textHolder: "Ex.: 30, 31, 32..."
                         defaultColor: '#fff'
                         textColor: '#fff'
-                        validator: RegExpValidator{regExp: /^[\-]?[0-9]+([\.]?[0-9]+)?$/}
+                        validator: RegExpValidator{regExp: /^[1-9]+([0-9]+)?$/}
                     }
 
                     // Label {
@@ -211,7 +211,7 @@ Item {
                         textHolder: "Ex.: 1.0, 3.2, 4"
                         defaultColor: '#fff'
                         textColor: '#fff'
-                        validator: RegExpValidator{regExp: /^[\-]?[0-9]+([\.]?[0-9]+)?$/}
+                        validator: RegExpValidator{regExp: /^[0-9]+([\.]?[0-9]+)?$/}
                         enabled: false
                     }
 
@@ -245,7 +245,7 @@ Item {
                         textHolder: "Ex.: 1.0, 3.2, 4"
                         defaultColor: '#fff'
                         textColor: '#fff'
-                        validator: RegExpValidator{regExp: /^[\-]?[0-9]+([\.]?[0-9]+)?$/}
+                        validator: RegExpValidator{regExp: /^[0-9]+([\.]?[0-9]+)?$/}
                         enabled: false
                     }
 

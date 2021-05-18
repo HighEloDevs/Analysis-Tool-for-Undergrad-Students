@@ -25,6 +25,7 @@ SOFTWARE.
 
 from matplotlib_backend_qtquick.qt_compat import QtCore
 from src.Calculators import interpreter_calculator, Plot
+import numpy as np
 import pandas as pd
 import json
 import platform
@@ -78,6 +79,8 @@ class SinglePlot(QtCore.QObject):
                 'p0'         : '',
                 'wsx'        : True,
                 'wsy'        : True,
+                'xmin'       : '',
+                'xmax'       : '',
                 'parameters' : {}
             },
             'data': []
@@ -90,6 +93,10 @@ class SinglePlot(QtCore.QObject):
         canvasProps = plotData['canvasProps']
         dataProps   = plotData['dataProps']
         fitProps    = plotData['fitProps']
+        for i in ["xmin", "xmax", "ymin", "ymax"]:
+            canvasProps[i] = self.mk_float(canvasProps[i])
+        for i in ["xdiv", "ydiv"]:
+            canvasProps[i] = self.mk_int(canvasProps[i])
         data        = plotData['data']
 
         # Loading data from the table
@@ -114,6 +121,13 @@ class SinglePlot(QtCore.QObject):
             p0 = p0.replace(';', ',')
             p0 = p0.replace('/', ',')
             self.model.set_p0(p0)
+        
+        self.model.xmin = self.mk_float(fitProps['xmin'])
+        self.model.xmax = self.mk_float(fitProps['xmax'])
+
+        if (self.model.xmin != 0.) and (self.model.xmin >= self.model.xmax):
+            self.msg.raiseError("Intervalo de ajuste inválido. Rever intervalo de ajuste.")
+            return None
 
         # Setting style of the plot 
         self.canvas.setCanvasProps(canvasProps, expr)
@@ -251,6 +265,9 @@ class SinglePlot(QtCore.QObject):
         try:
             nc = nc.replace(',', '.')
             nc = float(nc)
+            if nc == 0 or nc >= 1:
+                self.msg.raiseError("Nível de confiança deve ser sempre maior que zero e menor que 1. Rever nível de confiança.")
+                return None
         except:
             pass
         try:
@@ -261,19 +278,28 @@ class SinglePlot(QtCore.QObject):
         try:
             mean = mean.replace(',', '.')
             mean = float(mean)
+            if mean <= 0:
+                self.msg.raiseError("Média deve ser sempre maior que zero. Rever média.")
+                return None
         except:
             pass
         try:
             std = std.replace(',', '.')
             std = float(std)
+            if std <= 0:
+                self.msg.raiseError("Desvio padrão deve ser sempre maior que zero. Rever desvio padrão.")
+                return None
         except:
             pass
-        if std <= 0:
-            self.msg.raiseError("Desvio padrão deve ser sempre maior que zero. Rever desvio padrão.")
-            return None
-        if ngl >= 1:
-            self.msg.raiseError("Número de graus de liberdade deve ser sempre menor que 1. Rever número de graus de liberdade.")
-            return None
+        
         s, x, y, x_area, y_area = interpreter_calculator(functionDict[function], methodDict[opt1], nc, ngl, mean, std)
         Plot(self.canvas, x, y, x_area, y_area)
         self.writeCalculator.emit(s)
+    def mk_float(self, s):
+        '''Make a float from the string'''
+        s = s.strip()
+        return np.float64(s) if s else 0.
+    def mk_int(self, s):
+        '''Make a float from the string'''
+        s = s.strip()
+        return np.int64(s) if s else 0
