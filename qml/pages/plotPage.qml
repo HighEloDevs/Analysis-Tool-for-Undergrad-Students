@@ -233,7 +233,8 @@ Item {
                                 title: "Escolha o arquivo com seus dados"
                                 folder: shortcuts.desktop
                                 selectMultiple: false
-                                nameFilters: ["Arquivos txt (*.txt)", "Arquivos csv (*.csv)", "Arquivos tsv (*.tsv)"]
+                                // nameFilters: ["Arquivos txt (*.txt)", "Arquivos csv (*.csv)", "Arquivos tsv (*.tsv)"]
+                                nameFilters: ["Arquivos de dados (*.txt *.csv *.tsv)"]
                                 onAccepted:{
                                     table.clear()
                                     model.load_data(fileOpen.fileUrl)
