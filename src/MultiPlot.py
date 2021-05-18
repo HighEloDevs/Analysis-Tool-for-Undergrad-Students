@@ -25,17 +25,21 @@ SOFTWARE.
 
 import json
 import numpy as np
+import platform
 from matplotlib_backend_qtquick.qt_compat import QtCore
 from .Model_multiplot import MultiModel
 
 class Multiplot(QtCore.QObject):
     """Backend for multiplot page"""
 
-    setData = QtCore.Signal(QtCore.QJsonValue, arguments='data')
-    removeRow = QtCore.Signal(int, arguments='row')
+    setData          = QtCore.Signal(QtCore.QJsonValue, arguments='data')
+    removeRow        = QtCore.Signal(int, arguments='row')
+    fillPageSignal   = QtCore.Signal(QtCore.QJsonValue, arguments='props')
+    addRow           = QtCore.Signal(QtCore.QJsonValue, arguments='rowData')
 
     def __init__(self, displayBridge, messageHandler):
         super().__init__()
+        self.path          = ''
         self.displayBridge = displayBridge
         self.msg           = messageHandler
         self.Multi_Model   = None
@@ -51,6 +55,124 @@ class Multiplot(QtCore.QObject):
         self.title         = ''
         self.xaxis         = ''
         self.yaxis         = ''
+
+        self.defaultProps  = {
+            'id': '',
+            'rowsData': [],
+            'canvasProps': {
+                'title': '',
+                'xaxis': '',
+                'yaxis': '',
+                'xmin': '',
+                'xmax': '',
+                'xdiv': '',
+                'ymin': '',
+                'ymax': '',
+                'ydiv': '',
+                'logx': False,
+                'logy': False,
+                'grid': False,
+            }
+        }
+
+    def fillPage(self, props):
+        props = QtCore.QJsonValue.fromVariant(props)
+        self.fillPageSignal.emit(props)
+
+    @QtCore.Slot()
+    def new(self):
+        # Reseting path
+        self.path = ''
+
+        # Reseting frontend
+        self.displayBridge.reset()
+        self.fillPage(self.defaultProps)
+
+    @QtCore.Slot(str)
+    def load(self, path):
+        curveStyles = {
+            '-': 0,
+            '--': 1,
+            '-.':2
+        }
+        # Reseting frontend
+        self.new()
+
+        # Setting path
+        self.path = QtCore.QUrl(path).toLocalFile()
+
+        # Getting props
+        with open(self.path, encoding='utf-8') as file:
+            try:
+                props = json.load(file)
+            except:
+                self.msg.raiseError("O arquivo carregado é incompatível.")
+
+        if "key" in props:
+            # Loading data from the table
+            key = props["key"].split('-')
+            if key[0] != "2":
+                self.msg.raiseWarn("O carregamento de arquivos antigos está limitado à uma versão anterior.")
+                return 0
+            if key[-1] != 'multiplot':
+                self.msg.raiseError("O arquivo carregado é incompatível ou está desatualizado.")
+                return 0
+        else:
+            self.msg.raiseError("O arquivo carregado é incompatível ou está desatualizado.")
+            return 0
+
+        for row, rowData in enumerate(props['rowsData'], start=0):
+            prop = QtCore.QJsonValue.fromVariant({
+                'row': row,
+                'data': rowData['df'],
+                'params': rowData['params'],
+                'fileName': 'Carregado do projeto',
+                'projectName': rowData['label'],
+                'expr': rowData['expr'],
+                'p0': rowData['p0'],
+                'symbolColor': rowData["markerColor"],
+                'curve': curveStyles[rowData['curve']]
+            })
+            self.addRow.emit(prop)
+
+        # Removing rowData from props
+        del props['rowsData']
+
+        # Filling page
+        self.fillPageSignal.emit(QtCore.QJsonValue.fromVariant(props))
+
+    @QtCore.Slot(QtCore.QJsonValue, result=int)
+    def save(self, props):
+        # If there's no path for saving, saveAs()
+        if self.path == '':
+            return 1
+
+        # Getting properties
+        props = props.toVariant()
+
+        if platform.system() == "Linux":
+            with open(self.path + ".json", 'w', encoding='utf-8') as file:
+                json.dump(props, file, ensure_ascii=False, indent=4)
+        else:
+            with open(self.path, 'w', encoding='utf-8') as file:
+                json.dump(props, file, ensure_ascii=False, indent=4)
+
+        return 0
+    
+    @QtCore.Slot(str, QtCore.QJsonValue)
+    def saveAs(self, path, props):
+        # Getting path
+        self.path = QtCore.QUrl(path).toLocalFile()
+
+        # Getting properties
+        props = props.toVariant()
+
+        if platform.system() == "Linux":
+            with open(self.path + ".json", 'w', encoding='utf-8') as file:
+                json.dump(props, file, ensure_ascii=False, indent=4)
+        else:
+            with open(self.path, 'w', encoding='utf-8') as file:
+                json.dump(props, file, ensure_ascii=False, indent=4)
 
     @QtCore.Slot(str, int)
     def loadData(self, fileUrl, row):
@@ -80,19 +202,34 @@ class Multiplot(QtCore.QObject):
 
     @QtCore.Slot(QtCore.QJsonValue)
     def getData(self, data):
+        '''Get data from frontend and make a plot'''
+
+        def mk_float(s):
+            '''Make a float from the string'''
+            s = s.strip()
+            return np.float64(s) if s else 0
+        def mk_int(s):
+            '''Make a float from the string'''
+            s = s.strip()
+            return np.int64(s) if s else 0
+
         dados              = data.toVariant()
-        graph_options      = dados['options']
-        projetos           = dados['rows']
+        graph_options      = dados['canvasProps']
+        projetos           = dados['rowsData']
+        # print(projetos[0].keys())
+        # return 0
         self.Multi_Model   = MultiModel(graph_options, projetos)
         self.grid          = graph_options['grid']
         self.logx          = graph_options['logx']
         self.logy          = graph_options['logy']
-        self.xmin          = float(graph_options['xmin'])
-        self.xmax          = float(graph_options['xmax'])
-        self.xdiv          = int(graph_options['xdiv'])
-        self.ymin          = float(graph_options['ymin'])
-        self.ymax          = float(graph_options['ymax'])
-        self.ydiv          = int(graph_options['ydiv'])
+
+        print(self.grid, self.logx, self.logy)
+        self.xmin          = mk_float(graph_options['xmin'])
+        self.xmax          = mk_float(graph_options['xmax'])
+        self.xdiv          = mk_int(graph_options['xdiv'])
+        self.ymin          = mk_float(graph_options['ymin'])
+        self.ymax          = mk_float(graph_options['ymax'])
+        self.ydiv          = mk_int(graph_options['ydiv'])
         self.title         = graph_options['title']
         self.xaxis         = graph_options['xaxis']
         self.yaxis         = graph_options['yaxis']
@@ -101,11 +238,11 @@ class Multiplot(QtCore.QObject):
     def Plot(self):
         self.displayBridge.reset()
 
-        if self.grid == 2:
+        if self.grid:
             self.displayBridge.axes.grid(True)
-        if self.logy == 2:
+        if self.logy:
             self.displayBridge.axes.set_yscale('log')
-        if self.logx == 2:
+        if self.logx:
             self.displayBridge.axes.set_xscale('log')
         if self.xdiv != 0. and (self.xmax != 0. or self.xmin != 0.):
             self.displayBridge.axes.set_xticks(np.linspace(self.xmin, self.xmax, self.xdiv + 1))

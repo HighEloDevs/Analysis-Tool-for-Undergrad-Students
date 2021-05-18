@@ -111,91 +111,144 @@ Item {
                         
                     }
 
-                    Label {
-                        id: label1
-                        color: "#ffffff"
-                        text: qsTr("Nível de Confiança")
-                        Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-                    }
+                    // Label {
+                    //     id: label1
+                    //     color: "#ffffff"
+                    //     text: qsTr("Nível de Confiança")
+                    //     Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+                    // }
 
-                    TextField {
+                    // TextField {
+                    //     id: nivelConfianca
+                    //     height: 30
+                    //     text: ""
+                    //     Layout.preferredHeight: 30
+                    //     Layout.fillWidth: true
+                    //     placeholderText: qsTr("Ex.: 0.95, 0.90")
+                    //     selectByMouse: true
+
+                    //     background: Rectangle{
+                    //         color: nivelConfianca.enabled? textDefaultColor : textDisabledColor
+                    //         radius: 10
+                    //     }
+                    // }
+
+                    TextInputCustom{
                         id: nivelConfianca
-                        height: 30
-                        text: ""
-                        Layout.preferredHeight: 30
                         Layout.fillWidth: true
-                        placeholderText: qsTr("Ex.: 0.95, 0.90")
-                        selectByMouse: true
-
-                        background: Rectangle{
-                            color: nivelConfianca.enabled? textDefaultColor : textDisabledColor
-                            radius: 10
-                        }
+                        Layout.columnSpan: 2
+                        focusColor: Colors.mainColor2
+                        title: 'Nível de Confiança'
+                        textHolder: 'Ex.: 0.95, 0.90'
+                        defaultColor: '#fff'
+                        textColor: '#fff'
+                        validator: RegExpValidator{regExp: /^[\-]?[0-9]+([\.]?[0-9]+)?$/}
                     }
 
-                    Label {
-                        id: label3
-                        color: "#ffffff"
-                        text: qsTr("Número de Graus de Liberdade")
-                        Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-                    }
 
-                    TextField {
+
+                    // Label {
+                    //     id: label3
+                    //     color: "#ffffff"
+                    //     text: qsTr("Número de Graus de Liberdade")
+                    //     Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+                    // }
+
+                    // TextField {
+                    //     id: ngl
+                    //     height: 30
+                    //     Layout.preferredHeight: 30
+                    //     Layout.fillWidth: true
+                    //     placeholderText: qsTr("Ex.: 30, 31, 32...")
+                    //     selectByMouse: true
+
+                    //     background: Rectangle{
+                    //         color: ngl.enabled? textDefaultColor : textDisabledColor
+                    //         radius: 10
+                    //     }
+                    // }
+
+                    TextInputCustom{
                         id: ngl
-                        height: 30
-                        Layout.preferredHeight: 30
                         Layout.fillWidth: true
-                        placeholderText: qsTr("Ex.: 30, 31, 32...")
-                        selectByMouse: true
-
-                        background: Rectangle{
-                            color: ngl.enabled? textDefaultColor : textDisabledColor
-                            radius: 10
-                        }
+                        Layout.columnSpan: 2
+                        focusColor: Colors.mainColor2
+                        title: 'Número de Graus de Liberdade'
+                        textHolder: "Ex.: 30, 31, 32..."
+                        defaultColor: '#fff'
+                        textColor: '#fff'
+                        validator: RegExpValidator{regExp: /^[\-]?[0-9]+([\.]?[0-9]+)?$/}
                     }
 
-                    Label {
-                        id: label4
-                        color: "#ffffff"
-                        text: qsTr("Média")
-                        Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-                    }
+                    // Label {
+                    //     id: label4
+                    //     color: "#ffffff"
+                    //     text: qsTr("Média")
+                    //     Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+                    // }
 
-                    TextField {
+                    // TextField {
+                    //     id: mean
+                    //     height: 30
+                    //     Layout.preferredHeight: 30
+                    //     Layout.fillWidth: true
+                    //     placeholderText: qsTr("Ex.: 1.0, 3.2, 4")
+                    //     selectByMouse: true
+                    //     enabled: false
+
+                    //     background: Rectangle{
+                    //         color: mean.enabled? textDefaultColor : textDisabledColor
+                    //         radius: 10
+                    //     }
+                    // }
+
+                    TextInputCustom{
                         id: mean
-                        height: 30
-                        Layout.preferredHeight: 30
                         Layout.fillWidth: true
-                        placeholderText: qsTr("Ex.: 1.0, 3.2, 4")
-                        selectByMouse: true
+                        Layout.columnSpan: 2
+                        focusColor: Colors.mainColor2
+                        title: 'Média'
+                        textHolder: "Ex.: 1.0, 3.2, 4"
+                        defaultColor: '#fff'
+                        textColor: '#fff'
+                        validator: RegExpValidator{regExp: /^[\-]?[0-9]+([\.]?[0-9]+)?$/}
                         enabled: false
-
-                        background: Rectangle{
-                            color: mean.enabled? textDefaultColor : textDisabledColor
-                            radius: 10
-                        }
                     }
 
-                    Label {
-                        id: label5
-                        color: "#ffffff"
-                        text: qsTr("Desvio Padrão")
-                        Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-                    }
+                    // Label {
+                    //     id: label5
+                    //     color: "#ffffff"
+                    //     text: qsTr("Desvio Padrão")
+                    //     Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+                    // }
 
-                    TextField {
+                    // TextField {
+                    //     id: std
+                    //     Layout.preferredHeight: 30
+                    //     Layout.fillWidth: true
+                    //     placeholderText: qsTr("Ex.: 1.0, 3.2, 4")
+                    //     selectByMouse: true
+                    //     enabled: false
+
+                    //     background: Rectangle{
+                    //         color: std.enabled? textDefaultColor : textDisabledColor
+                    //         radius: 10
+                    //     }
+                    // }
+
+                    TextInputCustom{
                         id: std
-                        Layout.preferredHeight: 30
                         Layout.fillWidth: true
-                        placeholderText: qsTr("Ex.: 1.0, 3.2, 4")
-                        selectByMouse: true
+                        Layout.columnSpan: 2
+                        focusColor: Colors.mainColor2
+                        title: 'Desvio Padrão'
+                        textHolder: "Ex.: 1.0, 3.2, 4"
+                        defaultColor: '#fff'
+                        textColor: '#fff'
+                        validator: RegExpValidator{regExp: /^[\-]?[0-9]+([\.]?[0-9]+)?$/}
                         enabled: false
-
-                        background: Rectangle{
-                            color: std.enabled? textDefaultColor : textDisabledColor
-                            radius: 10
-                        }
                     }
+
 
                     Button {
                         id: btnCalcular

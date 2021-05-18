@@ -3,42 +3,194 @@ import QtQuick.Controls 2.15
 import Qt.labs.qmlmodels 1.0
 import QtQuick.Window 2.12
 import QtQuick.Layouts 1.12
+import QtQuick.Dialogs 1.3
 import "../controls"
 import "../colors.js" as Colors
 
 Item {
     id: root
+    clip: true
+
+    property var multiPlotData: ({
+        key: '2-b',
+        id: id.text,
+        rowsData: [],
+        canvasProps: {
+            title: title.text,
+            xaxis: xaxis.text,
+            yaxis: yaxis.text,
+            xmin: xmin.text,
+            xmax: xmax.text,
+            xdiv: xdiv.text,
+            ymin: ymin.text,
+            ymax: ymax.text,
+            ydiv: ydiv.text,
+            logx: logx.checked,
+            logy: logy.checked,
+            grid: grid.checked,
+        }
+    })
     
-    Column{
+    ColumnLayout{
         anchors.fill: parent
+        spacing: 0
+
+        Rectangle{
+            id: projectBg
+            Layout.fillWidth: true
+            border.width: 2
+            border.color: Colors.color2
+            height: 100
+            color: Colors.color3
+
+            ColumnLayout{
+                anchors.fill: parent
+                anchors.leftMargin: 5
+                anchors.rightMargin: 5
+                anchors.bottomMargin: 5
+                anchors.topMargin: 5
+                spacing: 0
+                RowLayout{
+                    TextButton{
+                        id: btnNew
+                        height: 25
+                        Layout.fillWidth: true
+                        texto: 'Novo Projeto'
+                        textSize: 10
+                        radius: 3
+                        primaryColor: Colors.c_button
+                        clickColor: Colors.c_button_active
+                        hoverColor: Colors.c_button_hover
+
+                        onClicked: {
+                            multiPlot.new()
+                            multiPlotTable.clear()
+                        }
+                    }
+
+                    TextButton{
+                        id: btnOpen
+                        height: 25
+                        radius: 3
+                        Layout.fillWidth: true
+                        texto: 'Abrir'
+                        textSize: 10
+                        primaryColor: Colors.c_button
+                        clickColor: Colors.c_button_active
+                        hoverColor: Colors.c_button_hover
+
+                        FileDialog{
+                            id: projectOpen
+                            title: "Escolha o projeto"
+                            folder: shortcuts.desktop
+                            selectMultiple: false
+                            nameFilters: ["Arquivos JSON (*.json)"]
+                            onAccepted:{
+                                multiPlotTable.clear()
+                                multiPlot.load(projectOpen.fileUrl)
+                            }
+                        }
+
+                        onClicked: {
+                            projectOpen.open()
+                        }
+                    }
+
+                    TextButton{
+                        id: btnSave
+                        height: 25
+                        radius: 3
+                        Layout.fillWidth: true
+                        texto: 'Salvar'
+                        textSize: 10
+                        primaryColor: Colors.c_button
+                        clickColor: Colors.c_button_active
+                        hoverColor: Colors.c_button_hover
+
+                        onClicked: {
+                            // Returns 1 if can't save in a existing path
+                            let saveAs = multiPlot.save(multiPlotData)
+                            if (saveAs){
+                                projectSaver.open()
+                            }
+                        }
+                    }
+
+                    TextButton{
+                        id: btnSaveAs
+                        height: 25
+                        radius: 3
+                        Layout.fillWidth: true
+                        texto: 'Salvar Como'
+                        textSize: 10
+                        primaryColor: Colors.c_button
+                        clickColor: Colors.c_button_active
+                        hoverColor: Colors.c_button_hover
+
+                        FileDialog{
+                            id: projectSaver
+                            title: "Escolha um local para salvar o projeto"
+                            folder: shortcuts.desktop
+                            selectExisting: false
+                            nameFilters: ["Arquivo JSON (*.json)"]
+                            onAccepted: {
+                                multiPlot.saveAs(fileUrl, multiPlotData)
+                            }
+                        }
+
+                        onClicked: {
+                            projectSaver.open()
+                        }
+                    }
+                }
+                TextInputCustom{
+                    id: id
+                    Layout.fillWidth: true
+                    focusColor: Colors.mainColor2
+                    title: 'Título do projeto'
+                    textHolder: ''
+                    defaultColor: '#fff'
+                    textColor: '#fff'
+                }
+            }
+        }
         
         TableMultiPlot{
             id: multiPlotTable
-            width: parent.width
-            height: root.height / 2
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            Layout.minimumHeight: 100
+            height: 250
         }
         
         Rectangle{
             id: optionsBg
-            width: root.width
-            height: root.height - multiPlotTable.height
-            color: Colors.color2
+            Layout.fillWidth: true
+            Layout.minimumHeight: 200
+            Layout.maximumHeight: 300
+            Layout.fillHeight: true
+            color: Colors.color3
+            border.width: 2
+            border.color: Colors.color2
             
             ScrollView {
                 id: scrollView
                 anchors.fill: parent
                 contentWidth: root.width
+                contentHeight: 320
                 clip: true
                 
                 GridLayout{
                     id: gridLayout
                     anchors.fill: parent
+                    anchors.topMargin: 15
+                    anchors.bottomMargin: 15
                     anchors.rightMargin: 15
                     anchors.leftMargin: 15
                     rowSpacing: 0
                     columnSpacing: 2
-                    rows: 6
                     columns: 3
+                    rows: 6
                     
                     TextInputCustom{
                         id: title
@@ -177,31 +329,18 @@ Item {
                     TextButton{
                         Layout.columnSpan: 3
                         Layout.alignment: Qt.AlignHCenter
-                        width: 50
                         height: 30
                         texto: 'PLOT / ATUALIZAR'
                         
-                        primaryColor: Colors.color3
+                        primaryColor: Colors.c_button
                         hoverColor: Colors.c_button_hover
                         clickColor: Colors.c_button_active
 
                         enabled: multiPlotTable.hasData
                         
                         onClicked:{
-                            let data = multiPlotTable.dataShaped
-                            data['options']['title'] = title.text
-                            data['options']['xaxis'] = xaxis.text
-                            data['options']['yaxis'] = yaxis.text
-                            data['options']['xmin'] = Number(xmin.text)
-                            data['options']['xmax'] = Number(xmax.text)
-                            data['options']['xdiv'] = Number(xdiv.text)
-                            data['options']['ymin'] = Number(ymin.text)
-                            data['options']['ymax'] = Number(ymax.text)
-                            data['options']['ydiv'] = Number(ydiv.text)
-                            data['options']['logx'] = logx.checkState
-                            data['options']['logy'] = logy.checkState
-                            data['options']['grid'] = grid.checkState
-                            multiPlot.getData(multiPlotTable.dataShaped)
+                            multiPlotData['rowsData'] = multiPlotTable.dataShaped
+                            multiPlot.getData(multiPlotData)
                         }
                     }
                 }
@@ -211,12 +350,32 @@ Item {
     
     Connections{
         target: multiPlot
+        function onAddRow(rowData){
+            multiPlotTable.addRowBackend(rowData)
+        }
+
         function onSetData(data){
             multiPlotTable.fillRow(data)
         }
 
         function onRemoveRow(row){
             multiPlotTable.removeRow(row)
+        }
+
+        function onFillPageSignal(props){
+            id.text = props['id']
+            title.text = props['canvasProps']['title']
+            xaxis.text = props['canvasProps']['xaxis']
+            yaxis.text = props['canvasProps']['yaxis']
+            xmin.text = props['canvasProps']['xmin']
+            xmax.text = props['canvasProps']['xmax']
+            xdiv.text = props['canvasProps']['xdiv']
+            ymin.text = props['canvasProps']['ymin']
+            ymax.text = props['canvasProps']['ymax']
+            ydiv.text = props['canvasProps']['ydiv']
+            logx.checked = props['canvasProps']['logx']
+            logy.checked = props['canvasProps']['logy']
+            grid.checked = props['canvasProps']['grid']
         }
     }
 }
