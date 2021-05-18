@@ -389,10 +389,11 @@ class MPLCanvas(QtCore.QObject):
         extension = path.split('/')[-1].split('.')[1]
 
         if transparent and extension != 'png':
-            self.messageHandler.raiseWarn('O fundo transparente funciona apenas na extesão .png')
+            self.messageHandler.raiseWarn('O fundo transparente funciona apenas na extensão .png')
             self.canvas.figure.savefig(path, dpi = 400, transparent=transparent)
         else:
             self.canvas.figure.savefig(path, dpi = 400, transparent=transparent)
+            self.messageHandler.raiseSuccess('Imagem salva com sucesso!')
 
     @QtCore.Slot()
     def copyToClipboard(self):
@@ -408,7 +409,7 @@ class MPLCanvas(QtCore.QObject):
         pixmap = QtGui.QPixmap()
         if pixmap.load(path):
             clipboard.setImage(pixmap.toImage())
-            self.messageHandler.raiseSuccess('Copiado para a área de transferência!')
+            self.messageHandler.raiseSuccess('Copiado com sucesso para a área de transferência!')
 
     @QtCore.Slot()
     def pan(self, *args):
