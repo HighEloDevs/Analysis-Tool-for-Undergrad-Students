@@ -89,7 +89,6 @@ class SinglePlot(QtCore.QObject):
     @QtCore.Slot(QtCore.QJsonValue)
     def getPlotData(self, plotData):
         plotData    = plotData.toVariant()
-        # id          = plotData['id']
         canvasProps = plotData['canvasProps']
         dataProps   = plotData['dataProps']
         fitProps    = plotData['fitProps']
@@ -97,7 +96,7 @@ class SinglePlot(QtCore.QObject):
             canvasProps[i] = self.mk_float(canvasProps[i])
         for i in ["xdiv", "ydiv"]:
             canvasProps[i] = self.mk_int(canvasProps[i])
-        data        = plotData['data']
+        data = plotData['data']
 
         # Loading data from the table
         self.model.loadDataTable(data)
@@ -166,10 +165,13 @@ class SinglePlot(QtCore.QObject):
             props = json.load(file)
 
         if "key" in props:
-            # Loading data from the table
-            self.model.load_data(df_array=props['data'])
             if props["key"][0] != "2":
                 self.msg.raiseWarn("O carregamento de arquivos antigos está limitado à uma versão anterior. Adaptação feita automaticamente.")
+            if props["key"].split('-')[-1] == 'multiplot':
+                self.msg.raiseError("O projeto carregado pertence ao multiplot, esse arquivo é incompatível.")
+                return 0
+            # Loading data from the project
+            self.model.load_data(df_array=props['data'])
         else:
             self.msg.raiseWarn("O carregamento de arquivos antigos está limitado à uma versão anterior. Adaptação feita automaticamente.")
             props = self.loadOldJson(props)

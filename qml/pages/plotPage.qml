@@ -28,7 +28,7 @@ Item {
         'Ponto-Tracejado':'-.'
     })
     property var plotData: ({
-        key: '2-b-multiplot',
+        key: '2-b',
         id: nomeProjeto.text,
         dataProps: {
             marker_color    : String(pageProp.markerColor.color),
