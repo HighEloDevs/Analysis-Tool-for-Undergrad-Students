@@ -81,6 +81,7 @@ Item{
             anchors.left: parent.left
             anchors.leftMargin: 5
             font.pixelSize: 13
+            font.bold: true
             text: title
             color: root.enabled ? defaultColor : disabledColor
 

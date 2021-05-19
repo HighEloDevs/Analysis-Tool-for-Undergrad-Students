@@ -828,13 +828,6 @@ Window {
                             leftPadding: 10
                         }
 
-                        // Label {
-                        //     id: labelLeftInfo1
-                        //     color: Colors.fontColor
-                        //     horizontalAlignment: Text.AlignLeft
-                        //     verticalAlignment: Text.AlignVCenter
-                        // }
-
                         MouseArea {
                             id: resizeBottomRight
                             x: 1183

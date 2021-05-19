@@ -22,7 +22,6 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
-from os import path
 from matplotlib_backend_qtquick.backend_qtquick import NavigationToolbar2QtQuick
 from matplotlib_backend_qtquick.qt_compat import QtCore, QtGui
 import numpy as np
@@ -386,7 +385,7 @@ class MPLCanvas(QtCore.QObject):
         path = QtCore.QUrl(save_path).toLocalFile()
 
         # Getting extension
-        extension = path.split('/')[-1].split('.')[1]
+        filename, extension = os.path.splitext(path)
 
         if transparent and extension != 'png':
             self.messageHandler.raiseWarn('O fundo transparente funciona apenas na extensão .png')

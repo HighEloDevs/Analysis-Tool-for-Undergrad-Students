@@ -104,7 +104,6 @@ class SinglePlot(QtCore.QObject):
 
         # Getting function to fit
         # Anti-dummies system
-        fitProps['expr'] = fitProps['expr']
         fitProps['expr'] = fitProps['expr'].replace('^', '**')
         fitProps['expr'] = fitProps['expr'].replace('arctan', 'atan')
         fitProps['expr'] = fitProps['expr'].replace('arcsin', 'asin')

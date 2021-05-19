@@ -6,8 +6,8 @@ import QtQuick.Dialogs 1.3
 import QtQuick.Layouts 1.11
 import Canvas 1.0
 
-import "controls"
 import "."
+import "controls"
 import "colors.js" as Colors
 
 Window {

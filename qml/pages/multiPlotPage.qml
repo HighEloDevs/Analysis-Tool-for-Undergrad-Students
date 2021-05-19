@@ -12,342 +12,355 @@ Item {
     clip: true
 
     property var multiPlotData: ({
-        key: '2-b',
-        id: id.text,
-        rowsData: [],
-        canvasProps: {
-            title: title.text,
-            xaxis: xaxis.text,
-            yaxis: yaxis.text,
-            xmin: xmin.text,
-            xmax: xmax.text,
-            xdiv: xdiv.text,
-            ymin: ymin.text,
-            ymax: ymax.text,
-            ydiv: ydiv.text,
-            logx: logx.checked,
-            logy: logy.checked,
-            grid: grid.checked,
-        }
-    })
+                                     key: '2-b',
+                                     id: id.text,
+                                     rowsData: [],
+                                     canvasProps: {
+                                         title: title.text,
+                                         xaxis: xaxis.text,
+                                         yaxis: yaxis.text,
+                                         xmin: xmin.text,
+                                         xmax: xmax.text,
+                                         xdiv: xdiv.text,
+                                         ymin: ymin.text,
+                                         ymax: ymax.text,
+                                         ydiv: ydiv.text,
+                                         logx: logx.checked,
+                                         logy: logy.checked,
+                                         grid: grid.checked,
+                                     }
+                                 })
     
-    ColumnLayout{
+    Rectangle {
+        id: bg
+        color: "#40464c"
         anchors.fill: parent
-        spacing: 0
 
-        Rectangle{
-            id: projectBg
-            Layout.fillWidth: true
-            border.width: 2
-            border.color: Colors.color2
-            height: 100
-            color: Colors.color3
+        ColumnLayout{
+            anchors.fill: parent
+            spacing: 0
 
-            ColumnLayout{
-                anchors.fill: parent
-                anchors.leftMargin: 5
-                anchors.rightMargin: 5
-                anchors.bottomMargin: 5
-                anchors.topMargin: 5
-                spacing: 0
-                RowLayout{
-                    TextButton{
-                        id: btnNew
-                        height: 25
-                        Layout.fillWidth: true
-                        texto: 'Novo Projeto'
-                        textSize: 10
-                        radius: 3
-                        primaryColor: Colors.c_button
-                        clickColor: Colors.c_button_active
-                        hoverColor: Colors.c_button_hover
+            Rectangle{
+                id: projectBg
+                Layout.fillWidth: true
+                border.width: 2
+                Layout.minimumHeight: 70
+                Layout.fillHeight: true
+                border.color: Colors.color2
+                height: 100
+                color: Colors.color3
 
-                        onClicked: {
-                            multiPlot.new()
-                            multiPlotTable.clear()
-                        }
-                    }
+                ColumnLayout{
+                    anchors.fill: parent
+                    anchors.leftMargin: 5
+                    anchors.rightMargin: 5
+                    anchors.bottomMargin: 5
+                    anchors.topMargin: 5
+                    spacing: 0
+                    RowLayout{
+                        TextButton{
+                            id: btnNew
+                            height: 25
+                            Layout.fillWidth: true
+                            texto: 'Novo Projeto'
+                            textSize: 10
+                            radius: 3
+                            primaryColor: Colors.c_button
+                            clickColor: Colors.c_button_active
+                            hoverColor: Colors.c_button_hover
 
-                    TextButton{
-                        id: btnOpen
-                        height: 25
-                        radius: 3
-                        Layout.fillWidth: true
-                        texto: 'Abrir'
-                        textSize: 10
-                        primaryColor: Colors.c_button
-                        clickColor: Colors.c_button_active
-                        hoverColor: Colors.c_button_hover
-
-                        FileDialog{
-                            id: projectOpen
-                            title: "Escolha o projeto"
-                            folder: shortcuts.desktop
-                            selectMultiple: false
-                            nameFilters: ["Arquivos JSON (*.json)"]
-                            onAccepted:{
+                            onClicked: {
+                                multiPlot.new()
                                 multiPlotTable.clear()
-                                multiPlot.load(projectOpen.fileUrl)
                             }
                         }
 
-                        onClicked: {
-                            projectOpen.open()
+                        TextButton{
+                            id: btnOpen
+                            height: 25
+                            radius: 3
+                            Layout.fillWidth: true
+                            texto: 'Abrir'
+                            textSize: 10
+                            primaryColor: Colors.c_button
+                            clickColor: Colors.c_button_active
+                            hoverColor: Colors.c_button_hover
+
+                            FileDialog{
+                                id: projectOpen
+                                title: "Escolha o projeto"
+                                folder: shortcuts.desktop
+                                selectMultiple: false
+                                nameFilters: ["Arquivos JSON (*.json)"]
+                                onAccepted:{
+                                    multiPlotTable.clear()
+                                    multiPlot.load(projectOpen.fileUrl)
+                                }
+                            }
+
+                            onClicked: {
+                                projectOpen.open()
+                            }
                         }
-                    }
 
-                    TextButton{
-                        id: btnSave
-                        height: 25
-                        radius: 3
-                        Layout.fillWidth: true
-                        texto: 'Salvar'
-                        textSize: 10
-                        primaryColor: Colors.c_button
-                        clickColor: Colors.c_button_active
-                        hoverColor: Colors.c_button_hover
+                        TextButton{
+                            id: btnSave
+                            height: 25
+                            radius: 3
+                            Layout.fillWidth: true
+                            texto: 'Salvar'
+                            textSize: 10
+                            primaryColor: Colors.c_button
+                            clickColor: Colors.c_button_active
+                            hoverColor: Colors.c_button_hover
 
-                        onClicked: {
-                            // Returns 1 if can't save in a existing path
-                            let saveAs = multiPlot.save(multiPlotData)
-                            if (saveAs){
+                            onClicked: {
+                                // Returns 1 if can't save in a existing path
+                                let saveAs = multiPlot.save(multiPlotData)
+                                if (saveAs){
+                                    projectSaver.open()
+                                }
+                            }
+                        }
+
+                        TextButton{
+                            id: btnSaveAs
+                            height: 25
+                            radius: 3
+                            Layout.fillWidth: true
+                            texto: 'Salvar Como'
+                            textSize: 10
+                            primaryColor: Colors.c_button
+                            clickColor: Colors.c_button_active
+                            hoverColor: Colors.c_button_hover
+
+                            FileDialog{
+                                id: projectSaver
+                                title: "Escolha um local para salvar o projeto"
+                                folder: shortcuts.desktop
+                                selectExisting: false
+                                nameFilters: ["Arquivo JSON (*.json)"]
+                                onAccepted: {
+                                    multiPlot.saveAs(fileUrl, multiPlotData)
+                                }
+                            }
+
+                            onClicked: {
                                 projectSaver.open()
                             }
                         }
                     }
-
-                    TextButton{
-                        id: btnSaveAs
-                        height: 25
-                        radius: 3
+                    TextInputCustom{
+                        id: id
                         Layout.fillWidth: true
-                        texto: 'Salvar Como'
-                        textSize: 10
-                        primaryColor: Colors.c_button
-                        clickColor: Colors.c_button_active
-                        hoverColor: Colors.c_button_hover
-
-                        FileDialog{
-                            id: projectSaver
-                            title: "Escolha um local para salvar o projeto"
-                            folder: shortcuts.desktop
-                            selectExisting: false
-                            nameFilters: ["Arquivo JSON (*.json)"]
-                            onAccepted: {
-                                multiPlot.saveAs(fileUrl, multiPlotData)
-                            }
-                        }
-
-                        onClicked: {
-                            projectSaver.open()
-                        }
+                        focusColor: Colors.mainColor2
+                        title: 'Título do projeto'
+                        textHolder: ''
+                        defaultColor: '#fff'
+                        textColor: '#fff'
                     }
-                }
-                TextInputCustom{
-                    id: id
-                    Layout.fillWidth: true
-                    focusColor: Colors.mainColor2
-                    title: 'Título do projeto'
-                    textHolder: ''
-                    defaultColor: '#fff'
-                    textColor: '#fff'
                 }
             }
-        }
-        
-        TableMultiPlot{
-            id: multiPlotTable
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-            Layout.minimumHeight: 100
-            height: 250
-        }
-        
-        Rectangle{
-            id: optionsBg
-            Layout.fillWidth: true
-            Layout.minimumHeight: 200
-            Layout.maximumHeight: 300
-            Layout.fillHeight: true
-            color: Colors.color3
-            border.width: 2
-            border.color: Colors.color2
-            
-            ScrollView {
-                id: scrollView
-                anchors.fill: parent
-                contentWidth: root.width
-                contentHeight: 320
-                clip: true
-                
-                GridLayout{
-                    id: gridLayout
-                    anchors.fill: parent
-                    anchors.topMargin: 15
-                    anchors.bottomMargin: 15
-                    anchors.rightMargin: 15
-                    anchors.leftMargin: 15
-                    rowSpacing: 0
-                    columnSpacing: 2
-                    columns: 3
-                    rows: 6
-                    
-                    TextInputCustom{
-                        id: title
-                        Layout.columnSpan: 2
-                        Layout.fillWidth: true
-                        focusColor: Colors.mainColor2
-                        title: 'Título do Gráfico'
-                        textHolder: ''
-                        defaultColor: '#fff'
-                        textColor: '#fff'
-                    }
-                    CheckBoxCustom{
-                        id: grid
-                        Layout.alignment: Qt.AlignHCenter
-                        w: 25
-                        texto: 'Grade'
-                        checked: false
-                    }
-                    
-                    TextInputCustom{
-                        id: xaxis
-                        Layout.columnSpan: 2
-                        Layout.fillWidth: true
-                        focusColor: Colors.mainColor2
-                        title: 'Título do Eixo X'
-                        textHolder: ''
-                        defaultColor: '#fff'
-                        textColor: '#fff'
-                    }
-                    CheckBoxCustom{
-                        id: logx
-                        Layout.alignment: Qt.AlignHCenter
-                        w: 25
-                        texto: 'Log X'
-                        checked: false
-                    }
-                    
-                    Rectangle{
-                        Layout.columnSpan: 3
-                        Layout.fillWidth: true
-                        height: 50
-                        color: 'transparent'
-                        RowLayout{
-                            anchors.fill: parent
-                            TextInputCustom{
-                                id: xmin
-                                Layout.fillWidth: true
-                                focusColor: Colors.mainColor2
-                                title: 'X Mínimo'
-                                textHolder: ''
-                                defaultColor: '#fff'
-                                textColor: '#fff'
-                                validator: RegExpValidator{regExp: /^[\-]?[0-9]+([\.]?[0-9]+)?$/}
-                            }
-                            TextInputCustom{
-                                id: xmax
-                                Layout.fillWidth: true
-                                focusColor: Colors.mainColor2
-                                title: 'X Máximo'
-                                textHolder: ''
-                                defaultColor: '#fff'
-                                textColor: '#fff'
-                                validator: RegExpValidator{regExp: /^[\-]?[0-9]+([\.]?[0-9]+)?$/}
-                            }
-                            TextInputCustom{
-                                id: xdiv
-                                Layout.fillWidth: true
-                                focusColor: Colors.mainColor2
-                                title: 'Intervalos em X'
-                                textHolder: ''
-                                defaultColor: '#fff'
-                                textColor: '#fff'
-                                validator: RegExpValidator{regExp: /^[0-9]+$/}
-                            }
-                        }
-                    }
-                    
-                    TextInputCustom{
-                        id: yaxis
-                        Layout.columnSpan: 2
-                        Layout.fillWidth: true
-                        focusColor: Colors.mainColor2
-                        title: 'Título do Eixo Y'
-                        textHolder: ''
-                        defaultColor: '#fff'
-                        textColor: '#fff'
-                    }
-                    CheckBoxCustom{
-                        id: logy
-                        Layout.alignment: Qt.AlignHCenter
-                        w: 25
-                        texto: 'Log Y'
-                        checked: false
-                    }
-                    
-                    Rectangle{
-                        Layout.columnSpan: 3
-                        Layout.fillWidth: true
-                        height: 50
-                        color: 'transparent'
-                        RowLayout{
-                            anchors.fill: parent
-                            TextInputCustom{
-                                id: ymin
-                                Layout.fillWidth: true
-                                focusColor: Colors.mainColor2
-                                title: 'Y Mínimo'
-                                textHolder: ''
-                                defaultColor: '#fff'
-                                textColor: '#fff'
-                                validator: RegExpValidator{regExp: /^[\-]?[0-9]+([\.]?[0-9]+)?$/}
-                            }
-                            TextInputCustom{
-                                id: ymax
-                                Layout.fillWidth: true
-                                focusColor: Colors.mainColor2
-                                title: 'Y Máximo'
-                                textHolder: ''
-                                defaultColor: '#fff'
-                                textColor: '#fff'
-                                validator: RegExpValidator{regExp: /^[\-]?[0-9]+([\.]?[0-9]+)?$/}
-                            }
-                            TextInputCustom{
-                                id: ydiv
-                                Layout.fillWidth: true
-                                focusColor: Colors.mainColor2
-                                title: 'Intervalos em Y'
-                                textHolder: ''
-                                defaultColor: '#fff'
-                                textColor: '#fff'
-                                validator: RegExpValidator{regExp: /^[0-9]+$/}
-                            }
-                        }
-                    }
-                    
-                    TextButton{
-                        Layout.columnSpan: 3
-                        Layout.alignment: Qt.AlignHCenter
-                        height: 30
-                        texto: 'PLOT / ATUALIZAR'
-                        
-                        primaryColor: Colors.c_button
-                        hoverColor: Colors.c_button_hover
-                        clickColor: Colors.c_button_active
 
-                        enabled: multiPlotTable.hasData
-                        
-                        onClicked:{
-                            multiPlotData['rowsData'] = multiPlotTable.dataShaped
-                            multiPlot.getData(multiPlotData)
+            TableMultiPlot{
+                id: multiPlotTable
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                // height: 200
+            }
+
+            Rectangle{
+                id: optionsBg
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                color: Colors.color3
+                border.width: 2
+                Layout.minimumHeight: 250
+                border.color: Colors.color2
+
+                ScrollView {
+                    id: scrollView
+                    anchors.fill: parent
+                    ScrollBar.vertical.policy: ScrollBar.AlwaysOn
+                    contentWidth: root.width
+                    contentHeight: 320
+                    clip: true
+
+                    GridLayout{
+                        id: gridLayout
+                        anchors.fill: parent
+                        anchors.topMargin: 15
+                        anchors.bottomMargin: 15
+                        anchors.rightMargin: 15
+                        anchors.leftMargin: 15
+                        rowSpacing: 0
+                        columnSpacing: 2
+                        columns: 3
+                        rows: 6
+
+                        TextInputCustom{
+                            id: title
+                            Layout.columnSpan: 2
+                            Layout.fillWidth: true
+                            focusColor: Colors.mainColor2
+                            title: 'Título do Gráfico'
+                            textHolder: ''
+                            defaultColor: '#fff'
+                            textColor: '#fff'
+                        }
+                        CheckBoxCustom{
+                            id: grid
+                            Layout.alignment: Qt.AlignHCenter
+                            w: 25
+                            texto: 'Grade'
+                            checked: false
+                        }
+
+                        TextInputCustom{
+                            id: xaxis
+                            Layout.columnSpan: 2
+                            Layout.fillWidth: true
+                            focusColor: Colors.mainColor2
+                            title: 'Título do Eixo X'
+                            textHolder: ''
+                            defaultColor: '#fff'
+                            textColor: '#fff'
+                        }
+                        CheckBoxCustom{
+                            id: logx
+                            Layout.alignment: Qt.AlignHCenter
+                            w: 25
+                            texto: 'Log X'
+                            checked: false
+                        }
+
+                        Rectangle{
+                            Layout.columnSpan: 3
+                            Layout.fillWidth: true
+                            height: 50
+                            color: 'transparent'
+                            RowLayout{
+                                anchors.fill: parent
+                                TextInputCustom{
+                                    id: xmin
+                                    Layout.fillWidth: true
+                                    focusColor: Colors.mainColor2
+                                    title: 'X Mínimo'
+                                    textHolder: ''
+                                    defaultColor: '#fff'
+                                    textColor: '#fff'
+                                    validator: RegExpValidator{regExp: /^[\-]?[0-9]+([\.]?[0-9]+)?$/}
+                                }
+                                TextInputCustom{
+                                    id: xmax
+                                    Layout.fillWidth: true
+                                    focusColor: Colors.mainColor2
+                                    title: 'X Máximo'
+                                    textHolder: ''
+                                    defaultColor: '#fff'
+                                    textColor: '#fff'
+                                    validator: RegExpValidator{regExp: /^[\-]?[0-9]+([\.]?[0-9]+)?$/}
+                                }
+                                TextInputCustom{
+                                    id: xdiv
+                                    Layout.fillWidth: true
+                                    focusColor: Colors.mainColor2
+                                    title: 'Intervalos em X'
+                                    textHolder: ''
+                                    defaultColor: '#fff'
+                                    textColor: '#fff'
+                                    validator: RegExpValidator{regExp: /^[0-9]+$/}
+                                }
+                            }
+                        }
+
+                        TextInputCustom{
+                            id: yaxis
+                            Layout.columnSpan: 2
+                            Layout.fillWidth: true
+                            focusColor: Colors.mainColor2
+                            title: 'Título do Eixo Y'
+                            textHolder: ''
+                            defaultColor: '#fff'
+                            textColor: '#fff'
+                        }
+                        CheckBoxCustom{
+                            id: logy
+                            Layout.alignment: Qt.AlignHCenter
+                            w: 25
+                            texto: 'Log Y'
+                            checked: false
+                        }
+
+                        Rectangle{
+                            Layout.columnSpan: 3
+                            Layout.fillWidth: true
+                            height: 50
+                            color: 'transparent'
+                            RowLayout{
+                                anchors.fill: parent
+                                TextInputCustom{
+                                    id: ymin
+                                    Layout.fillWidth: true
+                                    focusColor: Colors.mainColor2
+                                    title: 'Y Mínimo'
+                                    textHolder: ''
+                                    defaultColor: '#fff'
+                                    textColor: '#fff'
+                                    validator: RegExpValidator{regExp: /^[\-]?[0-9]+([\.]?[0-9]+)?$/}
+                                }
+                                TextInputCustom{
+                                    id: ymax
+                                    Layout.fillWidth: true
+                                    focusColor: Colors.mainColor2
+                                    title: 'Y Máximo'
+                                    textHolder: ''
+                                    defaultColor: '#fff'
+                                    textColor: '#fff'
+                                    validator: RegExpValidator{regExp: /^[\-]?[0-9]+([\.]?[0-9]+)?$/}
+                                }
+                                TextInputCustom{
+                                    id: ydiv
+                                    Layout.fillWidth: true
+                                    focusColor: Colors.mainColor2
+                                    title: 'Intervalos em Y'
+                                    textHolder: ''
+                                    defaultColor: '#fff'
+                                    textColor: '#fff'
+                                    validator: RegExpValidator{regExp: /^[0-9]+$/}
+                                }
+                            }
                         }
                     }
+                }
+            }
+
+            TextButton{
+                width: root.width*0.8
+                // Layout.columnSpan: 3
+                // Layout.alignment: Qt.AlignHCenter
+                height: 30
+                radius: 0
+                Layout.preferredHeight: 25
+                Layout.fillHeight: false
+                Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+                Layout.fillWidth: true
+                texto: 'PLOT / ATUALIZAR'
+
+                primaryColor: Colors.c_button
+                hoverColor: Colors.c_button_hover
+                clickColor: Colors.c_button_active
+
+                enabled: multiPlotTable.hasData
+
+                onClicked:{
+                    multiPlotData['rowsData'] = multiPlotTable.dataShaped
+                    multiPlot.getData(multiPlotData)
                 }
             }
         }
     }
-    
+
     Connections{
         target: multiPlot
         function onAddRow(rowData){
@@ -378,10 +391,11 @@ Item {
             grid.checked = props['canvasProps']['grid']
         }
     }
+
 }
 
 /*##^##
 Designer {
-    D{i:0;autoSize:true;formeditorZoom:1.33;height:500;width:500}
+    D{i:0;autoSize:true;formeditorZoom:1.1;height:500;width:500}D{i:1}
 }
 ##^##*/

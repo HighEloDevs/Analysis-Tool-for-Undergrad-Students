@@ -381,7 +381,6 @@ Item {
                             Component.onCompleted: {
                                 if(fromBtn){
                                     dataShaped.push(dataRow)
-                                    print('aaaa')
                                 }
                             }
                         }
