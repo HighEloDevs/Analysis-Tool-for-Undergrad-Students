@@ -181,7 +181,7 @@ class MPLCanvas(QtCore.QObject):
 
                     # Setting titles
                     self.ax1.set_title(str(self.axisTitle[0]))
-                    self.ax1.set(xlabel = str(self.axisTitle[1]))
+                    self.ax2.set(xlabel = str(self.axisTitle[1]))
                     self.ax1.set(ylabel = str(self.axisTitle[2]))
                     self.ax2.set(ylabel = "Resíduos")
                 else:

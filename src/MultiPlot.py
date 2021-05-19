@@ -281,9 +281,12 @@ class Multiplot(QtCore.QObject):
         self.displayBridge.axes.set_title(self.title)
         self.displayBridge.axes.set(xlabel = self.xaxis, ylabel = self.yaxis)
         handles, labels = self.displayBridge.axes.get_legend_handles_labels()
+        # print(handles)
+        # print(labels)
 
         if len(handles) > 1:
             by_label = dict(zip(np.array(labels, dtype=object)[::-1], np.array(handles, dtype=object)[::-1]))
+            # print(by_label)
             self.displayBridge.axes.legend(by_label.values(), by_label.keys())
         elif len(handles) == 1:
             by_label = dict(zip(labels, handles))

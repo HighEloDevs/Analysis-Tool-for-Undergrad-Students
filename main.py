@@ -66,7 +66,6 @@ if __name__ == "__main__":
     
     # Loading QML files
     plat = platform.system()
-
     if(plat == 'Darwin'):
         engine.load(QtCore.QUrl.fromLocalFile(os.path.join(os.path.dirname(__file__), "qml/main_mac.qml")))
     else:
