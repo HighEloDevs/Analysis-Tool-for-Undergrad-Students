@@ -784,24 +784,24 @@ Window {
                                                     texto: 'Fundo transparente'
                                                     checked: false
                                                 }
-                                                IconTextButton{
-                                                    id: copyClipboard
-                                                    Layout.fillHeight: true
-                                                    texto: 'Copiar'
-                                                    textSize: 11
-                                                    primaryColor: 'transparent'
-                                                    hoverColor: 'transparent'
-                                                    clickColor: 'transparent'
-                                                    iconColor: enabled ? '#fff':'#707070'
-                                                    textColor: enabled ? '#fff':'#707070'
-                                                    iconUrl: '../../images/icons/content_copy_black_24dp.svg'
-                                                    iconWidth: 17
-                                                    enabled: !bgTransparent.checked
+                                                // IconTextButton{
+                                                //     id: copyClipboard
+                                                //     Layout.fillHeight: true
+                                                //     texto: 'Copiar'
+                                                //     textSize: 11
+                                                //     primaryColor: 'transparent'
+                                                //     hoverColor: 'transparent'
+                                                //     clickColor: 'transparent'
+                                                //     iconColor: enabled ? '#fff':'#707070'
+                                                //     textColor: enabled ? '#fff':'#707070'
+                                                //     iconUrl: '../../images/icons/content_copy_black_24dp.svg'
+                                                //     iconWidth: 17
+                                                //     enabled: !bgTransparent.checked
 
-                                                    onClicked: {
-                                                        canvas.copyToClipboard()
-                                                    }
-                                                }
+                                                //     onClicked: {
+                                                //         canvas.copyToClipboard()
+                                                //     }
+                                                // }
                                             }
                                         }
 

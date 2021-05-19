@@ -28,6 +28,7 @@ Window {
     property int windowStatus: 1
     property int windowMargin: 0
     property int stackedPage: 0
+    property string os: ''
 
     MessageSnackbar{
         id: messageSnackbar
@@ -293,6 +294,7 @@ Window {
                     IconButton{
                         width: 35
                         Layout.fillHeight: true
+                        Layout.fillWidth: true
                         iconUrl: '../../images/icons/github-36px.svg'
                         iconWidth: 22
                         r: 0
@@ -920,6 +922,10 @@ Window {
                                                     iconUrl: '../../images/icons/content_copy_black_24dp.svg'
                                                     iconWidth: 17
                                                     enabled: !bgTransparent.checked
+                                                    visible: {
+                                                        if(mainWindow.os != 'Windows') false
+                                                        else true
+                                                    }
 
                                                     onClicked: {
                                                         canvas.copyToClipboard()
@@ -1102,10 +1108,9 @@ Window {
     Component.onCompleted: {
         updater.checkUpdate()
         labelVersion.text = updater.getVersion()
+        os = updater.getOS()
     }
 }
-
-
 
 /*##^##
 Designer {

@@ -25,6 +25,7 @@ SOFTWARE.
 
 from matplotlib_backend_qtquick.qt_compat import QtCore
 import requests
+import platform
 
 class UpdateChecker(QtCore.QObject):
 
@@ -55,3 +56,7 @@ class UpdateChecker(QtCore.QObject):
     @QtCore.Slot(result=str)
     def getVersion(self):
         return 'v' + self.__VERSION__
+
+    @QtCore.Slot(result=str)
+    def getOS(self):
+        return platform.system()
