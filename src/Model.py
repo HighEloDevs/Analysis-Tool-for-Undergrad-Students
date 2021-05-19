@@ -88,12 +88,12 @@ class Model(QtCore.QObject):
             self._data_json    = deepcopy(df)
             self._has_sy       = False
             self._has_sx       = False
-            df["sy"]           = 1
-            df["sx"]           = 1
+            df["sy"]           = 0.
+            df["sx"]           = 0.
         elif self._mode == 1:
             self._data_json    = deepcopy(df)
             self._has_sx       = False
-            df["sx"]           = 1
+            df["sx"]           = 0.
         else:
             self._data_json    = deepcopy(df)
         try:
@@ -525,7 +525,9 @@ class Model(QtCore.QObject):
         return x_plot, self._model.eval(x = x_plot, params = self._params)
     
     def reset(self):
+        # self._msgHandler = messageHandler
         self._data       = None
+        self._data_json  = None
         self._exp_model  = ""
         self._model      = None
         self._report_fit = ""
@@ -535,9 +537,10 @@ class Model(QtCore.QObject):
         self._dict       = dict()
         self._dict2      = dict()
         self._p0         = None
+        self.xmin_adj    = 0.
+        self.xmax_adj    = 0.
         self._mode       = 0
         self._has_data   = False
         self._isvalid    = False
         self._has_sx     = True
         self._has_sy     = True
-        self.writeInfos.emit('')

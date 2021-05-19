@@ -45,7 +45,7 @@ Item {
                 textHolder: 'Função a ser ajustada. Ex.: a*x + b'
                 defaultColor: '#fff'
                 textColor: '#fff'
-                validator: RegExpValidator{regExp: /^[0-9a-zA-Z.()*^_+-/ ]+$/}
+                validator: RegExpValidator{regExp: /^[0-9a-zA-Z.()\-*^_+/ ]+$/}
             }
 
             TextInputCustom{
