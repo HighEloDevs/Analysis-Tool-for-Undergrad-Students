@@ -104,16 +104,16 @@ class SinglePlot(QtCore.QObject):
 
         # Getting function to fit
         # Anti-dummies system
-        expr = fitProps['expr']
-        expr = expr.replace('^', '**')
-        expr = expr.replace('arctan', 'atan')
-        expr = expr.replace('arcsin', 'asin')
-        expr = expr.replace('arccos', 'acos')
-        expr = expr.replace('sen', 'sin')
+        fitProps['expr'] = fitProps['expr']
+        fitProps['expr'] = fitProps['expr'].replace('^', '**')
+        fitProps['expr'] = fitProps['expr'].replace('arctan', 'atan')
+        fitProps['expr'] = fitProps['expr'].replace('arcsin', 'asin')
+        fitProps['expr'] = fitProps['expr'].replace('arccos', 'acos')
+        fitProps['expr'] = fitProps['expr'].replace('sen', 'sin')
 
         # Setting expression
-        if self.model._exp_model != expr:
-            self.model.set_expression(expr)
+        if self.model._exp_model != fitProps['expr']:
+            self.model.set_expression(fitProps['expr'])
 
         # Getting initial parameters
         if fitProps['p0'] != '':
@@ -130,7 +130,7 @@ class SinglePlot(QtCore.QObject):
             return None
 
         # Setting style of the plot 
-        self.canvas.setCanvasProps(canvasProps, expr)
+        self.canvas.setCanvasProps(canvasProps, fitProps['expr'])
         self.canvas.setDataProps(dataProps, fitProps)
         self.canvas.Plot(self.model)
 
