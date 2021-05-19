@@ -298,6 +298,8 @@ class Model(QtCore.QObject):
             if (self._result is None) == False:
                 self.__set_param_values_lm_special(x)
                 self.__set_report_lm_special(x)
+            else:
+                return None
             
         elif self._mode == 1:
             if wsy:
@@ -305,12 +307,16 @@ class Model(QtCore.QObject):
                 if (self._result is None) == False:
                     self.__set_param_values_lm_special(x)
                     self.__set_report_lm_special(x)
+                else:
+                    return None
 
             else:
                 self.__fit_lm(x, y, sy, pi)
                 if (self._result is None) == False:
                     self.__set_param_values_lm(x)
                     self.__set_report_lm(x)
+                else:
+                    return None
 
         else:
             if wsx == True and wsy == True:
@@ -318,12 +324,16 @@ class Model(QtCore.QObject):
                 if (self._result is None) == False:
                     self.__set_param_values_lm_special(x)
                     self.__set_report_lm_special(x)
+                else:
+                    return None
             
             elif wsx:
                 self.__fit_lm(x, y, sy, pi)
                 if (self._result is None) == False:
                     self.__set_param_values_lm(x)
                     self.__set_report_lm(x)
+                else:
+                    return None
             
             elif wsy:
                 data = RealData(x, y, sx = sx)
@@ -372,6 +382,10 @@ class Model(QtCore.QObject):
             # A função ajustada possui algum termo inválido, rever ajuste.
             # print(error)
             return None
+        if self._result.covar is None:
+            self._msgHandler.raiseError("A função ajustada não convergiu, rever ajuste.")
+            self._result = None
+            return None
     
     def __fit_lm_wy(self, x, y, pi):
         params = Parameters()
@@ -389,6 +403,10 @@ class Model(QtCore.QObject):
             # A função ajustada possui algum termo inválido, rever ajuste.
             # print(error)
             return None
+        if self._result.covar is None:
+            self._msgHandler.raiseError("A função ajustada não convergiu, rever ajuste.")
+            self._result = None
+            return None
         
     def get_params(self):
         ''' Retorna um dicionário onde as keys são os parâmetros e que retornam uma lista com [valor, incerteza]. '''
@@ -398,7 +416,7 @@ class Model(QtCore.QObject):
         self._dict.clear()
         self._params = Parameters()
         ngl          = len(x) - len(self._coef)
-        inc_cons     = np.sqrt(self._result.chisqr/ngl)
+        # inc_cons     = np.sqrt(self._result.chisqr/ngl)
         # inc_cons_q   = inc_cons**2
         for i in range(len(self._coef)):
             self._params.add(self._coef[i], self._result.values[self._coef[i]])
@@ -415,9 +433,7 @@ class Model(QtCore.QObject):
             self._params.add(self._coef[i], self._result.values[self._coef[i]])
             self._dict.update({self._coef[i]: [self._result.values[self._coef[i]], np.sqrt(self._result.covar[i, i])*inc_cons]})
             self._dict2.update({self._coef[i]: [self._result.values[self._coef[i]], np.sqrt(self._result.covar[i, i])]})
-        # else:
-        #     print("is none")
-        #     return None
+
     def __set_param_values_ODR(self, x):
         self._dict.clear()
         self._params = Parameters()

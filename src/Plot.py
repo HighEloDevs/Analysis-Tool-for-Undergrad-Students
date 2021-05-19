@@ -88,6 +88,7 @@ class SinglePlot(QtCore.QObject):
 
     @QtCore.Slot(QtCore.QJsonValue)
     def getPlotData(self, plotData):
+        self.model.reset()
         plotData    = plotData.toVariant()
         canvasProps = plotData['canvasProps']
         dataProps   = plotData['dataProps']
