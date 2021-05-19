@@ -285,19 +285,18 @@ class Multiplot(QtCore.QObject):
         self.displayBridge.axes.minorticks_on()
 
         for i in range(len(self.Multi_Model.models)):
-            if self.Multi_Model.arquivos[i]['func'] == True and self.Multi_Model.models[i] != 0.:
-                self.Func_plot(self.Multi_Model.arquivos[i], self.Multi_Model.models[i], self.Multi_Model.parameters[i])
             if self.Multi_Model.arquivos[i]['marker'] == True:
                 self.Plot_sx_sy(self.Multi_Model.dfs[i], self.Multi_Model.arquivos[i])
+            if self.Multi_Model.arquivos[i]['func'] == True and self.Multi_Model.models[i] != 0.:
+                self.Func_plot(self.Multi_Model.arquivos[i], self.Multi_Model.models[i], self.Multi_Model.parameters[i])
         self.displayBridge.axes.set_title(self.title)
         self.displayBridge.axes.set(xlabel = self.xaxis, ylabel = self.yaxis)
         handles, labels = self.displayBridge.axes.get_legend_handles_labels()
-        # print(handles)
-        # print(labels)
 
         if len(handles) > 1:
-            by_label = dict(zip(np.array(labels, dtype=object)[::-1], np.array(handles, dtype=object)[::-1]))
-            # print(by_label)
+            labels.reverse()
+            handles.reverse()
+            by_label = dict(zip(labels, handles))
             self.displayBridge.axes.legend(by_label.values(), by_label.keys())
         elif len(handles) == 1:
             by_label = dict(zip(labels, handles))
