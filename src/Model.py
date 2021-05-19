@@ -258,9 +258,10 @@ class Model(QtCore.QObject):
 
         # Getting Model
         try:
-            self._model = ExpressionModel(self._exp_model)
-        except ValueError:
             self._model = ExpressionModel(self._exp_model + " + 0*x")
+        except ValueError:
+            self._msgHandler.raiseError("Expressão de ajuste escrita de forma errada. Rever função de ajuste.")
+            return None
         except SyntaxError as error:
             self._msgHandler.raiseError("Expressão de ajuste escrita de forma errada. Rever função de ajuste.")
             # Expressão de ajuste escrita de forma errada. Rever função de ajuste.
