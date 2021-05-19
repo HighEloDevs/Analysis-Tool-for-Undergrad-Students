@@ -227,8 +227,12 @@ class SinglePlot(QtCore.QObject):
         props["fitProps"]["parameters"] = self.model._params.valuesdict()
 
         if platform.system() == "Linux":
-            with open(self.path + ".json", 'w', encoding='utf-8') as file:
-                json.dump(props, file, ensure_ascii=False, indent=4)
+            if self.path[-5:] == ".json":
+                with open(self.path, 'w', encoding='utf-8') as file:
+                    json.dump(props, file, ensure_ascii=False, indent=4)
+            else: 
+                with open(self.path + ".json", 'w', encoding='utf-8') as file:
+                    json.dump(props, file, ensure_ascii=False, indent=4)
         else:
             with open(self.path, 'w', encoding='utf-8') as file:
                 json.dump(props, file, ensure_ascii=False, indent=4)
@@ -245,8 +249,12 @@ class SinglePlot(QtCore.QObject):
         props['fitProps']['parameters'] = self.model._params.valuesdict()
 
         if platform.system() == "Linux":
-            with open(self.path + ".json", 'w', encoding='utf-8') as file:
-                json.dump(props, file, ensure_ascii=False, indent=4)
+            if self.path[-5:] == ".json":
+                with open(self.path, 'w', encoding='utf-8') as file:
+                    json.dump(props, file, ensure_ascii=False, indent=4)
+            else: 
+                with open(self.path + ".json", 'w', encoding='utf-8') as file:
+                    json.dump(props, file, ensure_ascii=False, indent=4)
         else:
             with open(self.path, 'w', encoding='utf-8') as file:
                 json.dump(props, file, ensure_ascii=False, indent=4)

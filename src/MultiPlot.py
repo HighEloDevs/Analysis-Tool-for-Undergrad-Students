@@ -151,8 +151,12 @@ class Multiplot(QtCore.QObject):
         props = props.toVariant()
 
         if platform.system() == "Linux":
-            with open(self.path + ".json", 'w', encoding='utf-8') as file:
-                json.dump(props, file, ensure_ascii=False, indent=4)
+            if self.path[-5:] == ".json":
+                with open(self.path, 'w', encoding='utf-8') as file:
+                    json.dump(props, file, ensure_ascii=False, indent=4)
+            else: 
+                with open(self.path + ".json", 'w', encoding='utf-8') as file:
+                    json.dump(props, file, ensure_ascii=False, indent=4)
         else:
             with open(self.path, 'w', encoding='utf-8') as file:
                 json.dump(props, file, ensure_ascii=False, indent=4)
@@ -168,8 +172,12 @@ class Multiplot(QtCore.QObject):
         props = props.toVariant()
 
         if platform.system() == "Linux":
-            with open(self.path + ".json", 'w', encoding='utf-8') as file:
-                json.dump(props, file, ensure_ascii=False, indent=4)
+            if self.path[-5:] == ".json":
+                with open(self.path, 'w', encoding='utf-8') as file:
+                    json.dump(props, file, ensure_ascii=False, indent=4)
+            else: 
+                with open(self.path + ".json", 'w', encoding='utf-8') as file:
+                    json.dump(props, file, ensure_ascii=False, indent=4)
         else:
             with open(self.path, 'w', encoding='utf-8') as file:
                 json.dump(props, file, ensure_ascii=False, indent=4)
@@ -266,21 +274,10 @@ class Multiplot(QtCore.QObject):
         self.displayBridge.axes.minorticks_on()
 
         for i in range(len(self.Multi_Model.models)):
-            # if self.Multi_Model.num_cols[i] == 4:
             if self.Multi_Model.arquivos[i]['func'] == True and self.Multi_Model.models[i] != 0.:
                 self.Func_plot(self.Multi_Model.arquivos[i], self.Multi_Model.models[i], self.Multi_Model.parameters[i])
             if self.Multi_Model.arquivos[i]['marker'] == True:
                 self.Plot_sx_sy(self.Multi_Model.dfs[i], self.Multi_Model.arquivos[i])
-            # elif self.Multi_Model.num_cols[i] == 3:
-            #     if self.Multi_Model.arquivos[i]['func'] == True and self.Multi_Model.models[i] != 0.:
-            #         self.Func_plot(self.Multi_Model.arquivos[i], self.Multi_Model.models[i], self.Multi_Model.parameters[i])
-            #     if self.Multi_Model.arquivos[i]['marker'] == True:
-            #         self.Plot_sy(self.Multi_Model.dfs[i], self.Multi_Model.arquivos[i])
-            # else:
-            #     if self.Multi_Model.arquivos[i]['func'] == True and self.Multi_Model.models[i] != 0.:
-            #         self.Func_plot(self.Multi_Model.arquivos[i], self.Multi_Model.models[i], self.Multi_Model.parameters[i])
-            #     if self.Multi_Model.arquivos[i]['marker'] == True:
-            #         self.Plot_op(self.Multi_Model.dfs[i], self.Multi_Model.arquivos[i])
         self.displayBridge.axes.set_title(self.title)
         self.displayBridge.axes.set(xlabel = self.xaxis, ylabel = self.yaxis)
         handles, labels = self.displayBridge.axes.get_legend_handles_labels()
