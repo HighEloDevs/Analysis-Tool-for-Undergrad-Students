@@ -101,7 +101,6 @@ class Model(QtCore.QObject):
         except ValueError as error:
             self._msgHandler.raiseError("Há mais do que 4 colunas. Rever entrada de dados.")
             # Há mais do que 4 colunas. Rever entrada de dados.
-            # print(error)
             return None
 
         # Turn everything into number (str -> number)
@@ -126,7 +125,7 @@ class Model(QtCore.QObject):
         except Exception:
             self._msgHandler.raiseError("Falha ao carregar clipboard. Rever dados de entrada.")
             # Falha ao carregar clipboard. Rever dados de entrada.
-            print(Exception)
+            return None
                 
     @QtCore.Slot(str)
     def load_data(self, data_path='', df=None, df_array=None):
@@ -145,7 +144,6 @@ class Model(QtCore.QObject):
                 except pd.errors.ParserError as error:
                     self._msgHandler.raiseError("Separação de colunas de arquivos csv são com vírgula (","). Rever dados de entrada.")
                     # Separação de colunas de arquivos csv são com vírgula (","). Rever dados de entrada.
-                    # print(error)
                     return None
             else:
                 try:
@@ -153,7 +151,6 @@ class Model(QtCore.QObject):
                 except pd.errors.ParserError as error:
                     self._msgHandler.raiseError("Separação de colunas de arquivos txt e tsv são com tab. Rever dados de entrada.")
                     # Separação de colunas de arquivos txt e tsv são com tab. Rever dados de entrada.
-                    # print(error)
                     return None
             # Getting file name
             fileName = data_path.split('/')[-1]
@@ -182,7 +179,6 @@ class Model(QtCore.QObject):
             except ValueError as error:
                 self._msgHandler.raiseError("A entrada de dados só permite entrada de números. Rever arquivo de entrada.")
                 # Há células não numéricas. A entrada de dados só permite entrada de números. Rever arquivo de entrada.
-                # print(error)
                 return None
 
         # Getting mode:
@@ -210,7 +206,6 @@ class Model(QtCore.QObject):
             except ValueError as error:
                 self._msgHandler.raiseError("Há mais do que 4 colunas. Rever entrada de dados.")
                 # Há mais do que 4 colunas. Rever entrada de dados.
-                # print(error)
                 return None
 
         df.columns     = ['x', 'y', 'sy', 'sx']
@@ -265,13 +260,10 @@ class Model(QtCore.QObject):
         except SyntaxError as error:
             self._msgHandler.raiseError("Expressão de ajuste escrita de forma errada. Rever função de ajuste.")
             # Expressão de ajuste escrita de forma errada. Rever função de ajuste.
-            # print(error)
             return None
 
         # Getting coefficients
         self._coef = [i for i in self._model.param_names]
-
-        # print(self._model)
         
         # If there's no p0, everything is set to 1.0
         pi = list()   # Inital values
@@ -375,12 +367,10 @@ class Model(QtCore.QObject):
         except ValueError as error:
             self._msgHandler.raiseError("A função ajustada gera valores não numéricos, rever ajuste.")
             # A função ajustada gera valores não numéricos, rever ajuste.
-            # print(error)
             return None
         except TypeError as error:
             self._msgHandler.raiseError("A função ajustada possui algum termo inválido, rever ajuste.")
             # A função ajustada possui algum termo inválido, rever ajuste.
-            # print(error)
             return None
         if self._result.covar is None:
             self._msgHandler.raiseError("A função ajustada não convergiu, rever ajuste.")
@@ -396,12 +386,10 @@ class Model(QtCore.QObject):
         except ValueError as error:
             self._msgHandler.raiseError("A função ajustada gera valores não numéricos, rever ajuste.")
             # A função ajustada gera valores não numéricos, rever ajuste.
-            # print(error)
             return None
         except TypeError as error:
             self._msgHandler.raiseError("A função ajustada possui algum termo inválido, rever ajuste.")
             # A função ajustada possui algum termo inválido, rever ajuste.
-            # print(error)
             return None
         if self._result.covar is None:
             self._msgHandler.raiseError("A função ajustada não convergiu, rever ajuste.")
@@ -480,7 +468,6 @@ class Model(QtCore.QObject):
         except TypeError as error:
             self._msgHandler.raiseError("A função ajustada provavelmente não possui parâmetros para serem ajustados. Rever ajuste.")
             # A função ajustada provavelmente não possui parâmetros para serem ajustados. Rever ajuste.
-            # print(error)
             return None
             
 
