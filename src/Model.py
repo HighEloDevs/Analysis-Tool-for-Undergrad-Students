@@ -330,14 +330,20 @@ class Model(QtCore.QObject):
             elif wsy:
                 data = RealData(x, y, sx = sx)
                 self.__fit_ODR(data, pi)
-                self.__set_param_values_ODR(x)
-                self.__set_report_ODR(x)
+                if (self._result is None) == False:
+                    self.__set_param_values_ODR(x)
+                    self.__set_report_ODR(x)
+                else:
+                    return None
 
             else:
                 data = RealData(x, y, sx = sx, sy = sy)
                 self.__fit_ODR(data, pi)
-                self.__set_param_values_ODR(x)
-                self.__set_report_ODR(x)
+                if (self._result is None) == False:
+                    self.__set_param_values_ODR(x)
+                    self.__set_report_ODR(x)
+                else:
+                    return None
 
         params = self.get_params()
         keys = list(params.keys())
@@ -354,8 +360,13 @@ class Model(QtCore.QObject):
                 param.add(self._model.param_names[i], value=a[i])
             return self._model.eval(x=x, params=param)
         model = SciPyModel(f)
-        myodr = ODR(data, model, beta0 = pi, maxit = 250)
-        self._result = myodr.run()
+        try:
+            myodr = ODR(data, model, beta0 = pi, maxit = 250)
+            self._result = myodr.run()
+        except TypeError as error:
+            # print(error)
+            self._msgHandler.raiseError("Expressão de ajuste escrita de forma errada. Rever função de ajuste.")
+            return None
         
 
     def __fit_lm(self, x, y, sy, pi):
