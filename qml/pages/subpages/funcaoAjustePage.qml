@@ -15,6 +15,7 @@ Item {
     property alias sigmay: switch_sigmay
     property alias xmin  : x_min
     property alias xmax  : x_max
+    property alias info  : infos.text
 
     // Functions
     function clearTableParams(){

@@ -129,6 +129,7 @@ Item {
                             onClicked: {
                                 table.clear()
                                 middleTabs.pageFunc.clearTableParams()
+                                middleTabs.pageFunc.info = ''
                                 label_fileName.text = 'Dados não selecionados'
                                 singlePlot.new()
                             }
@@ -152,6 +153,7 @@ Item {
                                 nameFilters: ["Arquivos JSON (*.json)"]
                                 onAccepted:{
                                     table.clear()
+                                    middleTabs.pageFunc.info = ''
                                     middleTabs.pageFunc.clearTableParams()
                                     singlePlot.load(projectOpen.fileUrl)
                                 }
