@@ -282,7 +282,8 @@ class Model(QtCore.QObject):
         indices = np.arange(len(self._data.index))
         if self.xmin != self.xmax:
             indices = np.where((self.xmin <= self._data["x"]) & (self.xmax >= self._data["x"]))[0]
-        x, y, sy, sx = x[indices], y[indices], sy[indices], sx[indices]
+
+        x, y, sy, sx = x.iloc[indices], y.iloc[indices], sy.iloc[indices], sx.iloc[indices]
         data = None
             
         if self._has_sy and self._has_sx: # Caso com as duas incs

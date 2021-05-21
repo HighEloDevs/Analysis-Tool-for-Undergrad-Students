@@ -124,7 +124,7 @@ class SinglePlot(QtCore.QObject):
         self.model.xmin = self.mk_float(fitProps['xmin'])
         self.model.xmax = self.mk_float(fitProps['xmax'])
 
-        if (self.model.xmin != 0.) and (self.model.xmin >= self.model.xmax):
+        if (self.model.xmin != 0. or self.model.xmax != 0.) and (self.model.xmin >= self.model.xmax):
             self.msg.raiseError("Intervalo de ajuste inválido. Rever intervalo de ajuste.")
             return None
 
