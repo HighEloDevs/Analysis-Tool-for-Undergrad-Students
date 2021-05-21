@@ -186,7 +186,7 @@ Item{
                                             verticalAlignment: TextEdit.AlignVCenter
                                             wrapMode: TextInput.WrapAnywhere
                                             readOnly: !edit
-                                            validator: RegExpValidator{regExp: /^[\-]?[0-9]+([\.]?[0-9]+)?$/}
+                                            validator: RegExpValidator{regExp: /^[\-]?[0-9.]+([\.]?[0-9]+)?$/}
 
                                             Keys.onReturnPressed: {
                                                 let keys = ['x_v', 'y_v', 'sy', 'sx']
