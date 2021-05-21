@@ -73,35 +73,27 @@ class Model(QtCore.QObject):
 
         # Removing not chosen rows
         df = df[df['bool'] == 1]
-
-        # Dropping some useless columns
-        df = df.replace('', '0')
-        if df[df['sx'] != '0'].empty: del df['sx']
-        if df[df['sy'] != '0'].empty: del df['sy']
+        print(df)
         del df['bool']
-        self._mode   = len(df.columns) - 2
-        self._has_sx = True
-        self._has_sy = True
+        uniqueSi = df["sy"].unique().astype(float)
+        if 0. in uniqueSi:
+            if len(uniqueSi) > 1:
+                self._msgHandler.raiseWarn("Um valor nulo foi encontrado nas incertezas em y, removendo coluna de sy.")
+            self._has_sy = False
+            # del df["sy"]
+        uniqueSi = df["sx"].unique().astype(float)
+        if 0. in uniqueSi:
+            if len(uniqueSi) > 1:
+                self._msgHandler.raiseWarn("Um valor nulo foi encontrado nas incertezas em x, removendo coluna de sx.")
+            self._has_sx = False
+            # del df["sx"]
 
         # Naming columns
-        if self._mode == 0:
-            self._data_json    = deepcopy(df)
-            self._has_sy       = False
-            self._has_sx       = False
-            df["sy"]           = 0.
-            df["sx"]           = 0.
-        elif self._mode == 1:
-            self._data_json    = deepcopy(df)
-            self._has_sx       = False
-            df["sx"]           = 0.
-        else:
-            self._data_json    = deepcopy(df)
-        try:
-            df.columns = ['x', 'y', 'sy', 'sx']
-        except ValueError as error:
-            self._msgHandler.raiseError("Há mais do que 4 colunas. Rever entrada de dados.")
-            # Há mais do que 4 colunas. Rever entrada de dados.
-            return None
+
+        print(df)
+
+        self._data_json         = deepcopy(df)
+        print(df)
 
         # Turn everything into number (str -> number)
         df = df.astype(float)
@@ -116,7 +108,7 @@ class Model(QtCore.QObject):
         clipboardText = clipboard.mimeData().text()
         try:
             # Creating a dataframe from the string
-            df = pd.read_csv(StringIO(clipboardText), sep = '\t', header = None, dtype = str).dropna()
+            df = pd.read_csv(StringIO(clipboardText), sep = '\t', header = None, dtype = str).replace(np.nan, "0")
             # Replacing all commas for dots
             for i in df.columns:
                 df[i] = [x.replace(',', '.') for x in df[i]]
@@ -140,14 +132,14 @@ class Model(QtCore.QObject):
             data_path = QtCore.QUrl(data_path).toLocalFile()
             if data_path[-3:] == "csv":
                 try:
-                    df = pd.read_csv(data_path, sep=',', header=None, dtype = str).dropna()
+                    df = pd.read_csv(data_path, sep=',', header=None, dtype = str).replace(np.nan, "0")
                 except pd.errors.ParserError as error:
                     self._msgHandler.raiseError("Separação de colunas de arquivos csv são com vírgula (","). Rever dados de entrada.")
                     # Separação de colunas de arquivos csv são com vírgula (","). Rever dados de entrada.
                     return None
             else:
                 try:
-                    df = pd.read_csv(data_path, sep='\t', header=None, dtype = str).dropna()
+                    df = pd.read_csv(data_path, sep='\t', header=None, dtype = str).replace(np.nan, "0")
                 except pd.errors.ParserError as error:
                     self._msgHandler.raiseError("Separação de colunas de arquivos txt e tsv são com tab. Rever dados de entrada.")
                     # Separação de colunas de arquivos txt e tsv são com tab. Rever dados de entrada.
@@ -185,24 +177,26 @@ class Model(QtCore.QObject):
         # mode = 2 -> no uncertainties
         # mode = 1 -> no uncertainty on x
         # mode = 0 -> both variables has uncertainties
-        self._mode   = len(df.columns) - 2
         self._has_sx = True
         self._has_sy = True
+        self._mode   = len(df.columns) - 2
 
         # Naming columns
         if self._mode == 0:
-            self._has_sy = False
-            self._has_sx = False
+            self._has_sy            = not self._has_sy
+            self._has_sx            = not self._has_sx
             self._data_json.columns = ['x', 'y']
-            df["sy"]     = 1
-            df["sx"]     = 1
+            df["sy"]                = 0.
+            df["sx"]                = 0.
         elif self._mode == 1:
-            self._has_sx = False
+            self._has_sx            = not self._has_sx
             self._data_json.columns = ['x', 'y', 'sy']
-            df["sx"]     = 1
+            df["sx"]                = 0.
         else:
             try:
                 self._data_json.columns = ['x', 'y', 'sy', 'sx']
+                if 0. in self._data_json['sy']:
+                    self._has_sy = False
             except ValueError as error:
                 self._msgHandler.raiseError("Há mais do que 4 colunas. Rever entrada de dados.")
                 # Há mais do que 4 colunas. Rever entrada de dados.
@@ -285,32 +279,8 @@ class Model(QtCore.QObject):
             indices = np.where((self.xmin <= self._data["x"]) & (self.xmax >= self._data["x"]))[0]
         x, y, sy, sx = x[indices], y[indices], sy[indices], sx[indices]
         data = None
-        if self._mode == 0:
-            self.__fit_lm_wy(x, y, pi)
-            if (self._result is None) == False:
-                self.__set_param_values_lm_special(x)
-                self.__set_report_lm_special(x)
-            else:
-                return None
             
-        elif self._mode == 1:
-            if wsy:
-                self.__fit_lm_wy(x, y, pi)
-                if (self._result is None) == False:
-                    self.__set_param_values_lm_special(x)
-                    self.__set_report_lm_special(x)
-                else:
-                    return None
-
-            else:
-                self.__fit_lm(x, y, sy, pi)
-                if (self._result is None) == False:
-                    self.__set_param_values_lm(x)
-                    self.__set_report_lm(x)
-                else:
-                    return None
-
-        else:
+        if self._has_sy and self._has_sx: # Caso com as duas incs
             if wsx == True and wsy == True:
                 self.__fit_lm_wy(x, y, pi)
                 if (self._result is None) == False:
@@ -326,16 +296,13 @@ class Model(QtCore.QObject):
                     self.__set_report_lm(x)
                 else:
                     return None
-            
             elif wsy:
-                data = RealData(x, y, sx = sx)
-                self.__fit_ODR(data, pi)
+                inc_considerada = self.__fit_ODR_special(x, y, sx, pi)
                 if (self._result is None) == False:
                     self.__set_param_values_ODR(x)
-                    self.__set_report_ODR(x)
+                    self.__set_report_ODR_special(x, inc_considerada)
                 else:
                     return None
-
             else:
                 data = RealData(x, y, sx = sx, sy = sy)
                 self.__fit_ODR(data, pi)
@@ -344,6 +311,43 @@ class Model(QtCore.QObject):
                     self.__set_report_ODR(x)
                 else:
                     return None
+        elif self._has_sy:  # Caso com a incerteza só em y
+            if wsy:
+                self.__fit_lm_wy(x, y, pi)
+                if (self._result is None) == False:
+                    self.__set_param_values_lm_special(x)
+                    self.__set_report_lm_special(x)
+                else:
+                    return None
+            else:
+                self.__fit_lm(x, y, sy, pi)
+                if (self._result is None) == False:
+                    self.__set_param_values_lm(x)
+                    self.__set_report_lm(x)
+                else:
+                    return None
+        elif self._has_sx:  # Caso com a incerteza só em x
+            if wsx:
+                self.__fit_lm_wy(x, y, pi)
+                if (self._result is None) == False:
+                    self.__set_param_values_lm_special(x)
+                    self.__set_report_lm_special(x)
+                else:
+                    return None
+            else:
+                inc_considerada = self.__fit_ODR_special(x, y, sx, pi)
+                if (self._result is None) == False:
+                    self.__set_param_values_ODR(x)
+                    self.__set_report_ODR_special(x, inc_considerada)
+                else:
+                    return None
+        else: # Caso sem incertezas
+            self.__fit_lm_wy(x, y, pi)
+            if (self._result is None) == False:
+                self.__set_param_values_lm_special(x)
+                self.__set_report_lm_special(x)
+            else:
+                return None
 
         params = self.get_params()
         keys = list(params.keys())
@@ -367,7 +371,44 @@ class Model(QtCore.QObject):
             # print(error)
             self._msgHandler.raiseError("Expressão de ajuste escrita de forma errada. Rever função de ajuste.")
             return None
-        
+    
+    def __fit_ODR_special(self, x, y, sx, pi):
+        params = Parameters()
+        for i in range(len(self._coef)):
+            params.add(self._coef[i], pi[i])
+        try:
+            self._result = self._model.fit(data = y, x = x, params = params, scale_covar=False, max_nfev = 250)
+        except ValueError as error:
+            self._msgHandler.raiseError("A função ajustada gera valores não numéricos, rever ajuste.")
+            # A função ajustada gera valores não numéricos, rever ajuste.
+            return None
+        except TypeError as error:
+            self._msgHandler.raiseError("A função ajustada possui algum termo inválido, rever ajuste.")
+            # A função ajustada possui algum termo inválido, rever ajuste.
+            return None
+        if self._result.covar is None:
+            self._msgHandler.raiseError("A função ajustada não convergiu, rever ajuste.")
+            self._result = None
+            return None
+        ngl      = len(x) - len(self._coef)
+        inc_cons = np.sqrt(self._result.chisqr/ngl)
+        sy       = np.array([inc_cons]*len(x), dtype = float)
+        data     = RealData(x, y, sx = sx, sy = sy)
+        def f(a, x):
+            param = Parameters()
+            for i in range(len(a)):
+                param.add(self._model.param_names[i], value=a[i])
+            return self._model.eval(x=x, params=param)
+        model = SciPyModel(f)
+        try:
+            myodr = ODR(data, model, beta0 = pi, maxit = 250)
+            self._result = myodr.run()
+        except TypeError as error:
+            # print(error)
+            self._msgHandler.raiseError("Expressão de ajuste escrita de forma errada. Rever função de ajuste.")
+            self._result = None
+            return None
+        return inc_cons
 
     def __fit_lm(self, x, y, sy, pi):
         params = Parameters()
@@ -487,6 +528,23 @@ class Model(QtCore.QObject):
         self._report_fit += "\nAjuste: y = %s\n"%self._exp_model
         self._report_fit += "\nNGL  = %d"%(len(x) - len(self._coef))
         self._report_fit += "\nChi² = %f"%self._result.sum_square
+        self._report_fit += "\nMatriz de covariância:\n\n" + str(self._result.cov_beta) + "\n"
+        lista             = list(self._params.keys())
+        matriz_corr       = np.zeros((len(self._result.cov_beta), len(self._result.cov_beta)))
+        z                 = range(len(matriz_corr))
+        for i in z:
+            for j in z:
+                matriz_corr[i, j] = self._result.cov_beta[i, j]/(self._dict[lista[i]][1]*self._dict[lista[j]][1])
+        matriz_corr       = matriz_corr.round(3)
+        self._report_fit += "\nMatriz de correlação:\n\n" + str(matriz_corr) + "\n\n"
+        self._isvalid     = True
+
+    def __set_report_ODR_special(self, x, inc_considerada):
+        self._report_fit  = ""
+        self._report_fit += "\nAjuste: y = %s\n"%self._exp_model
+        self._report_fit += "\nNGL  = %d"%(len(x) - len(self._coef))
+        self._report_fit += "\nChi² = %f"%self._result.sum_square
+        self._report_fit += "\nIncerteza considerada em y = %f"%inc_considerada
         self._report_fit += "\nMatriz de covariância:\n\n" + str(self._result.cov_beta) + "\n"
         lista             = list(self._params.keys())
         matriz_corr       = np.zeros((len(self._result.cov_beta), len(self._result.cov_beta)))
