@@ -93,6 +93,7 @@ class Model(QtCore.QObject):
         df = df.astype(float)
 
         self._data     = deepcopy(df)
+        print(df)
         self._has_data = True
 
     @QtCore.Slot()
@@ -143,11 +144,21 @@ class Model(QtCore.QObject):
         elif df is None:
             df = pd.DataFrame.from_records(df_array)
             df.columns = ['x', 'y', 'sy', 'sx', 'bool']
-            if df[df['sx'] != '0'].empty: del df['sx']
-            if df[df['sy'] != '0'].empty: del df['sy']
 
             bools = df['bool'].astype(str)
             del df['bool']
+
+            uniqueSi = df["sy"].unique().astype(float)
+            if 0. in uniqueSi:
+                if len(uniqueSi) > 1:
+                    self._msgHandler.raiseWarn("Um valor nulo foi encontrado nas incertezas em y, removendo coluna de sy.")
+                self._has_sy = False
+                # del df["sy"]
+            uniqueSi = df["sx"].unique().astype(float)
+            if 0. in uniqueSi:
+                if len(uniqueSi) > 1:
+                    self._msgHandler.raiseWarn("Um valor nulo foi encontrado nas incertezas em x, removendo coluna de sx.")
+                self._has_sx = False
             
         # Saving the dataframe in the class
         self._data_json = deepcopy(df)

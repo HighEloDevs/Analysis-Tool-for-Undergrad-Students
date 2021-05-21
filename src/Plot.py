@@ -97,10 +97,9 @@ class SinglePlot(QtCore.QObject):
             canvasProps[i] = self.mk_float(canvasProps[i])
         for i in ["xdiv", "ydiv"]:
             canvasProps[i] = self.mk_int(canvasProps[i])
-        data = plotData['data']
 
         # Loading data from the table
-        self.model.loadDataTable(data)
+        self.model.loadDataTable(plotData['data'])
 
         # Getting function to fit
         # Anti-dummies system
