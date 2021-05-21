@@ -193,17 +193,17 @@ class Multiplot(QtCore.QObject):
         with open(QtCore.QUrl(fileUrl).toLocalFile(), encoding='utf-8') as file:
             data = json.load(file)
 
-        # Getting function to fit
-        # Anti-dummies system
-        expr = data["fitProps"]['expr']
-        if expr != '':
-            expr = expr.replace('^', '**')
-            expr = expr.replace('arctan', 'atan')
-            expr = expr.replace('arcsin', 'asin')
-            expr = expr.replace('arccos', 'acos')
-            expr = expr.replace('sen', 'sin')
-
         try:
+            # Getting function to fit
+            # Anti-dummies system
+            expr = data["fitProps"]['expr']
+            if expr != '':
+                expr = expr.replace('^', '**')
+                expr = expr.replace('arctan', 'atan')
+                expr = expr.replace('arcsin', 'asin')
+                expr = expr.replace('arccos', 'acos')
+                expr = expr.replace('sen', 'sin')
+                
             self.setData.emit(QtCore.QJsonValue.fromVariant({
                 'row': row,
                 'data': data['data'],

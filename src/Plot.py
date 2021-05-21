@@ -173,8 +173,12 @@ class SinglePlot(QtCore.QObject):
             # Loading data from the project
             self.model.load_data(df_array=props['data'])
         else:
-            self.msg.raiseWarn("O carregamento de arquivos antigos está limitado à uma versão anterior. Adaptação feita automaticamente.")
-            props = self.loadOldJson(props)
+            try:
+                self.msg.raiseWarn("O carregamento de arquivos antigos está limitado à uma versão anterior. Adaptação feita automaticamente.")
+                props = self.loadOldJson(props)
+            except:
+                self.msg.raiseError("O arquivo carregado é incompatível com o ATUS.")
+                return 0
             self.model.load_data(df=props['data'])
 
         self.fillPlotPage(props)

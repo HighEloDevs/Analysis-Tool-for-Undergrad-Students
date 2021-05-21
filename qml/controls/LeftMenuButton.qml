@@ -89,7 +89,8 @@ Button{
         Text{
             color: "#ffffff"
             text: btnLeftMenu.text
-            font: btnLeftMenu.font
+            // font: btnLeftMenu.font
+            font.bold: true
             anchors.verticalCenter: parent.verticalCenter
             anchors.left: parent.left
             anchors.leftMargin: 75

@@ -12,7 +12,7 @@ Item {
     clip: true
 
     property var multiPlotData: ({
-                                     key: '2-b',
+                                     key: '2-b-multiplot',
                                      id: id.text,
                                      rowsData: [],
                                      canvasProps: {

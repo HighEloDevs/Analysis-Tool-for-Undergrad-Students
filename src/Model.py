@@ -73,7 +73,6 @@ class Model(QtCore.QObject):
 
         # Removing not chosen rows
         df = df[df['bool'] == 1]
-        print(df)
         del df['bool']
         uniqueSi = df["sy"].unique().astype(float)
         if 0. in uniqueSi:
@@ -88,12 +87,7 @@ class Model(QtCore.QObject):
             self._has_sx = False
             # del df["sx"]
 
-        # Naming columns
-
-        print(df)
-
-        self._data_json         = deepcopy(df)
-        print(df)
+        self._data_json = deepcopy(df)
 
         # Turn everything into number (str -> number)
         df = df.astype(float)
@@ -149,7 +143,6 @@ class Model(QtCore.QObject):
         elif df is None:
             df = pd.DataFrame.from_records(df_array)
             df.columns = ['x', 'y', 'sy', 'sx', 'bool']
-            # df = df.replace('', '0')
             if df[df['sx'] != '0'].empty: del df['sx']
             if df[df['sy'] != '0'].empty: del df['sy']
 
@@ -164,7 +157,6 @@ class Model(QtCore.QObject):
             # Replacing comma for dots
             df[i]              = [x.replace(',', '.') for x in df[i]]
             self._data_json[i] = [x.replace(',', '.') for x in self._data_json[i]]
-            # df                 = df.replace('', '0')
             # Converting everything to float
             try:
                 df[i] = df[i].astype(float)
@@ -174,9 +166,10 @@ class Model(QtCore.QObject):
                 return None
 
         # Getting mode:
-        # mode = 2 -> no uncertainties
+        # mode = 2 -> both variables has uncertainties
         # mode = 1 -> no uncertainty on x
-        # mode = 0 -> both variables has uncertainties
+        # mode = 0 -> no uncertainties
+
         self._has_sx = True
         self._has_sy = True
         self._mode   = len(df.columns) - 2
@@ -195,14 +188,26 @@ class Model(QtCore.QObject):
         else:
             try:
                 self._data_json.columns = ['x', 'y', 'sy', 'sx']
-                if 0. in self._data_json['sy']:
+                # if 0. in self._data_json['sy']:
+                #     self._has_sy = False
+
+                uniqueSi = self._data_json["sy"].unique().astype(float)
+                if 0. in uniqueSi:
+                    if len(uniqueSi) > 1:
+                        self._msgHandler.raiseWarn("Um valor nulo foi encontrado nas incertezas em y, removendo coluna de sy.")
                     self._has_sy = False
+                    # del df["sy"]
+                uniqueSi = self._data_json["sx"].unique().astype(float)
+                if 0. in uniqueSi:
+                    if len(uniqueSi) > 1:
+                        self._msgHandler.raiseWarn("Um valor nulo foi encontrado nas incertezas em x, removendo coluna de sx.")
+                    self._has_sx = False
+                    # del df["sx"]
             except ValueError as error:
                 self._msgHandler.raiseError("Há mais do que 4 colunas. Rever entrada de dados.")
-                # Há mais do que 4 colunas. Rever entrada de dados.
                 return None
 
-        df.columns     = ['x', 'y', 'sy', 'sx']
+        # df.columns     = ['x', 'y', 'sy', 'sx']
         self._data     = deepcopy(df)
         self._has_data = True
         
@@ -368,7 +373,6 @@ class Model(QtCore.QObject):
             myodr = ODR(data, model, beta0 = pi, maxit = 250)
             self._result = myodr.run()
         except TypeError as error:
-            # print(error)
             self._msgHandler.raiseError("Expressão de ajuste escrita de forma errada. Rever função de ajuste.")
             return None
     
@@ -404,7 +408,6 @@ class Model(QtCore.QObject):
             myodr = ODR(data, model, beta0 = pi, maxit = 250)
             self._result = myodr.run()
         except TypeError as error:
-            # print(error)
             self._msgHandler.raiseError("Expressão de ajuste escrita de forma errada. Rever função de ajuste.")
             self._result = None
             return None
