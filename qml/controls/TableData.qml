@@ -142,6 +142,7 @@ Item{
                                         from: 'green';
                                         to: 'transparent';
                                         duration: 800
+                                        running: false
                                     }
 
                                     ColorAnimation on color {
@@ -149,6 +150,7 @@ Item{
                                         from: 'red';
                                         to: 'transparent';
                                         duration: 800
+                                        running: false
                                     }
 
                                     property int        column: index
@@ -199,10 +201,12 @@ Item{
                                                     changeFailAnimation.running = true
                                                     text = String(value)
                                                 }
+                                                textInput.focus = false
                                             }
                                             Keys.onEscapePressed: {
                                                 changeFailAnimation.running = true
                                                 text = String(value)
+                                                textInput.focus = false
                                             }
 
                                             onEditingFinished: {
@@ -216,6 +220,7 @@ Item{
                                                     changeFailAnimation.running = true
                                                     text = String(value)
                                                 }
+                                                textInput.focus = false
                                             }  
                                         }
                                     }
@@ -225,14 +230,14 @@ Item{
                     }
 
                     // Animations
-                    add: Transition {
-                        NumberAnimation{
-                            property: "opacity";
-                            from: 0;
-                            to: 1.0;
-                            duration: 400
-                        }
-                    }
+                    // add: Transition {
+                    //     NumberAnimation{
+                    //         property: "opacity";
+                    //         from: 0;
+                    //         to: 1.0;
+                    //         duration: 400
+                    //     }
+                    // }
                 }
 
                 ListView {
