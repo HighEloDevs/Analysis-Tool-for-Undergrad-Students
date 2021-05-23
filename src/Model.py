@@ -93,7 +93,7 @@ class Model(QtCore.QObject):
         df = df.astype(float)
 
         self._data     = deepcopy(df)
-        print(df)
+
         self._has_data = True
 
     @QtCore.Slot()
@@ -608,7 +608,7 @@ class Model(QtCore.QObject):
             x_min = self._data['x'].min()
         if x_max is None:
             x_max = self._data['x'].max()
-        x_plot = np.linspace(x_min, x_max, 10*len(self._data['x']))
+        x_plot = np.linspace(x_min, x_max, 10000*len(self._data['x']))
         return x_plot, self._model.eval(x = x_plot, params = self._params)
     
     def reset(self):
