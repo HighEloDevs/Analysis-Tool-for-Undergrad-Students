@@ -327,7 +327,7 @@ class Multiplot(QtCore.QObject):
             ecolor = options['markerColor'], capsize = 0, elinewidth = 1, ms = 3, marker = '.', color = options['markerColor'], ls = 'none')
     
     def Func_plot(self, options, model, params):
-        px = np.linspace(self.Multi_Model.min_x, self.Multi_Model.max_x, 1000)
+        px = np.linspace(self.Multi_Model.min_x, self.Multi_Model.max_x, 8500)
         py = model.eval(x = px, params = params)
         if options['label'] != '':
             self.displayBridge.axes.plot(px, py, lw = 2, color = options['markerColor'], ls = options['curve'], label = options['label'])
