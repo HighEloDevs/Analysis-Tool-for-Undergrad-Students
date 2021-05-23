@@ -144,7 +144,7 @@ Item {
                         textHolder: "Ex.: 1.0, 3.2, 4"
                         defaultColor: '#fff'
                         textColor: '#fff'
-                        validator: RegExpValidator{regExp: /^[0-9]+([\.]?[0-9]+)?$/}
+                        validator: RegExpValidator{regExp: /^[0-9.-]+([\.]?[0-9]+)?$/}
                         enabled: false
                     }
 
@@ -157,7 +157,7 @@ Item {
                         textHolder: "Ex.: 1.0, 3.2, 4"
                         defaultColor: '#fff'
                         textColor: '#fff'
-                        validator: RegExpValidator{regExp: /^[0-9]+([\.]?[0-9]+)?$/}
+                        validator: RegExpValidator{regExp: /^[0-9.]+([\.]?[0-9]+)?$/}
                         enabled: false
                     }
 

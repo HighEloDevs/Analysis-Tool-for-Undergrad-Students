@@ -291,9 +291,6 @@ class SinglePlot(QtCore.QObject):
         try:
             mean = mean.replace(',', '.')
             mean = float(mean)
-            if mean <= 0:
-                self.msg.raiseError("Média deve ser sempre maior que zero. Rever média.")
-                return None
         except:
             pass
         try:
