@@ -23,23 +23,17 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-import sys
 import os
+import sys
 import platform
+from src.Model import Model
+from src.Plot import SinglePlot 
+from src.MultiPlot import Multiplot
+from src.MatPlotLib import MPLCanvas
+from src.UpdateChecker import UpdateChecker
+from src.MessageHandler import MessageHandler
 from matplotlib_backend_qtquick.qt_compat import QtGui, QtQml, QtCore
 from matplotlib_backend_qtquick.backend_qtquickagg import FigureCanvasQtQuickAgg
-from numpy.core.records import array
-from operator import mod
-from src.Plot import Bridge 
-from src.MatPlotLib import DisplayBridge
-from src.Model import Model
-from src.Calculators import CalculatorCanvas, interpreter_calculator, Plot
-from src.ProjectManager import ProjectManager
-from src.MultiPlot import Multiplot
-from src.UpdateChecker import UpdateChecker
-
-displayBridge = DisplayBridge()
-model = Model() 
 
 if __name__ == "__main__":
     # Matplotlib stuff
@@ -54,26 +48,24 @@ if __name__ == "__main__":
     app.setWindowIcon(QtGui.QIcon(os.path.join(os.path.dirname(__file__), "images/main_icon/ATUS_icon.png")))
     engine = QtQml.QQmlApplicationEngine()
 
-    # Creating singlePlot
-    singlePlot      = Bridge(displayBridge, model)
-    multiplot       = Multiplot(displayBridge)
+    messageHandler  = MessageHandler()
+    canvas          = MPLCanvas(messageHandler)
+    model           = Model(messageHandler) 
+    singlePlot      = SinglePlot(canvas, model, messageHandler)
+    multiPlot       = Multiplot(canvas, messageHandler)
     updater         = UpdateChecker()
-
-    # Project Manager
-    projectMngr = ProjectManager(displayBridge, model)
 
     # Creating 'link' between front-end and back-end
     context = engine.rootContext()
-    context.setContextProperty("displayBridge", displayBridge)
-    context.setContextProperty("plot", singlePlot)
+    context.setContextProperty("singlePlot", singlePlot)
+    context.setContextProperty("multiPlot", multiPlot)
+    context.setContextProperty("canvas", canvas)
     context.setContextProperty("model", model)
-    context.setContextProperty("projectMngr", projectMngr)
-    context.setContextProperty("multiplot", multiplot)
     context.setContextProperty("updater", updater)
+    context.setContextProperty("messageHandler", messageHandler)
     
     # Loading QML files
     plat = platform.system()
-
     if(plat == 'Darwin'):
         engine.load(QtCore.QUrl.fromLocalFile(os.path.join(os.path.dirname(__file__), "qml/main_mac.qml")))
     else:
@@ -81,9 +73,9 @@ if __name__ == "__main__":
         
     # Updating canvasPlot with the plot
     win = engine.rootObjects()[0]
-    displayBridge.updateWithCanvas(win.findChild(QtCore.QObject, "canvasPlot"))
-    
-    # Stopping program if PySide fails loading the file
+    canvas.updateWithCanvas(win.findChild(QtCore.QObject, "canvasPlot"))
+
+    # Stopping program if PyQt fails loading the file
     if not engine.rootObjects():
         sys.exit(-1)    
 

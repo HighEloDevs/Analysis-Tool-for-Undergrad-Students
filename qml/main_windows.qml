@@ -6,18 +6,16 @@ import QtQuick.Dialogs 1.3
 import QtQuick.Layouts 1.11
 import Canvas 1.0
 
-import "controls"
 import "."
+import "controls"
 import "colors.js" as Colors
 
 Window {
     id: mainWindow
-    width: 1500
-    height: 800
 
     minimumWidth: 1000
     minimumHeight: 600
-
+    visibility: Window.Maximized
     visible: true
     color: "#00000000"
     property alias btnCalcWidth: btnCalc.width
@@ -27,14 +25,13 @@ Window {
     flags: Qt.Window | Qt.FramelessWindowHint
 
     // Properties
-    property int windowStatus: 0
+    property int windowStatus: 1
     property int windowMargin: 0
     property int stackedPage: 0
+    property string os: ''
 
-    PopupSaveFig{
-        width: 300
-        height: 400
-        id: poputSaveFig
+    MessageSnackbar{
+        id: messageSnackbar
     }
 
     PopupUpdate {
@@ -74,7 +71,7 @@ Window {
             {
                 mainWindow.showNormal()
                 windowStatus = 0
-                windowMargin = 10
+                windowMargin = 0
                 btnMaximizeRestore.btnIconSource = "../images/svg_images/maximize_icon.svg"
                 resetResizeBorders()
             }
@@ -92,7 +89,7 @@ Window {
 
         function restoreMargins(){
             windowStatus = 0
-            windowMargin = 10
+            windowMargin = 0
             btnMaximizeRestore.btnIconSource = "../images/svg_images/maximize_icon.svg"
             resetResizeBorders()
         }
@@ -173,7 +170,6 @@ Window {
                         anchors.rightMargin: 10
                         anchors.leftMargin: 0
                         anchors.topMargin: 0
-
                     }
                 }
 
@@ -253,7 +249,7 @@ Window {
                     Label {
                         id: appTitle
                         color: Colors.fontColor
-                        text: qsTr("Analysis Tool for Undergrad Students")
+                        text: qsTr("")
                         anchors.left: iconApp.right
                         anchors.right: parent.right
                         anchors.top: parent.top
@@ -265,12 +261,13 @@ Window {
                     }
                 }
 
-                Row {
+                RowLayout {
                     id: rowBtns
                     height: 35
                     anchors.left: titleBar.right
                     anchors.right: parent.right
                     anchors.top: parent.top
+                    layoutDirection: Qt.LeftToRight
                     anchors.leftMargin: 0
                     transformOrigin: Item.Center
                     anchors.rightMargin: 0
@@ -278,15 +275,14 @@ Window {
 
                     IconTextButton {
                         id: siteBtn
+                        Layout.fillHeight: true
 
-                        anchors.top: parent.top
-                        anchors.bottom: parent.bottom
-                        anchors.topMargin: 0
-                        anchors.bottomMargin: 0
+                        Layout.fillWidth: true
 
                         flat: false
                         texto: "Documentação"
                         iconUrl: qsTr("../../images/icons/ios_share_white_24dp.svg")
+                        textSize: 12
 
                         primaryColor: 'transparent'
                         clickColor: Colors.c_button_active
@@ -297,13 +293,11 @@ Window {
 
                     IconButton{
                         width: 35
-                        anchors.top: parent.top
-                        anchors.bottom: parent.bottom
-                        anchors.topMargin: 0
-                        anchors.bottomMargin: 0
-                        r: 0
+                        Layout.fillHeight: true
+                        Layout.fillWidth: true
                         iconUrl: '../../images/icons/github-36px.svg'
                         iconWidth: 22
+                        r: 0
 
                         primaryColor: 'transparent'
                         clickColor: Colors.c_button_active
@@ -323,7 +317,7 @@ Window {
 
                     TopBarButton {
                         id: btnMaximizeRestore
-                        btnIconSource: "../images/svg_images/maximize_icon.svg"
+                        btnIconSource: "../images/svg_images/restore_icon.svg"
                         onClicked: internal.maximizeRestore()
                     }
 
@@ -771,7 +765,7 @@ Window {
                                                 anchors.leftMargin: 0
 
                                                 onClicked: {
-                                                    displayBridge.back();
+                                                    canvas.back();
                                                 }
 
                                             }
@@ -786,7 +780,7 @@ Window {
                                                 anchors.leftMargin: 0
 
                                                 onClicked: {
-                                                    displayBridge.home();
+                                                    canvas.home();
                                                 }
 
                                             }
@@ -800,7 +794,7 @@ Window {
                                                 anchors.leftMargin: 0
 
                                                 onClicked: {
-                                                    displayBridge.forward();
+                                                    canvas.forward();
                                                 }
                                             }
 
@@ -819,7 +813,7 @@ Window {
                                                         zoomBtn.checked = false;
                                                         zoomBtn.isActiveMenu = false;
                                                     }
-                                                    displayBridge.pan();
+                                                    canvas.pan();
                                                     panBtn.isActiveMenu = true;
                                                 }
 
@@ -842,7 +836,7 @@ Window {
                                                         panBtn.isActiveMenu = false;
                                                     }
                                                     zoomBtn.isActiveMenu = true;
-                                                    displayBridge.zoom();
+                                                    canvas.zoom();
                                                 }
                                             }
 
@@ -858,7 +852,6 @@ Window {
 
                                                 onClicked:{
                                                     fileSaver.open()
-                                                    // poputSaveFig.open()
                                                 }
 
                                                 FileDialog{
@@ -868,7 +861,7 @@ Window {
                                                     selectExisting: false
                                                     nameFilters: ["Arquivo de imagem .png (*.png)", "Arquivo de imagem .jpg (*.jpg)", "Arquivo de imagem .pdf (*.pdf)", "Arquivo de imagem .svg (*.svg)"]
                                                     onAccepted: {
-                                                        plot.savePlot(fileSaver.fileUrl)
+                                                        canvas.savePlot(fileSaver.fileUrl, bgTransparent.checked)
                                                     }
                                                 }
                                             }
@@ -889,19 +882,59 @@ Window {
 
                                         Rectangle {
                                             id: footer
-                                            height: 20
+                                            height: 25
                                             color: Colors.color2
                                             Layout.fillWidth: true
 
                                             TextInput {
                                                 id: location
                                                 readOnly: true
-                                                text: displayBridge.coordinates
+                                                text: canvas.coordinates
                                                 anchors.verticalCenter: parent.verticalCenter
                                                 anchors.left: parent.left
                                                 anchors.leftMargin: 10
                                                 color: Colors.fontColor
                                             }
+
+                                            RowLayout{
+                                                anchors.top: parent.top
+                                                anchors.bottom: parent.bottom
+                                                anchors.right: parent.right
+                                                anchors.rightMargin: 10
+                                                anchors.bottomMargin: 0
+                                                anchors.topMargin: 0
+                                                CheckBoxCustom{
+                                                    id: bgTransparent
+                                                    Layout.fillHeight: true
+                                                    texto: 'Fundo transparente'
+                                                    checked: false
+                                                }
+                                                IconTextButton{
+                                                    id: copyClipboard
+                                                    Layout.fillHeight: true
+                                                    texto: 'Copiar'
+                                                    textSize: 11
+                                                    primaryColor: 'transparent'
+                                                    hoverColor: 'transparent'
+                                                    clickColor: 'transparent'
+                                                    iconColor: enabled ? '#fff':'#707070'
+                                                    textColor: enabled ? '#fff':'#707070'
+                                                    iconUrl: '../../images/icons/content_copy_black_24dp.svg'
+                                                    iconWidth: 17
+                                                    enabled: !bgTransparent.checked
+                                                    visible: {
+                                                        if(mainWindow.os != 'Windows') false
+                                                        else true
+                                                    }
+
+                                                    onClicked: {
+                                                        canvas.copyToClipboard()
+                                                    }
+                                                }
+                                            }
+
+
+                                            
                                         }
 
                                     }
@@ -915,7 +948,7 @@ Window {
                     Rectangle {
                         id: footer1
                         color: Colors.color2
-                        Layout.preferredHeight: 25
+                        Layout.preferredHeight: 20
                         Layout.fillWidth: true
 
                         Label {
@@ -932,7 +965,7 @@ Window {
                             x: 1183
                             y: 0
                             width: 25
-                            height: 25
+                            height: 20
                             anchors.right: parent.right
                             anchors.bottom: parent.bottom
                             anchors.rightMargin: 0
@@ -942,16 +975,19 @@ Window {
                             Image {
                                 id: image
                                 width: 25
-                                height: 25
+                                height: 20
                                 source: "../images/svg_images/resize_icon.svg"
+                                autoTransform: false
+                                smooth: true
+                                mipmap: false
                                 fillMode: Image.PreserveAspectFit
                             }
 
                             DragHandler{
                                 target: null
                                 onActiveChanged: if(active){
-                                                     mainWindow.startSystemResize(Qt.RightEdge | Qt.BottomEdge)
-                                                 }
+                                    mainWindow.startSystemResize(Qt.RightEdge | Qt.BottomEdge)
+                                }
                             }
 
                         }
@@ -1054,11 +1090,30 @@ Window {
         }
     }
 
+    Connections{
+        target: messageHandler
+
+        function onShowMessage(message, type){
+            messageSnackbar.message = message
+            messageSnackbar.type    = type
+            if(type === 'error'){
+                messageSnackbar.timer = 8000
+            } else if(type === 'warn'){
+                messageSnackbar.timer = 4000
+            }
+            messageSnackbar.open()
+        }
+    }
+
     Component.onCompleted: {
         updater.checkUpdate()
         labelVersion.text = updater.getVersion()
-        mainWindow.showMaximized()
+        os = updater.getOS()
     }
 }
 
-
+/*##^##
+Designer {
+    D{i:0;autoSize:true;height:480;width:640}
+}
+##^##*/

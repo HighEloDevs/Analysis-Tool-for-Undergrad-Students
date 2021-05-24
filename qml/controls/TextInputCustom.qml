@@ -14,16 +14,24 @@ Item{
     property color focusColor: '#f0f'
     property color defaultColor: '#000'
     property color textColor: '#000'
+    property color disabledColor: '#707070'
     property string title: 'Título do TextInput'
     property string textHolder: 'Placeholder'
     property alias text: textInput.text 
     property alias validator: textInput.validator
+    property alias enabled: textInput.enabled
+    property color dynamicColor:    if(enabled){
+                                        textInput.focus ? focusColor:defaultColor
+                                    } else {
+                                        disabledColor
+                                    }
 
     Rectangle{
         id: bg
         height: 53
         anchors.fill: parent
         color: 'transparent'
+        clip: true
 
         RowLayout{
             id: row
@@ -44,7 +52,8 @@ Item{
                 font.pixelSize: 14
                 selectByMouse: true
                 clip: true
-                color: textColor
+                color: root.enabled ? textColor : disabledColor
+                enabled: true
             }
 
             IconButton{
@@ -56,23 +65,25 @@ Item{
                 primaryColor: 'transparent'
                 hoverColor: 'transparent'
                 clickColor: 'transparent'
-                iconColor: textInput.focus ? focusColor:defaultColor
+                iconColor: textInput.enabled ? (textInput.focus ? focusColor:defaultColor):disabledColor
                 iconUrl: '../../images/icons/close_black_24dp.svg'
                 visible: textInput.text != ''
+                enabled: root.enabled
 
                 onClicked: textInput.text = ""
             }
         }
         
-        Label{
+        Text{
             id: titleLabel
             anchors.top: parent.top
             anchors.topMargin: parent.height/2 - titleLabel.height/2
             anchors.left: parent.left
             anchors.leftMargin: 5
-            font.pixelSize: 14
+            font.pixelSize: 13
+            font.bold: true
             text: title
-            color: defaultColor
+            color: root.enabled ? defaultColor : disabledColor
 
             states: [
                 State{
@@ -82,11 +93,11 @@ Item{
                         scale: 0.7
                         anchors.topMargin: parent.height/2 - titleLabel.height*1.5
                         anchors.leftMargin: -(titleLabel.width - 0.7*titleLabel.width)/2 + 5
-                        color: textInput.focus? focusColor:defaultColor
+                        color: dynamicColor
                     }
                     PropertyChanges{
                         target: footer
-                        color: textInput.focus? focusColor:defaultColor
+                        color: dynamicColor
                     }
                     when: textInput.focus || textInput.text != ''
                 }
@@ -108,7 +119,7 @@ Item{
             anchors.topMargin: -12
             anchors.rightMargin: 5
             anchors.leftMargin: 5
-            color: defaultColor
+            color: root.enabled ? defaultColor : disabledColor
         }
 
         Label{
@@ -122,7 +133,7 @@ Item{
             anchors.leftMargin: 5
             font.pixelSize: 10
             visible: textInput.focus
-            color: focusColor
+            color: dynamicColor
             text: textHolder
         }
     }

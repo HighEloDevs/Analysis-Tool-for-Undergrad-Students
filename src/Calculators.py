@@ -23,11 +23,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-from matplotlib_backend_qtquick.backend_qtquick import NavigationToolbar2QtQuick
-from matplotlib_backend_qtquick.qt_compat import QtCore
 import numpy as np
-from numpy import array
+from matplotlib_backend_qtquick.qt_compat import QtCore
 from scipy.stats import chi2, norm, t
+from numpy import array
 
 def calc_chi2_sim(ngl, nc):
     return array([chi2.ppf(0.5 - nc/2, ngl), chi2.ppf(0.5 + nc/2, ngl)])
@@ -38,32 +37,32 @@ def calc_chi2_lim_inf(ngl, nc):
 def calc_chi2_lim_sup(ngl, nc):
     return chi2.ppf(nc, ngl)
 
-def calc_gauss_sim(media, dp, nc):
+def calc_gauss_sim(nc):
     return array([norm.ppf(0.5 - nc/2), norm.ppf(0.5 + nc/2)])
 
-def calc_gauss_lim_inf(media, dp, nc):
+def calc_gauss_lim_inf(nc):
     return norm.ppf(1 - nc)
 
-def calc_gauss_lim_sup(media, dp, nc):
+def calc_gauss_lim_sup(nc):
     return norm.ppf(nc)
 
-def calc_t_sim(media, dp, ngl, nc):
-    return array([t.ppf(0.5 - nc/2, df = ngl)*dp + media, t.ppf(0.5 + nc/2, df = ngl)*dp + media])
+def calc_t_sim(ngl, nc):
+    return array([t.ppf(0.5 - nc/2, df = ngl), t.ppf(0.5 + nc/2, df = ngl)])
 
-def calc_t_lim_inf(media, dp, ngl, nc):
-    return chi2.ppf(1 - nc, df = ngl)*dp + media
+def calc_t_lim_inf(ngl, nc):
+    return chi2.ppf(1 - nc, df = ngl)
 
-def calc_t_lim_sup(media, dp, ngl, nc):
-    return chi2.ppf(nc, df = ngl)*dp + media
+def calc_t_lim_sup(ngl, nc):
+    return chi2.ppf(nc, df = ngl)
 
 def calc_chi2r_sim(ngl, nc):
-    return [chi2.ppf(0.5 - nc/2, ngl)/ngl, chi2.ppf(0.5 + nc/2, ngl)/ngl]
+    return [chi2.ppf(0.5 - nc/2, ngl), chi2.ppf(0.5 + nc/2, ngl)]
 
 def calc_chi2r_lim_inf(ngl, nc):
-    return chi2.ppf(1 - nc, ngl)/ngl
+    return chi2.ppf(1 - nc, ngl)
 
 def calc_chi2r_lim_sup(ngl, nc):
-    return chi2.ppf(nc, ngl)/ngl
+    return chi2.ppf(nc, ngl)
 
 def interpreter_calculator(f, opt, nc, ngl, mean, std):
     ''' Return the plot string and the arrays for the graph plot.
@@ -104,31 +103,30 @@ def interpreter_calculator(f, opt, nc, ngl, mean, std):
         # If it's Red Chi²
         x_plot = np.linspace(chi2.ppf(lim_inf, ngl), chi2.ppf(lim_sup, ngl), 350)
         y_plot = chi2.pdf(x_plot, ngl)
-        x_plot = x_plot/chi2.ppf(0.5, ngl)
-        # y_plot = y_plot/chi2.pdf(chi2.ppf(0.5, ngl), ngl)
+        x_plot = x_plot/ngl
+        y_plot = y_plot*ngl
 
         if opt == 0:
             result = calc_chi2r_sim(ngl, nc)
-            s      = "Limite inferior = %f \n Limite superior  = %f"%(result[0], result[1])
+            s      = "Limite inferior = %f \n Limite superior  = %f"%(result[0]/ngl, result[1]/ngl)
             x_area = np.linspace(result[0], result[1], 350)
-            y_area = chi2.pdf(x_area, ngl)
-            x_area = x_area/chi2.ppf(0.5, ngl)
-            print(x_area[0], x_plot[0])
+            y_area = chi2.pdf(x_area, ngl)*ngl
+            x_area = x_area/ngl
             return s, x_plot, y_plot, x_area, y_area
 
         elif opt == 1:
             result = calc_chi2r_lim_inf(ngl, nc)
-            s      = "Limite inferior = %f \n Limite superior = inf"%result
+            s      = "Limite inferior = %f \n Limite superior = inf"%(result/ngl)
             x_area = np.linspace(result, chi2.ppf(lim_sup, ngl), 350)
-            y_area = chi2.pdf(x_area, ngl)
-            x_area = x_area/chi2.ppf(0.5, ngl)
+            y_area = chi2.pdf(x_area, ngl)*ngl
+            x_area = x_area/ngl
             return s, x_plot, y_plot, x_area, y_area 
 
         result = calc_chi2r_lim_sup(ngl, nc)
-        s      = "Limite inferior = -inf \n Limite superior = %f"%result
+        s      = "Limite inferior = -inf \n Limite superior = %f"%(result/ngl)
         x_area = np.linspace(chi2.ppf(lim_inf, ngl), result, 350)
-        y_area = chi2.pdf(x_area, ngl)
-        x_area = x_area/chi2.ppf(0.5, ngl)
+        y_area = chi2.pdf(x_area, ngl)*ngl
+        x_area = x_area/ngl
         return s, x_plot, y_plot, x_area, y_area
 
     elif f == 2:
@@ -138,45 +136,55 @@ def interpreter_calculator(f, opt, nc, ngl, mean, std):
         x_plot = (x_plot * std) + mean
 
         if opt == 0:
-            result = calc_gauss_sim(mean, std, nc)
+            result = calc_gauss_sim(nc)
             s      = "Limite inferior = %f \n Limite superior  = %f"%(result[0]*std + mean, result[1]*std + mean)
             x_area = np.linspace(result[0], result[1], 350)
             y_area = norm.pdf(x_area)
             x_area = x_area*std + mean
-            return s, x_plot, y_plot, x_area, y_area
+            return s, x_plot, y_plot/std, x_area, y_area/std
 
         elif opt == 1:
-            result = calc_gauss_lim_inf(mean, std, nc)
+            result = calc_gauss_lim_inf(nc)
             s      = "Limite inferior = %f \n Limite superior = inf"%(result*std + mean)
             x_area = np.linspace(result, norm.ppf(lim_sup), 350)
             y_area = norm.pdf(x_area)
             x_area = x_area*std + mean
-            return s, x_plot, y_plot, x_area, y_area
+            return s, x_plot, y_plot/std, x_area, y_area/std
 
-        result = calc_gauss_lim_sup(mean, std, nc)
+        result = calc_gauss_lim_sup(nc)
         s      = "Limite inferior = -inf \n Limite superior = %f"%(result*std + mean)
         x_area = np.linspace(result, norm.ppf(lim_inf), 350)
         y_area = norm.pdf(x_area)
         x_area = x_area*std + mean
-        return s, x_plot, y_plot, x_area, y_area
+        return s, x_plot, y_plot/std, x_area, y_area/std
 
     # If it's Student:    
-    x_plot = np.linspace(t.ppf(lim_inf, df = ngl)*std + mean, t.ppf(lim_sup, df = ngl)*std + mean)
-    y_plot = t.pdf(x_plot)
+    x_plot = np.linspace(t.ppf(lim_inf, df = ngl), t.ppf(lim_sup, df = ngl), 350)
+    y_plot = t.pdf(x_plot, df = ngl)
+    x_plot = (x_plot * std) + mean
 
     if opt == 0:
-        result = calc_t_sim(mean, std, ngl, nc)
-        s      = "Limite inferior = %f \n Limite superior  = %f"%(result[0], result[1])
-        return s, x_plot, y_plot, (result[0], result[1])
+        result = calc_t_sim(ngl, nc)
+        s      = "Limite inferior = %f \n Limite superior  = %f"%(result[0]*std + mean, result[1]*std + mean)
+        x_area = np.linspace(result[0], result[1], 350)
+        y_area = t.pdf(x_area, df = ngl)
+        x_area = x_area*std + mean
+        return s, x_plot, y_plot/std, x_area, y_area/std
     
     elif opt == 1:
-            result = calc_t_lim_inf(mean, std, ngl, nc)
-            s      = "Limite inferior = %f \n Limite superior = inf"%result
-            return s, x_plot, y_plot, (result, -1) 
+            result = calc_t_lim_inf(ngl, nc)
+            s      = "Limite inferior = %f \n Limite superior = inf"%(result*std + mean)
+            x_area = np.linspace(result, t.ppf(lim_sup, df = ngl), 350)
+            y_area = t.pdf(x_area)
+            x_area = x_area*std + mean
+            return s, x_plot, y_plot/std, x_area, y_area/std
 
-    result = calc_t_lim_sup(mean, std, ngl, nc)
-    s      = "Limite inferior = -inf \n Limite superior = %f"%result
-    return s, x_plot, y_plot, (-1, result)
+    result = calc_t_lim_sup(ngl, nc)
+    s      = "Limite inferior = -inf \n Limite superior = %f"%(result*std + mean)
+    x_area = np.linspace(result, t.ppf(lim_inf, df = ngl), 350)
+    y_area = t.pdf(x_area, df = ngl)
+    x_area = x_area*std + mean
+    return s, x_plot, y_plot/std, x_area, y_area/std
 
 class CalculatorCanvas(QtCore.QObject):
     """ A bridge class to interact with the plot in python
@@ -200,6 +208,7 @@ class CalculatorCanvas(QtCore.QObject):
         self.axes = self.figure.add_subplot(111)
         self.axes.grid(True)
         self.canvas.draw_idle()
+        
 
 def Plot(displayBridge, x, y, x_area, y_area):
     try:
@@ -208,7 +217,8 @@ def Plot(displayBridge, x, y, x_area, y_area):
         pass
 
     displayBridge.axes = displayBridge.figure.add_subplot(111)
-    displayBridge.axes.grid(True)       
+    displayBridge.axes.grid(True)
+    displayBridge.axes.minorticks_on()     
     displayBridge.axes.fill_between(x_area, y_area, color = 'blue', alpha = 0.3)
     displayBridge.axes.plot(x, y, lw = 1, c = 'red')
     displayBridge.axes.set_title("P.D.F.")

@@ -60,9 +60,9 @@ Item {
 
                         model: ListModel {
                                 ListElement { text: "Chi²" }
-                                // ListElement { text: "Chi² Reduzido" }
+                                ListElement { text: "Chi² Reduzido" }
                                 ListElement { text: "Gaussiana" }
-                                // ListElement { text: "Student" }
+                                ListElement { text: "Student" }
                         }
 
                         onActivated: {
@@ -71,21 +71,21 @@ Item {
                                 std.enabled = false
                                 nivelConfianca.enabled = true
                                 ngl.enabled = true
-                            // } else if(comboFunc.currentText == 'Chi² Reduzido'){
-                            //     mean.enabled = false
-                            //     std.enabled = false
-                            //     nivelConfianca.enabled = true
-                            //     ngl.enabled = true
+                            } else if(comboFunc.currentText == 'Chi² Reduzido'){
+                                mean.enabled = false
+                                std.enabled = false
+                                nivelConfianca.enabled = true
+                                ngl.enabled = true
                             } else if(comboFunc.currentText == "Gaussiana"){
                                 mean.enabled = true
                                 std.enabled = true
                                 nivelConfianca.enabled = true
                                 ngl.enabled = false
-                            // } else if(comboFunc.currentText == "Student"){
-                            //     mean.enabled = true
-                            //     std.enabled = true
-                            //     nivelConfianca.enabled = true
-                            //     ngl.enabled = true
+                            } else if(comboFunc.currentText == "Student"){
+                                mean.enabled = true
+                                std.enabled = true
+                                nivelConfianca.enabled = true
+                                ngl.enabled = true
                             }
                         }
                     }
@@ -111,129 +111,80 @@ Item {
                         
                     }
 
-                    Label {
-                        id: label1
-                        color: "#ffffff"
-                        text: qsTr("Nível de Confiança")
-                        Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-                    }
-
-                    TextField {
+                    TextInputCustom{
                         id: nivelConfianca
-                        height: 30
-                        text: ""
-                        Layout.preferredHeight: 30
                         Layout.fillWidth: true
-                        placeholderText: qsTr("Ex.: 0.95, 0.90")
-                        selectByMouse: true
-
-                        background: Rectangle{
-                            color: nivelConfianca.enabled? textDefaultColor : textDisabledColor
-                            radius: 10
-                        }
+                        Layout.columnSpan: 2
+                        focusColor: Colors.mainColor2
+                        title: 'Nível de Confiança'
+                        textHolder: 'Ex.: 0.95, 0.90'
+                        defaultColor: '#fff'
+                        textColor: '#fff'
+                        validator: RegExpValidator{regExp: /^[0]+([\.]?[0-9]+)?$/}
                     }
 
-                    Label {
-                        id: label3
-                        color: "#ffffff"
-                        text: qsTr("Número de Graus de Liberdade")
-                        Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-                    }
-
-                    TextField {
+                    TextInputCustom{
                         id: ngl
-                        height: 30
-                        Layout.preferredHeight: 30
                         Layout.fillWidth: true
-                        placeholderText: qsTr("Ex.: 30, 31, 32...")
-                        selectByMouse: true
-
-                        background: Rectangle{
-                            color: ngl.enabled? textDefaultColor : textDisabledColor
-                            radius: 10
-                        }
+                        Layout.columnSpan: 2
+                        focusColor: Colors.mainColor2
+                        title: 'Número de Graus de Liberdade'
+                        textHolder: "Ex.: 30, 31, 32..."
+                        defaultColor: '#fff'
+                        textColor: '#fff'
+                        validator: RegExpValidator{regExp: /^[1-9]+([0-9]+)?$/}
                     }
 
-                    Label {
-                        id: label4
-                        color: "#ffffff"
-                        text: qsTr("Média")
-                        Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-                    }
-
-                    TextField {
+                    TextInputCustom{
                         id: mean
-                        height: 30
-                        Layout.preferredHeight: 30
                         Layout.fillWidth: true
-                        placeholderText: qsTr("Ex.: 1.0, 3.2, 4")
-                        selectByMouse: true
+                        Layout.columnSpan: 2
+                        focusColor: Colors.mainColor2
+                        title: 'Média'
+                        textHolder: "Ex.: 1.0, 3.2, 4"
+                        defaultColor: '#fff'
+                        textColor: '#fff'
+                        validator: RegExpValidator{regExp: /^[0-9.-]+([\.]?[0-9]+)?$/}
                         enabled: false
-
-                        background: Rectangle{
-                            color: mean.enabled? textDefaultColor : textDisabledColor
-                            radius: 10
-                        }
                     }
 
-                    Label {
-                        id: label5
-                        color: "#ffffff"
-                        text: qsTr("Desvio Padrão")
-                        Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-                    }
-
-                    TextField {
+                    TextInputCustom{
                         id: std
-                        Layout.preferredHeight: 30
                         Layout.fillWidth: true
-                        placeholderText: qsTr("Ex.: 1.0, 3.2, 4")
-                        selectByMouse: true
+                        Layout.columnSpan: 2
+                        focusColor: Colors.mainColor2
+                        title: 'Desvio Padrão'
+                        textHolder: "Ex.: 1.0, 3.2, 4"
+                        defaultColor: '#fff'
+                        textColor: '#fff'
+                        validator: RegExpValidator{regExp: /^[0-9.]+([\.]?[0-9]+)?$/}
                         enabled: false
-
-                        background: Rectangle{
-                            color: std.enabled? textDefaultColor : textDisabledColor
-                            radius: 10
-                        }
                     }
 
-                    Button {
-                        id: btnCalcular
-                        text: qsTr("Calcular")
+                    TextButton{
+                        id: btnSinglePlot
                         Layout.preferredHeight: 25
                         Layout.fillWidth: true
-                        Layout.fillHeight: false
                         Layout.columnSpan: 2
-
-                        QtObject{
-                            id: internal
-
-                            property color dynamicColor: if(btnCalcular.down){
-                                       btnCalcular.down ? Colors.c_button_active : Colors.c_button
-                                   } else {
-                                       btnCalcular.hovered ? Colors.c_button_hover : Colors.c_button
-                                   }
-                        }
-
-                        background: Rectangle{
-                            radius: 10
-                            color: internal.dynamicColor
-                        }
-
-                        contentItem: Item{
-                            anchors.fill: parent
-                            id: content
-                            Text{
-                                color: "#ffffff"
-                                text: btnCalcular.text
-                                font: btnCalcular.font
-                                anchors.verticalCenter: parent.verticalCenter
-                                anchors.horizontalCenter: parent.horizontalCenter
+                        texto: 'CALCULAR / ATUALIZAR'
+                        primaryColor: Colors.c_button
+                        clickColor: Colors.c_button_active
+                        hoverColor: Colors.c_button_hover
+                        enabled: {
+                            if(comboFunc.currentText == "Chi²" || comboFunc.currentText == 'Chi² Reduzido'){
+                                if(nivelConfianca.text != '' && ngl.text != '') true
+                                else false
+                            } else if(comboFunc.currentText == "Gaussiana"){
+                                if(mean.text != '' && std.text != '' && nivelConfianca.text != '') true
+                                else false
+                            } else if(comboFunc.currentText == "Student"){
+                                if(mean.text != '' && std.text != '' && nivelConfianca.text != '' && ngl.text != '') true
+                                else false
                             }
                         }
 
                         onClicked:{
-                            plot.calculator(comboFunc.currentText, comboMethod.currentText, nivelConfianca.text, ngl.text, mean.text, std.text)
+                            singlePlot.calculator(comboFunc.currentText, comboMethod.currentText, nivelConfianca.text, ngl.text, mean.text, std.text)
                         }
                     }
 
@@ -265,7 +216,7 @@ Item {
     }
 
     Connections{
-        target: plot
+        target: singlePlot
 
         function onWriteCalculator(expr){
             infos.text = expr

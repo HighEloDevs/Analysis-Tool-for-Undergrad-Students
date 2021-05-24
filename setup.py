@@ -1,5 +1,3 @@
-import sys 
-import os
 from cx_Freeze import setup, Executable
 
 with open('./version.txt') as version:
@@ -28,7 +26,7 @@ includes = [
     'operator',
     'scipy',
     'pandas',
-    'lmfit'
+    'lmfit',
 ]
 
 # TARGET

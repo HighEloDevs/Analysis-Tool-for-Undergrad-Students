@@ -15,6 +15,7 @@ Item {
 
     property alias pageFunc: pageFuncaoAjuste.item
     property alias pageProp: pageProps.item
+    property alias btnSinglePlot: btnSinglePlot
     property bool isPlotable: false
 
     Rectangle {
@@ -95,7 +96,7 @@ Item {
             }
 
             TextButton{
-                id: btnPlot
+                id: btnSinglePlot
                 height: 25
                 Layout.rightMargin: 10
                 Layout.leftMargin: 10
@@ -107,45 +108,6 @@ Item {
                 clickColor: Colors.c_button_active
                 hoverColor: Colors.c_button_hover
                 enabled: root.isPlotable
-
-                onClicked: {
-                    pageFunc.clearTableParams()
-                    plot.getProps({
-                        expr: pageFunc.expr,
-                        p0:  pageFunc.initParams,
-                        sigmax: pageFunc.sigmax,
-                        sigmay: pageFunc.sigmay,
-                        titulo: pageProp.titulo_text,
-                        eixox: pageProp.eixox_text,
-                        eixoy: pageProp.eixoy_text,
-                        residuos: pageProp.residuals,
-                        grade: pageProp.grid,
-                        logx: pageProp.logx,
-                        logy: pageProp.logy,
-                        markerColor: pageProp.markerColor,
-                        markerSize: pageProp.markerSize,
-                        marker: pageProp.marker,
-                        curveColor: pageProp.curveColor,
-                        curveThickness: pageProp.curveThickness,
-                        curveType: pageProp.curveType,
-                        legend: pageProp.legend,
-                        xmin: pageProp.xmin,
-                        xmax: pageProp.xmax,
-                        xdiv: pageProp.xdiv,
-                        ymin: pageProp.ymin,
-                        ymax: pageProp.ymax,
-                        ydiv: pageProp.ydiv,
-                        resMin: pageProp.resMin,
-                        resMax: pageProp.resMax
-                    })
-                }
-            }
-
-            Rectangle {
-                id: bottomBar
-                height: 20
-                color: Colors.color2
-                Layout.fillWidth: true
             }
 
         }

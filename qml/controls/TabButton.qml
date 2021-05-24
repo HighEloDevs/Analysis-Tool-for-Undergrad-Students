@@ -65,7 +65,8 @@ Button{
         Text{
             color: "#ffffff"
             text: btnTab.text
-            font: btnTab.font
+            // font: btnTab.font
+            font.bold: true
             anchors.verticalCenter: parent.verticalCenter
             anchors.horizontalCenter: parent.horizontalCenter
         }

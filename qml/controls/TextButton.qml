@@ -12,6 +12,7 @@ Button{
     property color textColor: 'white'
     property string texto: 'Botão'
     property int textSize: 14
+    property alias radius: bg.radius
 
     property color dynamicColor: if(root.down){
                                     root.down ? clickColor : primaryColor
@@ -29,6 +30,7 @@ Button{
     }
 
     background: Rectangle{
+        id: bg
         radius: 5
         color: dynamicColor
         opacity: dynamicOpacity

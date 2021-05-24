@@ -6,8 +6,13 @@ Button{
     id: root
     width: 22
     height: 22
-    // anchors.verticalCenter: parent.verticalCenter
-    // anchors.horizontalCenter: parent.horizontalCenter
+
+    MouseArea{
+        id: mouseArea
+        anchors.fill: parent
+        cursorShape: Qt.PointingHandCursor
+        onPressed:  mouse.accepted = false
+    }
 
     QtObject{
         id: internal
@@ -19,11 +24,6 @@ Button{
     }
 
     background: Rectangle {
-        id: rectangle
-        x: 239
-        y: 123
-        width: 22
-        height: rectangle.width
         color: "#00000000"
         radius: 100
         border.width: 0
@@ -35,6 +35,7 @@ Button{
             anchors.fill: parent
             source: "../../images/icons/delete-18px.svg"
             mipmap: true
+            smooth: true
             fillMode: Image.PreserveAspectFit
         }
 

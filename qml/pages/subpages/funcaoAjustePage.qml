@@ -9,14 +9,17 @@ Item {
     width: 366
     height: 598
 
-    property string expr: expression.text
-    property string initParams: p0.text
-    property int sigmax: switch_sigmax.checkState
-    property int sigmay: switch_sigmay.checkState
+    property alias expr: expression
+    property alias initParams: p0
+    property alias sigmax: switch_sigmax
+    property alias sigmay: switch_sigmay
+    property alias xmin  : x_min
+    property alias xmax  : x_max
+    property alias info  : infos.text
 
     // Functions
     function clearTableParams(){
-            tableParams.clear()
+        tableParams.clear()
     }
 
     Rectangle {
@@ -40,9 +43,10 @@ Item {
                 Layout.columnSpan: 4
                 focusColor: Colors.mainColor2
                 title: 'Expressão | y(x) ='
-                textHolder: 'Função a ser ajustada'
+                textHolder: 'Função a ser ajustada. Ex.: a*x + b'
                 defaultColor: '#fff'
                 textColor: '#fff'
+                validator: RegExpValidator{regExp: /^[0-9a-zA-Z.()\-*^_+/ ]+$/}
             }
 
             TextInputCustom{
@@ -54,7 +58,36 @@ Item {
                 textHolder: 'Ex.: 0, 32, 4.3, 23.4'
                 defaultColor: '#fff'
                 textColor: '#fff'
-                validator: RegExpValidator{regExp: /^[0-9.,]+$/}
+                validator: RegExpValidator{regExp: /^[0-9. ,-]+$/}
+            }
+
+            RowLayout{
+                width: 100
+                height: 45
+                Layout.columnSpan: 4
+                Layout.fillWidth: true
+
+                TextInputCustom{
+                    id: x_min
+                    Layout.fillWidth: true
+                    focusColor: Colors.mainColor2
+                    title: 'Ajuste - X mín.'
+                    textHolder: 'Ex.: 0, 32, 4.3, 23.4'
+                    defaultColor: '#fff'
+                    textColor: '#fff'
+                    validator: RegExpValidator{regExp: /^[\-]?[0-9]+([\.]?[0-9]+)?$/}
+                }
+
+                TextInputCustom{
+                    id: x_max
+                    Layout.fillWidth: true
+                    focusColor: Colors.mainColor2
+                    title: 'Ajuste - X máx.'
+                    textHolder: 'Ex.: 0, 32, 4.3, 23.4'
+                    defaultColor: '#fff'
+                    textColor: '#fff'
+                    validator: RegExpValidator{regExp: /^[\-]?[0-9]+([\.]?[0-9]+)?$/}
+                }
             }
 
             RowLayout {
@@ -158,21 +191,6 @@ Item {
 
         function onWriteInfos(expr){
             infos.text = expr
-        }
-    }
-    
-    Connections{
-        target: projectMngr
-
-        function onFillFuncPage(expr, pi, sx, sy){
-            expression.text = expr
-            p0.text = pi
-            switch_sigmax.checked = sx
-            switch_sigmay.checked = sy
-        }
-
-        function onClearTableParams(){
-            tableParams.clear()
         }
     }
 }

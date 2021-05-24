@@ -19,8 +19,8 @@ Item{
     property variant dataShaped: []
     property variant hasData:  dataShaped.length != 0 ? true : false
 
-    function addRow(x_v, y_v, sy, sx, isEditable = true) {
-        dataSet.insert(dataSet.count, {x_v: String(x_v), y_v: String(y_v), sy: String(sy), sx: String(sx), isEditable: isEditable})
+    function addRow(x_v, y_v, sy, sx, isChecked = true) {
+        dataSet.insert(dataSet.count, {x_v: String(x_v), y_v: String(y_v), sy: String(sy), sx: String(sx), isChecked: isChecked, isEditable: !lockBtn.isLocked})
     }
 
     function clear(){
@@ -142,6 +142,7 @@ Item{
                                         from: 'green';
                                         to: 'transparent';
                                         duration: 800
+                                        running: false
                                     }
 
                                     ColorAnimation on color {
@@ -149,6 +150,7 @@ Item{
                                         from: 'red';
                                         to: 'transparent';
                                         duration: 800
+                                        running: false
                                     }
 
                                     property int        column: index
@@ -177,7 +179,7 @@ Item{
                                             anchors.fill: parent
                                             anchors.rightMargin: 5
                                             anchors.leftMargin: 5
-                                            font.pixelSize: 13
+                                            font.pixelSize: 12
                                             color: 'white'
                                             clip: true
                                             selectByMouse: true
@@ -186,7 +188,7 @@ Item{
                                             verticalAlignment: TextEdit.AlignVCenter
                                             wrapMode: TextInput.WrapAnywhere
                                             readOnly: !edit
-                                            inputMethodHints: Qt.ImhDigitsOnly
+                                            validator: RegExpValidator{regExp: /^[\-]?[0-9.]+([\.]?[0-9]+)?$/}
 
                                             Keys.onReturnPressed: {
                                                 let keys = ['x_v', 'y_v', 'sy', 'sx']
@@ -199,10 +201,12 @@ Item{
                                                     changeFailAnimation.running = true
                                                     text = String(value)
                                                 }
+                                                textInput.focus = false
                                             }
                                             Keys.onEscapePressed: {
                                                 changeFailAnimation.running = true
                                                 text = String(value)
+                                                textInput.focus = false
                                             }
 
                                             onEditingFinished: {
@@ -216,6 +220,7 @@ Item{
                                                     changeFailAnimation.running = true
                                                     text = String(value)
                                                 }
+                                                textInput.focus = false
                                             }  
                                         }
                                     }
@@ -225,14 +230,14 @@ Item{
                     }
 
                     // Animations
-                    add: Transition {
-                        NumberAnimation{
-                            property: "opacity";
-                            from: 0;
-                            to: 1.0;
-                            duration: 400
-                        }
-                    }
+                    // add: Transition {
+                    //     NumberAnimation{
+                    //         property: "opacity";
+                    //         from: 0;
+                    //         to: 1.0;
+                    //         duration: 400
+                    //     }
+                    // }
                 }
 
                 ListView {
@@ -248,6 +253,7 @@ Item{
 
                         property int        row: index
                         property bool       edit: isEditable
+                        property bool       check: isChecked
 
                         Rectangle{
                             color: 'transparent'
@@ -255,11 +261,13 @@ Item{
 
                             RowLayout{
                                 anchors.fill: parent
-                                spacing: -0.5 * parent.width
+                                spacing: -0.45 * parent.width
 
                                 CheckBoxCustom{
                                     id: checkBox
+                                    Layout.fillWidth: true
                                     enabled: edit
+                                    checked: check
                                     onCheckedChanged: {
                                         if(checkBox.checkState === 2)
                                             dataShaped[index][4] = checkBox.checkState - 1
@@ -269,6 +277,7 @@ Item{
                                 }
 
                                 TrashButton{
+                                    Layout.fillWidth: true
                                     enabled: edit
                                     onClicked: {
                                         dataShaped.splice(row, 1)
@@ -290,7 +299,7 @@ Item{
     Rectangle{
         id: footer
         width: root.width
-        height: 30
+        height: 25
         color: Colors.color2
         radius: 0
 
@@ -314,7 +323,7 @@ Item{
             primaryColor: 'transparent'
             hoverColor: 'transparent'
             clickColor: 'transparent'
-            iconColor: 'white'
+            iconColor: lockBtn.isLocked ? 'grey' : 'white' 
             iconUrl: '../../images/icons/add_white-24px.svg'
 
             onClicked:{

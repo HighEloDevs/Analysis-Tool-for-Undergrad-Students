@@ -25,25 +25,21 @@ Item {
 
     property variant dataSet: ListModel{}
 
-    property variant dataShaped: {
-        'rows': [],
-        'options': {
-            'xmin': 0,
-            'xmax': 0,
-            'xdiv': 0,
-            'ymin': 0,
-            'ymax': 0,
-            'ydiv': 0,
-            'logx': false,
-            'logy': false,
-            'grid': false,
-            'title': '',
-            'xaxis': '',
-            'yaxis': ''
-        }
-    }
+    property variant dataShaped: ([])
 
-    property variant hasData:  dataShaped['rows'].length != 0 ? true : false
+    property variant hasData:  dataShaped.length != 0 ? true : false
+
+    property variant dataRow: ({
+        df: {},
+        params: [],
+        expr: '',
+        p0: '',
+        marker: true,
+        func: true,
+        label: '',
+        markerColor: '#000',
+        curve: ''
+    })
 
     function addRow(){
         dataSet.insert(dataSet.count, {
@@ -52,8 +48,38 @@ Item {
             func: true,
             label: '',
             markerColor: '#fff',
-            curve: 0
+            curve: 0,
+            fromBtn: true,
         })
+    }
+
+    function addRowBackend(options){
+        root.dataShaped.push(Object.create(dataRow))
+        dataSet.insert(dataSet.count, {
+            fileName: options['fileName']   ,
+            marker: true,
+            func: true,
+            label: options['projectName'],
+            markerColor:  options['symbolColor'],
+            curve: options['curve'],
+            fromBtn: false,
+        })
+
+        let curveStyles = {
+            0: '-',
+            1: '--',
+            2: '-.'
+        }
+        dataShaped[options['row']]['df'] = options['data']
+        dataShaped[options['row']]['params'] = options['params']
+        dataShaped[options['row']]['expr'] = options['expr']
+        dataShaped[options['row']]['p0'] = options['p0']
+        dataShaped[options['row']]['label'] = options['projectName']
+        dataShaped[options['row']]['markerColor'] = options['symbolColor']
+        dataShaped[options['row']]['curve'] = curveStyles[options['curve']]
+        dataShaped[options['row']]['func'] = true
+        dataShaped[options['row']]['marker'] = true
+        root.checkData()
     }
 
     function fillRow(options){
@@ -67,24 +93,29 @@ Item {
             1: '--',
             2: '-.'
         }
-
-        dataShaped['rows'][options['row']]['df'] = options['data']
-        dataShaped['rows'][options['row']]['params'] = options['params']
-        dataShaped['rows'][options['row']]['expr'] = options['expr']
-        dataShaped['rows'][options['row']]['p0'] = options['p0']
-        dataShaped['rows'][options['row']]['label'] = options['projectName']
-        dataShaped['rows'][options['row']]['markerColor'] = options['symbolColor']
-        dataShaped['rows'][options['row']]['curve'] = curveStyles[options['curve']]
+        
+        dataShaped[options['row']]['df'] = options['data']
+        dataShaped[options['row']]['params'] = options['params']
+        dataShaped[options['row']]['expr'] = options['expr']
+        dataShaped[options['row']]['p0'] = options['p0']
+        dataShaped[options['row']]['label'] = options['projectName']
+        dataShaped[options['row']]['markerColor'] = options['symbolColor']
+        dataShaped[options['row']]['curve'] = curveStyles[options['curve']]
     }
 
     function checkData(){
-        root.hasData = dataShaped['rows'].length != 0 ? true : false
+        root.hasData = dataShaped.length != 0 ? true : false
     }
 
     function removeRow(row){
-        dataShaped['rows'].splice(row, 1)
+        dataShaped.splice(row, 1)
         dataSet.remove(row)  
         root.checkData()
+    }
+
+    function clear(){
+        dataSet.clear()
+        dataShaped = []
     }
 
     ColumnLayout{
@@ -111,7 +142,7 @@ Item {
                         anchors.horizontalCenter: parent.horizontalCenter
                         text: modelData.title
                         color: 'white'
-                        font.pixelSize: 12
+                        font.pointSize: 9
                         font.bold: true
                     }
                 }
@@ -194,11 +225,11 @@ Item {
                                             selectMultiple: false
                                             nameFilters: ["Arquivos JSON (*.json)"]
                                             onAccepted: {
-                                                multiplot.loadData(fileUrl, row)
+                                                multiPlot.loadData(fileUrl, row)
                                                 root.checkData()
                                             }
                                             onRejected: {
-                                                dataShaped['rows'].splice(row, 1)
+                                                dataShaped.splice(row, 1)
                                                 dataSet.remove(row)
                                                 root.checkData()
                                             }
@@ -206,7 +237,9 @@ Item {
 
                                         onClicked: chooseProject.open()
 
-                                        Component.onCompleted: chooseProject.open()
+                                        Component.onCompleted: {
+                                            if(fromBtn) chooseProject.open()
+                                        }
                                     }
                                     Text{
                                         height: parent.height
@@ -230,7 +263,7 @@ Item {
                                     checked: marker
 
                                     onCheckedChanged: {
-                                        dataShaped['rows'][row]['marker'] = Boolean(checkBoxMarker.checkState)
+                                        dataShaped[row]['marker'] = Boolean(checkBoxMarker.checkState)
                                     }
                                 }
                             }
@@ -244,7 +277,7 @@ Item {
                                     checked: func
 
                                     onCheckedChanged: {
-                                        dataShaped['rows'][row]['func'] = Boolean(checkBoxFunc.checkState)
+                                        dataShaped[row]['func'] = Boolean(checkBoxFunc.checkState)
                                     }
                                 }
                             }
@@ -264,7 +297,7 @@ Item {
 
                                     text: label
 
-                                    onEditingFinished: dataShaped['rows'][row]['label'] = textInputLabel.text
+                                    onEditingFinished: dataShaped[row]['label'] = textInputLabel.text
                                 }
                                 Rectangle{
                                     anchors.top: textInputLabel.bottom
@@ -297,7 +330,7 @@ Item {
                                         title: "Escolha uma cor para os pontos"
                                         onAccepted: {
                                             colorBtn.primaryColor = colorDialog.color
-                                            dataShaped['rows'][row]['markerColor'] = String(colorDialog.color)
+                                            dataShaped[row]['markerColor'] = String(colorDialog.color)
                                         }
                                     }
 
@@ -325,7 +358,7 @@ Item {
                                             'Ponto-tracejado': '-.',
                                             'Ponto': ':'
                                         }
-                                        dataShaped['rows'][row]['curve'] = curveStyle[comboBoxCurve.currentText]
+                                        dataShaped[row]['curve'] = curveStyle[comboBoxCurve.currentText]
                                     }
                                 }
                             }
@@ -339,13 +372,17 @@ Item {
                                     anchors.horizontalCenter: parent.horizontalCenter
 
                                     onClicked: {
-                                        dataShaped['rows'].splice(row, 1)
+                                        dataShaped.splice(row, 1)
                                         dataSet.remove(row)  
                                         root.checkData()
                                     }
                                 }
                             }
-                            Component.onCompleted: dataShaped['rows'].push(dataRow)
+                            Component.onCompleted: {
+                                if(fromBtn){
+                                    dataShaped.push(dataRow)
+                                }
+                            }
                         }
                     }
                 }

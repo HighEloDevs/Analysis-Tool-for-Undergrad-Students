@@ -6,18 +6,16 @@ import QtQuick.Dialogs 1.3
 import QtQuick.Layouts 1.11
 import Canvas 1.0
 
-import "controls"
 import "."
+import "controls"
 import "colors.js" as Colors
 
 Window {
     id: mainWindow
-    width: 1500
-    height: 800
 
     minimumWidth: 1000
-    minimumHeight: 400
-
+    minimumHeight: 600
+    visibility: Window.Maximized
     visible: true
     color: "#00000000"
     property alias btnCalcWidth: btnCalc.width
@@ -27,6 +25,10 @@ Window {
     property int windowStatus: 0
     property int windowMargin: 0
     property int stackedPage: 0
+
+    MessageSnackbar{
+        id: messageSnackbar
+    }
 
     PopupUpdate {
         id: updatePopup
@@ -123,10 +125,6 @@ Window {
                 anchors.leftMargin: 0
                 anchors.topMargin: 0
 
-                // ToggleButton{
-                //     onClicked: animationMenu.running = true
-                // }
-
                 Rectangle {
                     id: topBarDescription
                     y: 21
@@ -207,92 +205,6 @@ Window {
                         antialiasing: true
                     }
                 }
-
-                // Rectangle {
-                //     id: titleBar
-                //     height: 35
-                //     color: "#00000000"
-                //     anchors.left: parent.left
-                //     anchors.right: parent.right
-                //     anchors.top: parent.top
-                //     anchors.rightMargin: 105
-                //     anchors.leftMargin: 70
-                //     anchors.topMargin: 0
-
-                //     DragHandler{
-                //         onActiveChanged: if(active){
-                //                              mainWindow.startSystemMove()
-                //                              internal.ifMaximizedWindowRestore()
-                //                          }
-                //     }
-
-                //     MouseArea{
-                //         anchors.fill: parent
-                //         onDoubleClicked: internal.maximizeRestore()
-                //     }
-
-                //     Image {
-                //         id: iconApp
-                //         width: 22
-                //         height: 22
-                //         anchors.left: parent.left
-                //         anchors.top: parent.top
-                //         anchors.bottom: parent.bottom
-                //         source: ""
-                //         anchors.leftMargin: 5
-                //         anchors.bottomMargin: 0
-                //         anchors.topMargin: 0
-                //         fillMode: Image.PreserveAspectFit
-                //     }
-
-                //     Label {
-                //         id: appTitle
-                //         color: Colors.fontColor
-                //         text: qsTr("Analysis Tool for Undergrad Students")
-                //         anchors.left: iconApp.right
-                //         anchors.right: parent.right
-                //         anchors.top: parent.top
-                //         anchors.bottom: parent.bottom
-                //         horizontalAlignment: Text.AlignHCenter
-                //         verticalAlignment: Text.AlignVCenter
-                //         font.pointSize: 10
-                //         anchors.leftMargin: 5
-                //     }
-                // }
-
-                // Row {
-                //     id: rowBtns
-                //     x: 910
-                //     width: 105
-                //     height: 35
-                //     anchors.right: parent.right
-                //     anchors.top: parent.top
-                //     transformOrigin: Item.Center
-                //     anchors.rightMargin: 0
-                //     anchors.topMargin: 0
-
-                //     TopBarButton {
-                //         id: btnMinimize
-                //         onClicked: {
-                //             internal.restoreMargins()
-                //             mainWindow.showMinimized()
-                //         }
-                //     }
-
-                //     TopBarButton {
-                //         id: btnMaximizeRestore
-                //         btnIconSource: "../images/svg_images/maximize_icon.svg"
-                //         onClicked: internal.maximizeRestore()
-                //     }
-
-                //     TopBarButton {
-                //         id: btnClose
-                //         btnColorClicked: "#f00"
-                //         btnIconSource: "../images/svg_images/close_icon.svg"
-                //         onClicked: mainWindow.close()
-                //     }
-                // }
-
             }
 
             Rectangle {
@@ -728,7 +640,7 @@ Window {
                                                 anchors.leftMargin: 0
 
                                                 onClicked: {
-                                                    displayBridge.back();
+                                                    canvas.back();
                                                 }
 
                                             }
@@ -743,7 +655,7 @@ Window {
                                                 anchors.leftMargin: 0
 
                                                 onClicked: {
-                                                    displayBridge.home();
+                                                    canvas.home();
                                                 }
 
                                             }
@@ -757,7 +669,7 @@ Window {
                                                 anchors.leftMargin: 0
 
                                                 onClicked: {
-                                                    displayBridge.forward();
+                                                    canvas.forward();
                                                 }
                                             }
 
@@ -776,7 +688,7 @@ Window {
                                                         zoomBtn.checked = false;
                                                         zoomBtn.isActiveMenu = false;
                                                     }
-                                                    displayBridge.pan();
+                                                    canvas.pan();
                                                     panBtn.isActiveMenu = true;
                                                 }
 
@@ -799,7 +711,7 @@ Window {
                                                         panBtn.isActiveMenu = false;
                                                     }
                                                     zoomBtn.isActiveMenu = true;
-                                                    displayBridge.zoom();
+                                                    canvas.zoom();
                                                 }
                                             }
 
@@ -824,7 +736,7 @@ Window {
                                                     selectExisting: false
                                                     nameFilters: ["Arquivo de imagem .png (*.png)", "Arquivo de imagem .jpg (*.jpg)", "Arquivo de imagem .pdf (*.pdf)", "Arquivo de imagem .svg (*.svg)"]
                                                     onAccepted: {
-                                                        plot.savePlot(fileSaver.fileUrl)
+                                                        canvas.savePlot(fileSaver.fileUrl, bgTransparent.checked)
                                                     }
                                                 }
                                             }
@@ -852,11 +764,44 @@ Window {
                                             TextInput {
                                                 id: location
                                                 readOnly: true
-                                                text: displayBridge.coordinates
+                                                text: canvas.coordinates
                                                 anchors.verticalCenter: parent.verticalCenter
                                                 anchors.left: parent.left
                                                 anchors.leftMargin: 10
                                                 color: Colors.fontColor
+                                            }
+
+                                            RowLayout{
+                                                anchors.top: parent.top
+                                                anchors.bottom: parent.bottom
+                                                anchors.right: parent.right
+                                                anchors.rightMargin: 10
+                                                anchors.bottomMargin: 0
+                                                anchors.topMargin: 0
+                                                CheckBoxCustom{
+                                                    id: bgTransparent
+                                                    Layout.fillHeight: true
+                                                    texto: 'Fundo transparente'
+                                                    checked: false
+                                                }
+                                                // IconTextButton{
+                                                //     id: copyClipboard
+                                                //     Layout.fillHeight: true
+                                                //     texto: 'Copiar'
+                                                //     textSize: 11
+                                                //     primaryColor: 'transparent'
+                                                //     hoverColor: 'transparent'
+                                                //     clickColor: 'transparent'
+                                                //     iconColor: enabled ? '#fff':'#707070'
+                                                //     textColor: enabled ? '#fff':'#707070'
+                                                //     iconUrl: '../../images/icons/content_copy_black_24dp.svg'
+                                                //     iconWidth: 17
+                                                //     enabled: !bgTransparent.checked
+
+                                                //     onClicked: {
+                                                //         canvas.copyToClipboard()
+                                                //     }
+                                                // }
                                             }
                                         }
 
@@ -875,10 +820,12 @@ Window {
                         Layout.fillWidth: true
 
                         Label {
-                            id: labelLeftInfo1
+                            id: labelVersion
                             color: Colors.fontColor
+                            anchors.verticalCenter: parent.verticalCenter
                             horizontalAlignment: Text.AlignLeft
                             verticalAlignment: Text.AlignVCenter
+                            leftPadding: 10
                         }
 
                         MouseArea {
@@ -997,6 +944,21 @@ Window {
     }
 
     Connections{
+    target: messageHandler
+
+        function onShowMessage(message, type){
+            messageSnackbar.message = message
+            messageSnackbar.type    = type
+            if(type === 'error'){
+                messageSnackbar.timer = 8000
+            } else if(type === 'warn'){
+                messageSnackbar.timer = 4000
+            }
+            messageSnackbar.open()
+        }
+    }
+
+    Connections{
         target: updater
         function onShowUpdate(infos){
             updatePopup.updateLog = infos['body']
@@ -1008,15 +970,11 @@ Window {
         }
     }
 
-    Component.onCompleted: updater.checkUpdate()
+    Component.onCompleted: {
+        updater.checkUpdate()
+        labelVersion.text = updater.getVersion()
+    }
 }
-
-
-
-
-
-
-
 
 /*##^##
 Designer {

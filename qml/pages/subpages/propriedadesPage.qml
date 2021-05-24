@@ -9,28 +9,28 @@ import "../../controls"
 Item {
     id: root
 
-    property string titulo_text: titulo.text
-    property string eixox_text: eixox.text
-    property string eixoy_text: eixoy.text
-    property int residuals: switchResiduos.checkState
-    property int grid: switchGrade.checkState
-    property int logx: log_eixox.checkState
-    property int logy: log_eixoy.checkState
-    property string markerColor: rectColor.color
-    property int markerSize: size.value
-    property string marker: symbol.currentText
-    property string curveColor: rectColor_curve.color
-    property int curveThickness: thickness.value
-    property string curveType: type_curve.currentText
-    property int legend: switchLegend.checkState
-    property double xmin: Number(xmin.text)
-    property double xmax: Number(xmax.text)
-    property int xdiv: Number(xdiv.text)
-    property double ymin: Number(ymin.text)
-    property double ymax: Number(ymax.text)
-    property int ydiv: Number(ydiv.text)
-    property double resMin: Number(resMin.text)
-    property double resMax: Number(resMax.text)
+    property alias titulo_text:    titulo
+    property alias eixox_text:     eixox
+    property alias eixoy_text:     eixoy
+    property alias residuals:      switchResiduos
+    property alias grid:           switchGrade
+    property alias logx:           log_eixox
+    property alias logy:           log_eixoy
+    property alias markerColor:    rectColor
+    property alias markerSize:     size
+    property alias marker:         symbol
+    property alias curveColor:     rectColor_curve
+    property alias curveThickness: thickness
+    property alias curveType:      type_curve
+    property alias legend:         switchLegend
+    property alias xmin:           xmin
+    property alias xmax:           xmax
+    property alias xdiv:           xdiv
+    property alias ymin:           ymin
+    property alias ymax:           ymax
+    property alias ydiv:           ydiv
+    property alias resMin:         resMin 
+    property alias resMax:         resMax 
 
     Rectangle {
         id: bg
@@ -55,7 +55,7 @@ Item {
             ScrollBar.vertical.policy: ScrollBar.AsNeeded
 
             contentWidth: root.width
-            contentHeight: gridLayout.height
+            contentHeight: 700
 
             GridLayout {
                 id: gridLayout
@@ -114,7 +114,7 @@ Item {
                             textHolder: 'Menor valor de X no gráfico'
                             defaultColor: '#fff'
                             textColor: '#fff'
-                            validator: RegExpValidator{regExp: /^[0-9.-]+$/}
+                            validator: RegExpValidator{regExp: /^[\-]?[0-9]+([\.]?[0-9]+)?$/}
                         }
                         TextInputCustom{
                             id: xmax
@@ -124,13 +124,13 @@ Item {
                             textHolder: 'Maior valor de X no gráfico'
                             defaultColor: '#fff'
                             textColor: '#fff'
-                            validator: RegExpValidator{regExp: /^[0-9.-]+$/}
+                            validator: RegExpValidator{regExp: /^[\-]?[0-9]+([\.]?[0-9]+)?$/}
                         }
                         TextInputCustom{
                             id: xdiv
                             Layout.fillWidth: true
                             focusColor: Colors.mainColor2
-                            title: 'Intervalos em X'
+                            title: 'Intervalos'
                             textHolder: 'Número de intervalos no eixo'
                             defaultColor: '#fff'
                             textColor: '#fff'
@@ -173,7 +173,7 @@ Item {
                             textHolder: 'Menor valor de Y no gráfico'
                             defaultColor: '#fff'
                             textColor: '#fff'
-                            validator: RegExpValidator{regExp: /^[0-9.-]+$/}
+                            validator: RegExpValidator{regExp: /^[\-]?[0-9]+([\.]?[0-9]+)?$/}
                         }
                         TextInputCustom{
                             id: ymax
@@ -183,13 +183,13 @@ Item {
                             textHolder: 'Maior valor de Y no gráfico'
                             defaultColor: '#fff'
                             textColor: '#fff'
-                            validator: RegExpValidator{regExp: /^[0-9.-]+$/}
+                            validator: RegExpValidator{regExp: /^[\-]?[0-9]+([\.]?[0-9]+)?$/}
                         }
                         TextInputCustom{
                             id: ydiv
                             Layout.fillWidth: true
                             focusColor: Colors.mainColor2
-                            title: 'Intervalos em Y'
+                            title: 'Intervalos'
                             textHolder: 'Número de intervalos no eixo'
                             defaultColor: '#fff'
                             textColor: '#fff'
@@ -234,7 +234,7 @@ Item {
                     textHolder: 'Y Minimo do gráfico de resíduos'
                     defaultColor: '#fff'
                     textColor: '#fff'
-                    validator: RegExpValidator{regExp: /^[0-9.-]+$/}
+                    validator: RegExpValidator{regExp: /^[\-]?[0-9]+([\.]?[0-9]+)?$/}
                 }
 
                 TextInputCustom{
@@ -246,7 +246,7 @@ Item {
                     textHolder: 'Y Máximo do gráfico de resíduos'
                     defaultColor: '#fff'
                     textColor: '#fff'
-                    validator: RegExpValidator{regExp: /^[0-9.-]+$/}
+                    validator: RegExpValidator{regExp: /^[\-]?[0-9]+([\.]?[0-9]+)?$/}
                 }
                 
                 GroupBox {
@@ -307,7 +307,6 @@ Item {
                                 title: "Escolha uma cor para os pontos"
                                 onAccepted: {
                                     rectColor.color = colorDialog.color
-                                    iconOverlay.color = rectColor.color
                                 }
                             }
 
@@ -379,10 +378,6 @@ Item {
                                 ListElement { text: "Diamante" }
                                 ListElement { text: "Produto" }
                             }
-
-                            onActivated: {
-                                icons.source = "../../../images/symbols/" + symbol.currentText + ".png"
-                            }
                         }
 
                         Rectangle{
@@ -394,7 +389,7 @@ Item {
                             Image {
                                 id: icons
                                 anchors.fill: parent
-                                source: "../../../images/symbols/Círculo.png"
+                                source: symbol.currentText == '' ? "../../../images/symbols/Círculo.png" : "../../../images/symbols/" + symbol.currentText + ".png"
                                 fillMode: Image.PreserveAspectFit
                                 mirror: false
                                 mipmap: true
@@ -413,7 +408,7 @@ Item {
                                 id: iconOverlay
                                 anchors.fill: parent
                                 source: icons
-                                color: "#000000"
+                                color: rectColor.color
                                 anchors.verticalCenter: parent.verticalCenter
                                 antialiasing: true
                                 width: icons.width
@@ -565,44 +560,6 @@ Item {
                     Layout.fillWidth: true
                 }
             }
-        }
-    }
-
-    Connections{
-        target: plot
-
-        function onSignalPropPage(){
-            plot.loadOptions(titulo.text, eixox.text, eixoy.text, switchResiduos.position, switchGrade.position, log_eixox.checkState, log_eixoy.checkState, rectColor.color, size.value, symbol.currentText, rectColor_curve.color, thickness.value, type_curve.currentText, switchLegend.position)
-        }
-    }
-
-    Connections{
-        target: projectMngr
-
-        function onFillPropPage(title, xaxis, log_x, yaxis, log_y, residuals, grid, legend, symbol_color, symbol_size, symbol_style, curve_color, curve_thickness, curve_style, xMin, xMax, xDiv, yMin, yMax, yDiv, resmin, resmax){
-            titulo.text = title
-            eixox.text = xaxis
-            eixoy.text = yaxis
-            switchResiduos.checked = residuals
-            switchGrade.checked = grid
-            log_eixox.checked = log_x
-            log_eixoy.checked = log_y
-            rectColor.color = symbol_color
-            size.value = symbol_size
-            symbol.currentIndex = symbol.find(symbol_style)
-            icons.source = "../../../images/symbols/" + symbol.currentText + ".png"
-            rectColor_curve.color = curve_color
-            thickness.value = curve_thickness
-            type_curve.currentIndex = type_curve.find(curve_style)
-            switchLegend.checked = legend
-            xmin.text = xMin == '0' ? '': xMin
-            xmax.text = xMax == '0' ? '': xMax
-            xdiv.text = xDiv == '0' ? '': xDiv
-            ymin.text = yMin == '0' ? '': yMin
-            ymax.text = yMax == '0' ? '': yMax
-            ydiv.text = yDiv == '0' ? '': yDiv
-            resMin.text = resmin == '0' ? '': resmin 
-            resMax.text = resmax == '0' ? '': resmax
         }
     }
 }

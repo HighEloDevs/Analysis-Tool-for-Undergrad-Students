@@ -24,39 +24,23 @@ SOFTWARE.
 """
 
 from matplotlib_backend_qtquick.qt_compat import QtCore
-import requests
-import platform
 
-class UpdateChecker(QtCore.QObject):
+class MessageHandler(QtCore.QObject):
+    '''Class that sends all messages (warning, errors, fatal errors) from the backend to frontend'''
 
-    # showUpdate = QtCore.Signal(str, str, str, arguments=['updateLog', 'version', 'downloadUrl'])
-    showUpdate = QtCore.Signal(QtCore.QJsonValue, arguments='infos')
+    # Signals to the frontend
+    # showMessage() shows a snackbar with the message and respective color to the type
+    # Types -> warn, error or success
+    showMessage = QtCore.Signal(str, str, arguments=['message', 'type'])
 
     def __init__(self) -> None:
         super().__init__()
-        
-        # Actual version
-        with open('./version.txt') as version:
-            self.__VERSION__  = version.read()
-            version.close()
-        self.isUpdate = True
-        
-    @QtCore.Slot()
-    def checkUpdate(self):
-        # GitHub API url
-        gitHubApiUrl = 'https://api.github.com/repos/HighEloDevs/Analysis-Tool-for-Undergrad-Students/releases/latest'
-        response = requests.get(gitHubApiUrl)
 
-        if response.status_code == 200:
-            infos = response.json()
-            version = infos['tag_name']
-            if version != self.__VERSION__:
-                self.showUpdate.emit(QtCore.QJsonValue.fromVariant(infos))
+    def raiseWarn(self, message=''):
+        self.showMessage.emit(message, 'warn')
 
-    @QtCore.Slot(result=str)
-    def getVersion(self):
-        return 'v' + self.__VERSION__
+    def raiseError(self, message=''):
+        self.showMessage.emit(message, 'error')
 
-    @QtCore.Slot(result=str)
-    def getOS(self):
-        return platform.system()
+    def raiseSuccess(self, message=''):
+        self.showMessage.emit(message, 'success')

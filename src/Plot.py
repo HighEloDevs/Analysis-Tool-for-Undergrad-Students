@@ -23,100 +23,244 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-from matplotlib_backend_qtquick.qt_compat import QtGui, QtQml, QtCore
-from src.Calculators import CalculatorCanvas, interpreter_calculator, Plot
+from matplotlib_backend_qtquick.qt_compat import QtCore
+from src.Calculators import interpreter_calculator, Plot
+import numpy as np
+import pandas as pd
+import json
+import platform
 
-class Bridge(QtCore.QObject):
-    # Signal to Properties page
-    signalPropPage = QtCore.Signal()
+class SinglePlot(QtCore.QObject):
+    '''Class that controls the single-plot page'''
 
     # Signal to write infos
-    writeInfos = QtCore.Signal(str, arguments='expr')
-    writeCalculator = QtCore.Signal(str, arguments='expr')
-    emitData = QtCore.Signal()
+    writeCalculator       = QtCore.Signal(str, arguments='expr')
+    fillPlotPageSignal    = QtCore.Signal(QtCore.QJsonValue, arguments='props')
+    plot                  = QtCore.Signal()
 
-    def __init__(self, displayBridge, model):
+    def __init__(self, canvas, model, messageHandler):
         super().__init__()
-        self.displayBridge = displayBridge
-        self.model = model
+        self.canvas = canvas
+        self.model  = model
+        self.path   = ''
+        self.msg    = messageHandler
+
+        # Default properties for the singlePlot page
+        self.props = {
+            'id': '',
+            'dataProps': {
+                'marker_color'    : '#000',
+                'marker_size'     : 3,
+                'marker'          : 'o',
+                'curve_color'     : '#000',
+                'curve_thickness' : 3,
+                'curve_style'     : '-',
+            },
+            'canvasProps': {
+                'xaxis'     : '',
+                'yaxis'     : '',
+                'title'     : '',
+                'log_x'     : False,
+                'log_y'     : False,
+                'legend'    : False,
+                'grid'      : False,
+                'residuals' : False,
+                'xmin'      : '',
+                'xmax'      : '',
+                'xdiv'      : '',
+                'ymin'      : '',
+                'ymax'      : '',
+                'ydiv'      : '',
+                'resmin'    : '',
+                'resmax'    : '',
+            },
+            'fitProps': {
+                'expr'       : '',
+                'p0'         : '',
+                'wsx'        : True,
+                'wsy'        : True,
+                'xmin'       : '',
+                'xmax'       : '',
+                'parameters' : {}
+            },
+            'data': []
+        }
 
     @QtCore.Slot(QtCore.QJsonValue)
-    def getProps(self, props):
-        self.emitData.emit()
-        props = props.toVariant()
+    def getPlotData(self, plotData):
+        self.model.reset()
+        plotData    = plotData.toVariant()
+        canvasProps = plotData['canvasProps']
+        dataProps   = plotData['dataProps']
+        fitProps    = plotData['fitProps']
+        for i in ["xmin", "xmax", "ymin", "ymax", "resmin", "resmax"]:
+            canvasProps[i] = self.mk_float(canvasProps[i])
+        for i in ["xdiv", "ydiv"]:
+            canvasProps[i] = self.mk_int(canvasProps[i])
 
-        self.displayBridge.setSigma(props['sigmax'], props['sigmay'])
+        # Loading data from the table
+        self.model.loadDataTable(plotData['data'])
 
-        # Setting up initial parameters
-        p0_tmp = list()
-        p0 = props['p0']
-        if p0 != '':
-            # Anti-dummies system
+        # Getting function to fit
+        # Anti-dummies system
+        fitProps['expr'] = fitProps['expr'].replace('^', '**')
+        fitProps['expr'] = fitProps['expr'].replace('arctan', 'atan')
+        fitProps['expr'] = fitProps['expr'].replace('arcsin', 'asin')
+        fitProps['expr'] = fitProps['expr'].replace('arccos', 'acos')
+        fitProps['expr'] = fitProps['expr'].replace('sen', 'sin')
+
+        # Setting expression
+        if self.model._exp_model != fitProps['expr']:
+            self.model.set_expression(fitProps['expr'])
+
+        # Getting initial parameters
+        if fitProps['p0'] != '':
+            p0 = fitProps['p0']
             p0 = p0.replace(';', ',')
             p0 = p0.replace('/', ',')
-            for i in p0.split(','):
-                p0_tmp.append(float(i))
-            self.model.set_p0(p0_tmp)
-
-        # Anti-dummies system 2
-        expression = props['expr']
-        expression = expression.replace('^', '**')
-        expression = expression.replace('arctan', 'atan')
-        expression = expression.replace('arcsin', 'asin')
-        expression = expression.replace('arccos', 'acos')
-        expression = expression.replace('sen', 'sin')
+            self.model.set_p0(p0)
         
-        # Setting expression
-        if self.model._exp_model != expression:
-            self.model.set_expression(expression)
+        self.model.xmin = self.mk_float(fitProps['xmin'])
+        self.model.xmax = self.mk_float(fitProps['xmax'])
 
-        curveStyles = {
-            'Sólido':'-',
-            'Tracejado':'--',
-            'Ponto-Tracejado':'-.'
-            }
-        symbols = {
-            'Círculo':'o',
-            'Triângulo':'^',
-            'Quadrado':'s',
-            'Pentagono':'p',
-            'Octagono':'8',
-            'Cruz':'P',
-            'Estrela':'*',
-            'Diamante':'d',
-            'Produto':'X'
-            }
+        if (self.model.xmin != 0. or self.model.xmax != 0.) and (self.model.xmin >= self.model.xmax):
+            self.msg.raiseError("Intervalo de ajuste inválido. Rever intervalo de ajuste.")
+            return None
 
         # Setting style of the plot 
-        self.model.set_title(props['titulo'])
-        self.model.set_x_axis(props['eixox'])
-        self.model.set_y_axis(props['eixoy'])
-        self.displayBridge.setStyle( props['logx'],
-                                props['logy'],
-                                props['markerColor'],
-                                props['markerSize'],
-                                symbols[props['marker']],
-                                props['curveColor'],
-                                props['curveThickness'],
-                                curveStyles[props['curveType']],
-                                props['legend'],
-                                self.model._exp_model.replace('**', '^'))
+        self.canvas.setCanvasProps(canvasProps, fitProps['expr'])
+        self.canvas.setDataProps(dataProps, fitProps)
+        self.canvas.Plot(self.model)
 
-        # Making plot
-        self.displayBridge.Plot(self.model, props['residuos'], props['grade'],
-         props['xmin'], props['xmax'], props['xdiv'],
-         props['ymin'], props['ymax'], props['ydiv'],
-         props['resMin'], props['resMax'])
+    def fillPlotPage(self, props=None):
+        # If no properties passed, emit the default values
+        if props is None:
+            self.fillPlotPageSignal.emit(QtCore.QJsonValue.fromVariant(self.props))
+        else:
+            self.fillPlotPageSignal.emit(QtCore.QJsonValue.fromVariant(props))
+        
+    @QtCore.Slot()
+    def new(self):
+        # Reseting canvas and model
+        self.model.reset()
+        self.canvas.reset()
 
-    @QtCore.Slot(str)
-    def loadData(self, file_path):
-        """Gets the path to data's file and fills the data's table"""
-        self.model.load_data(QtCore.QUrl(file_path).toLocalFile())
+        # Fill singlePlot page with default values
+        self.fillPlotPage()
+
+        # Reseting path
+        self.path = ''
 
     @QtCore.Slot(str)
-    def savePlot(self, save_path):
-        """Gets the path from input and save the actual plot"""
-        self.displayBridge.figure.savefig(QtCore.QUrl(save_path).toLocalFile(), dpi = 400)
+    def load(self, path):
+        # Reseting frontend
+        self.new()
+
+        # Getting path
+        self.path = QtCore.QUrl(path).toLocalFile()
+
+        # Getting props
+        with open(self.path, encoding='utf-8') as file:
+            props = json.load(file)
+
+        if "key" in props:
+            if props["key"][0] != "2":
+                self.msg.raiseWarn("O carregamento de arquivos antigos está limitado à uma versão anterior. Adaptação feita automaticamente.")
+            if props["key"].split('-')[-1] == 'multiplot':
+                self.msg.raiseError("O projeto carregado pertence ao multiplot, esse arquivo é incompatível.")
+                return 0
+            # Loading data from the project
+            self.model.load_data(df_array=props['data'])
+        else:
+            try:
+                self.msg.raiseWarn("O carregamento de arquivos antigos está limitado à uma versão anterior. Adaptação feita automaticamente.")
+                props = self.loadOldJson(props)
+            except:
+                self.msg.raiseError("O arquivo carregado é incompatível com o ATUS.")
+                return 0
+            self.model.load_data(df=props['data'])
+
+        self.fillPlotPage(props)
+        # self.plot.emit()
+
+    def loadOldJson(self, props):
+        props_tmp = self.props.copy()
+
+        # Shaping old json into the new one
+        props_tmp['id']                           = props['projectName']
+        props_tmp['dataProps']['marker_color']    = props['symbol_color']
+        props_tmp['dataProps']['marker_size']     = props['symbol_size']
+        props_tmp['dataProps']['marker']          = props['symbol']
+        props_tmp['dataProps']['curve_color']     = props['curve_color']
+        props_tmp['dataProps']['curve_thickness'] = props['curve_thickness']
+        props_tmp['dataProps']['curve_style']     = props['curve_style']
+        props_tmp['canvasProps']['xaxis']         = props['xaxis']
+        props_tmp['canvasProps']['yaxis']         = props['yaxis']
+        props_tmp['canvasProps']['title']         = props['title']
+        props_tmp['canvasProps']['log_x']         = props['log_x']
+        props_tmp['canvasProps']['log_y']         = props['log_y']
+        props_tmp['canvasProps']['legend']        = props['legend']
+        props_tmp['canvasProps']['grid']          = props['grid']
+        props_tmp['canvasProps']['residuals']     = props['residuals']
+        props_tmp['canvasProps']['xmin']          = props['xmin']
+        props_tmp['canvasProps']['xmax']          = props['xmax']
+        props_tmp['canvasProps']['xdiv']          = props['xdiv']
+        props_tmp['canvasProps']['ymin']          = props['ymin']
+        props_tmp['canvasProps']['ymax']          = props['ymax']
+        props_tmp['canvasProps']['ydiv']          = props['ydiv']
+        props_tmp['canvasProps']['resmin']        = props['resmin']
+        props_tmp['canvasProps']['resmax']        = props['resmax']
+        props_tmp['fitProps']['expr']             = props['expr']
+        props_tmp['fitProps']['p0']               = props['p0']
+        props_tmp['fitProps']['wsx']              = props['wsx']
+        props_tmp['fitProps']['wsy']              = props['wsy']
+        props_tmp['fitProps']['parameters']       = props['parameters']
+        props_tmp['data']                         = pd.read_json(props['data'], dtype=str)
+
+        return props_tmp
+
+    @QtCore.Slot(QtCore.QJsonValue, result=int)
+    def save(self, props):
+        # If there's no path for saving, saveAs()
+        if self.path == '':
+            return 1
+
+        # Getting properties
+        props                           = props.toVariant()
+        props["fitProps"]["parameters"] = self.model._params.valuesdict()
+
+        if platform.system() == "Linux":
+            if self.path[-5:] == ".json":
+                with open(self.path, 'w', encoding='utf-8') as file:
+                    json.dump(props, file, ensure_ascii=False, indent=4)
+            else: 
+                with open(self.path + ".json", 'w', encoding='utf-8') as file:
+                    json.dump(props, file, ensure_ascii=False, indent=4)
+        else:
+            with open(self.path, 'w', encoding='utf-8') as file:
+                json.dump(props, file, ensure_ascii=False, indent=4)
+
+        return 0
+    
+    @QtCore.Slot(str, QtCore.QJsonValue)
+    def saveAs(self, path, props):
+        # Getting path
+        self.path = QtCore.QUrl(path).toLocalFile()
+
+        # Getting properties
+        props = props.toVariant()
+        props['fitProps']['parameters'] = self.model._params.valuesdict()
+
+        if platform.system() == "Linux":
+            if self.path[-5:] == ".json":
+                with open(self.path, 'w', encoding='utf-8') as file:
+                    json.dump(props, file, ensure_ascii=False, indent=4)
+            else: 
+                with open(self.path + ".json", 'w', encoding='utf-8') as file:
+                    json.dump(props, file, ensure_ascii=False, indent=4)
+        else:
+            with open(self.path, 'w', encoding='utf-8') as file:
+                json.dump(props, file, ensure_ascii=False, indent=4)
 
     @QtCore.Slot(str, str, str, str, str, str)
     def calculator(self, function, opt1, nc, ngl, mean, std):
@@ -134,6 +278,9 @@ class Bridge(QtCore.QObject):
         try:
             nc = nc.replace(',', '.')
             nc = float(nc)
+            if nc == 0 or nc >= 1:
+                self.msg.raiseError("Nível de confiança deve ser sempre maior que zero e menor que 1. Rever nível de confiança.")
+                return None
         except:
             pass
         try:
@@ -149,9 +296,20 @@ class Bridge(QtCore.QObject):
         try:
             std = std.replace(',', '.')
             std = float(std)
+            if std <= 0:
+                self.msg.raiseError("Desvio padrão deve ser sempre maior que zero. Rever desvio padrão.")
+                return None
         except:
             pass
-
+        
         s, x, y, x_area, y_area = interpreter_calculator(functionDict[function], methodDict[opt1], nc, ngl, mean, std)
-        Plot(self.displayBridge, x, y, x_area, y_area)
+        Plot(self.canvas, x, y, x_area, y_area)
         self.writeCalculator.emit(s)
+    def mk_float(self, s):
+        '''Make a float from the string'''
+        s = s.strip()
+        return np.float64(s) if s else 0.
+    def mk_int(self, s):
+        '''Make a float from the string'''
+        s = s.strip()
+        return np.int64(s) if s else 0
