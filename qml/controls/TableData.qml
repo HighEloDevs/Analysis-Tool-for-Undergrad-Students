@@ -228,16 +228,6 @@ Item{
                             }
                         }
                     }
-
-                    // Animations
-                    // add: Transition {
-                    //     NumberAnimation{
-                    //         property: "opacity";
-                    //         from: 0;
-                    //         to: 1.0;
-                    //         duration: 400
-                    //     }
-                    // }
                 }
 
                 ListView {

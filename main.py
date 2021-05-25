@@ -64,12 +64,7 @@ if __name__ == "__main__":
     context.setContextProperty("updater", updater)
     context.setContextProperty("messageHandler", messageHandler)
     
-    # Loading QML files
-    plat = platform.system()
-    if(plat == 'Darwin'):
-        engine.load(QtCore.QUrl.fromLocalFile(os.path.join(os.path.dirname(__file__), "qml/main_mac.qml")))
-    else:
-        engine.load(QtCore.QUrl.fromLocalFile(os.path.join(os.path.dirname(__file__), "qml/main_windows.qml")))
+    engine.load(QtCore.QUrl.fromLocalFile(os.path.join(os.path.dirname(__file__), "qml/main_windows.qml")))
         
     # Updating canvasPlot with the plot
     win = engine.rootObjects()[0]

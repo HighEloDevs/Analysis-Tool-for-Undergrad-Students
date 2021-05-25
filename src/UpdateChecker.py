@@ -60,3 +60,4 @@ class UpdateChecker(QtCore.QObject):
     @QtCore.Slot(result=str)
     def getOS(self):
         return platform.system()
+        # return 'Darwin'

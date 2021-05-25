@@ -336,15 +336,12 @@ Item {
             }
 
             TextButton{
-                width: root.width*0.8
-                // Layout.columnSpan: 3
-                // Layout.alignment: Qt.AlignHCenter
                 height: 30
                 radius: 0
                 Layout.preferredHeight: 25
                 Layout.fillHeight: false
-                Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                 Layout.fillWidth: true
+                Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                 texto: 'PLOT / ATUALIZAR'
 
                 primaryColor: Colors.c_button
