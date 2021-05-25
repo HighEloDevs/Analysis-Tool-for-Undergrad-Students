@@ -419,22 +419,9 @@ Window {
 
                     Rectangle {
                         id: topBarDescription
-                        height: 25
-                        color: Colors.color2
                         Layout.preferredHeight: 25
-                        clip: false
                         Layout.fillWidth: true
-
-                        Label {
-                            id: labelRightInfo
-                            color: Colors.fontColor
-                            text: "| Início"
-                            anchors.verticalCenter: parent.verticalCenter
-                            anchors.right: parent.right
-                            horizontalAlignment: Text.AlignRight
-                            verticalAlignment: Text.AlignVCenter
-                            anchors.rightMargin: 5
-                        }
+                        color: Colors.color2
                     }
 
 
