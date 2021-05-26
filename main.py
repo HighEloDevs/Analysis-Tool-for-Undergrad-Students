@@ -32,6 +32,7 @@ from src.MultiPlot import Multiplot
 from src.MatPlotLib import MPLCanvas
 from src.UpdateChecker import UpdateChecker
 from src.MessageHandler import MessageHandler
+from src.GoogleDriveAPI import GDrive
 from matplotlib_backend_qtquick.qt_compat import QtGui, QtQml, QtCore
 from matplotlib_backend_qtquick.backend_qtquickagg import FigureCanvasQtQuickAgg
 
@@ -54,6 +55,7 @@ if __name__ == "__main__":
     singlePlot      = SinglePlot(canvas, model, messageHandler)
     multiPlot       = Multiplot(canvas, messageHandler)
     updater         = UpdateChecker()
+    gdrive          = GDrive(messageHandler)
 
     # Creating 'link' between front-end and back-end
     context = engine.rootContext()
@@ -63,6 +65,7 @@ if __name__ == "__main__":
     context.setContextProperty("model", model)
     context.setContextProperty("updater", updater)
     context.setContextProperty("messageHandler", messageHandler)
+    context.setContextProperty("gdrive", gdrive)
     
     engine.load(QtCore.QUrl.fromLocalFile(os.path.join(os.path.dirname(__file__), "qml/main_windows.qml")))
         

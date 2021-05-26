@@ -19,6 +19,19 @@ Window {
     visible: true
     color: "#00000000"
 
+    // Shortcuts for debug
+    Shortcut {
+        sequences: ["CTRL+SHIFT+I"]
+        onActivated: {
+            gdrive.listFiles()
+        }
+    }
+    Shortcut {
+        sequences: ["CTRL+SHIFT+O"]
+        onActivated: {
+            gdrive.uploadFile()
+        }
+    }
 
     // Removing Title Bar
     flags: {
@@ -32,6 +45,7 @@ Window {
     // Properties
     property string os: ''
     property    int activeBtn: 0
+    property   bool isGoogleConnected: false
 
     // Buttons on leftMenu
     property variant leftMenuBtns: ListModel{
@@ -250,6 +264,7 @@ Window {
                                         Layout.rowSpan: 2
                                         color: 'transparent'
                                         Image{
+                                            id: avatar
                                             anchors.centerIn: parent
                                             width: 40
                                             height: 40
@@ -275,7 +290,7 @@ Window {
                                         id: nameLabel
                                         Layout.topMargin: 13
                                         Layout.fillWidth: true
-                                        text: 'Leonardo Eiji Tamayose'
+                                        text: 'Desconectado'
                                         color: 'white'
                                         elide: Text.ElideRight
 
@@ -288,12 +303,26 @@ Window {
                                         Layout.rightMargin: 5
                                         Layout.rowSpan: 2
 
-                                        texto: 'SAIR'
+                                        texto: isGoogleConnected ? 'SAIR':'ENTRAR'
                                         primaryColor: 'transparent'
                                         hoverColor: 'transparent'
                                         clickColor: 'transparent'
-                                        textColor: '#ba342b'
+                                        textColor: isGoogleConnected ? '#ba342b':'#48cf4d'
                                         textSize: 11
+
+                                        onClicked: {
+                                            if(isGoogleConnected){
+                                                gdrive.logout()
+                                                // Setting default values
+                                                isGoogleConnected = false
+                                                nameLabel.text = 'Desconectado'
+                                                emailLabel.text = ''
+                                                avatar.source = 'https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png'
+
+                                            } else {
+                                                gdrive.login()
+                                            }
+                                        }
 
                                     }
 
@@ -301,7 +330,7 @@ Window {
                                         id: emailLabel
                                         Layout.bottomMargin: 13
                                         Layout.fillWidth: true
-                                        text: 'leoeiji@usp.br'
+                                        text: ''
                                         color: 'white'
                                         elide: Text.ElideRight
 
@@ -1001,10 +1030,26 @@ Window {
         }
     }
 
+    Connections{
+        target: gdrive
+        
+        function onInformationSignal(ownersInfo){
+            emailLabel.text = ownersInfo['user']['emailAddress']
+            nameLabel.text  = ownersInfo['user']['displayName']
+            
+            if (ownersInfo['user']['photoLink'] != undefined){
+                avatar.source = ownersInfo['user']['photoLink']
+            }
+
+            isGoogleConnected = true
+        }
+    }
+
     Component.onCompleted: {
         updater.checkUpdate()
         labelVersion.text = updater.getVersion()
         os = updater.getOS()
+        gdrive.tryLogin()
     }
 }
 
