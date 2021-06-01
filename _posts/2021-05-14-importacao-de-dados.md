@@ -35,7 +35,7 @@ Com os dados copiados, basta ir ao ATUS e colá-los, utilizando <kbd>CTRL</kbd>+
 Para criar um **.txt** compatível com o ATUS, basta criar um novo bloco de notas e colar os dados copiados nele.
 
 <p align="center">
-  <img width="400" height="350" src="https://user-images.githubusercontent.com/48266854/120241626-867a0480-c239-11eb-8f85-bc67792885b8.png">
+  <img width="400" height="350" src="https://user-images.githubusercontent.com/56280982/120269598-7afcfc80-c27e-11eb-91e3-c03e41664f00.png">
 </p>
 
 Outra forma de importação de dados ocorre através de arquivos de texto. O **Google Sheets** permite a criação de arquivos **.csv** e **.tsv** a partir das tabelas. Lembrando que ao fazer o download do arquivo, os títulos das colunas serão inclusas, é extramente importante retirá-los.
