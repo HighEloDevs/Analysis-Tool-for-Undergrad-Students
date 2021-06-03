@@ -296,6 +296,7 @@ Window {
 
                                         font.pointSize: 9
                                         font.bold: true
+                                        // font.family: "Roboto Condensed"
                                     }
 
                                     TextButton{
@@ -416,9 +417,9 @@ Window {
                             transformOrigin: Item.Center
                             spacing: 0
 
-                            Rectangle {
+                            Item {
                                 id: topBarHandler
-                                color: "transparent"
+                                // color: "transparent"
                                 Layout.fillHeight: true
                                 Layout.fillWidth: true
                                 DragHandler{

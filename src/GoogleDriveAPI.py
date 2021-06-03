@@ -25,17 +25,18 @@ SOFTWARE.
 
 from __future__ import print_function
 import os.path
-from matplotlib_backend_qtquick.qt_compat import QtCore
+# from matplotlib_backend_qtquick.qt_compat import QtCore
+from PyQt5.QtCore import QObject, pyqtProperty, QUrl, pyqtSignal, pyqtSlot, QJsonValue
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 
-class GDrive(QtCore.QObject):
+class GDrive(QObject):
     '''Class that interact with google drive API'''
     # Signals
-    informationSignal = QtCore.Signal(QtCore.QJsonValue, arguments='ownersInfo')
+    informationSignal = pyqtSignal(QJsonValue, arguments='ownersInfo')
 
     def __init__(self, messageHandler):
         super().__init__()
@@ -59,7 +60,7 @@ class GDrive(QtCore.QObject):
                        'https://www.googleapis.com/auth/drive.appdata',
                        'https://www.googleapis.com/auth/userinfo.profile']
 
-    @QtCore.Slot()
+    @pyqtSlot()
     def tryLogin(self):
         '''
             Called when the program is initialized, try to connect with Google if there's already a token
@@ -68,9 +69,9 @@ class GDrive(QtCore.QObject):
         if os.path.exists(self.tokenPath):
             self.creds = Credentials.from_authorized_user_file(self.tokenPath, self.SCOPES)
             about = self.getDrive()
-            self.informationSignal.emit(QtCore.QJsonValue.fromVariant(about))
+            self.informationSignal.emit(QJsonValue.fromVariant(about))
 
-    @QtCore.Slot()
+    @pyqtSlot()
     def login(self):
         '''
             Connect to Google Drive API and get user's information
@@ -95,9 +96,9 @@ class GDrive(QtCore.QObject):
             
             # Mounting drive
             about = self.getDrive()
-            self.informationSignal.emit(QtCore.QJsonValue.fromVariant(about))
+            self.informationSignal.emit(QJsonValue.fromVariant(about))
     
-    @QtCore.Slot()
+    @pyqtSlot()
     def logout(self):
         '''
             Closes http2lib connection
@@ -109,13 +110,13 @@ class GDrive(QtCore.QObject):
         self.service = None
         self.creds = None
 
-    @QtCore.Slot()
+    @pyqtSlot()
     def listFiles(self):
         results = self.service.files().list(spaces='appDataFolder', fields="nextPageToken, files(id, name)", q="mimeType='application/json'").execute()
         print(results.get('files', []))
         # return results.get('files', [])
 
-    @QtCore.Slot()
+    @pyqtSlot()
     def uploadFile(self):
         file_metadata = {
             'name': 'config.json',

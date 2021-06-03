@@ -23,15 +23,17 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 from matplotlib_backend_qtquick.backend_qtquick import NavigationToolbar2QtQuick
-from matplotlib_backend_qtquick.qt_compat import QtCore, QtGui
+# from matplotlib_backend_qtquick.qt_compat import QtCore, QtGui
+from PyQt5.QtCore import QObject, pyqtProperty, QUrl, pyqtSignal, pyqtSlot
+from PyQt5.QtGui import QGuiApplication, QPixmap
 import numpy as np
 import os
 
-class MPLCanvas(QtCore.QObject):
+class MPLCanvas(QObject):
     """ A bridge class to interact with the plot in python
     """
     # Some signals for the frontend
-    coordinatesChanged = QtCore.Signal(str)
+    coordinatesChanged = pyqtSignal(str)
 
     def __init__(self, messageHandler):
         super().__init__()
@@ -376,13 +378,13 @@ class MPLCanvas(QtCore.QObject):
         self._coordinates = coordinates
         self.coordinatesChanged.emit(self._coordinates)
 
-    coordinates = QtCore.Property(str, getCoordinates, setCoordinates, notify=coordinatesChanged)
+    coordinates = pyqtProperty(str, getCoordinates, setCoordinates, notify=coordinatesChanged)
 
     # The toolbar commands
-    @QtCore.Slot(str, bool)
+    @pyqtSlot(str, bool)
     def savePlot(self, save_path, transparent):
         """Gets the path from input and save the actual plot"""
-        path = QtCore.QUrl(save_path).toLocalFile()
+        path = QUrl(save_path).toLocalFile()
 
         # Getting extension
         filename, extension = os.path.splitext(path)
@@ -394,17 +396,17 @@ class MPLCanvas(QtCore.QObject):
             self.canvas.figure.savefig(path, dpi = 400, transparent=transparent)
             self.messageHandler.raiseSuccess('Imagem salva com sucesso!')
 
-    @QtCore.Slot()
+    @pyqtSlot()
     def copyToClipboard(self):
         '''Copy imagine to the clipboard'''
         # Getting clipboard
-        clipboard = QtGui.QGuiApplication.clipboard()
+        clipboard = QGuiApplication.clipboard()
 
         # Saving image to a path   
         try:
             path = os.path.join(os.path.expanduser('~\Documents'), 'image.png')
             self.canvas.figure.savefig(path, dpi = 400, transparent=False)
-            pixmap = QtGui.QPixmap()
+            pixmap = QPixmap()
             # Loading image as pixmap and saving to clipboard
             if pixmap.load(path):
                 clipboard.setImage(pixmap.toImage())
@@ -413,23 +415,23 @@ class MPLCanvas(QtCore.QObject):
         except:
             self.messageHandler.raiseError('Erro copiar para a área de transferência, contatar os desenvolvedores.')
 
-    @QtCore.Slot()
+    @pyqtSlot()
     def pan(self, *args):
         self.toolbar.pan(*args)
 
-    @QtCore.Slot()
+    @pyqtSlot()
     def zoom(self, *args):
         self.toolbar.zoom(*args)
 
-    @QtCore.Slot()
+    @pyqtSlot()
     def home(self, *args):
         self.toolbar.home(*args)
 
-    @QtCore.Slot()
+    @pyqtSlot()
     def back(self, *args):
         self.toolbar.back(*args)
 
-    @QtCore.Slot()
+    @pyqtSlot()
     def forward(self, *args):
         self.toolbar.forward(*args)
 

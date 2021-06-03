@@ -25,7 +25,7 @@ SOFTWARE.
 
 import os
 import sys
-import platform
+
 from src.Model import Model
 from src.Plot import SinglePlot 
 from src.MultiPlot import Multiplot
@@ -33,21 +33,23 @@ from src.MatPlotLib import MPLCanvas
 from src.UpdateChecker import UpdateChecker
 from src.MessageHandler import MessageHandler
 from src.GoogleDriveAPI import GDrive
-from matplotlib_backend_qtquick.qt_compat import QtGui, QtQml, QtCore
+from PyQt5.QtCore import QCoreApplication, QUrl, QObject, Qt
+from PyQt5.QtQml import qmlRegisterType, QQmlApplicationEngine
+from PyQt5.QtGui import QIcon, QGuiApplication
 from matplotlib_backend_qtquick.backend_qtquickagg import FigureCanvasQtQuickAgg
 
 if __name__ == "__main__":
     # Matplotlib stuff
-    QtQml.qmlRegisterType(FigureCanvasQtQuickAgg, "Canvas", 1, 0, "FigureCanvas")
-    QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
+    qmlRegisterType(FigureCanvasQtQuickAgg, "Canvas", 1, 0, "FigureCanvas")
+    QCoreApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
 
     # Setting up app
-    app = QtGui.QGuiApplication(sys.argv)
-    app.setOrganizationName("High Elo Devs")
+    app = QGuiApplication(sys.argv)
+    app.setOrganizationName("High Elo Devs") 
     app.setOrganizationDomain("https://github.com/leoeiji/Analysis-Tool-for-Undergrad-Students---ATUS")
     app.setApplicationName("Analysis Tool for Undergrad Students")
-    app.setWindowIcon(QtGui.QIcon(os.path.join(os.path.dirname(__file__), "images/main_icon/ATUS_icon.png")))
-    engine = QtQml.QQmlApplicationEngine()
+    app.setWindowIcon(QIcon(os.path.join(os.path.dirname(__file__), "images/main_icon/ATUS_icon.png")))
+    engine = QQmlApplicationEngine()
 
     messageHandler  = MessageHandler()
     canvas          = MPLCanvas(messageHandler)
@@ -67,11 +69,11 @@ if __name__ == "__main__":
     context.setContextProperty("messageHandler", messageHandler)
     context.setContextProperty("gdrive", gdrive)
     
-    engine.load(QtCore.QUrl.fromLocalFile(os.path.join(os.path.dirname(__file__), "qml/main_windows.qml")))
+    engine.load(QUrl.fromLocalFile(os.path.join(os.path.dirname(__file__), "qml/main_windows.qml")))
         
     # Updating canvasPlot with the plot
     win = engine.rootObjects()[0]
-    canvas.updateWithCanvas(win.findChild(QtCore.QObject, "canvasPlot"))
+    canvas.updateWithCanvas(win.findChild(QObject, "canvasPlot"))
 
     # Stopping program if PyQt fails loading the file
     if not engine.rootObjects():

@@ -25,20 +25,22 @@ SOFTWARE.
 
 import numpy as np
 import pandas as pd
-from matplotlib_backend_qtquick.qt_compat import QtCore, QtGui
+# from matplotlib_backend_qtquick.qt_compat import QtCore, QtGui
+from PyQt5.QtGui import QGuiApplication
+from PyQt5.QtCore import QObject, QJsonValue, QUrl, pyqtSignal, pyqtSlot
 from scipy.odr import ODR, Model as SciPyModel, RealData
 from lmfit.models import ExpressionModel
 from lmfit import Parameters
 from copy import deepcopy
 from io import StringIO
 
-class Model(QtCore.QObject):
+class Model(QObject):
     """Class used for fit
     """
     # Signals
-    fillDataTable = QtCore.Signal(str, str, str, str, str, str, arguments=['x', 'y', 'sy', 'sx', 'filename'])
-    fillParamsTable = QtCore.Signal(str, float, float, arguments=['param', 'value', 'uncertainty'])
-    writeInfos = QtCore.Signal(str, arguments='expr')
+    fillDataTable   = pyqtSignal(str, str, str, str, str, str, arguments=['x', 'y', 'sy', 'sx', 'filename'])
+    fillParamsTable = pyqtSignal(str, float, float, arguments=['param', 'value', 'uncertainty'])
+    writeInfos      = pyqtSignal(str, arguments='expr')
 
     def __init__(self, messageHandler):
         super().__init__()
@@ -65,7 +67,7 @@ class Model(QtCore.QObject):
     def __str__(self):
         return self._report_fit
         
-    @QtCore.Slot(QtCore.QJsonValue)
+    @pyqtSlot(QJsonValue)
     def loadDataTable(self, data = None):
         """Getting data from table"""
         df = pd.DataFrame.from_records(data)
@@ -96,10 +98,10 @@ class Model(QtCore.QObject):
 
         self._has_data = True
 
-    @QtCore.Slot()
+    @pyqtSlot()
     def loadDataClipboard(self):
         # Instantiating clipboard
-        clipboard = QtGui.QGuiApplication.clipboard()
+        clipboard = QGuiApplication.clipboard()
         clipboardText = clipboard.mimeData().text()
         try:
             # Creating a dataframe from the string
@@ -114,7 +116,7 @@ class Model(QtCore.QObject):
             # Falha ao carregar clipboard. Rever dados de entrada.
             return None
                 
-    @QtCore.Slot(str)
+    @pyqtSlot(str)
     def load_data(self, data_path='', df=None, df_array=None):
         """ Loads the data from a given path or from a given dataframe """
 
@@ -124,7 +126,7 @@ class Model(QtCore.QObject):
         # If no dataframe passed, loading data from the given path
         if len(data_path) > 0:
             # Loading from .csv or (.txt and .tsv)
-            data_path = QtCore.QUrl(data_path).toLocalFile()
+            data_path = QUrl(data_path).toLocalFile()
             if data_path[-3:] == "csv":
                 try:
                     df = pd.read_csv(data_path, sep=',', header=None, dtype = str).replace(np.nan, "0")

@@ -26,16 +26,17 @@ SOFTWARE.
 import json
 import numpy as np
 import platform
-from matplotlib_backend_qtquick.qt_compat import QtCore
+# from matplotlib_backend_qtquick.qt_compat import QtCore
+from PyQt5.QtCore import QObject, QJsonValue, QUrl, pyqtSignal, pyqtSlot
 from .Model_multiplot import MultiModel
 
-class Multiplot(QtCore.QObject):
+class Multiplot(QObject):
     """Backend for multiplot page"""
 
-    setData          = QtCore.Signal(QtCore.QJsonValue, arguments='data')
-    removeRow        = QtCore.Signal(int, arguments='row')
-    fillPageSignal   = QtCore.Signal(QtCore.QJsonValue, arguments='props')
-    addRow           = QtCore.Signal(QtCore.QJsonValue, arguments='rowData')
+    setData          = pyqtSignal(QJsonValue, arguments='data')
+    removeRow        = pyqtSignal(int, arguments='row')
+    fillPageSignal   = pyqtSignal(QJsonValue, arguments='props')
+    addRow           = pyqtSignal(QJsonValue, arguments='rowData')
 
     def __init__(self, displayBridge, messageHandler):
         super().__init__()
@@ -76,10 +77,10 @@ class Multiplot(QtCore.QObject):
         }
 
     def fillPage(self, props):
-        props = QtCore.QJsonValue.fromVariant(props)
+        props = QJsonValue.fromVariant(props)
         self.fillPageSignal.emit(props)
 
-    @QtCore.Slot()
+    @pyqtSlot()
     def new(self):
         # Reseting path
         self.path = ''
@@ -88,7 +89,7 @@ class Multiplot(QtCore.QObject):
         self.displayBridge.reset()
         self.fillPage(self.defaultProps)
 
-    @QtCore.Slot(str)
+    @pyqtSlot(str)
     def load(self, path):
         curveStyles = {
             '-': 0,
@@ -99,7 +100,7 @@ class Multiplot(QtCore.QObject):
         self.new()
 
         # Setting path
-        self.path = QtCore.QUrl(path).toLocalFile()
+        self.path = QUrl(path).toLocalFile()
 
         # Getting props
         with open(self.path, encoding='utf-8') as file:
@@ -122,7 +123,7 @@ class Multiplot(QtCore.QObject):
             return 0
 
         for row, rowData in enumerate(props['rowsData'], start=0):
-            prop = QtCore.QJsonValue.fromVariant({
+            prop = QJsonValue.fromVariant({
                 'row': row,
                 'data': rowData['df'],
                 'params': rowData['params'],
@@ -139,9 +140,9 @@ class Multiplot(QtCore.QObject):
         del props['rowsData']
 
         # Filling page
-        self.fillPageSignal.emit(QtCore.QJsonValue.fromVariant(props))
+        self.fillPageSignal.emit(QJsonValue.fromVariant(props))
 
-    @QtCore.Slot(QtCore.QJsonValue, result=int)
+    @pyqtSlot(QJsonValue, result=int)
     def save(self, props):
         # If there's no path for saving, saveAs()
         if self.path == '':
@@ -163,10 +164,10 @@ class Multiplot(QtCore.QObject):
 
         return 0
     
-    @QtCore.Slot(str, QtCore.QJsonValue)
+    @pyqtSlot(str, QJsonValue)
     def saveAs(self, path, props):
         # Getting path
-        self.path = QtCore.QUrl(path).toLocalFile()
+        self.path = QUrl(path).toLocalFile()
 
         # Getting properties
         props = props.toVariant()
@@ -182,7 +183,7 @@ class Multiplot(QtCore.QObject):
             with open(self.path, 'w', encoding='utf-8') as file:
                 json.dump(props, file, ensure_ascii=False, indent=4)
 
-    @QtCore.Slot(str, int)
+    @pyqtSlot(str, int)
     def loadData(self, fileUrl, row):
         curveStyles = {
             '-': 0,
@@ -190,7 +191,7 @@ class Multiplot(QtCore.QObject):
             '-.':2
         }
         # Opening json file
-        with open(QtCore.QUrl(fileUrl).toLocalFile(), encoding='utf-8') as file:
+        with open(QUrl(fileUrl).toLocalFile(), encoding='utf-8') as file:
             data = json.load(file)
 
         try:
@@ -204,11 +205,11 @@ class Multiplot(QtCore.QObject):
                 expr = expr.replace('arccos', 'acos')
                 expr = expr.replace('sen', 'sin')
                 
-            self.setData.emit(QtCore.QJsonValue.fromVariant({
+            self.setData.emit(QJsonValue.fromVariant({
                 'row': row,
                 'data': data['data'],
                 'params': data["fitProps"]['parameters'],
-                'fileName': QtCore.QUrl(fileUrl).toLocalFile().split('/')[-1],
+                'fileName': QUrl(fileUrl).toLocalFile().split('/')[-1],
                 'projectName': data['id'],
                 'expr': expr,
                 'p0': data["fitProps"]['p0'],
@@ -219,7 +220,7 @@ class Multiplot(QtCore.QObject):
             self.msg.raiseError("Erro ao carregar arquivo. Verificar arquivo de entrada.")
             self.removeRow.emit(row)
 
-    @QtCore.Slot(QtCore.QJsonValue)
+    @pyqtSlot(QJsonValue)
     def getData(self, data):
         '''Get data from frontend and make a plot'''
 

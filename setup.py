@@ -2,7 +2,6 @@ from cx_Freeze import setup, Executable
 
 with open('./version.txt') as version:
     __VERSION__  = version.read()
-    version.close()
 
 # Files and folders to include
 files = [
@@ -37,6 +36,7 @@ target = Executable(
 )
 
 # Dependencies are automatically detected, but it might need fine tuning.
+# Options for building a .exe
 build_exe_options = {
     'packages': includes,
     'excludes': ["tkinter",
@@ -53,7 +53,19 @@ build_exe_options = {
     'include_files': files
 }
 
-# SETUP CX FREEZE
+# Options for building a .msi installer
+bdist_msi_options = {
+    "data": {
+        "ProgId": [
+            ("Prog.Id", None, None, "Ferramenta para análise de dados", "IconId", None),
+        ],
+        "Icon": [
+            ("IconId", "icon.ico"),
+        ],
+    },
+}
+
+# Setting up CxFreeze
 setup(
     name = 'ATUS',
     version = __VERSION__,

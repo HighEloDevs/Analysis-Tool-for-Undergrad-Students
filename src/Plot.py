@@ -23,20 +23,21 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-from matplotlib_backend_qtquick.qt_compat import QtCore
+# from matplotlib_backend_qtquick.qt_compat import QtCore
+from PyQt5.QtCore import QObject, QJsonValue, QUrl, pyqtSignal, pyqtSlot
 from src.Calculators import interpreter_calculator, Plot
 import numpy as np
 import pandas as pd
 import json
 import platform
 
-class SinglePlot(QtCore.QObject):
+class SinglePlot(QObject):
     '''Class that controls the single-plot page'''
 
     # Signal to write infos
-    writeCalculator       = QtCore.Signal(str, arguments='expr')
-    fillPlotPageSignal    = QtCore.Signal(QtCore.QJsonValue, arguments='props')
-    plot                  = QtCore.Signal()
+    writeCalculator       = pyqtSignal(str, arguments='expr')
+    fillPlotPageSignal    = pyqtSignal(QJsonValue, arguments='props')
+    plot                  = pyqtSignal()
 
     def __init__(self, canvas, model, messageHandler):
         super().__init__()
@@ -86,7 +87,7 @@ class SinglePlot(QtCore.QObject):
             'data': []
         }
 
-    @QtCore.Slot(QtCore.QJsonValue)
+    @pyqtSlot(QJsonValue)
     def getPlotData(self, plotData):
         self.model.reset()
         plotData    = plotData.toVariant()
@@ -135,11 +136,11 @@ class SinglePlot(QtCore.QObject):
     def fillPlotPage(self, props=None):
         # If no properties passed, emit the default values
         if props is None:
-            self.fillPlotPageSignal.emit(QtCore.QJsonValue.fromVariant(self.props))
+            self.fillPlotPageSignal.emit(QJsonValue.fromVariant(self.props))
         else:
-            self.fillPlotPageSignal.emit(QtCore.QJsonValue.fromVariant(props))
+            self.fillPlotPageSignal.emit(QJsonValue.fromVariant(props))
         
-    @QtCore.Slot()
+    @pyqtSlot()
     def new(self):
         # Reseting canvas and model
         self.model.reset()
@@ -151,13 +152,13 @@ class SinglePlot(QtCore.QObject):
         # Reseting path
         self.path = ''
 
-    @QtCore.Slot(str)
+    @pyqtSlot(str)
     def load(self, path):
         # Reseting frontend
         self.new()
 
         # Getting path
-        self.path = QtCore.QUrl(path).toLocalFile()
+        self.path = QUrl(path).toLocalFile()
 
         # Getting props
         with open(self.path, encoding='utf-8') as file:
@@ -181,7 +182,6 @@ class SinglePlot(QtCore.QObject):
             self.model.load_data(df=props['data'])
 
         self.fillPlotPage(props)
-        # self.plot.emit()
 
     def loadOldJson(self, props):
         props_tmp = self.props.copy()
@@ -219,7 +219,7 @@ class SinglePlot(QtCore.QObject):
 
         return props_tmp
 
-    @QtCore.Slot(QtCore.QJsonValue, result=int)
+    @pyqtSlot(QJsonValue, result=int)
     def save(self, props):
         # If there's no path for saving, saveAs()
         if self.path == '':
@@ -242,10 +242,10 @@ class SinglePlot(QtCore.QObject):
 
         return 0
     
-    @QtCore.Slot(str, QtCore.QJsonValue)
+    @pyqtSlot(str, QJsonValue)
     def saveAs(self, path, props):
         # Getting path
-        self.path = QtCore.QUrl(path).toLocalFile()
+        self.path = QUrl(path).toLocalFile()
 
         # Getting properties
         props = props.toVariant()
@@ -262,7 +262,7 @@ class SinglePlot(QtCore.QObject):
             with open(self.path, 'w', encoding='utf-8') as file:
                 json.dump(props, file, ensure_ascii=False, indent=4)
 
-    @QtCore.Slot(str, str, str, str, str, str)
+    @pyqtSlot(str, str, str, str, str, str)
     def calculator(self, function, opt1, nc, ngl, mean, std):
         functionDict = {
             'Chi²':0,

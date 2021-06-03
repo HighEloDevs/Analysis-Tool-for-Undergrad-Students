@@ -24,14 +24,14 @@ SOFTWARE.
 """
 
 import numpy as np
-import matplotlib.pyplot as plt
 import pandas as pd
-from matplotlib_backend_qtquick.qt_compat import QtCore
+
+# from matplotlib_backend_qtquick.qt_compat import QtCore
+from PyQt5.QtCore import QObject
 from lmfit.models import ExpressionModel
 from lmfit import Parameters
-from scipy.odr import ODR, Model as SciPyModel, Data, RealData
 
-class MultiModel(QtCore.QObject):
+class MultiModel(QObject):
     def __init__(self, options: dict, arquivos: list):
         super().__init__()
         self.options    = options

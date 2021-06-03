@@ -24,7 +24,8 @@ SOFTWARE.
 """
 
 import numpy as np
-from matplotlib_backend_qtquick.qt_compat import QtCore
+# from matplotlib_backend_qtquick.qt_compat import QtCore
+from PyQt5.QtCore import QObject
 from scipy.stats import chi2, norm, t
 from numpy import array
 
@@ -186,7 +187,7 @@ def interpreter_calculator(f, opt, nc, ngl, mean, std):
     x_area = x_area*std + mean
     return s, x_plot, y_plot/std, x_area, y_area/std
 
-class CalculatorCanvas(QtCore.QObject):
+class CalculatorCanvas(QObject):
     """ A bridge class to interact with the plot in python
     """
     def __init__(self, parent=None):
