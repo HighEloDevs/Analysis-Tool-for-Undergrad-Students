@@ -57,7 +57,7 @@ onde *a* e *b* são nossos parâmetros e o *x* **necessariamente** deve ser a va
 |      cosh        |Cosseno hiperbólico|  sinh   |Seno hiperbólico|
 |      degrees        |Converte o valor em graus (ex.: degrees(3.14))|  sqrt   |Raiz quadrada|
 |      exp / e        |Exponencial (ex.: exp(3) = e**3)|  tan   |Tangente|
-|      factorial        |Fatorial (ex.: factorial(3) = 6|  tanh   |Tangente hiperbólica|
+|      factorial        |Fatorial (ex.: factorial(3) = 6)|  tanh   |Tangente hiperbólica|
 |      +        |Soma|  -   |Subtração|
 |      *        |Multiplicação|  /   |Divisão|
 |      ** / ^        |Potenciação (ex.: 3**3 = 3^3)|  ---   |---|
