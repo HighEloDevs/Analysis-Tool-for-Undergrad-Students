@@ -6,9 +6,9 @@ O **A**nalysis **T**ool for **U**ndergrad **S**tudents (ATUS) foi desenvolvido p
 
 ### Características
 
-- Pode ser usado no Windows 10, Linux (testado no Ubuntu 18.04+), e Mac;
-- Interface intuitiva;
-- Alta velocidade de execução;
-- Open source.
+- Pode ser usado no **Windows 10**, **Linux** (testado no Ubuntu 18.04+), e **Mac OS**
+- Interface intuitiva
+- Alta velocidade de execução
+- Open source
 
 ### Tutoriais
