@@ -36,7 +36,7 @@ A interface do ATUS foi desenvolvida por ex-alunos de física experimental, ou s
 |      7        |Tabela de dados onde é possível alterar e exluir valores|  15   |Área em que serão mostrados os valores do χ², NGL etc |
 |      8        |Função a ser ajustada|  16   |Ajusta a função e plota o gráfico|
   
-Depois de conhecer a interface e carregar os dados do experimento, precisamos escrever a nossa função a ser ajustada. No caso desse exemplo, desejamos ajustar uma reta, ou seja, na região *"Expressão | y(x) = "* devemos escrever
+Depois de conhecer a interface e carregar os dados do experimento, precisamos escrever a nossa função a ser ajustada. No caso desse exemplo, desejamos ajustar uma reta, ou seja, na região *"Expressão / y(x) = "* devemos escrever
 
 ```
 a*x + b
