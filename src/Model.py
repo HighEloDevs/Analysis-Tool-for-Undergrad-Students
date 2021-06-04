@@ -604,13 +604,18 @@ class Model(QObject):
         ''' Retorna os valores de y_i - f(x_i). '''
         return self._data["y"] - self._model.eval(x = self._data["x"])
 
-    def get_predict(self, x_min = None, x_max = None):
+    def get_predict(self, fig, x_min = None, x_max = None):
         ''' Retorna a previsão do modelo. '''
-        if x_min is None:
-            x_min = self._data['x'].min()
-        if x_max is None:
-            x_max = self._data['x'].max()
-        x_plot = np.linspace(x_min, x_max, 10000*len(self._data['x']))
+        x_plot = np.linspace(x_min, x_max, int(fig.get_size_inches()[0]*fig.dpi*2))
+        # x_plot = np.linspace(x_min, x_max, 10000*len(self._data['x']))
+        return x_plot, self._model.eval(x = x_plot, params = self._params)
+    
+    def get_predict_log(self, fig, x_min = None, x_max = None):
+        ''' Retorna a previsão do modelo. '''
+        if x_min < 5000 and x_max > 10**5:
+            x_plot = np.hstack((np.linspace(x_min, 10000, 3000), np.linspace(10000, x_max, int(fig.get_size_inches()[0]*fig.dpi*2))))
+            return x_plot, self._model.eval(x = x_plot, params = self._params)
+        x_plot = np.linspace(x_min, x_max, int(fig.get_size_inches()[0]*fig.dpi*5))
         return x_plot, self._model.eval(x = x_plot, params = self._params)
     
     def reset(self):

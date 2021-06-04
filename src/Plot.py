@@ -121,10 +121,10 @@ class SinglePlot(QObject):
             p0 = p0.replace('/', ',')
             self.model.set_p0(p0)
         
-        self.model.xmin = self.mk_float(fitProps['xmin'])
-        self.model.xmax = self.mk_float(fitProps['xmax'])
+        self.model.xmin = self.mk_float(fitProps['xmin'], valor = -np.inf)
+        self.model.xmax = self.mk_float(fitProps['xmax'], valor = np.inf)
 
-        if (self.model.xmin != 0. or self.model.xmax != 0.) and (self.model.xmin >= self.model.xmax):
+        if self.model.xmin >= self.model.xmax:
             self.msg.raiseError("Intervalo de ajuste inválido. Rever intervalo de ajuste.")
             return None
 
@@ -305,11 +305,11 @@ class SinglePlot(QObject):
         s, x, y, x_area, y_area = interpreter_calculator(functionDict[function], methodDict[opt1], nc, ngl, mean, std)
         Plot(self.canvas, x, y, x_area, y_area)
         self.writeCalculator.emit(s)
-    def mk_float(self, s):
+    def mk_float(self, s, valor = 0.):
         '''Make a float from the string'''
         s = s.strip()
-        return np.float64(s) if s else 0.
-    def mk_int(self, s):
+        return np.float64(s) if s else valor
+    def mk_int(self, s, valor = 0.):
         '''Make a float from the string'''
         s = s.strip()
-        return np.int64(s) if s else 0
+        return np.int64(s) if s else valor

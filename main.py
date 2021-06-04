@@ -25,6 +25,7 @@ SOFTWARE.
 
 import os
 import sys
+import matplotlib.pyplot as plt
 
 from src.Model import Model
 from src.Plot import SinglePlot 
@@ -37,7 +38,7 @@ from PyQt5.QtCore import QCoreApplication, QUrl, QObject, Qt
 from PyQt5.QtQml import qmlRegisterType, QQmlApplicationEngine
 from PyQt5.QtGui import QIcon, QGuiApplication
 from matplotlib_backend_qtquick.backend_qtquickagg import FigureCanvasQtQuickAgg
-
+plt.rcParams["figure.autolayout"] = True
 if __name__ == "__main__":
     # Matplotlib stuff
     qmlRegisterType(FigureCanvasQtQuickAgg, "Canvas", 1, 0, "FigureCanvas")

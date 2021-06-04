@@ -71,7 +71,7 @@ class MPLCanvas(QObject):
         self.ymax            = 0.
         self.ydiv            = 0.
         self.resmin          = 0.
-        self.resmax          = 0. 
+        self.resmax          = 0.
 
         # This is used to display the coordinates of the mouse in the window
         self._coordinates = ""
@@ -108,7 +108,7 @@ class MPLCanvas(QObject):
 
                 # Getting data
                 x, y, sy, sx = model.data
-                px, py       = model.get_predict()
+                # px, py       = model.get_predict()
                 y_r          = model.residuo
 
                 if self.residuals:
@@ -157,26 +157,22 @@ class MPLCanvas(QObject):
                         self.ax1.set_yscale('log')
                     if self.log_x:
                         self.ax1.set_xscale('log')
-
-                    # Making Plots
-                    self.ax1.plot(px, py, lw = self.curve_thickness, color = self.curve_color, ls = self.curve_style, label = '${}$'.format(self.expression))
+                    
 
                     if self.legend:
                         self.ax1.legend(frameon=False)
 
-                    # if model._mode == 2:
                     self.ax2.errorbar(x, y_r, yerr=sy, xerr = sx, ecolor = self.symbol_color, capsize = 0, elinewidth = 1, ms = self.symbol_size, marker = self.symbol, color = self.symbol_color, ls = 'none')
                     self.ax1.errorbar(x, y, yerr=sy, xerr=sx, ecolor = self.symbol_color, capsize = 0, elinewidth = 1, ms = self.symbol_size, marker = self.symbol, color = self.symbol_color, ls = 'none')
-                    # elif model._has_sx:
-                    #     self.ax2.errorbar(x, y_r, xerr = sx, ecolor = self.symbol_color, capsize = 0, elinewidth = 1, ms = self.symbol_size, marker = self.symbol, color = self.symbol_color, ls = 'none')
-                    #     self.ax1.errorbar(x, y, xerr=sx, ecolor = self.symbol_color, capsize = 0, elinewidth = 1, ms = self.symbol_size, marker = self.symbol, color = self.symbol_color, ls = 'none')
-                    # elif model._has_sy:
-                    #     self.ax2.errorbar(x, y_r, yerr=sy, ecolor = self.symbol_color, capsize = 0, elinewidth = 1, ms = self.symbol_size, marker = self.symbol, color = self.symbol_color, ls = 'none')
-                    #     self.ax1.errorbar(x, y, yerr=sy, ecolor = self.symbol_color, capsize = 0, elinewidth = 1, ms = self.symbol_size, marker = self.symbol, color = self.symbol_color, ls = 'none')
-                    # else:
-                    #     self.ax2.errorbar(x, y_r, ecolor = self.symbol_color, capsize = 0, elinewidth = 1, ms = self.symbol_size, marker = self.symbol, color = self.symbol_color, ls = 'none')
-                    #     self.ax1.errorbar(x, y, ecolor = self.symbol_color, capsize = 0, elinewidth = 1, ms = self.symbol_size, marker = self.symbol, color = self.symbol_color, ls = 'none')
+                    
+                    left, right = self.ax1.get_xlim()
+                    self.ax1.set_xlim(left = left, right = right)
+                    self.ax2.set_xlim(left = left, right = right)
+                    px, py      = model.get_predict(self.ax1.figure, left, right)
 
+                    # Making Plots
+                    line_func, = self.ax1.plot(px, py, lw = self.curve_thickness, color = self.curve_color, ls = self.curve_style, label = '${}$'.format(self.expression))
+                    
                     self.ax1.minorticks_on()
                     self.ax2.minorticks_on()
 
@@ -185,6 +181,23 @@ class MPLCanvas(QObject):
                     self.ax2.set(xlabel = str(self.axisTitle[1]))
                     self.ax1.set(ylabel = str(self.axisTitle[2]))
                     self.ax2.set(ylabel = "Resíduos")
+                    def update(evt=None):
+                        left, right = self.ax1.get_xlim()
+                        # npoints = self.ax1.figure.get_size_inches()[0]*self.ax1.figure.dpi
+                        # x = np.linspace(xmin, xmax, npoints)
+                        ppx, ppy = model.get_predict(self.ax1.figure, left, right)
+                        line_func.set_data(ppx, ppy)
+                        self.ax1.figure.canvas.draw_idle()
+                    if self.log_x:
+                        def update(evt=None):
+                            left, right = self.ax1.get_xlim()
+                            # npoints = self.ax1.figure.get_size_inches()[0]*self.ax1.figure.dpi
+                            # x = np.linspace(xmin, xmax, npoints)
+                            ppx, ppy = model.get_predict_log(self.ax1.figure, left, right)
+                            line_func.set_data(ppx, ppy)
+                            self.ax1.figure.canvas.draw_idle()
+                    self.ax1.callbacks.connect('xlim_changed', update)
+                    self.ax1.figure.canvas.mpl_connect("resize_event", update)
                 else:
                     self.axes = self.figure.add_subplot(111)
 
@@ -220,19 +233,19 @@ class MPLCanvas(QObject):
                             self.axes.set_ylim(bottom = self.ymin, top = self.ymax)
                     
                     # Making Plots
-                    # if model._mode == 2:
-                    self.axes.plot(px, py, lw = self.curve_thickness, color = self.curve_color, ls = self.curve_style, label = '${}$'.format(self.expression))
+
                     self.axes.errorbar(x, y, yerr=sy, xerr=sx, capsize = 0, elinewidth = 1, ecolor = self.symbol_color, ms = self.symbol_size, marker = self.symbol, color = self.symbol_color, ls = 'none')
-                    # elif model._has_sx:
-                    #     self.axes.plot(px, py, lw = self.curve_thickness, color = self.curve_color, ls = self.curve_style, label = '${}$'.format(self.expression))
-                    #     self.axes.errorbar(x, y, xerr=sx, capsize = 0, elinewidth = 1, ecolor = self.symbol_color, ms = self.symbol_size, marker = self.symbol, color = self.symbol_color, ls = 'none')
-                    # elif model._has_sy:
-                    #     self.axes.plot(px, py, lw = self.curve_thickness, color = self.curve_color, ls = self.curve_style, label = '${}$'.format(self.expression))
-                    #     self.axes.errorbar(x, y, yerr=sy, capsize = 0, elinewidth = 1, ecolor = self.symbol_color, ms = self.symbol_size, marker = self.symbol, color = self.symbol_color, ls = 'none')
-                    # else:
-                    #     self.axes.plot(px, py, lw = self.curve_thickness, color = self.curve_color, ls = self.curve_style, label = '${}$'.format(self.expression))
-                    #     self.axes.errorbar(x, y, capsize = 0, elinewidth = 1, ecolor = self.symbol_color, ms = self.symbol_size, marker = self.symbol, color = self.symbol_color, ls = 'none')
                     
+                    left, right = self.axes.get_xlim()
+                    self.axes.set_xlim(left = left, right = right)
+                    px, py = 0., 0.
+                    if self.log_x:
+                        px, py      = model.get_predict_log(self.axes.figure, left, right)
+                    else:
+                        px, py      = model.get_predict(self.axes.figure, left, right)
+                    
+                    line_func, = self.axes.plot(px, py, lw = self.curve_thickness, color = self.curve_color, ls = self.curve_style, label = '${}$'.format(self.expression))
+
                     if self.legend:
                         self.axes.legend(frameon=False)
                     
@@ -242,6 +255,21 @@ class MPLCanvas(QObject):
                     self.axes.set_title(str(self.axisTitle[0]))
                     self.axes.set(xlabel = str(self.axisTitle[1]))
                     self.axes.set(ylabel = str(self.axisTitle[2]))
+
+                    # One piece
+                    def updateWr(evt=None):
+                        left, right = self.axes.get_xlim()
+                        ppx, ppy = model.get_predict(self.axes.figure, left, right)
+                        line_func.set_data(ppx,ppy)
+                        self.axes.figure.canvas.draw_idle()
+                    if self.log_x:
+                        def updateWr(evt=None):
+                            left, right = self.axes.get_xlim()
+                            ppx, ppy = model.get_predict_log(self.axes.figure, left, right)
+                            line_func.set_data(ppx,ppy)
+                            self.axes.figure.canvas.draw_idle()
+                    self.axes.callbacks.connect('xlim_changed', updateWr)
+                    self.axes.figure.canvas.mpl_connect("resize_event", updateWr)
             else:
                 self.clearAxis()
                 self.axes = self.figure.add_subplot(111)
@@ -280,14 +308,8 @@ class MPLCanvas(QObject):
                 x, y, sy, sx = model.data
 
                 # Making Plots
-                # if model._has_sx and model._has_sy:
+
                 self.axes.errorbar(x, y, yerr=sy, xerr=sx, elinewidth = 1, ecolor = self.symbol_color, ms = self.symbol_size, marker = self.symbol, color = self.symbol_color, ls = 'none', capsize = 0)
-                # elif model._has_sx:
-                #     self.axes.errorbar(x, y, xerr=sx, elinewidth = 1, ecolor = self.symbol_color, ms = self.symbol_size, marker = self.symbol, color = self.symbol_color, ls = 'none', capsize = 0)
-                # elif model._has_sy:
-                #     self.axes.errorbar(x, y, yerr=sy, elinewidth = 1, ecolor = self.symbol_color, ms = self.symbol_size, marker = self.symbol, color = self.symbol_color, ls = 'none', capsize = 0)
-                # else:
-                #     self.axes.errorbar(x, y, capsize = 0, elinewidth = 1, ecolor = self.symbol_color, ms = self.symbol_size, marker = self.symbol, color = self.symbol_color, ls = 'none')
 
                 self.axes.minorticks_on()
                 # self.axes.twinx()
