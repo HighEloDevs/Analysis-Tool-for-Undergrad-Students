@@ -25,10 +25,10 @@ O ATUS permite uma razoável gama de opções de customização do seu gráfico.
 ---
 #### Compatibilidade com o LaTeX
 
-Uma propriedade bastante legal / importante do ATUS, é a sua compatibilidade com símbolos e expressões do ***LaTeX***. Por exemplo, digamos que você tem um gráfico em que precisa nomear os eixos x e y com **∆t** e **∆S**, respectivamente. Para isso, precisamos, assim como no ***LaTeX***, inicializar um ambiente de equações utilizando o **$**, alguns exemplos abaixo:
+Uma propriedade bastante legal / importante do ATUS é a sua compatibilidade com símbolos e expressões do ***LaTeX***. Por exemplo, digamos que você tem um gráfico em que precisa nomear os eixos x e y com **∆t** e **∆S**, respectivamente. Para isso, precisamos, assim como no ***LaTeX***, inicializar um ambiente de equações utilizando o **$**, alguns exemplos abaixo:
 
- - $\delta$t = ∆t
- - $\delta$S = ∆S
+ - $\Delta$t = ∆t
+ - $\Delta$S = ∆S
  - $\psi ^ 3$ = ψ³
 
 Neste [link](https://www.caam.rice.edu/~heinken/latex/symbols.pdf) você pode baixar um **.pdf** contendo todos os símbolos suportados pelo ***LaTeX***.
