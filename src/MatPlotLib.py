@@ -47,6 +47,8 @@ class MPLCanvas(QObject):
         self.axes    = None
         self.ax1     = ''
         self.ax2     = ''
+        self.oid     = 0
+        self.cid     = 0
 
         # Options
         self.axisTitle       = []
@@ -113,7 +115,7 @@ class MPLCanvas(QObject):
 
                 if self.residuals:
                     self.ax1, self.ax2 = self.figure.subplots(2, 1, sharex=True, gridspec_kw={'height_ratios': [3, 1.0]})
-                    self.figure.subplots_adjust(left = None, bottom = None, right = None, top = None, wspace = None, hspace = 0)
+                    self.figure.subplots_adjust(left = None, bottom = None, right = None, top = None, wspace = None, hspace = 0.)
 
                     if self.xdiv != 0. and (self.xmax != 0. or self.xmin != 0.):
                         self.ax1.set_xticks(np.linspace(self.xmin, self.xmax, self.xdiv + 1))
@@ -168,8 +170,11 @@ class MPLCanvas(QObject):
                     left, right = self.ax1.get_xlim()
                     self.ax1.set_xlim(left = left, right = right)
                     self.ax2.set_xlim(left = left, right = right)
-                    px, py      = model.get_predict(self.ax1.figure, left, right)
-
+                    px, py = 0., 0.
+                    if self.log_x:
+                        px, py      = model.get_predict_log(self.ax1.figure, left, right)
+                    else:
+                        px, py      = model.get_predict(self.ax1.figure, left, right)
                     # Making Plots
                     line_func, = self.ax1.plot(px, py, lw = self.curve_thickness, color = self.curve_color, ls = self.curve_style, label = '${}$'.format(self.expression))
                     
@@ -183,21 +188,19 @@ class MPLCanvas(QObject):
                     self.ax2.set(ylabel = "Resíduos")
                     def update(evt=None):
                         left, right = self.ax1.get_xlim()
-                        # npoints = self.ax1.figure.get_size_inches()[0]*self.ax1.figure.dpi
-                        # x = np.linspace(xmin, xmax, npoints)
                         ppx, ppy = model.get_predict(self.ax1.figure, left, right)
                         line_func.set_data(ppx, ppy)
                         self.ax1.figure.canvas.draw_idle()
                     if self.log_x:
                         def update(evt=None):
                             left, right = self.ax1.get_xlim()
-                            # npoints = self.ax1.figure.get_size_inches()[0]*self.ax1.figure.dpi
-                            # x = np.linspace(xmin, xmax, npoints)
                             ppx, ppy = model.get_predict_log(self.ax1.figure, left, right)
                             line_func.set_data(ppx, ppy)
                             self.ax1.figure.canvas.draw_idle()
-                    self.ax1.callbacks.connect('xlim_changed', update)
-                    self.ax1.figure.canvas.mpl_connect("resize_event", update)
+                    self.ax1.remove_callback(self.oid)
+                    self.ax1.figure.canvas.mpl_disconnect(self.cid)
+                    self.oid = self.ax1.callbacks.connect('xlim_changed', update)
+                    self.cid = self.ax1.figure.canvas.mpl_connect("resize_event", update)
                 else:
                     self.axes = self.figure.add_subplot(111)
 
@@ -257,19 +260,21 @@ class MPLCanvas(QObject):
                     self.axes.set(ylabel = str(self.axisTitle[2]))
 
                     # One piece
-                    def updateWr(evt=None):
+                    def update(evt=None):
                         left, right = self.axes.get_xlim()
                         ppx, ppy = model.get_predict(self.axes.figure, left, right)
                         line_func.set_data(ppx,ppy)
                         self.axes.figure.canvas.draw_idle()
                     if self.log_x:
-                        def updateWr(evt=None):
+                        def update(evt=None):
                             left, right = self.axes.get_xlim()
                             ppx, ppy = model.get_predict_log(self.axes.figure, left, right)
                             line_func.set_data(ppx,ppy)
                             self.axes.figure.canvas.draw_idle()
-                    self.axes.callbacks.connect('xlim_changed', updateWr)
-                    self.axes.figure.canvas.mpl_connect("resize_event", updateWr)
+                    self.axes.remove_callback(self.oid)
+                    self.axes.figure.canvas.mpl_disconnect(self.cid)
+                    self.oid = self.axes.callbacks.connect('xlim_changed', update)
+                    self.cid = self.axes.figure.canvas.mpl_connect("resize_event", update)
             else:
                 self.clearAxis()
                 self.axes = self.figure.add_subplot(111)
@@ -312,8 +317,6 @@ class MPLCanvas(QObject):
                 self.axes.errorbar(x, y, yerr=sy, xerr=sx, elinewidth = 1, ecolor = self.symbol_color, ms = self.symbol_size, marker = self.symbol, color = self.symbol_color, ls = 'none', capsize = 0)
 
                 self.axes.minorticks_on()
-                # self.axes.twinx()
-                # self.axes.twiny()
 
                 # Setting titles
                 self.axes.set_title(str(self.axisTitle[0]))
@@ -371,6 +374,8 @@ class MPLCanvas(QObject):
         self.clearAxis()
         self.axes = self.figure.add_subplot(111)
         self.canvas.draw_idle()
+        self.oid = 0
+        self.cid = 0
 
         # Options
         self.sigma_x         = False
