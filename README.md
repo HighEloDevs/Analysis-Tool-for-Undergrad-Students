@@ -1,13 +1,27 @@
-# Analysis Tool for Undergrad Students | ATUS
+![Logo](https://user-images.githubusercontent.com/48266854/121274136-3a196f00-c8a0-11eb-9625-3b637054867f.png)
+
+
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4723864.svg)](https://doi.org/10.5281/zenodo.4723864)
+![GitHub repo size](https://img.shields.io/github/repo-size/HighEloDevs/Analysis-Tool-for-Undergrad-Students)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/HighEloDevs/Analysis-Tool-for-Undergrad-Students)
+![Codacy grade](https://img.shields.io/codacy/grade/f47977a1c98547699611f8b4a40614a4)
+![GitHub all releases](https://img.shields.io/github/downloads/HighEloDevs/Analysis-Tool-for-Undergrad-Students/total)
+[![MIT License](https://img.shields.io/apm/l/atomic-design-ui.svg?)](https://highelodevs.github.io/Analysis-Tool-for-Undergrad-Students/license/)
 
-Uma ferramenta desenvolvida por estudantes da Universidade de São Paulo, visando facilitar a análise de dados feita por estudantes da graduação.
 
-![image](https://user-images.githubusercontent.com/48266854/113489486-eef77000-949a-11eb-988b-9d2ec7da7462.png)
 
-Instruções para instalação podem ser encontradas [aqui](https://highelodevs.github.io/Analysis-Tool-for-Undergrad-Students/).
+O **A**nalysis **T**ool for **U**ndergrad **S**tudents é uma ferramenta desenvolvida por estudantes da **Universidade de São Paulo**, com o objetivo de facilitar a análise de dados feita por estudantes de física experimental.
 
-<a name="licensa"/></a>
-## Licença
-MIT
+
+
+## Documentação
+Instruções para instalação e tutoriais de uso do ATUS podem ser encontradas na nossa [página](https://highelodevs.github.io/Analysis-Tool-for-Undergrad-Students/).
+
+## Feedback
+Para qualquer crítica construtiva, sugestões, reportes de bugs etc, por favor, nos envie um e-mail - atusdevs@gmail.com
+
+## Autores
+- [@GuiiFerrari](https://github.com/GuiiFerrari)
+- [@LeoEiji](https://github.com/leoeiji)
+- [@imscl_](https://www.instagram.com/imscl_/)
