@@ -35,7 +35,8 @@ from copy import deepcopy
 from io import StringIO
 
 class Model(QObject):
-    """Class used for fit
+    """
+    Class used for fit.
     """
     # Signals
     fillDataTable   = pyqtSignal(str, str, str, str, str, str, arguments=['x', 'y', 'sy', 'sx', 'filename'])
@@ -69,7 +70,7 @@ class Model(QObject):
         
     @pyqtSlot(QJsonValue)
     def loadDataTable(self, data = None):
-        """Getting data from table"""
+        """ Getting data from table. """
         df = pd.DataFrame.from_records(data)
         df.columns = ['x', 'y', 'sy', 'sx', 'bool']
 
@@ -100,6 +101,7 @@ class Model(QObject):
 
     @pyqtSlot()
     def loadDataClipboard(self):
+        """ Pega a tabela de dados do Clipboard. """
         # Instantiating clipboard
         clipboard = QGuiApplication.clipboard()
         clipboardText = clipboard.mimeData().text()
@@ -118,7 +120,7 @@ class Model(QObject):
                 
     @pyqtSlot(str)
     def load_data(self, data_path='', df=None, df_array=None):
-        """ Loads the data from a given path or from a given dataframe """
+        """ Loads the data from a given path or from a given dataframe. """
 
         # Name of the loaded file
         fileName = 'Dados Carregados do Projeto'
@@ -130,14 +132,14 @@ class Model(QObject):
             if data_path[-3:] == "csv":
                 try:
                     df = pd.read_csv(data_path, sep=',', header=None, dtype = str).replace(np.nan, "0")
-                except pd.errors.ParserError as error:
+                except pd.errors.ParserError:
                     self._msgHandler.raiseError("Separação de colunas de arquivos csv são com vírgula (","). Rever dados de entrada.")
                     # Separação de colunas de arquivos csv são com vírgula (","). Rever dados de entrada.
                     return None
             else:
                 try:
                     df = pd.read_csv(data_path, sep='\t', header=None, dtype = str).replace(np.nan, "0")
-                except pd.errors.ParserError as error:
+                except pd.errors.ParserError:
                     self._msgHandler.raiseError("Separação de colunas de arquivos txt e tsv são com tab. Rever dados de entrada.")
                     # Separação de colunas de arquivos txt e tsv são com tab. Rever dados de entrada.
                     return None
@@ -173,15 +175,10 @@ class Model(QObject):
             # Converting everything to float
             try:
                 df[i] = df[i].astype(float)
-            except ValueError as error:
+            except ValueError:
                 self._msgHandler.raiseError("A entrada de dados só permite entrada de números. Rever arquivo de entrada.")
                 # Há células não numéricas. A entrada de dados só permite entrada de números. Rever arquivo de entrada.
                 return None
-
-        # Getting mode:
-        # mode = 2 -> both variables has uncertainties
-        # mode = 1 -> no uncertainty on x
-        # mode = 0 -> no uncertainties
 
         self._has_sx = True
         self._has_sy = True
@@ -216,7 +213,7 @@ class Model(QObject):
                         self._msgHandler.raiseWarn("Um valor nulo foi encontrado nas incertezas em x, removendo coluna de sx.")
                     self._has_sx = False
                     # del df["sx"]
-            except ValueError as error:
+            except ValueError:
                 self._msgHandler.raiseError("Há mais do que 4 colunas. Rever entrada de dados.")
                 return None
 
@@ -252,6 +249,7 @@ class Model(QObject):
                     self.fillDataTable.emit(self._data_json["x"][i], self._data_json["y"][i], str(0), str(0), bools[i], fileName)
 
     def set_p0(self, p0):
+        ''' Coloca os chutes iniciais. '''
         self._p0 = p0
         
     def set_expression(self, exp = ""):
@@ -259,27 +257,23 @@ class Model(QObject):
         self._exp_model = exp
         
     def fit(self, **kargs):
-
+        ''' Interpretador de qual ajuste deve ser feito. '''
         wsx = kargs.pop("wsx", True)
         wsy = kargs.pop("wsy", True)
-
         # Getting Model
         try:
             self._model = ExpressionModel(self._exp_model + " + 0*x")
         except ValueError:
             self._msgHandler.raiseError("Expressão de ajuste escrita de forma errada. Rever função de ajuste.")
             return None
-        except SyntaxError as error:
+        except SyntaxError:
             self._msgHandler.raiseError("Expressão de ajuste escrita de forma errada. Rever função de ajuste.")
             # Expressão de ajuste escrita de forma errada. Rever função de ajuste.
             return None
-
         # Getting coefficients
         self._coef = [i for i in self._model.param_names]
-        
         # If there's no p0, everything is set to 1.0
         pi = list()   # Inital values
-
         if self._p0 is None:
             for i in range(len(self._model.param_names)):
                 pi.append(1.0)
@@ -289,16 +283,13 @@ class Model(QObject):
                     pi.append(float(self._p0[i]))
                 except:
                     pi.append(1.0)
-
         # Data
         x, y, sy, sx = self.data
         indices = np.arange(len(self._data.index))
         if self.xmin != self.xmax:
             indices = np.where((self.xmin <= self._data["x"]) & (self.xmax >= self._data["x"]))[0]
-
         x, y, sy, sx = x.iloc[indices], y.iloc[indices], sy.iloc[indices], sx.iloc[indices]
         data = None
-            
         if self._has_sy and self._has_sx: # Caso com as duas incs
             if wsx == True and wsy == True:
                 self.__fit_lm_wy(x, y, pi)
@@ -307,7 +298,6 @@ class Model(QObject):
                     self.__set_report_lm_special(x)
                 else:
                     return None
-            
             elif wsx:
                 self.__fit_lm(x, y, sy, pi)
                 if (self._result is None) == False:
@@ -367,16 +357,14 @@ class Model(QObject):
                 self.__set_report_lm_special(x)
             else:
                 return None
-
         params = self.get_params()
-        keys = list(params.keys())
-            
+        keys   = list(params.keys())
         for i in range(len(keys)):
             self.fillParamsTable.emit(keys[i], params[keys[i]][0], params[keys[i]][1])
-
         self.writeInfos.emit(self._report_fit)
 
     def __fit_ODR(self, data, pi):
+        ''' Fit com ODR. '''
         def f(a, x):
             param = Parameters()
             for i in range(len(a)):
@@ -386,21 +374,22 @@ class Model(QObject):
         try:
             myodr = ODR(data, model, beta0 = pi, maxit = 250)
             self._result = myodr.run()
-        except TypeError as error:
+        except TypeError:
             self._msgHandler.raiseError("Expressão de ajuste escrita de forma errada. Rever função de ajuste.")
             return None
     
     def __fit_ODR_special(self, x, y, sx, pi):
+        ''' Fit com ODR quando só há incertezas em x. '''
         params = Parameters()
         for i in range(len(self._coef)):
             params.add(self._coef[i], pi[i])
         try:
             self._result = self._model.fit(data = y, x = x, params = params, scale_covar=False, max_nfev = 250)
-        except ValueError as error:
+        except ValueError:
             self._msgHandler.raiseError("A função ajustada gera valores não numéricos, rever ajuste.")
             # A função ajustada gera valores não numéricos, rever ajuste.
             return None
-        except TypeError as error:
+        except TypeError:
             self._msgHandler.raiseError("A função ajustada possui algum termo inválido, rever ajuste.")
             # A função ajustada possui algum termo inválido, rever ajuste.
             return None
@@ -421,23 +410,24 @@ class Model(QObject):
         try:
             myodr = ODR(data, model, beta0 = pi, maxit = 250)
             self._result = myodr.run()
-        except TypeError as error:
+        except TypeError:
             self._msgHandler.raiseError("Expressão de ajuste escrita de forma errada. Rever função de ajuste.")
             self._result = None
             return None
         return inc_cons
 
     def __fit_lm(self, x, y, sy, pi):
+        ''' Fit com MMQ. '''
         params = Parameters()
         for i in range(len(self._coef)):
             params.add(self._coef[i], pi[i])
         try:
             self._result = self._model.fit(data = y, x = x, weights = 1/sy, params = params, scale_covar=False, max_nfev = 250)
-        except ValueError as error:
+        except ValueError:
             self._msgHandler.raiseError("A função ajustada gera valores não numéricos, rever ajuste.")
             # A função ajustada gera valores não numéricos, rever ajuste.
             return None
-        except TypeError as error:
+        except TypeError:
             self._msgHandler.raiseError("A função ajustada possui algum termo inválido, rever ajuste.")
             # A função ajustada possui algum termo inválido, rever ajuste.
             return None
@@ -447,16 +437,17 @@ class Model(QObject):
             return None
     
     def __fit_lm_wy(self, x, y, pi):
+        ''' Fit com MMQ quando não há incertezas. '''
         params = Parameters()
         for i in range(len(self._coef)):
             params.add(self._coef[i], pi[i])
         try:
             self._result = self._model.fit(data = y, x = x, params = params, scale_covar=False, max_nfev = 250)
-        except ValueError as error:
+        except ValueError:
             self._msgHandler.raiseError("A função ajustada gera valores não numéricos, rever ajuste.")
             # A função ajustada gera valores não numéricos, rever ajuste.
             return None
-        except TypeError as error:
+        except TypeError:
             self._msgHandler.raiseError("A função ajustada possui algum termo inválido, rever ajuste.")
             # A função ajustada possui algum termo inválido, rever ajuste.
             return None
@@ -470,6 +461,7 @@ class Model(QObject):
         return self._dict
         
     def __set_param_values_lm(self, x):
+        ''' Constrói o dicionário e o Parameters dos valores do ajuste. '''
         self._dict.clear()
         self._params = Parameters()
         ngl          = len(x) - len(self._coef)
@@ -481,6 +473,7 @@ class Model(QObject):
             self._dict.update({self._coef[i]: [self._result.values[self._coef[i]], np.sqrt(self._result.covar[i, i])]})
     
     def __set_param_values_lm_special(self, x):
+        ''' Constrói o dicionário e o Parameters dos valores do ajuste, quando não há incertezas. '''
         self._dict.clear()
         self._dict2.clear()
         self._params = Parameters()
@@ -492,6 +485,7 @@ class Model(QObject):
             self._dict2.update({self._coef[i]: [self._result.values[self._coef[i]], np.sqrt(self._result.covar[i, i])]})
 
     def __set_param_values_ODR(self, x):
+        ''' Constrói o dicionário e o Parameters dos valores do ajuste. '''
         self._dict.clear()
         self._params = Parameters()
         for i in range(len(self._coef)):
@@ -499,6 +493,7 @@ class Model(QObject):
             self._dict.update({self._coef[i]: [self._result.beta[i], np.sqrt(self._result.cov_beta[i, i])]})
 
     def __set_report_lm(self, x):
+        ''' Constrói a string com os resultados. '''
         self._report_fit  = ""
         self._report_fit += "\nAjuste: y = %s\n"%self._exp_model
         self._report_fit += "\nNGL  = %d"%(len(x) - len(self._coef))
@@ -515,6 +510,7 @@ class Model(QObject):
         self._isvalid     = True
     
     def __set_report_lm_special(self, x):
+        ''' Constrói a string com os resultados, neste caso quando não há incertezas. '''
         ngl               = len(x) - len(self._coef)
         inc_considerada   = np.sqrt(self._result.chisqr/ngl)
         inc_considerada_q = inc_considerada**2
@@ -534,13 +530,14 @@ class Model(QObject):
             matriz_corr       = matriz_corr.round(3)
             self._report_fit += "\nMatriz de correlação:\n\n" + str(matriz_corr) + "\n\n"
             self._isvalid     = True
-        except TypeError as error:
+        except TypeError:
             self._msgHandler.raiseError("A função ajustada provavelmente não possui parâmetros para serem ajustados. Rever ajuste.")
             # A função ajustada provavelmente não possui parâmetros para serem ajustados. Rever ajuste.
             return None
             
 
     def __set_report_ODR(self, x):
+        ''' Constrói a string com os resultados. '''
         self._report_fit  = ""
         self._report_fit += "\nAjuste: y = %s\n"%self._exp_model
         self._report_fit += "\nNGL  = %d"%(len(x) - len(self._coef))
@@ -557,6 +554,7 @@ class Model(QObject):
         self._isvalid     = True
 
     def __set_report_ODR_special(self, x, inc_considerada):
+        ''' Constrói a string com os resultados, neste caso quando só há incertezas em x. '''
         self._report_fit  = ""
         self._report_fit += "\nAjuste: y = %s\n"%self._exp_model
         self._report_fit += "\nNGL  = %d"%(len(x) - len(self._coef))
