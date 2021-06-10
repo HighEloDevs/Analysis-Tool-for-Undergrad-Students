@@ -96,7 +96,7 @@ Window {
             icon    : '../images/icons/histogram-18px.svg'
             enabled : true
             active  : false
-            visible : false
+            visible : true
             canvas  : true
         }
         ListElement{
