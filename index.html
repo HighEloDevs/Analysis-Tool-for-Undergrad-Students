@@ -9,15 +9,19 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js"></script>
     <script>
+        // Script for JQuery
         $(document).ready(function(){
+            // Configure
             $.ajaxPrefilter(function( options, original_Options, jqXHR ) {
                 options.async = true;
             });
-
-            $("#display-container").html(fetch("pages/home.html")
+            
+            // Setting first page as home page
+            $("#display-container").html(fetch("pages/tutoriais.html")
                     .then(resp => resp.text())
                     .then(html => $("#display-container").html(html)))
 
+            // Event when clicking navigation button
             $("[nav]").click(e => {
                 let nav = e.currentTarget.getAttribute("nav")
                 e.preventDefault()
@@ -34,17 +38,17 @@
             <nav>
                 <a class="navbar-btn" href="/" nav="pages/home.html">ATUS</a>
                 <ul class="navbar-btnRow">
-                    <li><a class="navbar-btn active-btn-indicator" href="/" nav="pages/windows.html">Windows</a></li>
-                    <li><a class="navbar-btn active-btn-indicator" href="/" nav="pages/macos.html">MacOS</a></li>
-                    <li><a class="navbar-btn active-btn-indicator" href="/" nav="pages/linux.html">Linux</a></li>
                     <li><a class="navbar-btn active-btn-indicator" href="/" nav="pages/tutoriais.html">Tutoriais</a></li>
+                    <li><a class="navbar-btn active-btn-indicator" href="/" nav="pages/contato.html">Contato</a></li>
                     <li><a class="navbar-btn active-btn-indicator" href="/" nav="pages/licenca.html">Licença</a></li>
                 </ul>
-                <a class="navbar-btn active-btn-indicator" href="/" nav="pages/contato.html">Contato</a>
+                <a class="navbar-btn" target="_blank" href="https://github.com/HighEloDevs/Analysis-Tool-for-Undergrad-Students">GitHub</a>
             </nav>
         </header>
 
-        <main id="display-container"></main>        
+        <main>
+            <div id="display-container"></div>
+        </main>        
     </div>
 </body>
 </html>

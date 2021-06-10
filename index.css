@@ -2,17 +2,21 @@
 
 html{
     font-family: "Roboto";
-    font-weight: 400;
+    font-weight: 500;
+    line-height: 1.5;
 }
 
 body{
-    background-color: #191923;
+    background-color: rgb(66, 167, 120);
     color: #fff;
     margin: 0;
+    /* background-color: #878c00; */
+    background-image: url("https://www.transparenttextures.com/patterns/bright-squares.png");
 }
 
 header{
-    border-bottom: 1px solid rgb(63, 63, 63);
+    background-color: #191923;
+    border-bottom: 4px solid #43435e;
     padding: 0 25% 3px 25%;
 }
 
@@ -22,17 +26,11 @@ p{
     text-indent: 30px;
 }
 
-main{
-    padding: 0% 30% 3px 30%;
-}
-
 nav{
     height: 70px;
     width: 100%;
     display: flex;
     justify-content: space-between;
-    position: sticky;
-
 }
 
 .navbar-btnRow{
@@ -48,6 +46,7 @@ nav{
     margin: unset;
     height: 100%;
     background-color: transparent;
+    padding: 0;
 }
 
 .navbar-btn{
@@ -60,7 +59,7 @@ nav{
     padding: 0px 20px;
     font-size: large;
     height: 100%;
-    transition: all 400ms ease;
+    transition: all 500ms ease;
 }
 
 .navbar-btn:hover{
@@ -81,6 +80,42 @@ nav{
 
 .active-btn-indicator:focus{
     border-bottom: 3px solid rgb(41, 165, 37);
+}
+
+@media (max-width: 700px){
+    main{
+        padding: 40px 5% 40px 5%;
+    }
+    header{
+        padding: 0 5% 3px 5%;
+    }
+    .navbar-btnRow{
+        display: block;
+    }
+    .navbar-btn{
+        padding: 5px 20px
+    }
+    nav{
+        height: 100%;
+    }
+}
+
+@media (min-width: 700px) and (max-width: 1300px){
+    main{
+        padding: 40px 15% 40px 15%;
+    }
+    header{
+        padding: 0 10% 3px 10%;
+    }
+}
+
+@media (min-width: 1300px){
+    main{
+        padding: 40px 28% 40px 28%;
+    }
+    header{
+        padding: 0 25% 3px 25%;
+    }
 }
 
 ::-webkit-scrollbar {
