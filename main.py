@@ -40,6 +40,8 @@ from PyQt5.QtGui import QIcon, QGuiApplication
 from matplotlib_backend_qtquick.backend_qtquickagg import FigureCanvasQtQuickAgg
 plt.rcParams["figure.autolayout"] = True
 plt.rcParams["figure.constrained_layout.hspace"] = 0.
+plt.rcParams["ytick.minor.visible"] = True
+plt.rcParams["xtick.minor.visible"] = True
 if __name__ == "__main__":
     # Matplotlib stuff
     qmlRegisterType(FigureCanvasQtQuickAgg, "Canvas", 1, 0, "FigureCanvas")

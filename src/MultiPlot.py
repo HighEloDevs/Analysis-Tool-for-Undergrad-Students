@@ -26,6 +26,7 @@ SOFTWARE.
 import json
 import numpy as np
 import platform
+import matplotlib as mpl
 # from matplotlib_backend_qtquick.qt_compat import QtCore
 from PyQt5.QtCore import QObject, QJsonValue, QUrl, pyqtSignal, pyqtSlot
 from .Model_multiplot import MultiModel
@@ -283,13 +284,19 @@ class Multiplot(QObject):
             elif self.ymin != 0. and self.ymax != 0.:
                 self.displayBridge.axes.set_ylim(bottom = self.ymin, top = self.ymax)
         
-        self.displayBridge.axes.minorticks_on()
+        self.displayBridge.axes.xaxis.set_minor_locator(mpl.ticker.AutoMinorLocator(3))
+        self.displayBridge.axes.yaxis.set_minor_locator(mpl.ticker.AutoMinorLocator(3))
 
         for i in range(len(self.Multi_Model.models)):
             if self.Multi_Model.arquivos[i]['marker'] == True:
                 self.Plot_sx_sy(self.Multi_Model.dfs[i], self.Multi_Model.arquivos[i])
+        left, right = self.displayBridge.axes.get_xlim()
+        self.displayBridge.axes.set_xlim(left = left, right = right)
+        self.displayBridge.axes.set_xlim(left = left, right = right)
+        lines = list()
+        for i in range(len(self.Multi_Model.models)):
             if self.Multi_Model.arquivos[i]['func'] == True and self.Multi_Model.models[i] != 0.:
-                self.Func_plot(self.Multi_Model.arquivos[i], self.Multi_Model.models[i], self.Multi_Model.parameters[i])
+                self.Func_plot(self.Multi_Model.arquivos[i], self.Multi_Model.models[i], self.Multi_Model.parameters[i], left, right, lines)
         self.displayBridge.axes.set_title(self.title)
         self.displayBridge.axes.set(xlabel = self.xaxis, ylabel = self.yaxis)
         handles, labels = self.displayBridge.axes.get_legend_handles_labels()
@@ -327,10 +334,16 @@ class Multiplot(QObject):
             self.displayBridge.axes.errorbar(df['x'], df['y'],
             ecolor = options['markerColor'], capsize = 0, elinewidth = 1, ms = 3, marker = '.', color = options['markerColor'], ls = 'none')
     
-    def Func_plot(self, options, model, params):
-        px = np.linspace(self.Multi_Model.min_x, self.Multi_Model.max_x, 8500)
-        py = model.eval(x = px, params = params)
-        if options['label'] != '':
-            self.displayBridge.axes.plot(px, py, lw = 2, color = options['markerColor'], ls = options['curve'], label = options['label'])
+    def Func_plot(self, options, model, params, left, right, lines):
+        x_plot = None
+        if self.logx:
+            x_plot = np.logspace(np.np.log10(left), np.np.log10(right), int(self.displayBridge.axes.figure.get_size_inches()[0]*self.displayBridge.axes.figure.dpi*1.75))
         else:
-            self.displayBridge.axes.plot(px, py, lw = 2, color = options['markerColor'], ls = options['curve'])
+            x_plot = np.linspace(left, right, int(self.displayBridge.axes.figure.get_size_inches()[0]*self.displayBridge.axes.figure.dpi*1.75)) 
+        y_plot = model.eval(x = x_plot, params = params)
+        if options['label'] != '':
+            line_func, = self.displayBridge.axes.plot(x_plot, y_plot, lw = 1.5, color = options['markerColor'], ls = options['curve'], label = options['label'])
+            lines.append(line_func)
+        else:
+            line_func, = self.displayBridge.axes.plot(x_plot, y_plot, lw = 1.5, color = options['markerColor'], ls = options['curve'])
+            lines.append(line_func)

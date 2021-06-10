@@ -41,12 +41,10 @@ class MultiModel(QObject):
             self.dfs[i].columns = ['x', 'y', 'sy', 'sx', 'bool']
             self.dfs[i]         = self.dfs[i][self.dfs[i]['bool'] == 1]
             del self.dfs[i]["bool"]
-        self.min_x      = np.inf
-        self.max_x      = -np.inf
         self.num_cols   = [len(df.columns) for df in self.dfs]
         self.models     = []
         self.parameters = []
-        for arquivo, df in zip(arquivos, self.dfs):
+        for arquivo in arquivos:
             if arquivo['expr'] != '' and len(arquivo['params']) > 0:
                 self.models.append(ExpressionModel(arquivo['expr']))
                 parametros = Parameters()
@@ -56,5 +54,3 @@ class MultiModel(QObject):
             else:
                 self.models.append(0)
                 self.parameters.append(0)
-            self.min_x = np.minimum(self.min_x, df['x'].min())
-            self.max_x = np.maximum(self.max_x, df['x'].max())

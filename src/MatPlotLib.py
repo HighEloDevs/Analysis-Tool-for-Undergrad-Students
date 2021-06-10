@@ -23,6 +23,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 from matplotlib_backend_qtquick.backend_qtquick import NavigationToolbar2QtQuick
+import matplotlib as mpl
 # from matplotlib_backend_qtquick.qt_compat import QtCore, QtGui
 from PyQt5.QtCore import QObject, pyqtProperty, QUrl, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QGuiApplication, QPixmap
@@ -178,8 +179,12 @@ class MPLCanvas(QObject):
                     # Making Plots
                     line_func, = self.ax1.plot(px, py, lw = self.curve_thickness, color = self.curve_color, ls = self.curve_style, label = '${}$'.format(self.expression))
                     
-                    self.ax1.minorticks_on()
-                    self.ax2.minorticks_on()
+                    # self.ax1.minorticks_on()
+                    # self.ax2.minorticks_on()
+                    self.ax1.xaxis.set_minor_locator(mpl.ticker.AutoMinorLocator(3))
+                    self.ax1.yaxis.set_minor_locator(mpl.ticker.AutoMinorLocator(3))
+                    self.ax2.xaxis.set_minor_locator(mpl.ticker.AutoMinorLocator(3))
+                    self.ax2.yaxis.set_minor_locator(mpl.ticker.AutoMinorLocator(2))
 
                     # Setting titles
                     self.ax1.set_title(str(self.axisTitle[0]))
@@ -252,7 +257,9 @@ class MPLCanvas(QObject):
                     if self.legend:
                         self.axes.legend(frameon=False)
                     
-                    self.axes.minorticks_on()
+                    # self.axes.minorticks_on()
+                    self.axes.xaxis.set_minor_locator(mpl.ticker.AutoMinorLocator(3))
+                    self.axes.yaxis.set_minor_locator(mpl.ticker.AutoMinorLocator(3))
 
                     # Setting titles
                     self.axes.set_title(str(self.axisTitle[0]))
@@ -315,8 +322,13 @@ class MPLCanvas(QObject):
                 # Making Plots
 
                 self.axes.errorbar(x, y, yerr=sy, xerr=sx, elinewidth = 1, ecolor = self.symbol_color, ms = self.symbol_size, marker = self.symbol, color = self.symbol_color, ls = 'none', capsize = 0)
+                
+                # self.axes.secondary_xaxis('top')
+                # self.axes.secondary_yaxis('right')
 
-                self.axes.minorticks_on()
+                # self.axes.minorticks_on()
+                self.axes.xaxis.set_minor_locator(mpl.ticker.AutoMinorLocator(3))
+                self.axes.yaxis.set_minor_locator(mpl.ticker.AutoMinorLocator(3))
 
                 # Setting titles
                 self.axes.set_title(str(self.axisTitle[0]))
