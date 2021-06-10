@@ -1,0 +1,95 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@100&display=swap');
+
+html{
+    font-family: "Roboto";
+    font-weight: 400;
+}
+
+body{
+    background-color: #191923;
+    color: #fff;
+    margin: 0;
+}
+
+header{
+    border-bottom: 1px solid rgb(63, 63, 63);
+    padding: 0 25% 3px 25%;
+}
+
+p{
+    font-size: 18px;
+    text-align: left;
+    text-indent: 30px;
+}
+
+main{
+    padding: 0% 30% 3px 30%;
+}
+
+nav{
+    height: 70px;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    position: sticky;
+
+}
+
+.navbar-btnRow{
+    /* Distribui os objetos da melhor forma possível */
+    display: flex; 
+    /* Forma como os objetos aparecem na lista - None remove os círculos dos itens */
+    list-style: none;
+    width: unset;
+    /* Apresenta os objetos em forma de linha */
+    flex-direction: row;
+    justify-content: center;
+    position: relative;
+    margin: unset;
+    height: 100%;
+    background-color: transparent;
+}
+
+.navbar-btn{
+    align-items: center;
+    display: flex;
+    color: rgb(145, 145, 145);
+    text-decoration: none;
+    background-color: transparent;
+    font-weight: bold;
+    padding: 0px 20px;
+    font-size: large;
+    height: 100%;
+    transition: all 400ms ease;
+}
+
+.navbar-btn:hover{
+    color:#fff;
+}
+
+.navbar-btn:focus{
+    color:#fff;
+}
+
+.active-btn-indicator{
+    border-bottom: 3px solid transparent;
+}
+
+.active-btn-indicator:hover{
+    border-bottom: 3px solid rgb(41, 165, 37);
+}
+
+.active-btn-indicator:focus{
+    border-bottom: 3px solid rgb(41, 165, 37);
+}
+
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+::-webkit-scrollbar-thumb {
+    background-color: rgb(42, 41, 56);
+}
+::-webkit-scrollbar-track{
+    background: #191923;
+}

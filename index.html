@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analysis Tool for Undergrad Students</title>
+    <link rel="stylesheet" href="./index.css">
+</head>
+<body>
+    <div>
+        <header>
+            <nav>
+                <a class="navbar-btn" href="" nav="pages/home.html">ATUS</a>
+                <ul class="navbar-btnRow">
+                    <li><a class="navbar-btn active-btn-indicator" href="" nav="pages/windows.html">Windows</a></li>
+                    <li><a class="navbar-btn active-btn-indicator" href="" nav="pages/macos.html">MacOS</a></li>
+                    <li><a class="navbar-btn active-btn-indicator" href="" nav="pages/linux.html">Linux</a></li>
+                    <li><a class="navbar-btn active-btn-indicator" href="" nav="pages/tutoriais.html">Tutoriais</a></li>
+                    <li><a class="navbar-btn active-btn-indicator" href="" nav="pages/licenca.html">Licença</a></li>
+                </ul>
+                <a class="navbar-btn active-btn-indicator" href="" nav="pages/contato.html">Contato</a>
+            </nav>
+        </header>
+
+        <main>
+            <div class="main-container"></div>
+        </main>
+
+        <script>
+            // Getting all navigation button links and mapping them
+            document.querySelectorAll("[nav]").forEach(link =>{
+                // Getting html from main container (display container)
+                const content = document.getElementsByClassName("main-container")[0]
+
+                // First page must be home page
+                if(link.getAttribute("nav") == "pages/home.html"){                    
+                    // Getting html from the provided link and replacing into display container
+                    fetch(link.getAttribute("nav"))
+                        .then(resp => resp.text())
+                        .then(html => content.innerHTML = html)
+                }
+
+                // When click on link
+                link.onclick = function(e) {
+                    // Don't know what this does
+                    e.preventDefault()
+                    
+                    // Getting html from the provided link and replacing into display container
+                    fetch(link.getAttribute("nav"))
+                        .then(resp => resp.text())
+                        .then(html => content.innerHTML = html)
+                }
+            })
+        </script>
+    </div>
+</body>
+</html>
