@@ -410,7 +410,7 @@ class Model(QObject):
             for i in range(len(a)):
                 param.add(self._model.param_names[i], value=a[i])
                 return eval("self._model.eval(%s=x, param=param)"%self._indVar, None,
-                {'x': x, 'params': param, 'self': self})
+                {'x': x, 'param': param, 'self': self})
         model = SciPyModel(f)
         try:
             myodr = ODR(data, model, beta0 = pi, maxit = 250)
