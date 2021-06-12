@@ -109,10 +109,14 @@ class SinglePlot(QObject):
         fitProps['expr'] = fitProps['expr'].replace('arcsin', 'asin')
         fitProps['expr'] = fitProps['expr'].replace('arccos', 'acos')
         fitProps['expr'] = fitProps['expr'].replace('sen', 'sin')
-
+        expIndVar = fitProps['expr'].split(";")
         # Setting expression
-        if self.model._exp_model != fitProps['expr']:
-            self.model.set_expression(fitProps['expr'])
+        if len(expIndVar) == 2:
+            if self.model._exp_model != expIndVar[0]:
+                self.model.set_expression(expIndVar[0].strip(), expIndVar[1].strip())
+        elif len(expIndVar) == 1:
+            if self.model._exp_model != expIndVar[0]:
+                self.model.set_expression(expIndVar[0])
 
         # Getting initial parameters
         if fitProps['p0'] != '':

@@ -49,6 +49,7 @@ class Model(QObject):
         self._data       = None
         self._data_json  = None
         self._exp_model  = ""
+        self._indVar     = "x"
         self._model      = None
         self._report_fit = ""
         self._result     = None
@@ -252,9 +253,10 @@ class Model(QObject):
         ''' Coloca os chutes iniciais. '''
         self._p0 = p0
         
-    def set_expression(self, exp = ""):
+    def set_expression(self, exp = "", varInd = "x"):
         """ Set new expression to model. """
         self._exp_model = exp
+        self._indVar    = varInd
         
     def fit(self, **kargs):
         ''' Interpretador de qual ajuste deve ser feito. '''
@@ -262,7 +264,7 @@ class Model(QObject):
         wsy = kargs.pop("wsy", True)
         # Getting Model
         try:
-            self._model = ExpressionModel(self._exp_model + " + 0*x")
+            self._model = ExpressionModel(self._exp_model + " + 0*%s"%self._indVar, independent_vars=[self._indVar])
         except ValueError:
             self._msgHandler.raiseError("Expressão de ajuste escrita de forma errada. Rever função de ajuste.")
             return None
@@ -364,12 +366,13 @@ class Model(QObject):
         self.writeInfos.emit(self._report_fit)
 
     def __fit_ODR(self, data, pi):
-        ''' Fit com ODR. '''
+        '''Fit com ODR.'''
         def f(a, x):
             param = Parameters()
             for i in range(len(a)):
                 param.add(self._model.param_names[i], value=a[i])
-            return self._model.eval(x=x, params=param)
+            return eval("self._model.eval(%s=x, params=param)"%self._indVar,
+             {'x': x, 'param': param, 'self': self})
         model = SciPyModel(f)
         try:
             myodr = ODR(data, model, beta0 = pi, maxit = 250)
@@ -379,12 +382,13 @@ class Model(QObject):
             return None
     
     def __fit_ODR_special(self, x, y, sx, pi):
-        ''' Fit com ODR quando só há incertezas em x. '''
+        '''Fit com ODR quando só há incertezas em x.'''
         params = Parameters()
         for i in range(len(self._coef)):
             params.add(self._coef[i], pi[i])
         try:
-            self._result = self._model.fit(data = y, x = x, params = params, scale_covar=False, max_nfev = 250)
+            self._result = eval("self._model.fit(data = y, %s = x, params = params, scale_covar=False, max_nfev = 250)"%self._indVar, None,
+            {'y': y, 'x': x, 'params': params, 'self': self})
         except ValueError:
             self._msgHandler.raiseError("A função ajustada gera valores não numéricos, rever ajuste.")
             # A função ajustada gera valores não numéricos, rever ajuste.
@@ -405,7 +409,8 @@ class Model(QObject):
             param = Parameters()
             for i in range(len(a)):
                 param.add(self._model.param_names[i], value=a[i])
-            return self._model.eval(x=x, params=param)
+                return eval("self._model.eval(%s=x, param=param)"%self._indVar, None,
+                {'x': x, 'params': param, 'self': self})
         model = SciPyModel(f)
         try:
             myodr = ODR(data, model, beta0 = pi, maxit = 250)
@@ -417,12 +422,13 @@ class Model(QObject):
         return inc_cons
 
     def __fit_lm(self, x, y, sy, pi):
-        ''' Fit com MMQ. '''
+        '''Fit com MMQ.'''
         params = Parameters()
         for i in range(len(self._coef)):
             params.add(self._coef[i], pi[i])
         try:
-            self._result = self._model.fit(data = y, x = x, weights = 1/sy, params = params, scale_covar=False, max_nfev = 250)
+            self._result = eval("self._model.fit(data = y, %s = x, weights = 1/sy, params = params, scale_covar=False, max_nfev = 250)"%self._indVar, None,
+            {'y': y, 'x': x, 'params': params, 'self': self, 'sy': sy})
         except ValueError:
             self._msgHandler.raiseError("A função ajustada gera valores não numéricos, rever ajuste.")
             # A função ajustada gera valores não numéricos, rever ajuste.
@@ -437,12 +443,13 @@ class Model(QObject):
             return None
     
     def __fit_lm_wy(self, x, y, pi):
-        ''' Fit com MMQ quando não há incertezas. '''
+        '''Fit com MMQ quando não há incertezas.'''
         params = Parameters()
         for i in range(len(self._coef)):
             params.add(self._coef[i], pi[i])
         try:
-            self._result = self._model.fit(data = y, x = x, params = params, scale_covar=False, max_nfev = 250)
+            self._result = eval("self._model.fit(data = y, %s = x, params = params, scale_covar=False, max_nfev = 250)"%self._indVar, None,
+            {'y': y, 'x': x, 'params': params, 'self': self})
         except ValueError:
             self._msgHandler.raiseError("A função ajustada gera valores não numéricos, rever ajuste.")
             # A função ajustada gera valores não numéricos, rever ajuste.
@@ -457,14 +464,13 @@ class Model(QObject):
             return None
         
     def get_params(self):
-        ''' Retorna um dicionário onde as keys são os parâmetros e que retornam uma lista com [valor, incerteza]. '''
+        '''Retorna um dicionário onde as keys são os parâmetros e que retornam uma lista com [valor, incerteza].'''
         return self._dict
         
     def __set_param_values_lm(self, x):
-        ''' Constrói o dicionário e o Parameters dos valores do ajuste. '''
+        '''Constrói o dicionário e o Parameters dos valores do ajuste.'''
         self._dict.clear()
         self._params = Parameters()
-        ngl          = len(x) - len(self._coef)
         # inc_cons     = np.sqrt(self._result.chisqr/ngl)
         # inc_cons_q   = inc_cons**2
         for i in range(len(self._coef)):
@@ -473,19 +479,20 @@ class Model(QObject):
             self._dict.update({self._coef[i]: [self._result.values[self._coef[i]], np.sqrt(self._result.covar[i, i])]})
     
     def __set_param_values_lm_special(self, x):
-        ''' Constrói o dicionário e o Parameters dos valores do ajuste, quando não há incertezas. '''
+        '''Constrói o dicionário e o Parameters dos valores do ajuste, quando não há incertezas.'''
         self._dict.clear()
         self._dict2.clear()
         self._params = Parameters()
         ngl          = len(x) - len(self._coef)
         inc_cons     = np.sqrt(self._result.chisqr/ngl)
+        print(self._model.expr)
         for i in range(len(self._coef)):
             self._params.add(self._coef[i], self._result.values[self._coef[i]])
             self._dict.update({self._coef[i]: [self._result.values[self._coef[i]], np.sqrt(self._result.covar[i, i])*inc_cons]})
             self._dict2.update({self._coef[i]: [self._result.values[self._coef[i]], np.sqrt(self._result.covar[i, i])]})
 
     def __set_param_values_ODR(self, x):
-        ''' Constrói o dicionário e o Parameters dos valores do ajuste. '''
+        '''Constrói o dicionário e o Parameters dos valores do ajuste.'''
         self._dict.clear()
         self._params = Parameters()
         for i in range(len(self._coef)):
@@ -493,7 +500,7 @@ class Model(QObject):
             self._dict.update({self._coef[i]: [self._result.beta[i], np.sqrt(self._result.cov_beta[i, i])]})
 
     def __set_report_lm(self, x):
-        ''' Constrói a string com os resultados. '''
+        '''Constrói a string com os resultados.'''
         self._report_fit  = ""
         self._report_fit += "\nAjuste: y = %s\n"%self._exp_model
         self._report_fit += "\nNGL  = %d"%(len(x) - len(self._coef))
@@ -510,7 +517,7 @@ class Model(QObject):
         self._isvalid     = True
     
     def __set_report_lm_special(self, x):
-        ''' Constrói a string com os resultados, neste caso quando não há incertezas. '''
+        '''Constrói a string com os resultados, neste caso quando não há incertezas.'''
         ngl               = len(x) - len(self._coef)
         inc_considerada   = np.sqrt(self._result.chisqr/ngl)
         inc_considerada_q = inc_considerada**2
@@ -554,7 +561,7 @@ class Model(QObject):
         self._isvalid     = True
 
     def __set_report_ODR_special(self, x, inc_considerada):
-        ''' Constrói a string com os resultados, neste caso quando só há incertezas em x. '''
+        '''Constrói a string com os resultados, neste caso quando só há incertezas em x.'''
         self._report_fit  = ""
         self._report_fit += "\nAjuste: y = %s\n"%self._exp_model
         self._report_fit += "\nNGL  = %d"%(len(x) - len(self._coef))
@@ -573,7 +580,7 @@ class Model(QObject):
         
     @property
     def coefficients(self):
-        ''' Retorna uma lista com os nomes dos coeficientes. '''
+        '''Retorna uma lista com os nomes dos coeficientes.'''
         return self._coef
 
     @property
@@ -594,24 +601,25 @@ class Model(QObject):
     
     @property
     def data(self, *args):
-        ''' Retorna x, y, sx e sy. '''
+        '''Retorna x, y, sx e sy.'''
         return self._data["x"], self._data["y"], self._data["sy"], self._data["sx"]
         
     @property
     def residuo(self):
-        ''' Retorna os valores de y_i - f(x_i). '''
+        '''Retorna os valores de y_i - f(x_i).'''
         return self._data["y"] - self._model.eval(x = self._data["x"])
 
     def get_predict(self, fig, x_min = None, x_max = None):
-        ''' Retorna a previsão do modelo. '''
+        '''Retorna a previsão do modelo.'''
         x_plot = np.linspace(x_min, x_max, int(fig.get_size_inches()[0]*fig.dpi*1.75))
-        # x_plot = np.linspace(x_min, x_max, 10000*len(self._data['x']))
-        return x_plot, self._model.eval(x = x_plot, params = self._params)
+        return x_plot, eval("self._model.eval(%s = x_plot, params = self._params)"%self._indVar, None,
+        {'x_plot': x_plot, 'self': self})
     
     def get_predict_log(self, fig, x_min = None, x_max = None):
-        ''' Retorna a previsão do modelo. '''
+        '''Retorna a previsão do modelo.'''
         x_plot = np.logspace(np.log10(x_min), np.log10(x_max), int(fig.get_size_inches()[0]*fig.dpi*2.1))
-        return x_plot, self._model.eval(x = x_plot, params = self._params)
+        return x_plot, eval("self._model.eval(%s = x_plot, params = self._params)"%self._indVar, None,
+        {'x_plot': x_plot, 'self': self})
     
     def reset(self):
         # self._msgHandler = messageHandler

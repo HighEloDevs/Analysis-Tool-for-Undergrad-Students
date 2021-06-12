@@ -44,9 +44,18 @@ class MultiModel(QObject):
         self.num_cols   = [len(df.columns) for df in self.dfs]
         self.models     = []
         self.parameters = []
+        self.indVars    = []
         for arquivo in arquivos:
             if arquivo['expr'] != '' and len(arquivo['params']) > 0:
-                self.models.append(ExpressionModel(arquivo['expr']))
+                expIndVar = arquivo['expr'].split(";")
+                if len(expIndVar) == 1:
+                    self.models.append(ExpressionModel(arquivo['expr'] + " + 0*x"))
+                    self.indVars.append("x")
+                elif len(expIndVar) == 2:
+                    self.models.append(ExpressionModel(expIndVar[0] + " + 0*%s"%expIndVar[1].strip(), independent_vars=[expIndVar[1].strip()]))
+                    self.indVars.append(expIndVar[1].strip())
+                else:
+                    continue
                 parametros = Parameters()
                 for parametro in arquivo['params'].keys():
                     parametros.add(parametro, value = arquivo['params'][parametro])
@@ -54,3 +63,4 @@ class MultiModel(QObject):
             else:
                 self.models.append(0)
                 self.parameters.append(0)
+                self.indVars.append("") 

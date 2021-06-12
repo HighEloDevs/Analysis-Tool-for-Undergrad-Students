@@ -162,8 +162,6 @@ class MPLCanvas(QObject):
                         self.ax1.set_xscale('log')
                     
 
-                    if self.legend:
-                        self.ax1.legend(frameon=False)
 
                     self.ax2.errorbar(x, y_r, yerr=sy, xerr = sx, ecolor = self.symbol_color, capsize = 0, elinewidth = 1, ms = self.symbol_size, marker = self.symbol, color = self.symbol_color, ls = 'none')
                     self.ax1.errorbar(x, y, yerr=sy, xerr=sx, ecolor = self.symbol_color, capsize = 0, elinewidth = 1, ms = self.symbol_size, marker = self.symbol, color = self.symbol_color, ls = 'none')
@@ -181,16 +179,19 @@ class MPLCanvas(QObject):
                     
                     # self.ax1.minorticks_on()
                     # self.ax2.minorticks_on()
-                    self.ax1.xaxis.set_minor_locator(mpl.ticker.AutoMinorLocator(3))
-                    self.ax1.yaxis.set_minor_locator(mpl.ticker.AutoMinorLocator(3))
-                    self.ax2.xaxis.set_minor_locator(mpl.ticker.AutoMinorLocator(3))
-                    self.ax2.yaxis.set_minor_locator(mpl.ticker.AutoMinorLocator(2))
+                    # self.ax1.xaxis.set_minor_locator(mpl.ticker.AutoMinorLocator(3))
+                    # self.ax1.yaxis.set_minor_locator(mpl.ticker.AutoMinorLocator(3))
+                    # self.ax2.xaxis.set_minor_locator(mpl.ticker.AutoMinorLocator(3))
+                    # self.ax2.yaxis.set_minor_locator(mpl.ticker.AutoMinorLocator(2))
 
                     # Setting titles
                     self.ax1.set_title(str(self.axisTitle[0]))
                     self.ax2.set(xlabel = str(self.axisTitle[1]))
                     self.ax1.set(ylabel = str(self.axisTitle[2]))
                     self.ax2.set(ylabel = "Resíduos")
+                    if self.legend:
+                        self.ax1.legend(frameon=False)
+
                     def update(evt=None):
                         left, right = self.ax1.get_xlim()
                         ppx, ppy = model.get_predict(self.ax1.figure, left, right)
@@ -255,11 +256,11 @@ class MPLCanvas(QObject):
                     line_func, = self.axes.plot(px, py, lw = self.curve_thickness, color = self.curve_color, ls = self.curve_style, label = '${}$'.format(self.expression))
 
                     if self.legend:
-                        self.axes.legend(frameon=False)
+                        self.axes.legend(fancybox=True)
                     
                     # self.axes.minorticks_on()
-                    self.axes.xaxis.set_minor_locator(mpl.ticker.AutoMinorLocator(3))
-                    self.axes.yaxis.set_minor_locator(mpl.ticker.AutoMinorLocator(3))
+                    # self.axes.xaxis.set_minor_locator(mpl.ticker.AutoMinorLocator(3))
+                    # self.axes.yaxis.set_minor_locator(mpl.ticker.AutoMinorLocator(3))
 
                     # Setting titles
                     self.axes.set_title(str(self.axisTitle[0]))
@@ -327,8 +328,8 @@ class MPLCanvas(QObject):
                 # self.axes.secondary_yaxis('right')
 
                 # self.axes.minorticks_on()
-                self.axes.xaxis.set_minor_locator(mpl.ticker.AutoMinorLocator(3))
-                self.axes.yaxis.set_minor_locator(mpl.ticker.AutoMinorLocator(3))
+                # self.axes.xaxis.set_minor_locator(mpl.ticker.AutoMinorLocator(3))
+                # self.axes.yaxis.set_minor_locator(mpl.ticker.AutoMinorLocator(3))
 
                 # Setting titles
                 self.axes.set_title(str(self.axisTitle[0]))
