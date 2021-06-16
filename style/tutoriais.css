@@ -1,31 +1,64 @@
-.container{
-    display: block;
+@import url('https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@200&display=swap');
+
+.install-container{
+    display: flex;
     justify-content: center;
-    align-items: center;
-    list-style-type: none;
-    margin: 0;
+    align-items: top;
+}
+
+.display-container{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin: 0 20px;
+}
+
+.iconify{
+    font-size: 40px;
+    margin-bottom: 1rem;
+    pointer-events: none;
+}
+
+.side-menu{
+    display: block;
+    flex-direction: column;
+    justify-content: space-between;
+    margin: 10px;
     padding: 0;
 }
 
-.container > li {
-    background-color: #191923;
-    border-radius: 3px 20px 3px 20px;
-    padding: 5px 20px;
+.side-menu > li{
+    list-style-type: none;
     margin: 10px 0;
     display: flex;
-    justify-content: space-between;
+    width: 8rem;
+    height: 8rem;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border-radius: 0.5rem;
+    transition: all 400ms ease;
 }
 
-.post-btn{
-    color: #fff;
-    display: flex;
-    align-items: center; 
-    text-decoration: none;
-    padding: 5px 5px;
-    margin: 15px 10px;
+.side-menu > li[focus=true]{
+    background-color: #191923;
+    box-shadow: 1px 1px 3px 1px rgb(61, 62, 88);
 }
 
-.post-btn:hover{
-    border-radius: 10px;
-    background-color: rgba(255, 255, 255, 0.2)
+.side-menu > li > p{
+    margin: 0 0.5rem;
+    font-weight: bold;
+    font-size: 14px;
+    text-align: center;
+    text-indent: 0;
+    pointer-events: none;
+}
+
+.code{
+    background-color: rgba(151, 151, 151, 0.384);
+    border-radius: 5px;
+    padding: 1rem;
+    font-family: 'Source Code Pro', monospace;
+    font-size: medium;
 }

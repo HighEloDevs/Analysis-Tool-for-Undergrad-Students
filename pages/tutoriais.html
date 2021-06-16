@@ -1,13 +1,69 @@
-<link rel="stylesheet" href="../style/tutoriais.css">
-<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-
-<ul class="container">
-    <li>
-        <h3>Como ajustar meus dados?</h3>
-        <a class="post-btn" href=""><i class="material-icons" style="font-size:30px;">arrow_forward</i></a>
-    </li>
-    <li>oie</li>
-    <li>oie</li>
-    <li>oie</li>
-    <li>oie</li>
-</ul>
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tutoriais</title>
+    <link rel="stylesheet" href="../index.css">
+    <link rel="stylesheet" href="../style/tutoriais.css">
+    <link rel="stylesheet" href="../style/navBar.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="https://code.iconify.design/1/1.0.7/iconify.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            var activeTab = "windows"
+            $.get("../posts/windows.html", html => {
+                $(".display-container").html(html)
+            }, "html")           
+            $(".side-menu > li").click(function(e){
+                // Disabling last tab button
+                $("#" + activeTab).attr("focus", false)
+                // Saving current one
+                activeTab = e.target.getAttribute("id")
+                // Enabling current button
+                e.target.setAttribute("focus", true)
+                // Getting content from link
+                $.get(e.target.getAttribute("href"), html => {
+                    $(".display-container").html(html)
+                }, "html")
+            });
+        });
+    </script>
+</head>
+<body>
+    <div>
+        <header>
+            <nav>
+                <a class="navbar-btn" href="../index.html">Início</a>
+                <ul class="navbar-btnRow">
+                    <li><a class="navbar-btn active-btn-indicator" href="./tutoriais.html" active>Tutoriais</a></li>
+                    <li><a class="navbar-btn active-btn-indicator" href="./contato.html">Contato</a></li>
+                    <li><a class="navbar-btn active-btn-indicator" href="./licenca.html">Licença</a></li>
+                </ul>
+                <a class="navbar-btn" target="_blank" href="https://github.com/HighEloDevs/Analysis-Tool-for-Undergrad-Students">GitHub</a>
+            </nav>
+        </header>
+        <main>
+            <div class="install-container">
+                <ul class="side-menu">
+                    <li id="windows" href="../posts/windows.html" focus=true>
+                        <span class="iconify" data-icon="mdi-microsoft-windows" data-inline="false"></span>
+                        <p>Windows 10</p>
+                    </li>
+                    <li id="macos" href="../posts/macos.html" focus=false>
+                        <span class="iconify" data-icon="wpf:mac-os" data-inline="false"></span>
+                        <p>Mac OS</p>
+                    </li>
+                    <li id="linux" href="../posts/linux.html" focus=false>
+                        <span class="iconify" data-icon="cib:linux" data-inline="false"></span>
+                        <p>Linux</p>
+                    </li>
+                </ul>
+                <div class="display-container"></div>
+            </div>
+        </main>        
+    </div>
+</body>
+</html>

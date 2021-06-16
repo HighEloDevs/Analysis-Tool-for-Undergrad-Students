@@ -1,0 +1,90 @@
+header{
+    background-color: #191923;
+    border-bottom: 2px solid #fff;
+    padding: 0 30% 0px 30%;
+}
+
+nav{
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.navbar-btnRow{
+    /* Distribui os objetos da melhor forma possível */
+    display: flex; 
+    /* Forma como os objetos aparecem na lista - None remove os círculos dos itens */
+    list-style: none;
+    width: unset;
+    /* Apresenta os objetos em forma de linha */
+    flex-direction: row;
+    justify-content: center;
+    position: relative;
+    margin: unset;
+    height: 100%;
+    background-color: transparent;
+    padding: 0;
+}
+
+.navbar-btn{
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    color: rgb(145, 145, 145);
+    text-decoration: none;
+    background-color: transparent;
+    font-weight: bold;
+    padding: 0px 20px;
+    font-size: large;
+    height:55px;
+    transition: all 500ms ease;
+}
+
+.navbar-btn:hover{
+    color:#fff;
+}
+
+.navbar-btn[active]{
+    color:#fff;
+}
+
+.active-btn-indicator{
+    border-bottom: 3px solid transparent;
+}
+
+.active-btn-indicator:hover{
+    border-bottom: 3px solid rgb(41, 165, 37);
+}
+
+.active-btn-indicator[active]{
+    border-bottom: 3px solid rgb(41, 165, 37);
+}
+
+@media (max-width: 1200px){
+    header{
+        padding: 0 15% 0px 15%;
+    }
+}
+
+@media (max-width: 700px){
+    .navbar-btnRow{
+        display: block;
+    }
+    .navbar-btn{
+        padding: 5px 20px
+    }
+}
+
+@media (max-width: 560px){
+    header{
+        padding: 0 5% 0px 5%;
+    }
+}
+
+@media (max-width: 320px){
+    nav{
+        display: block;
+    }
+}
