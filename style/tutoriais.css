@@ -39,11 +39,16 @@
     cursor: pointer;
     border-radius: 0.5rem;
     transition: all 400ms ease;
+    color: rgb(138, 138, 138);
+}
+.side-menu > li:hover{
+    color: #fff
 }
 
 .side-menu > li[focus=true]{
     background-color: #191923;
     box-shadow: 1px 1px 3px 1px rgb(61, 62, 88);
+    color: #fff;
 }
 
 .side-menu > li > p{
