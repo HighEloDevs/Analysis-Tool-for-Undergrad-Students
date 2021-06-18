@@ -34,6 +34,7 @@ from src.MatPlotLib import MPLCanvas
 from src.UpdateChecker import UpdateChecker
 from src.MessageHandler import MessageHandler
 from src.GoogleDriveAPI import GDrive
+from src.Histogram import Histogram
 from PyQt5.QtCore import QCoreApplication, QUrl, QObject, Qt
 from PyQt5.QtQml import qmlRegisterType, QQmlApplicationEngine
 from PyQt5.QtGui import QIcon, QGuiApplication
@@ -61,6 +62,7 @@ if __name__ == "__main__":
     singlePlot      = SinglePlot(canvas, model, messageHandler)
     multiPlot       = Multiplot(canvas, messageHandler)
     updater         = UpdateChecker()
+    histogram       = Histogram(canvas, messageHandler)
     gdrive          = GDrive(messageHandler)
 
     # Creating 'link' between front-end and back-end
@@ -71,6 +73,7 @@ if __name__ == "__main__":
     context.setContextProperty("model", model)
     context.setContextProperty("updater", updater)
     context.setContextProperty("messageHandler", messageHandler)
+    context.setContextProperty("hist", histogram)
     context.setContextProperty("gdrive", gdrive)
     
     engine.load(QUrl.fromLocalFile(os.path.join(os.path.dirname(__file__), "qml/main_windows.qml")))

@@ -28,7 +28,7 @@ Item{
 
     Rectangle{
         id: bg
-        height: 53
+        height: 55
         anchors.fill: parent
         color: 'transparent'
         clip: true

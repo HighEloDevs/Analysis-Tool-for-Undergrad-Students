@@ -9,6 +9,8 @@ Button{
     property color hoverColor: 'blue'
     property color clickColor: 'red'
     property color iconColor: 'white'
+    property color borderColor: 'transparent'
+    property int borderWidth: 0
     property int iconWidth: 24
     property string iconUrl: ''
     property int r: 15 // Radius
@@ -28,6 +30,8 @@ Button{
     background: Rectangle{
         radius: r
         color: dynamicColor
+        border.color: root.borderColor
+        border.width: root.borderWidth
 
         Image {
             id: image
