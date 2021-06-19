@@ -125,6 +125,7 @@ Popup {
                     id: label
                     Layout.columnSpan: 6
                     Layout.alignment: Qt.AlignCenter
+                    checked: false
                     texto: "Contagens em cima"
                     w: 22
                 }
@@ -143,6 +144,7 @@ Popup {
                     id: fill
                     Layout.columnSpan: 4
                     Layout.alignment: Qt.AlignCenter
+                    checked: false
                     texto: "Preencher barras"
                     w: 22
                 }

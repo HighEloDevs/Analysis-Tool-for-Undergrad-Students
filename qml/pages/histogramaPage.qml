@@ -325,7 +325,7 @@ Rectangle {
                         Layout.alignment: Qt.AlignCenter
                         highlightColor: Colors.mainColor2
                         label: "Tipo de histograma"
-                        model: ["Barra", "Cumulativo", "Step", "Stepfilled"]
+                        model: ["bar", "step", "stepfilled"]
                     }
                     ComboBoxCustom{
                         id: histAlign

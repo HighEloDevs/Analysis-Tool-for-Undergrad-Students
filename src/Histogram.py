@@ -40,11 +40,70 @@ class Histogram(QObject):
         self.messageHandler = messageHandler
         self.canvas         = canvas
         self.path           = ""
+        self.histAlign      = {"Centro" : "center", "Direita" : "right", "Esquerda" : "left"}
+        self.histOrient     = {"Vertical" : "vertical", "Horizontal" : "horizontal"}
+
 
 ########################### EDITE AQUI \/ #############################
     @pyqtSlot(QJsonValue)
     def plot(self, data):
-        print(QJsonValue.toVariant(data))
+        data = QJsonValue.toVariant(data)
+        # print(QJsonValue.toVariant(data))
+        self.clearAxis()
+        axes =  self.canvas.figure.add_subplot(111)
+        if data["props"]["grid"]:
+            axes.grid(True, which='major')
+        if data["props"]["logy"]:
+            axes.set_yscale('log')
+        if data["props"]["logx"]:
+            axes.set_xscale('log')
+
+        xdiv = self.makeFloat(data["props"]["xdiv"], 0.)
+        xmin = self.makeFloat(data["props"]["xmin"], 0.)
+        xmax = self.makeFloat(data["props"]["xmax"], 0.)
+        ydiv = self.makeFloat(data["props"]["ydiv"], 0.)
+        ymin = self.makeFloat(data["props"]["ymin"], 0.)
+        ymax = self.makeFloat(data["props"]["ymax"], 0.)
+
+        if xdiv != 0. and (xmax != 0. or xmin != 0.):
+            axes.set_xticks(np.linspace(xmin, xmax, xdiv + 1))
+            axes.set_xlim(left = xmin, right = xmax)
+
+        else:
+            if xmin == 0. and xmax != 0.:
+                axes.set_xlim(left = None, right = xmax)
+            elif xmin != 0. and xmax == 0.:
+                axes.set_xlim(left = xmin, right = None)
+            elif xmin != 0. and xmax != 0.:
+                axes.set_xlim(left = xmin, right = xmax)
+        
+        if ydiv != 0. and (ymax != 0. or ymin != 0.):
+            axes.set_yticks(np.linspace(ymin, ymax, ydiv + 1))
+            axes.set_ylim(bottom = ymin, top = ymax)
+        else:
+            if ymin == 0. and ymax != 0.:
+                axes.set_ylim(bottom = None, top = ymax)
+            elif ymin != 0. and ymax == 0.:
+                axes.set_ylim(bottom = ymin, top = None)
+            elif ymin != 0. and ymax != 0.:
+                axes.set_ylim(bottom = ymin, top = ymax)
+        df = pd.DataFrame.from_records(data["data"][0]["data"])
+        print(data)
+        print(data.keys())
+        label = data["kargs"].pop("label")
+        if len(df["weight"]) > 0:
+            counts, bins, _ = axes.hist(x = data["data"]["data"], bins = self.makeInt(data["props"]["bins"], 10),
+            range = (self.makeFloat(data["props"]["rangexmin"], -np.inf),
+            self.makeFloat(data["props"]["rangexmax"], np.inf)),
+            weights     = df["weight"],
+            density     = False, cumulative = False, bottom = 0,
+            histtype    = data["props"]["histType"],
+            align       = self.histAlign[data["props"]["histAlign"]],
+            orientation = self.histOrient[data["props"]["histOrientation"]],
+            log = False, rwidth = 0, capstyle = "round", ls = "--", aa = True,
+            kwargs = data["kargs"])
+#         'kargs': {'alpha': '1.0', 'ec': '#006e00', 
+# 'fc': '#006e00', 'fill': True, 'hatch': '/', 'label': True, 'lw': 3}
 ########################### EDITE AQUI /\ #############################
 
     @pyqtSlot()
@@ -154,3 +213,27 @@ class Histogram(QObject):
         package["data"] = df.to_json()
         package["isValid"] = True
         return package
+
+    def makeFloat(self, var, value):
+        try:
+            return float(var)
+        except:
+            return value
+
+    def makeInt(self, var, value):
+        try:
+            return int(var)
+        except:
+            return value
+
+    def clearAxis(self):
+        """Clear the current plot in the axis."""
+        try:
+            self.canvas.axes.remove()
+        except:
+            pass
+        try:
+            self.canvas.ax1.remove()
+            self.canvas.ax2.remove()
+        except:
+            pass
