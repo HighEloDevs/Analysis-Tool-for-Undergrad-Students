@@ -24,7 +24,6 @@ SOFTWARE.
 """
 
 import numpy as np
-# from matplotlib_backend_qtquick.qt_compat import QtCore
 from PyQt5.QtCore import QObject
 from scipy.stats import chi2, norm, t
 from numpy import array

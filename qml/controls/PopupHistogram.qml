@@ -41,11 +41,29 @@ Popup {
     background: Rectangle{
         id: bg
         anchors.fill: parent
-        radius: 5
+        radius: 10
         opacity: 0.95
         color: Colors.color2 
         border.width: 2
         border.color: "#fff"
+        LinearGradient{
+            end: Qt.point(bg.width, bg.height)
+            gradient: Gradient{
+                GradientStop{
+                    position: 0
+                    color: Colors.color2 + "80"
+                }
+                GradientStop{
+                    position: 1
+                    color: "#202020"
+                }
+            }
+            source: bg
+            start: Qt.point(0, 0)
+            anchors.fill: parent
+            anchors.margins: 2
+            smooth: true
+        }
 
         IconButton{
             anchors.right: parent.right

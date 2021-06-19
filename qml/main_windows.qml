@@ -152,8 +152,8 @@ Window {
     PopupUpdate {
         id: updatePopup
         anchors.centerIn: parent
-        width: mainWindow.width/3
-        height: mainWindow.height/2
+        width: 600
+        height: 500
     }
 
     Rectangle {
