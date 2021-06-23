@@ -40,7 +40,7 @@ class Histogram(QObject):
         self.messageHandler = messageHandler
         self.canvas         = canvas
         self.path           = ""
-        self.histAlign      = {"Centro" : "center", "Direita" : "right", "Esquerda" : "left"}
+        self.histAlign      = {"Centro" : "mid", "Direita" : "right", "Esquerda" : "left"}
         self.histOrient     = {"Vertical" : "vertical", "Horizontal" : "horizontal"}
 
 
@@ -87,23 +87,31 @@ class Histogram(QObject):
                 axes.set_ylim(bottom = ymin, top = None)
             elif ymin != 0. and ymax != 0.:
                 axes.set_ylim(bottom = ymin, top = ymax)
-        df = pd.DataFrame.from_records(data["data"][0]["data"])
-        print(data)
-        print(data.keys())
-        label = data["kargs"].pop("label")
-        if len(df["weight"]) > 0:
-            counts, bins, _ = axes.hist(x = data["data"]["data"], bins = self.makeInt(data["props"]["bins"], 10),
-            range = (self.makeFloat(data["props"]["rangexmin"], -np.inf),
-            self.makeFloat(data["props"]["rangexmax"], np.inf)),
-            weights     = df["weight"],
-            density     = False, cumulative = False, bottom = 0,
-            histtype    = data["props"]["histType"],
-            align       = self.histAlign[data["props"]["histAlign"]],
-            orientation = self.histOrient[data["props"]["histOrientation"]],
-            log = False, rwidth = 0, capstyle = "round", ls = "--", aa = True,
-            kwargs = data["kargs"])
-#         'kargs': {'alpha': '1.0', 'ec': '#006e00', 
-# 'fc': '#006e00', 'fill': True, 'hatch': '/', 'label': True, 'lw': 3}
+        for arquivo in data["data"]:
+            df = pd.DataFrame.from_dict(json.loads(arquivo["data"]))
+            alpha = self.makeFloat(arquivo["kargs"].pop("alpha"), 1.0)
+            if len(df.columns) == 2:
+                label = arquivo["kargs"].pop("label")
+                counts, bins, _ = axes.hist(x = df["x"], bins = self.makeInt(data["props"]["nbins"], 10),
+                weights     = df["weight"],
+                density     = False, cumulative = False, bottom = 0,
+                histtype    = data["props"]["histType"],
+                align       = self.histAlign[data["props"]["histAlign"]],
+                orientation = self.histOrient[data["props"]["histOrientation"]],
+                log = False, rwidth = 1, capstyle = "round", ls = "-", aa = True,
+                alpha = alpha,
+                **arquivo["kargs"])
+            elif len(df.columns) == 1:
+                label = arquivo["kargs"].pop("label")
+                counts, bins, _ = axes.hist(x = df["x"], bins = self.makeInt(data["props"]["nbins"], 10),
+                density     = False, cumulative = False, bottom = 0,
+                histtype    = data["props"]["histType"],
+                align       = self.histAlign[data["props"]["histAlign"]],
+                orientation = self.histOrient[data["props"]["histOrientation"]],
+                log = False, rwidth = 1, capstyle = "round", ls = "-", aa = True,
+                alpha = alpha,
+                **arquivo["kargs"])
+        self.canvas.canvas.draw_idle()
 ########################### EDITE AQUI /\ #############################
 
     @pyqtSlot()
@@ -229,11 +237,12 @@ class Histogram(QObject):
     def clearAxis(self):
         """Clear the current plot in the axis."""
         try:
-            self.canvas.axes.remove()
+            self.canvas.canvas.figure.gca().remove()
         except:
             pass
         try:
-            self.canvas.ax1.remove()
-            self.canvas.ax2.remove()
+            ax1, ax2 = self.canvas.canvas.figure.gca()
+            ax1.remove()
+            ax2.remove()
         except:
             pass

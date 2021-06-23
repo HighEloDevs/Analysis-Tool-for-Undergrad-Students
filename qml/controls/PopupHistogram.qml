@@ -137,7 +137,7 @@ Popup {
                     Layout.alignment: Qt.AlignCenter
                     highlightColor: Colors.mainColor2
                     label: "Textura"
-                    model: ["/", "\\", "|", "-", "+", "x", "o", "O", ".", "*"]
+                    model: ["", "/", "\\", "|", "-", "+", "x", "o", "O", ".", "*"]
                 }
 
                 CheckBoxCustom{
