@@ -40,11 +40,78 @@ class Histogram(QObject):
         self.messageHandler = messageHandler
         self.canvas         = canvas
         self.path           = ""
+        self.histAlign      = {"Centro" : "mid", "Direita" : "right", "Esquerda" : "left"}
+        self.histOrient     = {"Vertical" : "vertical", "Horizontal" : "horizontal"}
+
 
 ########################### EDITE AQUI \/ #############################
     @pyqtSlot(QJsonValue)
     def plot(self, data):
-        print(QJsonValue.toVariant(data))
+        data = QJsonValue.toVariant(data)
+        # print(QJsonValue.toVariant(data))
+        self.clearAxis()
+        axes =  self.canvas.figure.add_subplot(111)
+        if data["props"]["grid"]:
+            axes.grid(True, which='major')
+        if data["props"]["logy"]:
+            axes.set_yscale('log')
+        if data["props"]["logx"]:
+            axes.set_xscale('log')
+
+        xdiv = self.makeFloat(data["props"]["xdiv"], 0.)
+        xmin = self.makeFloat(data["props"]["xmin"], 0.)
+        xmax = self.makeFloat(data["props"]["xmax"], 0.)
+        ydiv = self.makeFloat(data["props"]["ydiv"], 0.)
+        ymin = self.makeFloat(data["props"]["ymin"], 0.)
+        ymax = self.makeFloat(data["props"]["ymax"], 0.)
+
+        if xdiv != 0. and (xmax != 0. or xmin != 0.):
+            axes.set_xticks(np.linspace(xmin, xmax, xdiv + 1))
+            axes.set_xlim(left = xmin, right = xmax)
+
+        else:
+            if xmin == 0. and xmax != 0.:
+                axes.set_xlim(left = None, right = xmax)
+            elif xmin != 0. and xmax == 0.:
+                axes.set_xlim(left = xmin, right = None)
+            elif xmin != 0. and xmax != 0.:
+                axes.set_xlim(left = xmin, right = xmax)
+        
+        if ydiv != 0. and (ymax != 0. or ymin != 0.):
+            axes.set_yticks(np.linspace(ymin, ymax, ydiv + 1))
+            axes.set_ylim(bottom = ymin, top = ymax)
+        else:
+            if ymin == 0. and ymax != 0.:
+                axes.set_ylim(bottom = None, top = ymax)
+            elif ymin != 0. and ymax == 0.:
+                axes.set_ylim(bottom = ymin, top = None)
+            elif ymin != 0. and ymax != 0.:
+                axes.set_ylim(bottom = ymin, top = ymax)
+        for arquivo in data["data"]:
+            df = pd.DataFrame.from_dict(json.loads(arquivo["data"]))
+            alpha = self.makeFloat(arquivo["kargs"].pop("alpha"), 1.0)
+            if len(df.columns) == 2:
+                label = arquivo["kargs"].pop("label")
+                counts, bins, _ = axes.hist(x = df["x"], bins = self.makeInt(data["props"]["nbins"], 10),
+                weights     = df["weight"],
+                density     = False, cumulative = False, bottom = 0,
+                histtype    = data["props"]["histType"],
+                align       = self.histAlign[data["props"]["histAlign"]],
+                orientation = self.histOrient[data["props"]["histOrientation"]],
+                log = False, rwidth = 1, capstyle = "round", ls = "-", aa = True,
+                alpha = alpha,
+                **arquivo["kargs"])
+            elif len(df.columns) == 1:
+                label = arquivo["kargs"].pop("label")
+                counts, bins, _ = axes.hist(x = df["x"], bins = self.makeInt(data["props"]["nbins"], 10),
+                density     = False, cumulative = False, bottom = 0,
+                histtype    = data["props"]["histType"],
+                align       = self.histAlign[data["props"]["histAlign"]],
+                orientation = self.histOrient[data["props"]["histOrientation"]],
+                log = False, rwidth = 1, capstyle = "round", ls = "-", aa = True,
+                alpha = alpha,
+                **arquivo["kargs"])
+        self.canvas.canvas.draw_idle()
 ########################### EDITE AQUI /\ #############################
 
     @pyqtSlot()
@@ -154,3 +221,28 @@ class Histogram(QObject):
         package["data"] = df.to_json()
         package["isValid"] = True
         return package
+
+    def makeFloat(self, var, value):
+        try:
+            return float(var)
+        except:
+            return value
+
+    def makeInt(self, var, value):
+        try:
+            return int(var)
+        except:
+            return value
+
+    def clearAxis(self):
+        """Clear the current plot in the axis."""
+        try:
+            self.canvas.canvas.figure.gca().remove()
+        except:
+            pass
+        try:
+            ax1, ax2 = self.canvas.canvas.figure.gca()
+            ax1.remove()
+            ax2.remove()
+        except:
+            pass

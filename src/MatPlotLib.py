@@ -162,8 +162,8 @@ class MPLCanvas(QObject):
                         self.ax1.set_xscale('log')
                     
 
-
-                    self.ax2.errorbar(x, y_r, yerr=sy, xerr = sx, ecolor = self.symbol_color, capsize = 0, elinewidth = 1, ms = self.symbol_size, marker = self.symbol, color = self.symbol_color, ls = 'none')
+                    ssy = model.predictInc(not self.sigma_x)
+                    self.ax2.errorbar(x, y_r, yerr=ssy, xerr = sx, ecolor = self.symbol_color, capsize = 0, elinewidth = 1, ms = self.symbol_size, marker = self.symbol, color = self.symbol_color, ls = 'none')
                     self.ax1.errorbar(x, y, yerr=sy, xerr=sx, ecolor = self.symbol_color, capsize = 0, elinewidth = 1, ms = self.symbol_size, marker = self.symbol, color = self.symbol_color, ls = 'none')
                     
                     left, right = self.ax1.get_xlim()
@@ -172,8 +172,11 @@ class MPLCanvas(QObject):
                     px, py = 0., 0.
                     if self.log_x:
                         px, py      = model.get_predict_log(self.ax1.figure, left, right)
+
                     else:
                         px, py      = model.get_predict(self.ax1.figure, left, right)
+
+
                     # Making Plots
                     line_func, = self.ax1.plot(px, py, lw = self.curve_thickness, color = self.curve_color, ls = self.curve_style, label = '${}$'.format(self.expression))
                     

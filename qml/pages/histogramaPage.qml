@@ -184,6 +184,7 @@ Rectangle {
                         Layout.columnSpan: 2
                         Layout.alignment: Qt.AlignCenter
                         texto: "Grade"
+                        checked: false
                         w: 22
                     }
                     TextInputCustom{
@@ -201,6 +202,7 @@ Rectangle {
                         Layout.columnSpan: 2
                         Layout.alignment: Qt.AlignCenter
                         texto: "Log X"
+                        checked: false
                         w: 22
                     }
                     TextInputCustom{
@@ -248,6 +250,7 @@ Rectangle {
                         Layout.columnSpan: 2
                         Layout.alignment: Qt.AlignCenter
                         texto: "Normalizar"
+                        checked: false
                         w: 22
                     }
                     CheckBoxCustom{
@@ -255,6 +258,7 @@ Rectangle {
                         Layout.columnSpan: 2
                         Layout.alignment: Qt.AlignCenter
                         texto: "Log Y"
+                        checked: false
                         w: 22
                     }
                     TextInputCustom{
@@ -324,7 +328,7 @@ Rectangle {
                         Layout.alignment: Qt.AlignCenter
                         highlightColor: Colors.mainColor2
                         label: "Tipo de histograma"
-                        model: ["Barra", "Cumulativo", "Step", "Stepfilled"]
+                        model: ["bar", "step", "stepfilled"]
                     }
                     ComboBoxCustom{
                         id: histAlign

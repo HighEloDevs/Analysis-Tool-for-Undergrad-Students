@@ -125,6 +125,7 @@ Popup {
                     id: label
                     Layout.columnSpan: 6
                     Layout.alignment: Qt.AlignCenter
+                    checked: false
                     texto: "Contagens em cima"
                     w: 22
                 }
@@ -136,13 +137,14 @@ Popup {
                     Layout.alignment: Qt.AlignCenter
                     highlightColor: Colors.mainColor2
                     label: "Textura"
-                    model: ["/", "\\", "|", "-", "+", "x", "o", "O", ".", "*"]
+                    model: ["", "/", "\\", "|", "-", "+", "x", "o", "O", ".", "*"]
                 }
 
                 CheckBoxCustom{
                     id: fill
                     Layout.columnSpan: 4
                     Layout.alignment: Qt.AlignCenter
+                    checked: false
                     texto: "Preencher barras"
                     w: 22
                 }
