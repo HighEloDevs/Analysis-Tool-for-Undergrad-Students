@@ -13,7 +13,7 @@ import "colors.js" as Colors
 Window {
     id: mainWindow
 
-    minimumWidth: 1000
+    minimumWidth: 1100
     minimumHeight: 600
     visibility: Window.AutomaticVisibility
     visible: true
@@ -390,7 +390,7 @@ Window {
                     id: topBar
                     width: 100
                     height: {
-                        if(rowBtns.visible) rowBtns.height + topBarDescription.height
+                        if(rowBtns.visible) rowBtns.height
                         else topBarDescription.height
                     }
                     Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
@@ -527,12 +527,12 @@ Window {
                         }
                     }
 
-                    Rectangle {
-                        id: topBarDescription
-                        Layout.preferredHeight: 25
-                        Layout.fillWidth: true
-                        color: Colors.color2
-                    }
+                    // Rectangle {
+                    //     id: topBarDescription
+                    //     Layout.preferredHeight: 25
+                    //     Layout.fillWidth: true
+                    //     color: Colors.color2
+                    // }
 
 
                 }
@@ -651,15 +651,20 @@ Window {
 
                                     Rectangle {
                                         id: canvasLayout
-                                        visible: true
-                                        radius: 0
-                                        Layout.preferredWidth: -1
-                                        Layout.leftMargin: 0
-                                        Layout.rightMargin: 0
-                                        Layout.bottomMargin: 0
-                                        Layout.topMargin: 0
                                         Layout.fillHeight: true
                                         Layout.fillWidth: true
+                                        radius: 5
+                                        color: Colors.color3
+
+                                        layer.enabled: true
+                                        layer.effect: DropShadow {
+                                            horizontalOffset: 1
+                                            verticalOffset: 1
+                                            radius: 10
+                                            spread: 0.1
+                                            samples: 17
+                                            color: "#252525"
+                                        }
 
                                         ColumnLayout {
                                             id: rightPanel_layout
@@ -672,7 +677,7 @@ Window {
 
                                             Rectangle {
                                                 id: toolBar
-                                                height: 60
+                                                height: 50
                                                 color: Colors.color1
                                                 Layout.fillWidth: true
 
@@ -802,9 +807,21 @@ Window {
 
                                             Rectangle {
                                                 id: footer
+                                                Layout.fillWidth: true
                                                 height: 25
                                                 color: Colors.color2
-                                                Layout.fillWidth: true
+                                                radius: 5
+
+                                                Rectangle{
+                                                    anchors.left: parent.left
+                                                    anchors.leftMargin: 0
+                                                    anchors.right: parent.right
+                                                    anchors.rightMargin: 0
+                                                    anchors.top: parent.top
+                                                    anchors.topMargin: 0
+                                                    color: parent.color
+                                                    height: parent.height/2
+                                                }
 
                                                 TextInput {
                                                     id: location
@@ -852,11 +869,7 @@ Window {
                                                         }
                                                     }
                                                 }
-
-
-
                                             }
-
                                         }
                                     }
 

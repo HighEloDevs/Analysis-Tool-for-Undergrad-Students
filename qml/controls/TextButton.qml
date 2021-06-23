@@ -2,6 +2,10 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtGraphicalEffects 1.15
 import "../colors.js" as Colors
+import QtQuick.Controls 2.12
+import QtQuick.Controls.impl 2.12
+import QtQuick.Controls.Material 2.12
+import QtQuick.Controls.Material.impl 2.12
 
 Button{
     id: root
@@ -32,8 +36,26 @@ Button{
     background: Rectangle{
         id: bg
         radius: 5
-        color: dynamicColor
+        color: primaryColor
         opacity: dynamicOpacity
+
+        Ripple {
+            id: ripple
+            anchors.fill: parent
+            clipRadius: 4
+            pressed: root.pressed
+            active: root.down || root.visualFocus || root.hovered
+            color: "#20FFFFFF"
+            layer.enabled: true
+            layer.effect: OpacityMask {
+                maskSource: Rectangle
+                {
+                    width: ripple.width
+                    height: ripple.height
+                    radius: 4
+                }
+            }
+        }
     }
 
     contentItem: Text{
@@ -48,5 +70,16 @@ Button{
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
         opacity: dynamicOpacity
+    }
+
+    DropShadow {
+        anchors.fill: parent
+        horizontalOffset: 0.5
+        verticalOffset: 1.5
+        radius: 5
+        spread: 0.05
+        samples: 17
+        color: "#212121"
+        source: bg
     }
 }

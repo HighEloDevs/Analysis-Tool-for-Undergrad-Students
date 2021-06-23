@@ -10,24 +10,43 @@ CheckBox{
 
     property int w: 18
     property string texto: ''
+    property color checkColor: "#43A047"
 
     indicator: Rectangle {
         width: w
         height: w
         x: checkBox.leftPadding
         y: parent.height / 2 - height / 2
-        radius: 3
-        border.color: Colors.color1
+        radius: 2
+        border.color: checkBox.checked ? checkColor:Colors.color1
+        color: checkBox.checked ? checkColor:"white"
 
-        Rectangle {
-            width: w - 10
-            height: w - 10
-            radius: 2
-            color: Colors.color3
-            visible: checkBox.checked
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.horizontalCenter: parent.horizontalCenter
+        Image {
+            id: image
+            anchors.fill: parent
+            width: 24
+            height: 24
+            // anchors.verticalCenter: parent.verticalCenter
+            // anchors.horizontalCenter: parent.horizontalCenter
+            source: "../../images/icons/check_white_24dp.svg"
+            // mipmap: true
+            // smooth: true
+            fillMode: Image.PreserveAspectFit
+            visible: checkBox.checked ? true:false
         }
+
+        // Rectangle {
+        //     width: w
+        //     height: w
+        //     radius: 2
+        //     clip: true
+        //     color: "green"
+        //     visible: checkBox.checked
+        //     anchors.verticalCenter: parent.verticalCenter
+        //     anchors.horizontalCenter: parent.horizontalCenter
+
+            
+        // }
     }
 
     contentItem: Text {

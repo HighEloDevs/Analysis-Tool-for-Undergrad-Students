@@ -26,7 +26,7 @@ Button{
     }
 
     implicitWidth: 250
-    implicitHeight: 60
+    implicitHeight: 50
 
     background: Rectangle{
         id: bgBtn

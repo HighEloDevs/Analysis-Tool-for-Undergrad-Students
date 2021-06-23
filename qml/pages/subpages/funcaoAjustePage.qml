@@ -2,6 +2,7 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 import Qt.labs.qmlmodels 1.0
 import QtQuick.Layouts 1.11
+import QtGraphicalEffects 1.15
 import "../../colors.js" as Colors
 import "../../controls"
 
@@ -24,7 +25,7 @@ Item {
 
     Rectangle {
         id: bg
-        color: Colors.c_section
+        color: "transparent"
         anchors.fill: parent
 
         GridLayout {
@@ -61,66 +62,53 @@ Item {
                 validator: RegExpValidator{regExp: /^[0-9. ,-]+$/}
             }
 
-            RowLayout{
-                width: 100
-                height: 45
-                Layout.columnSpan: 4
+            TextInputCustom{
+                id: x_min
                 Layout.fillWidth: true
-
-                TextInputCustom{
-                    id: x_min
-                    Layout.fillWidth: true
-                    focusColor: Colors.mainColor2
-                    title: 'Ajuste - X mín.'
-                    textHolder: 'Ex.: 0, 32, 4.3, 23.4'
-                    defaultColor: '#fff'
-                    textColor: '#fff'
-                    validator: RegExpValidator{regExp: /^[\-]?[0-9]+([\.]?[0-9]+)?$/}
-                }
-
-                TextInputCustom{
-                    id: x_max
-                    Layout.fillWidth: true
-                    focusColor: Colors.mainColor2
-                    title: 'Ajuste - X máx.'
-                    textHolder: 'Ex.: 0, 32, 4.3, 23.4'
-                    defaultColor: '#fff'
-                    textColor: '#fff'
-                    validator: RegExpValidator{regExp: /^[\-]?[0-9]+([\.]?[0-9]+)?$/}
-                }
+                Layout.columnSpan: 2
+                focusColor: Colors.mainColor2
+                title: 'Ajuste - X mín.'
+                textHolder: 'Ex.: 0, 32, 4.3, 23.4'
+                defaultColor: '#fff'
+                textColor: '#fff'
+                validator: RegExpValidator{regExp: /^[\-]?[0-9]+([\.]?[0-9]+)?$/}
             }
 
-            RowLayout {
-                id: rowLayout
-                width: 100
-                height: 45
-                Layout.columnSpan: 4
+            TextInputCustom{
+                id: x_max
                 Layout.fillWidth: true
-                Layout.rowSpan: 1
+                Layout.columnSpan: 2
+                focusColor: Colors.mainColor2
+                title: 'Ajuste - X máx.'
+                textHolder: 'Ex.: 0, 32, 4.3, 23.4'
+                defaultColor: '#fff'
+                textColor: '#fff'
+                validator: RegExpValidator{regExp: /^[\-]?[0-9]+([\.]?[0-9]+)?$/}
+            }
 
-                CheckBoxCustom{
-                    id: switch_sigmax
-                    Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-                    Layout.fillWidth: true
-                    w: 25
-                    checked: true
-                    texto: "Incerteza em X"
-                }
+            CheckBoxCustom{
+                id: switch_sigmax
+                Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+                Layout.columnSpan: 2
+                w: 20
+                checked: true
+                texto: "Usar σx"
+            }
 
-                CheckBoxCustom{
-                    id: switch_sigmay
-                    w: 25
-                    Layout.fillWidth: true
-                    checked: true
-                    texto: "Incerteza em Y"
-                }
+            CheckBoxCustom{
+                id: switch_sigmay
+                Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+                Layout.columnSpan: 2
+                w: 20
+                checked: true
+                texto: "Usar σy"
             }
 
             Table{
                 id: tableParams
                 height: 130
                 Layout.columnSpan: 4
-                Layout.preferredHeight: 35
+                Layout.preferredHeight: 50
                 Layout.rightMargin: 0
                 Layout.leftMargin: 0
                 Layout.fillHeight: true
@@ -135,51 +123,98 @@ Item {
                 } 
             }
 
-            GroupBox {
-                id: groupBox_params
+            Rectangle {
                 Layout.columnSpan: 4
                 Layout.preferredHeight: 50
-                Layout.topMargin: 10
-                Layout.rightMargin: 0
-                Layout.leftMargin: 0
+                Layout.bottomMargin: 10
                 Layout.fillHeight: true
                 Layout.fillWidth: true
-                title: qsTr("Dados do Ajuste")
 
-                background: Rectangle{
+                layer.enabled: true
+                layer.effect: DropShadow {
+                    horizontalOffset: 0.5
+                    verticalOffset: 1
                     radius: 10
-                    color: '#00000000'
-                    border.color: '#ffffff'
-
-                    y: groupBox_params.topPadding - groupBox_params.bottomPadding
-                    width: parent.width
-                    height: parent.height - groupBox_params.topPadding + groupBox_params.bottomPadding
+                    spread: 0.05
+                    samples: 17
+                    color: "#252525"
                 }
 
-                label: Label {
-                    x: groupBox_params.leftPadding
-                    width: groupBox_params.availableWidth
-                    text: groupBox_params.title
-                    color: "#ffffff"
-                    elide: Text.ElideRight
-                }
+                color: Colors.color3
+                radius: 5
 
-                ScrollView {
-                    id: view
+                ColumnLayout{
                     anchors.fill: parent
-
-                    TextArea {
-                        id: infos
-                        color: "#ffffff"
-                        text: ""
-                        anchors.fill: parent
-                        font.pointSize: 10
-                        readOnly: true
-                        selectByMouse: true
+                    Text{
+                        Layout.alignment: Qt.AlignHCenter
+                        Layout.topMargin: 5
+                        text: "Dados do Ajuste"
+                        color: "#fff"
+                        font.pointSize: 9
+                        font.bold: true
                     }
-                }
+                    ScrollView {
+                        Layout.fillHeight: true
+                        Layout.fillWidth: true
+                        TextArea {
+                            id: infos
+                            color: "#ffffff"
+                            text: ""
+                            anchors.fill: parent
+                            font.pointSize: 10
+                            readOnly: true
+                            selectByMouse: true
+                        }
+                    }
+                }   
             }
         }
+
+            // GroupBox {
+            //     id: groupBox_params
+                // Layout.columnSpan: 4
+                // Layout.preferredHeight: 50
+                // Layout.topMargin: 10
+                // Layout.rightMargin: 0
+                // Layout.leftMargin: 0
+                // Layout.fillHeight: true
+                // Layout.fillWidth: true
+            //     title: qsTr("Dados do Ajuste")
+
+            //     background: Rectangle{
+            //         radius: 10
+            //         color: '#00000000'
+            //         border.color: '#ffffff'
+
+            //         y: groupBox_params.topPadding - groupBox_params.bottomPadding
+            //         width: parent.width
+            //         height: parent.height - groupBox_params.topPadding + groupBox_params.bottomPadding
+            //     }
+
+            //     label: Label {
+            //         x: groupBox_params.leftPadding
+            //         width: groupBox_params.availableWidth
+            //         text: groupBox_params.title
+            //         color: "#ffffff"
+            //         elide: Text.ElideRight
+            //     }
+
+            //     ScrollView {
+            //         id: view
+            //         anchors.fill: parent
+
+            //         TextArea {
+            //             id: infos
+            //             color: "#ffffff"
+            //             text: ""
+            //             anchors.fill: parent
+            //             font.pointSize: 10
+            //             readOnly: true
+            //             selectByMouse: true
+            //         }
+            //     }
+            // }
+        // }
     }
 
     Connections{

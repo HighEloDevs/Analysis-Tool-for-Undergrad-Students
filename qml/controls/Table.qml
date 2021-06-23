@@ -2,6 +2,7 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.11
 import QtQuick.Dialogs 1.3
+import QtGraphicalEffects 1.15
 import "../colors.js" as Colors
 
 Item{
@@ -17,6 +18,16 @@ Item{
         dataSet.clear()
     }
 
+    layer.enabled: true
+    layer.effect: DropShadow {
+        horizontalOffset: 1
+        verticalOffset: 1
+        radius: 10
+        spread: 0.1
+        samples: 17
+        color: "#252525"
+    }
+
     // Private
     width: 300
     height: 200
@@ -25,9 +36,9 @@ Item{
     Rectangle{
         id: header
         width: parent.width
-        height: 30
+        height: 25
         color: Colors.color2
-        radius: 0
+        radius: 5
 
         // Half bottom of the header must be flat
         Rectangle{
@@ -54,7 +65,7 @@ Item{
                     text: modelData.text
                     anchors.verticalCenter: parent.verticalCenter
                     anchors.horizontalCenter: parent.horizontalCenter
-                    font.pixelSize: 14
+                    font.pixelSize: 11
                     font.bold: true
                     color: 'white'
                 }
@@ -71,8 +82,9 @@ Item{
         anchors.topMargin: 0
         anchors.bottomMargin: 0
         color: Colors.color3
-        border.width: 2
-        border.color: header.color
+        radius: 0
+        // border.width: 2
+        // border.color: header.color
 
         ScrollView{
             anchors.fill: parent
@@ -142,9 +154,11 @@ Item{
     Rectangle{
         id: footer
         width: root.width
-        height: 15
-        color: Colors.color2
-        radius: 0
+        height: 10
+        color: Colors.color3
+        // color: "white"
+        z:2
+        radius: 5
 
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 0
@@ -153,6 +167,7 @@ Item{
             width: parent.width
             height: parent.height/2
             color: parent.color
+            radius: 0
             
             anchors.top: parent.top
             anchors.topMargin: 0

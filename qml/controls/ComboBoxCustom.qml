@@ -13,6 +13,7 @@ ComboBox {
     property color highlightColor: "#f0f"
 
     indicator: Image{
+        id: indicatorImg
         source: "../../images/icons/expand_more_white_18dp.svg"
         mipmap: true
         smooth: true
@@ -20,6 +21,21 @@ ComboBox {
         anchors.right: parent.right
         anchors.rightMargin: 5
         anchors.verticalCenter: parent.verticalCenter
+
+        states: [
+            State{
+                name: "down"
+                PropertyChanges{
+                    target: indicatorImg
+                    rotation: 180
+                }
+                when: root.down
+            }
+        ]
+
+        transitions: Transition {
+            RotationAnimation { duration: 150; direction: RotationAnimation.Counterclockwise }
+        }
     }
 
     delegate: ItemDelegate {

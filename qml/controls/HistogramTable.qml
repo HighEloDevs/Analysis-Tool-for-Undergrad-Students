@@ -4,6 +4,14 @@ import QtQuick.Layouts 1.11
 import QtQuick.Dialogs 1.3
 import "../colors.js" as Colors
 import "../controls"
+import QtQuick.Controls.Material 2.12
+import QtGraphicalEffects 1.12
+import QtQuick.Controls 2.12
+import QtQuick.Controls.impl 2.12
+import QtQuick.Controls.Material 2.12
+import QtQuick.Controls.Material.impl 2.12
+
+
 
 Item{
     id: root

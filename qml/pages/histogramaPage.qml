@@ -84,7 +84,6 @@ Rectangle {
                         hist.load(projectOpen.fileUrl)
                     }
                 }
-
                 onClicked: projectOpen.open()
             }
             TextButton{

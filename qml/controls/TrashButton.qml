@@ -17,9 +17,9 @@ Button{
     QtObject{
         id: internal
         property color dynamicColor: if(root.down){
-                                        root.down ? '#330011' : '#990033'
+                                        root.down ? '#990011' : '#ff0033'
                                     } else {
-                                        root.hovered ? '#4d0019' : '#990033'
+                                        root.hovered ? '#ee0019' : '#ff0033'
                                     }
     }
 

@@ -10,8 +10,6 @@ Item {
     id: root
     width: 372
     height: 673
-    implicitWidth: 372
-    implicitHeight: 673
 
     property alias pageFunc: pageFuncaoAjuste.item
     property alias pageProp: pageProps.item
@@ -20,10 +18,20 @@ Item {
 
     Rectangle {
         id: bg
-        color: Colors.c_section
+        color: Colors.color3
         anchors.fill: parent
+        radius: 5
         clip: true
-        z: 1
+
+        layer.enabled: true
+        layer.effect: DropShadow {
+            horizontalOffset: 0.5
+            verticalOffset: 1
+            radius: 10
+            spread: 0.05
+            samples: 17
+            color: "#252525"
+        }
 
         ColumnLayout {
             id: columnLayout
@@ -104,7 +112,7 @@ Item {
                 Layout.topMargin: 5
                 Layout.fillWidth: true
                 texto: 'PLOT / ATUALIZAR'
-                primaryColor: Colors.c_button
+                primaryColor: "#009900"
                 clickColor: Colors.c_button_active
                 hoverColor: Colors.c_button_hover
                 enabled: root.isPlotable

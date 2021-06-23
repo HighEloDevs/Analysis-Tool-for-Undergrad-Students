@@ -1,14 +1,17 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
-import Qt.labs.qmlmodels 1.0
 import QtQuick.Window 2.12
 import QtQuick.Layouts 1.12
 import QtQuick.Dialogs 1.3
+import QtGraphicalEffects 1.15
+import Qt.labs.qmlmodels 1.0
+
 
 import "../controls"
 import "../colors.js" as Colors
 
 Item {
+    id: root
     property alias pageProp: middleTabs.pageProp
     property alias pageFunc: middleTabs.pageFunc
     property var markers: ({
@@ -83,43 +86,42 @@ Item {
         RowLayout {
             id: bg_layout
             anchors.fill: parent
-            anchors.rightMargin: 0
-            anchors.leftMargin: 0
-            anchors.bottomMargin: 0
-            anchors.topMargin: 0
             spacing: 10
 
-            Rectangle {
+            ColumnLayout {
                 id: leftPanel
-                width: 298
-                color: Colors.c_section
                 Layout.fillWidth: true
                 Layout.fillHeight: true
+                Layout.minimumWidth: 150
+                Layout.maximumWidth: 400
+                spacing: 10
 
-                ColumnLayout {
-                    id: leftPanel_layout
-                    width: 271
-                    height: 125
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    anchors.top: parent.top
-                    anchors.rightMargin: 5
-                    anchors.leftMargin: 5
-                    anchors.topMargin: 5
-                    spacing: 0
-
-                    RowLayout {
-                        id: saveBtns_layout
-                        width: 100
-                        height: 100
-                        Layout.preferredHeight: 35
-                        Layout.fillWidth: true
-                        Layout.fillHeight: false
+                Rectangle{
+                    Layout.fillWidth: true
+                    radius: 5
+                    height: 130
+                    color: Colors.color3
+                    clip: true
+                    layer.enabled: true
+                    layer.effect: DropShadow {
+                        horizontalOffset: 1
+                        verticalOffset: 1
+                        radius: 10
+                        spread: 0.1
+                        samples: 17
+                        color: "#252525"
+                    }
+                    GridLayout{
+                        anchors.fill: parent
+                        anchors.margins: 5
+                        rowSpacing: 0
+                        columns: 4
+                        rows: 3
 
                         TextButton{
                             id: btnNew
-                            height: 25
                             Layout.fillWidth: true
+                            height: 25
                             texto: 'Novo Projeto'
                             textSize: 10
                             primaryColor: Colors.c_button
@@ -134,17 +136,15 @@ Item {
                                 singlePlot.new()
                             }
                         }
-
                         TextButton{
                             id: btnLoadProject
-                            height: 25
                             Layout.fillWidth: true
+                            height: 25
                             texto: 'Abrir'
                             textSize: 10
                             primaryColor: Colors.c_button
                             clickColor: Colors.c_button_active
                             hoverColor: Colors.c_button_hover
-
                             FileDialog{
                                 id: projectOpen
                                 title: "Escolha o projeto"
@@ -158,20 +158,17 @@ Item {
                                     singlePlot.load(projectOpen.fileUrl)
                                 }
                             }
-
                             onClicked: projectOpen.open()
                         }
-
                         TextButton{
                             id: btnSave
-                            height: 25
                             Layout.fillWidth: true
+                            height: 25
                             texto: 'Salvar'
                             textSize: 10
                             primaryColor: Colors.c_button
                             clickColor: Colors.c_button_active
                             hoverColor: Colors.c_button_hover
-
                             onClicked: {
                                 let saveAs = singlePlot.save(plotData)
                                 if (saveAs){
@@ -179,17 +176,15 @@ Item {
                                 }
                             }
                         }
-
                         TextButton{
                             id: btnSaveAs
-                            height: 25
                             Layout.fillWidth: true
+                            height: 25
                             texto: 'Salvar Como'
                             textSize: 10
                             primaryColor: Colors.c_button
                             clickColor: Colors.c_button_active
                             hoverColor: Colors.c_button_hover
-
                             FileDialog{
                                 id: projectSaver
                                 title: "Escolha um local para salvar o projeto"
@@ -200,31 +195,22 @@ Item {
                                     singlePlot.saveAs(fileUrl, plotData)
                                 }
                             }
-
-                            onClicked:{
-                                projectSaver.open()
-                            }
+                            onClicked: projectSaver.open()
                         }
-                    }
-
-                    TextInputCustom{
-                        id: nomeProjeto
-                        Layout.fillWidth: true
-                        focusColor: Colors.mainColor2
-                        title: 'Identificação do projeto'
-                        textHolder: 'Ex.: Ajuste X vs T'
-                        defaultColor: '#fff'
-                        textColor: '#fff'
-                    }
-
-                    RowLayout {
-                        id: dataBtns_layout
-                        Layout.preferredHeight: 35
-                        Layout.fillWidth: true
-
+                        TextInputCustom{
+                            id: nomeProjeto
+                            Layout.fillWidth: true
+                            Layout.columnSpan: 4
+                            focusColor: Colors.mainColor2
+                            title: 'Identificação do projeto'
+                            textHolder: 'Ex.: Ajuste X vs T'
+                            defaultColor: '#fff'
+                            textColor: '#fff'
+                        }
                         TextButton{
                             id: btnUpload
                             Layout.fillWidth: true
+                            Layout.columnSpan: 1
                             texto: 'Escolher Dados'
                             primaryColor: Colors.c_button
                             clickColor: Colors.c_button_active
@@ -235,7 +221,6 @@ Item {
                                 title: "Escolha o arquivo com seus dados"
                                 folder: shortcuts.desktop
                                 selectMultiple: false
-                                // nameFilters: ["Arquivos txt (*.txt)", "Arquivos csv (*.csv)", "Arquivos tsv (*.tsv)"]
                                 nameFilters: ["Arquivos de dados (*.txt *.csv *.tsv)"]
                                 onAccepted:{
                                     table.clear()
@@ -247,33 +232,26 @@ Item {
                                 fileOpen.open()
                             }
                         }
-
                         Text {
                             id: label_fileName
                             Layout.fillWidth: true
+                            Layout.columnSpan: 3
                             color: "#fff"
                             font.pointSize: 10
-                            minimumPointSize: 5
                             fontSizeMode: Text.Fit
+                            minimumPointSize: 5
                             maximumLineCount: 2
                             wrapMode: Text.Wrap
                             text: qsTr("Dados não selecionados")
                         }
                     }
+
                 }
 
                 TableData{
                     id: table
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    anchors.top: leftPanel_layout.bottom
-                    anchors.bottom: parent.bottom
-                    anchors.topMargin: 0
-                    anchors.rightMargin: 0
-                    anchors.leftMargin: 0
-                    anchors.bottomMargin: 0
-                    Layout.fillHeight: true
                     Layout.fillWidth: true
+                    Layout.fillHeight: true
                     dataModel: ListModel{
                         id: dataSet
                     }
@@ -282,9 +260,9 @@ Item {
 
             Tabs{
                 id: middleTabs
+                Layout.minimumWidth: 200
                 Layout.fillHeight: true
                 Layout.fillWidth: true
-
                 isPlotable: table.hasData
             }
         }
@@ -355,21 +333,13 @@ Item {
             pageProp.legend.checked         = props['canvasProps']['legend']
             pageProp.grid.checked           = props['canvasProps']['grid']
             pageProp.residuals.checked      = props['canvasProps']['residuals']
-            // pageProp.xmin.text              = props['canvasProps']['xmin'] == '0' ? '' : props['canvasProps']['xmin']
             pageProp.xmin.text              = props['canvasProps']['xmin']
-            // pageProp.xmax.text              = props['canvasProps']['xmax'] == '0' ? '' : props['canvasProps']['xmax']
             pageProp.xmax.text              = props['canvasProps']['xmax']
-            // pageProp.xdiv.text              = props['canvasProps']['xdiv'] == '0' ? '' : props['canvasProps']['xdiv']
             pageProp.xdiv.text              = props['canvasProps']['xdiv']
-            // pageProp.ymin.text              = props['canvasProps']['ymin'] == '0' ? '' : props['canvasProps']['ymin']
             pageProp.ymin.text              = props['canvasProps']['ymin']
-            // pageProp.ymax.text              = props['canvasProps']['ymax'] == '0' ? '' : props['canvasProps']['ymax']
             pageProp.ymax.text              = props['canvasProps']['ymax']
-            // pageProp.ydiv.text              = props['canvasProps']['ydiv'] == '0' ? '' : props['canvasProps']['ydiv']
             pageProp.ydiv.text              = props['canvasProps']['ydiv']
-            // pageProp.resMin.text            = props['canvasProps']['resmin'] == '0' ? '' : props['canvasProps']['resmin']
             pageProp.resMin.text            = props['canvasProps']['resmin']
-            // pageProp.resMax.text            = props['canvasProps']['resmax'] == '0' ? '' : props['canvasProps']['resmax']
             pageProp.resMax.text            = props['canvasProps']['resmax']
 
             // Filling funcaoAjustePage.qml
