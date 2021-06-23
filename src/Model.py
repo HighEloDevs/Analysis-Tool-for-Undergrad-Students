@@ -409,7 +409,7 @@ class Model(QObject):
             param = Parameters()
             for i in range(len(a)):
                 param.add(self._model.param_names[i], value=a[i])
-                return eval("self._model.eval(%s=x, param=param)"%self._indVar, None,
+            return eval("self._model.eval(%s=x, params=param)"%self._indVar, None,
                 {'x': x, 'param': param, 'self': self})
         model = SciPyModel(f)
         try:
@@ -620,6 +620,26 @@ class Model(QObject):
         x_plot = np.logspace(np.log10(x_min), np.log10(x_max), int(fig.get_size_inches()[0]*fig.dpi*2.1))
         return x_plot, eval("self._model.eval(%s = x_plot, params = self._params)"%self._indVar, None,
         {'x_plot': x_plot, 'self': self})
+    
+    def predictInc(self, wsx):
+        if self._has_sx and (wsx == False) and self._has_sy:
+            # d  = np.array([np.diff(self._data["x"]).min()/2]*3)
+            sy = np.zeros(len(self._data["x"]), dtype = float)
+            for i, x in enumerate(self._data["x"]):
+                # x_var = np.array([x - d[0], x, x + d[0]])
+                x_var = np.array([x + self._data["sx"].iloc[i], x - self._data["sx"].iloc[i]])
+                y_prd = eval("self._model.eval(%s = x, params = self._params)"%self._indVar, None,
+            {'x': x, 'self': self})
+                y_var = eval("self._model.eval(%s = x_var, params = self._params)"%self._indVar, None,
+            {'x_var': x_var, 'self': self})
+                sy[i] = np.abs(y_var - y_prd).max()
+                # sy[i] = np.gradient(y_var, x_var)[1]
+            # return np.sqrt(self._data["sy"].to_numpy()**2 + (sy*self._data["sx"].to_numpy())**2)
+            return sy
+        elif self._has_sx and (wsx == False) and self._has_sy == False:
+            return self._data["sx"]
+        return self._data["sy"]
+
     
     def reset(self):
         # self._msgHandler = messageHandler
