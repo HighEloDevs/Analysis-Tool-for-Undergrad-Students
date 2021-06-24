@@ -54,6 +54,7 @@ Item {
                         text: "Função de Ajuste"
                         activeMenuColorRight: "#565e66"
                         isActiveMenu: true
+                        iconUrl: "../../images/icons/functions_white_24dp.svg"
 
                         onClicked: {
                             tabBtn1.isActiveMenu = true
@@ -67,9 +68,10 @@ Item {
                     TabButton {
                         id: tabBtn2
                         width: topBar.width / 2
-                        text: "Propriedades do gráfico"
+                        text: "Propriedades"
                         activeMenuColorRight: "#565e66"
                         isActiveMenu: false
+                        iconUrl: "../../images/icons/settings_white_24dp.svg"
 
                         onClicked: {
                             tabBtn1.isActiveMenu = false

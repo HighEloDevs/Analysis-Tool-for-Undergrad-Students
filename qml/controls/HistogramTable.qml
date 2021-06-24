@@ -15,6 +15,15 @@ import QtQuick.Controls.Material.impl 2.12
 
 Item{
     id: root
+    layer.enabled: true
+    layer.effect: DropShadow {
+        horizontalOffset: 1
+        verticalOffset: 1
+        radius: 10
+        spread: 0.1
+        samples: 17
+        color: "#252525"
+    }
     // Fixed header
     property variant headerArr: [
         {title: 'Dados (.txt)', width: 30/100},
@@ -64,16 +73,25 @@ Item{
         // Header
         Rectangle{
             Layout.fillWidth: true
+            color: Colors.color1
             height: root.headerHeight
+            radius: 5
+            Rectangle{
+                anchors.bottom: parent.bottom
+                anchors.bottomMargin: 0
+                width: parent.width
+                height: parent.height/2
+                color: parent.color
+            }
             ListView{
                 anchors.fill: parent
                 orientation: ListView.Horizontal
                 interactive: false
                 model: root.headerArr
-                delegate: Rectangle{
+                delegate: Item{
                     width: modelData.width * root.width
                     height: root.headerHeight
-                    color: Colors.color1
+                    // color: Colors.color1
 
                     Text{
                         anchors.verticalCenter: parent.verticalCenter
@@ -91,7 +109,7 @@ Item{
         Rectangle{
             Layout.fillHeight: true
             Layout.fillWidth: true
-            color: "transparent"
+            color: Colors.color3
             ScrollView{
                 anchors.fill: parent
                 ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
@@ -267,6 +285,15 @@ Item{
             Layout.fillWidth: true
             height: root.headerHeight - 10
             color: Colors.color1
+            radius: 5
+
+            Rectangle{
+                anchors.top: parent.top
+                anchors.topMargin: 0
+                width: parent.width
+                height: parent.height/2
+                color: parent.color
+            }
 
             IconButton{
                 id: addRowBtn

@@ -122,7 +122,7 @@ Item {
                             id: btnNew
                             Layout.fillWidth: true
                             height: 25
-                            texto: 'Novo Projeto'
+                            texto: 'Novo'
                             textSize: 10
                             primaryColor: Colors.c_button
                             clickColor: Colors.c_button_active
@@ -245,7 +245,6 @@ Item {
                             text: qsTr("Dados não selecionados")
                         }
                     }
-
                 }
 
                 TableData{

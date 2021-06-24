@@ -12,7 +12,7 @@ var c_section = "#565e66"
 
 var color1 = "#23272A"
 var color2 = "#2C2F33"
-var color3 = "#40464c"
+var color3 = "#40464e"
 
 // Button colors
 var c_button_sideBar = color1

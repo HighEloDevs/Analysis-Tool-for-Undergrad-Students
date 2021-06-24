@@ -2,15 +2,16 @@ import QtQuick 2.0
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.11
 import QtQuick.Dialogs 1.3
+import QtGraphicalEffects 1.15
 import "../colors.js" as Colors
 import "../controls"
 
 Rectangle {
     id: root
     anchors.fill: parent
-    color: "#40464c"
-    border.width: 2
-    border.color: Colors.color2
+    color: Colors.color3
+    // border.width: 2
+    // border.color: Colors.color2
 
     property var plotData: ({
         key   : "2-b-hist",
@@ -41,102 +42,117 @@ Rectangle {
 
     ColumnLayout{
         anchors.fill: parent
-        anchors.margins: 2
-        spacing: 0
+        // anchors.margins: 2
+        spacing: 10
 
-        GridLayout{
-            id: projectBg
+        Rectangle{
             Layout.fillWidth: true
-            Layout.preferredHeight: 80
-            Layout.margins: 10
-            columnSpacing: 5
-            columns: 4
-            rowSpacing: 5
-            rows: 2
-
-            TextButton{
-                Layout.fillWidth: true
-                radius: 5
-                primaryColor: Colors.c_button
-                clickColor: Colors.c_button_active
-                hoverColor: Colors.c_button_hover
-                texto: "Novo"
-                textColor: "#fff"
-
-                onClicked: hist.new()
+            Layout.preferredHeight: 95
+            radius: 5
+            color: root.color
+            layer.enabled: true
+            layer.effect: DropShadow {
+                horizontalOffset: 1
+                verticalOffset: 1
+                radius: 10
+                spread: 0.1
+                samples: 17
+                color: "#252525"
             }
-            TextButton{
-                Layout.fillWidth: true
-                radius: 5
-                primaryColor: Colors.c_button
-                clickColor: Colors.c_button_active
-                hoverColor: Colors.c_button_hover
-                texto: "Abrir"
-                textColor: "#fff"
 
-                FileDialog{
-                    id: projectOpen
-                    title: "Escolha o projeto"
-                    folder: shortcuts.desktop
-                    selectMultiple: false
-                    nameFilters: ["Arquivos JSON (*.json)"]
-                    onAccepted:{
-                        hist.load(projectOpen.fileUrl)
+            GridLayout{
+                id: projectBg
+                anchors.fill: parent
+                anchors.margins: 5
+                columnSpacing: 5
+                columns: 4
+                rowSpacing: 5
+                rows: 2
+
+                TextButton{
+                    Layout.fillWidth: true
+                    radius: 5
+                    primaryColor: Colors.c_button
+                    clickColor: Colors.c_button_active
+                    hoverColor: Colors.c_button_hover
+                    texto: "Novo"
+                    textColor: "#fff"
+
+                    onClicked: hist.new()
+                }
+                TextButton{
+                    Layout.fillWidth: true
+                    radius: 5
+                    primaryColor: Colors.c_button
+                    clickColor: Colors.c_button_active
+                    hoverColor: Colors.c_button_hover
+                    texto: "Abrir"
+                    textColor: "#fff"
+
+                    FileDialog{
+                        id: projectOpen
+                        title: "Escolha o projeto"
+                        folder: shortcuts.desktop
+                        selectMultiple: false
+                        nameFilters: ["Arquivos JSON (*.json)"]
+                        onAccepted:{
+                            hist.load(projectOpen.fileUrl)
+                        }
+                    }
+                    onClicked: projectOpen.open()
+                }
+                TextButton{
+                    Layout.fillWidth: true
+                    radius: 5
+                    primaryColor: Colors.c_button
+                    clickColor: Colors.c_button_active
+                    hoverColor: Colors.c_button_hover
+                    texto: "Salvar"
+                    textColor: "#fff"
+
+                    onClicked: {
+                        plotData["data"] = dataTable.getDataShaped()
+                        var res = hist.save(root.plotData)
+                        if(!res){
+                            projectSaver.open()
+                        }
                     }
                 }
-                onClicked: projectOpen.open()
-            }
-            TextButton{
-                Layout.fillWidth: true
-                radius: 5
-                primaryColor: Colors.c_button
-                clickColor: Colors.c_button_active
-                hoverColor: Colors.c_button_hover
-                texto: "Salvar"
-                textColor: "#fff"
+                TextButton{
+                    Layout.fillWidth: true
+                    radius: 5
+                    primaryColor: Colors.c_button
+                    clickColor: Colors.c_button_active
+                    hoverColor: Colors.c_button_hover
+                    texto: "Salvar como"
+                    textColor: "#fff"
 
-                onClicked: {
-                    plotData["data"] = dataTable.getDataShaped()
-                    var res = hist.save(root.plotData)
-                    if(!res){
+                    FileDialog{
+                        id: projectSaver
+                        title: "Escolha um local para salvar o projeto"
+                        folder: shortcuts.desktop
+                        selectExisting: false
+                        nameFilters: ["Arquivo JSON (*.json)"]
+                        onAccepted: {
+                            plotData["data"] = dataTable.getDataShaped()
+                            hist.saveAs(fileUrl, plotData)
+                        }
+                    }
+
+                    onClicked:{
                         projectSaver.open()
                     }
                 }
-            }
-            TextButton{
-                Layout.fillWidth: true
-                radius: 5
-                primaryColor: Colors.c_button
-                clickColor: Colors.c_button_active
-                hoverColor: Colors.c_button_hover
-                texto: "Salvar como"
-                textColor: "#fff"
-
-                FileDialog{
-                    id: projectSaver
-                    title: "Escolha um local para salvar o projeto"
-                    folder: shortcuts.desktop
-                    selectExisting: false
-                    nameFilters: ["Arquivo JSON (*.json)"]
-                    onAccepted: {
-                        plotData["data"] = dataTable.getDataShaped()
-                        hist.saveAs(fileUrl, plotData)
-                    }
+                TextInputCustom{
+                    id: id
+                    Layout.columnSpan: 4
+                    Layout.fillWidth: true
+                    focusColor: Colors.mainColor2
+                    title: 'Título do projeto'
+                    textHolder: ''
+                    defaultColor: '#fff'
+                    textColor: '#fff'
                 }
-
-                onClicked:{
-                    projectSaver.open()
-                }
-            }
-            TextInputCustom{
-                id: id
-                Layout.columnSpan: 4
-                Layout.fillWidth: true
-                focusColor: Colors.mainColor2
-                title: 'Título do projeto'
-                textHolder: ''
-                defaultColor: '#fff'
-                textColor: '#fff'
             }
         }
 
@@ -150,7 +166,17 @@ Rectangle {
             Layout.alignment: Qt.AlignHCenter
             Layout.fillHeight: true
             Layout.fillWidth: true
-            color: "#00000000"
+            layer.enabled: true
+            layer.effect: DropShadow {
+                horizontalOffset: 1
+                verticalOffset: 1
+                radius: 10
+                spread: 0.1
+                samples: 17
+                color: "#252525"
+            }
+            color: Colors.color3
+            radius: 5
             ScrollView{
                 anchors.fill: parent
                 anchors.leftMargin: 10        
@@ -348,6 +374,9 @@ Rectangle {
                         label: "Orientação"
                         model: ["Vertical", "Horizontal"]
                     }
+                    SliderCustom{
+                        
+                    }
                 }
             }
         }
@@ -355,10 +384,10 @@ Rectangle {
         TextButton{
             Layout.fillWidth: true
             Layout.preferredHeight: 25
-            radius: 0
-            primaryColor: Colors.c_button
-            hoverColor: Colors.c_button_hover
-            clickColor: Colors.c_button_active
+            Layout.leftMargin: 10
+            Layout.rightMargin: 10
+            radius: 5
+            primaryColor: "#009900"
             texto: "PLOT / ATUALIZAR"
             textColor: "#fff"
             enabled: dataTable.hasData ? true:false

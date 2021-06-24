@@ -169,52 +169,6 @@ Item {
                 }   
             }
         }
-
-            // GroupBox {
-            //     id: groupBox_params
-                // Layout.columnSpan: 4
-                // Layout.preferredHeight: 50
-                // Layout.topMargin: 10
-                // Layout.rightMargin: 0
-                // Layout.leftMargin: 0
-                // Layout.fillHeight: true
-                // Layout.fillWidth: true
-            //     title: qsTr("Dados do Ajuste")
-
-            //     background: Rectangle{
-            //         radius: 10
-            //         color: '#00000000'
-            //         border.color: '#ffffff'
-
-            //         y: groupBox_params.topPadding - groupBox_params.bottomPadding
-            //         width: parent.width
-            //         height: parent.height - groupBox_params.topPadding + groupBox_params.bottomPadding
-            //     }
-
-            //     label: Label {
-            //         x: groupBox_params.leftPadding
-            //         width: groupBox_params.availableWidth
-            //         text: groupBox_params.title
-            //         color: "#ffffff"
-            //         elide: Text.ElideRight
-            //     }
-
-            //     ScrollView {
-            //         id: view
-            //         anchors.fill: parent
-
-            //         TextArea {
-            //             id: infos
-            //             color: "#ffffff"
-            //             text: ""
-            //             anchors.fill: parent
-            //             font.pointSize: 10
-            //             readOnly: true
-            //             selectByMouse: true
-            //         }
-            //     }
-            // }
-        // }
     }
 
     Connections{
