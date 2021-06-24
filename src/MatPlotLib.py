@@ -80,8 +80,7 @@ class MPLCanvas(QObject):
         self._coordinates = ""
 
     def updateWithCanvas(self, canvas):
-        """ initialize with the canvas for the figure
-        """
+        """Initialize with the canvas for the figure."""
         self.canvas  = canvas
         self.figure  = self.canvas.figure
         self.toolbar = NavigationToolbar2QtQuick(canvas=canvas)
@@ -346,16 +345,22 @@ class MPLCanvas(QObject):
         self.canvas.draw_idle()
 
     def clearAxis(self):
-        """Clear the current plot in the axis"""
+        """Clear the current plot in the axis."""
         try:
-            self.axes.remove()
+            self.figure.gca().remove()
         except:
-            pass
-        try:
-            self.ax1.remove()
-            self.ax2.remove()
-        except:
-            pass
+            ax1, ax2 = self.figure.gca()
+            ax1.remove()
+            ax2.remove()
+        # try:
+        #     self.axes.remove()
+        # except:
+        #     pass
+        # try:
+        #     self.ax1.remove()
+        #     self.ax2.remove()
+        # except:
+        #     pass
 
     def setCanvasProps(self, props, expr):
         self.log_x      = bool(props['log_x'])
@@ -385,7 +390,7 @@ class MPLCanvas(QObject):
         self.sigma_y         = bool(fitProps['wsy'])
 
     def reset(self):
-        '''Resets the class'''
+        '''Resets the class.'''
         # The figure, canvas, toolbar and axes
         self.clearAxis()
         self.axes = self.figure.add_subplot(111)
@@ -413,11 +418,11 @@ class MPLCanvas(QObject):
         self._coordinates = ""
     
     def getCoordinates(self):
-        """Gets the cordinates in the plot"""
+        """Gets the cordinates in the plot."""
         return self._coordinates
     
     def setCoordinates(self, coordinates):
-        """Sets the cordinates"""
+        """Sets the cordinates."""
         self._coordinates = coordinates
         self.coordinatesChanged.emit(self._coordinates)
 

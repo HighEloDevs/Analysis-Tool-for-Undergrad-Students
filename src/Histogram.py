@@ -48,15 +48,15 @@ class Histogram(QObject):
     @pyqtSlot(QJsonValue)
     def plot(self, data):
         data = QJsonValue.toVariant(data)
-        # print(QJsonValue.toVariant(data))
-        self.clearAxis()
-        axes =  self.canvas.figure.add_subplot(111)
+        # self.clearAxis()
+        self.canvas.reset()
+        # axes = self.canvas.figure.add_subplot(111)
         if data["props"]["grid"]:
-            axes.grid(True, which='major')
+            self.canvas.axes.grid(True, which='major')
         if data["props"]["logy"]:
-            axes.set_yscale('log')
+            self.canvas.axes.set_yscale('log')
         if data["props"]["logx"]:
-            axes.set_xscale('log')
+            self.canvas.axes.set_xscale('log')
 
         xdiv = self.makeFloat(data["props"]["xdiv"], 0.)
         xmin = self.makeFloat(data["props"]["xmin"], 0.)
@@ -66,33 +66,33 @@ class Histogram(QObject):
         ymax = self.makeFloat(data["props"]["ymax"], 0.)
 
         if xdiv != 0. and (xmax != 0. or xmin != 0.):
-            axes.set_xticks(np.linspace(xmin, xmax, xdiv + 1))
-            axes.set_xlim(left = xmin, right = xmax)
+            self.canvas.axes.set_xticks(np.linspace(xmin, xmax, xdiv + 1))
+            self.canvas.axes.set_xlim(left = xmin, right = xmax)
 
         else:
             if xmin == 0. and xmax != 0.:
-                axes.set_xlim(left = None, right = xmax)
+                self.canvas.axes.set_xlim(left = None, right = xmax)
             elif xmin != 0. and xmax == 0.:
-                axes.set_xlim(left = xmin, right = None)
+                self.canvas.axes.set_xlim(left = xmin, right = None)
             elif xmin != 0. and xmax != 0.:
-                axes.set_xlim(left = xmin, right = xmax)
+                self.canvas.axes.set_xlim(left = xmin, right = xmax)
         
         if ydiv != 0. and (ymax != 0. or ymin != 0.):
-            axes.set_yticks(np.linspace(ymin, ymax, ydiv + 1))
-            axes.set_ylim(bottom = ymin, top = ymax)
+            self.canvas.axes.set_yticks(np.linspace(ymin, ymax, ydiv + 1))
+            self.canvas.axes.set_ylim(bottom = ymin, top = ymax)
         else:
             if ymin == 0. and ymax != 0.:
-                axes.set_ylim(bottom = None, top = ymax)
+                self.canvas.axes.set_ylim(bottom = None, top = ymax)
             elif ymin != 0. and ymax == 0.:
-                axes.set_ylim(bottom = ymin, top = None)
+                self.canvas.axes.set_ylim(bottom = ymin, top = None)
             elif ymin != 0. and ymax != 0.:
-                axes.set_ylim(bottom = ymin, top = ymax)
+                self.canvas.axes.set_ylim(bottom = ymin, top = ymax)
         for arquivo in data["data"]:
             df = pd.DataFrame.from_dict(json.loads(arquivo["data"]))
             alpha = self.makeFloat(arquivo["kargs"].pop("alpha"), 1.0)
             if len(df.columns) == 2:
                 label = arquivo["kargs"].pop("label")
-                counts, bins, _ = axes.hist(x = df["x"], bins = self.makeInt(data["props"]["nbins"], 10),
+                counts, bins, _ = self.canvas.axes.hist(x = df["x"], bins = self.makeInt(data["props"]["nbins"], 10),
                 weights     = df["weight"],
                 density     = False, cumulative = False, bottom = 0,
                 histtype    = data["props"]["histType"],
@@ -103,7 +103,7 @@ class Histogram(QObject):
                 **arquivo["kargs"])
             elif len(df.columns) == 1:
                 label = arquivo["kargs"].pop("label")
-                counts, bins, _ = axes.hist(x = df["x"], bins = self.makeInt(data["props"]["nbins"], 10),
+                counts, bins, _ = self.canvas.axes.hist(x = df["x"], bins = self.makeInt(data["props"]["nbins"], 10),
                 density     = False, cumulative = False, bottom = 0,
                 histtype    = data["props"]["histType"],
                 align       = self.histAlign[data["props"]["histAlign"]],
@@ -111,6 +111,14 @@ class Histogram(QObject):
                 log = False, rwidth = 1, capstyle = "round", ls = "-", aa = True,
                 alpha = alpha,
                 **arquivo["kargs"])
+                
+                if label:
+                    _, top = self.canvas.axes.get_ylim()
+                    c = (bins[1] - bins[0])/2
+                    for n, b in zip(counts, bins):
+                        if n != 0:
+                            self.canvas.axes.text(b + c, n + top*0.02, str(int(n)), ha = "center")
+                # self.canvas.axes.bar_label(bars, padding=3)
         self.canvas.canvas.draw_idle()
 ########################### EDITE AQUI /\ #############################
 
@@ -118,6 +126,7 @@ class Histogram(QObject):
     def new(self):
         self.path = ""
         self.fillPage.emit(None)
+        self.canvas.reset()
 
     @pyqtSlot(QJsonValue, result=bool)
     def save(self, data):
@@ -233,16 +242,3 @@ class Histogram(QObject):
             return int(var)
         except:
             return value
-
-    def clearAxis(self):
-        """Clear the current plot in the axis."""
-        try:
-            self.canvas.canvas.figure.gca().remove()
-        except:
-            pass
-        try:
-            ax1, ax2 = self.canvas.canvas.figure.gca()
-            ax1.remove()
-            ax2.remove()
-        except:
-            pass

@@ -379,10 +379,10 @@ Rectangle {
                 title.text = ""
                 xaxis.text = ""
                 yaxis.text = ""
-                grid.checkState = 2
-                logx.checkState = 2
-                logy.checkState = 2
-                norm.checkState = 2
+                grid.checkState = 0
+                logx.checkState = 0
+                logy.checkState = 0
+                norm.checkState = 0
                 xmin.text = ""
                 xmax.text = ""
                 xdiv.text = ""
@@ -392,7 +392,7 @@ Rectangle {
                 rangexmin.text = ""
                 rangexmax.text = ""
                 nbins.text = ""
-                histType.currentIndex = histType.find("Barra")
+                histType.currentIndex = histType.find("bar")
                 histAlign.currentIndex = histAlign.find("Centro")
                 histOrientation.currentIndex = histOrientation.find("Vertical")
             } else {
