@@ -93,48 +93,50 @@ class Histogram(QObject):
                 df = pd.DataFrame.from_dict(json.loads(arquivo["data"]))
                 alpha = self.makeFloat(arquivo["kargs"].pop("alpha"), 1.0)
                 label = arquivo["kargs"].pop("label")
-                if len(df.columns) == 2:
-                    if arquivo["legend"] == "":
-                        counts, bins, _ = self.canvas.axes.hist(x = df["x"], bins = self.makeInt(data["props"]["nbins"], 10),
-                        weights     = df["weight"],
-                        density     = False, cumulative = False, bottom = 0,
-                        histtype    = data["props"]["histType"],
-                        align       = self.histAlign[data["props"]["histAlign"]],
-                        orientation = self.histOrient[data["props"]["histOrientation"]],
-                        log = False, rwidth = 1, capstyle = "round", ls = "-", aa = True,
-                        alpha = alpha,
-                        **arquivo["kargs"])
-                    else:
-                        counts, bins, _ = self.canvas.axes.hist(x = df["x"], bins = self.makeInt(data["props"]["nbins"], 10),
-                        weights     = df["weight"],
-                        density     = False, cumulative = False, bottom = 0,
-                        histtype    = data["props"]["histType"],
-                        align       = self.histAlign[data["props"]["histAlign"]],
-                        orientation = self.histOrient[data["props"]["histOrientation"]],
-                        log = False, rwidth = 1, capstyle = "round", ls = "-", aa = True,
-                        alpha = alpha, label = arquivo["legend"],
-                        **arquivo["kargs"])
-                        has_legend = True
-                elif len(df.columns) == 1:
-                    if arquivo["legend"] == "":
-                        counts, bins, _ = self.canvas.axes.hist(x = df["x"], bins = self.makeInt(data["props"]["nbins"], 10),
-                        density     = False, cumulative = False, bottom = 0,
-                        histtype    = data["props"]["histType"],
-                        align       = self.histAlign[data["props"]["histAlign"]],
-                        orientation = self.histOrient[data["props"]["histOrientation"]],
-                        log = False, rwidth = 1, capstyle = "round", ls = "-", aa = True,
-                        alpha = alpha,
-                        **arquivo["kargs"])
-                    else:
-                        counts, bins, _ = self.canvas.axes.hist(x = df["x"], bins = self.makeInt(data["props"]["nbins"], 10),
-                        density     = False, cumulative = False, bottom = 0,
-                        histtype    = data["props"]["histType"],
-                        align       = self.histAlign[data["props"]["histAlign"]],
-                        orientation = self.histOrient[data["props"]["histOrientation"]],
-                        log = False, rwidth = 1, capstyle = "round", ls = "-", aa = True,
-                        alpha = alpha, label = arquivo["legend"],
-                        **arquivo["kargs"])
-                        has_legend = True
+                # if len(df.columns) == 2:
+                #     if arquivo["legend"] == "":
+                #         counts, bins, _ = self.canvas.axes.hist(x = df["x"], bins = self.makeInt(data["props"]["nbins"], 10),
+                #         weights     = df["weight"],
+                #         density     = False, cumulative = False, bottom = 0,
+                #         histtype    = data["props"]["histType"],
+                #         align       = self.histAlign[data["props"]["histAlign"]],
+                #         orientation = self.histOrient[data["props"]["histOrientation"]],
+                #         log = False, rwidth = 1, capstyle = "round", ls = "-", aa = True,
+                #         alpha = alpha,
+                #         **arquivo["kargs"])
+                #     else:
+                #         counts, bins, _ = self.canvas.axes.hist(x = df["x"], bins = self.makeInt(data["props"]["nbins"], 10),
+                #         weights     = df["weight"],
+                #         density     = False, cumulative = False, bottom = 0,
+                #         histtype    = data["props"]["histType"],
+                #         align       = self.histAlign[data["props"]["histAlign"]],
+                #         orientation = self.histOrient[data["props"]["histOrientation"]],
+                #         log = False, rwidth = 1, capstyle = "round", ls = "-", aa = True,
+                #         alpha = alpha, label = arquivo["legend"],
+                #         **arquivo["kargs"])
+                #         has_legend = True
+                # elif len(df.columns) == 1:
+                bins   = np.linspace(np.floor(df["x"].min()), np.ceil(df["x"].max()), self.makeInt(data["props"]["nbins"], 10) + 1)
+                counts = None
+                if arquivo["legend"] == "":
+                    counts, bins, _ = self.canvas.axes.hist(x = df["x"], bins = bins,
+                    density     = False, cumulative = False, bottom = 0,
+                    histtype    = data["props"]["histType"],
+                    align       = self.histAlign[data["props"]["histAlign"]],
+                    orientation = self.histOrient[data["props"]["histOrientation"]],
+                    log = False, rwidth = 1, capstyle = "round", ls = "-", aa = True,
+                    alpha = alpha,
+                    **arquivo["kargs"])
+                else:
+                    counts, bins, _ = self.canvas.axes.hist(x = df["x"], bins = bins,
+                    density     = False, cumulative = False, bottom = 0,
+                    histtype    = data["props"]["histType"],
+                    align       = self.histAlign[data["props"]["histAlign"]],
+                    orientation = self.histOrient[data["props"]["histOrientation"]],
+                    log = False, rwidth = 1, capstyle = "round", ls = "-", aa = True,
+                    alpha = alpha, label = arquivo["legend"],
+                    **arquivo["kargs"])
+                    has_legend = True
                 if label:
                     left, top = self.canvas.axes.get_ylim()
                     height = top - left
@@ -238,10 +240,10 @@ class Histogram(QObject):
 
         if len(df.columns) == 1:
             df.columns = ["x"]
-        elif len(df.columns) == 2:
-            df.columns = ["x", "weight"]
+        # elif len(df.columns) == 2:
+        #     df.columns = ["x", "weight"]
         else:
-            self.messageHandler.raiseError("A tabela de histogramas deve conter no máximo 2 colunas: x e pesos.")
+            self.messageHandler.raiseError("A tabela de histogramas deve conter no máximo 1 coluna.")
             return QJsonValue.fromVariant(package)
         
         for i in df.columns:
