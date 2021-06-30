@@ -162,7 +162,7 @@ class MPLCanvas(QObject):
                     
 
                     ssy = model.predictInc(not self.sigma_x)
-                    self.ax2.errorbar(x, y_r, yerr=ssy, xerr = sx, ecolor = self.symbol_color, capsize = 0, elinewidth = 1, ms = self.symbol_size, marker = self.symbol, color = self.symbol_color, ls = 'none')
+                    self.ax2.errorbar(x, y_r, yerr=ssy, ecolor = self.symbol_color, capsize = 0, elinewidth = 1, ms = self.symbol_size, marker = self.symbol, color = self.symbol_color, ls = 'none')
                     self.ax1.errorbar(x, y, yerr=sy, xerr=sx, ecolor = self.symbol_color, capsize = 0, elinewidth = 1, ms = self.symbol_size, marker = self.symbol, color = self.symbol_color, ls = 'none')
                     
                     left, right = self.ax1.get_xlim()
