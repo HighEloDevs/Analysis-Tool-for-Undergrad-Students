@@ -48,9 +48,7 @@ class Histogram(QObject):
     @pyqtSlot(QJsonValue)
     def plot(self, data):
         data = QJsonValue.toVariant(data)
-        # self.clearAxis()
         self.canvas.reset()
-        # axes = self.canvas.figure.add_subplot(111)
         if data["props"]["grid"]:
             self.canvas.axes.grid(True, which='major')
         if data["props"]["logy"]:
@@ -58,10 +56,10 @@ class Histogram(QObject):
         if data["props"]["logx"]:
             self.canvas.axes.set_xscale('log')
 
-        xdiv = self.makeFloat(data["props"]["xdiv"], 0.)
+        xdiv = self.makeInt(data["props"]["xdiv"], 0.)
         xmin = self.makeFloat(data["props"]["xmin"], 0.)
         xmax = self.makeFloat(data["props"]["xmax"], 0.)
-        ydiv = self.makeFloat(data["props"]["ydiv"], 0.)
+        ydiv = self.makeInt(data["props"]["ydiv"], 0.)
         ymin = self.makeFloat(data["props"]["ymin"], 0.)
         ymax = self.makeFloat(data["props"]["ymax"], 0.)
 
@@ -93,34 +91,13 @@ class Histogram(QObject):
                 df = pd.DataFrame.from_dict(json.loads(arquivo["data"]))
                 alpha = self.makeFloat(arquivo["kargs"].pop("alpha"), 1.0)
                 label = arquivo["kargs"].pop("label")
-                # if len(df.columns) == 2:
-                #     if arquivo["legend"] == "":
-                #         counts, bins, _ = self.canvas.axes.hist(x = df["x"], bins = self.makeInt(data["props"]["nbins"], 10),
-                #         weights     = df["weight"],
-                #         density     = False, cumulative = False, bottom = 0,
-                #         histtype    = data["props"]["histType"],
-                #         align       = self.histAlign[data["props"]["histAlign"]],
-                #         orientation = self.histOrient[data["props"]["histOrientation"]],
-                #         log = False, rwidth = 1, capstyle = "round", ls = "-", aa = True,
-                #         alpha = alpha,
-                #         **arquivo["kargs"])
-                #     else:
-                #         counts, bins, _ = self.canvas.axes.hist(x = df["x"], bins = self.makeInt(data["props"]["nbins"], 10),
-                #         weights     = df["weight"],
-                #         density     = False, cumulative = False, bottom = 0,
-                #         histtype    = data["props"]["histType"],
-                #         align       = self.histAlign[data["props"]["histAlign"]],
-                #         orientation = self.histOrient[data["props"]["histOrientation"]],
-                #         log = False, rwidth = 1, capstyle = "round", ls = "-", aa = True,
-                #         alpha = alpha, label = arquivo["legend"],
-                #         **arquivo["kargs"])
-                #         has_legend = True
-                # elif len(df.columns) == 1:
-                bins   = np.linspace(np.floor(df["x"].min()), np.ceil(df["x"].max()), self.makeInt(data["props"]["nbins"], 10) + 1)
+                bins   = np.linspace(self.makeFloat(data["props"]["rangexmin"], np.floor(df["x"].min())),
+                 self.makeFloat(data["props"]["rangexmax"], np.ceil(df["x"].max())),
+                 self.makeInt(data["props"]["nbins"], 10) + 1)
                 counts = None
                 if arquivo["legend"] == "":
                     counts, bins, _ = self.canvas.axes.hist(x = df["x"], bins = bins,
-                    density     = False, cumulative = False, bottom = 0,
+                    density     = data["props"]["norm"], cumulative = False, bottom = 0,
                     histtype    = data["props"]["histType"],
                     align       = self.histAlign[data["props"]["histAlign"]],
                     orientation = self.histOrient[data["props"]["histOrientation"]],
@@ -129,7 +106,7 @@ class Histogram(QObject):
                     **arquivo["kargs"])
                 else:
                     counts, bins, _ = self.canvas.axes.hist(x = df["x"], bins = bins,
-                    density     = False, cumulative = False, bottom = 0,
+                    density     = data["props"]["norm"], cumulative = False, bottom = 0,
                     histtype    = data["props"]["histType"],
                     align       = self.histAlign[data["props"]["histAlign"]],
                     orientation = self.histOrient[data["props"]["histOrientation"]],
@@ -143,8 +120,7 @@ class Histogram(QObject):
                     c = (bins[1] - bins[0])/2
                     for n, b in zip(counts, bins):
                         if n != 0:
-                            self.canvas.axes.text(b + c, n + height*0.02, str(int(n)), ha = "center")
-                # self.canvas.axes.bar_label(bars, padding=3)
+                            self.canvas.axes.text(b + c, n + height*0.02, str(n), ha = "center")
         self.canvas.axes.set_title(data["props"]["title"])
         self.canvas.axes.set(xlabel = data["props"]["xaxis"], ylabel = data["props"]["yaxis"])
         if has_legend:
@@ -240,8 +216,6 @@ class Histogram(QObject):
 
         if len(df.columns) == 1:
             df.columns = ["x"]
-        # elif len(df.columns) == 2:
-        #     df.columns = ["x", "weight"]
         else:
             self.messageHandler.raiseError("A tabela de histogramas deve conter no máximo 1 coluna.")
             return QJsonValue.fromVariant(package)

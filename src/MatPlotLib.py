@@ -349,9 +349,13 @@ class MPLCanvas(QObject):
         try:
             self.figure.gca().remove()
         except:
-            ax1, ax2 = self.figure.gca()
-            ax1.remove()
-            ax2.remove()
+            pass
+        try:
+            # ax1, ax2 = self.figure.gca()
+            self.ax1.remove()
+            self.ax2.remove()
+        except:
+            pass
         # try:
         #     self.axes.remove()
         # except:

@@ -275,7 +275,7 @@ Rectangle {
                         id: norm
                         Layout.columnSpan: 2
                         Layout.alignment: Qt.AlignCenter
-                        texto: "Normalizar"
+                        texto: "Densidade"
                         checked: false
                         w: 22
                     }
