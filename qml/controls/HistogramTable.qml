@@ -38,10 +38,10 @@ Item{
         kargs   : {
             alpha: "1.0",
             label: false,
-            hatch: "/",
+            hatch: "",
             fill: true,
             fc: "#006e00",
-            lw: 3,
+            lw: 2,
             ec: "#006e00",
         },
         legend: "",

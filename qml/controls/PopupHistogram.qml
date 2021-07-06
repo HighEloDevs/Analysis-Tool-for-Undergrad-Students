@@ -30,7 +30,7 @@ Popup {
 
     function setData(data){
         alpha.text = data["alpha"]
-        label.checked = data["alpha"]
+        label.checked = data["label"]
         hatch.currentIndex = hatch.find(data["hatch"])
         fill.checked = data["fill"]
         fc.primaryColor = data["fc"]
