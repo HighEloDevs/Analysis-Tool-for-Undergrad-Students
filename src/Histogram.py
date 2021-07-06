@@ -66,7 +66,6 @@ class Histogram(QObject):
         if xdiv != 0. and (xmax != 0. or xmin != 0.):
             self.canvas.axes.set_xticks(np.linspace(xmin, xmax, xdiv + 1))
             self.canvas.axes.set_xlim(left = xmin, right = xmax)
-
         else:
             if xmin == 0. and xmax != 0.:
                 self.canvas.axes.set_xlim(left = None, right = xmax)
@@ -74,7 +73,6 @@ class Histogram(QObject):
                 self.canvas.axes.set_xlim(left = xmin, right = None)
             elif xmin != 0. and xmax != 0.:
                 self.canvas.axes.set_xlim(left = xmin, right = xmax)
-        
         if ydiv != 0. and (ymax != 0. or ymin != 0.):
             self.canvas.axes.set_yticks(np.linspace(ymin, ymax, ydiv + 1))
             self.canvas.axes.set_ylim(bottom = ymin, top = ymax)
@@ -88,12 +86,16 @@ class Histogram(QObject):
         has_legend = False
         for arquivo in data["data"]:
             if arquivo["visible"]:
-                df = pd.DataFrame.from_dict(json.loads(arquivo["data"]))
+                df    = pd.DataFrame.from_dict(json.loads(arquivo["data"]))
                 alpha = self.makeFloat(arquivo["kargs"].pop("alpha"), 1.0)
                 label = arquivo["kargs"].pop("label")
-                bins   = np.linspace(self.makeFloat(data["props"]["rangexmin"], np.floor(df["x"].min())),
-                 self.makeFloat(data["props"]["rangexmax"], np.ceil(df["x"].max())),
-                 self.makeInt(data["props"]["nbins"], 10) + 1)
+                left  = self.makeFloat(data["props"]["rangexmin"], np.floor(df["x"].min()))
+                right = self.makeFloat(data["props"]["rangexmax"], np.ceil(df["x"].max()))
+                if left >= right:
+                    self.msg.raiseError("Intervalo de bins inválido. Rever intervalo de bins.")
+                    return None
+                bins  = np.linspace(self.makeFloat(left, right,
+                 self.makeInt(data["props"]["nbins"], 10) + 1))
                 counts = None
                 if arquivo["legend"] == "":
                     counts, bins, _ = self.canvas.axes.hist(x = df["x"], bins = bins,
@@ -115,8 +117,8 @@ class Histogram(QObject):
                     **arquivo["kargs"])
                     has_legend = True
                 if label:
-                    left, top = self.canvas.axes.get_ylim()
-                    height = top - left
+                    bottom, top = self.canvas.axes.get_ylim()
+                    height = top - bottom
                     c = (bins[1] - bins[0])/2
                     for n, b in zip(counts, bins):
                         if n != 0:
