@@ -94,8 +94,8 @@ class Histogram(QObject):
                 if left >= right:
                     self.msg.raiseError("Intervalo de bins inválido. Rever intervalo de bins.")
                     return None
-                bins  = np.linspace(self.makeFloat(left, right,
-                 self.makeInt(data["props"]["nbins"], 10) + 1))
+                bins  = np.linspace(left, right,
+                 self.makeInt(data["props"]["nbins"], 10) + 1)
                 counts = None
                 if arquivo["legend"] == "":
                     counts, bins, _ = self.canvas.axes.hist(x = df["x"], bins = bins,
