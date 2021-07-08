@@ -135,7 +135,6 @@ class MPLCanvas(QObject):
                     
                     if self.ydiv != 0. and (self.ymax != 0. or self.ymin != 0.):
                         self.ax1.set_yticks(np.linspace(self.ymin, self.ymax, self.ydiv + 1))
-                        self.ax2.set_yticks(np.linspace(self.ymin, self.ymax, self.ydiv + 1))
                         self.ax1.set_ylim(bottom = self.ymin, top = self.ymax)
                     else:
                         if self.ymin == 0. and self.ymax != 0.:
@@ -144,11 +143,8 @@ class MPLCanvas(QObject):
                             self.ax1.set_ylim(bottom = self.ymin, top = None)
                         elif self.ymin != 0. and self.ymax != 0.:
                             self.ax1.set_ylim(bottom = self.ymin, top = self.ymax)
-                    
                     if self.resmin != 0. or self.resmax != 0.:
                         self.ax2.set_ylim(bottom = self.resmin, top = self.resmax)
-
-
 
                     if self.grid:
                         self.ax1.grid(True,  which='major')
@@ -159,7 +155,6 @@ class MPLCanvas(QObject):
                         self.ax1.set_yscale('log')
                     if self.log_x:
                         self.ax1.set_xscale('log')
-                    
 
                     ssy = model.predictInc(not self.sigma_x)
                     self.ax2.errorbar(x, y_r, yerr=ssy, ecolor = self.symbol_color, capsize = 0, elinewidth = 1, ms = self.symbol_size, marker = self.symbol, color = self.symbol_color, ls = 'none')
@@ -177,7 +172,7 @@ class MPLCanvas(QObject):
 
 
                     # Making Plots
-                    line_func, = self.ax1.plot(px, py, lw = self.curve_thickness, color = self.curve_color, ls = self.curve_style, label = '${}$'.format(self.expression))
+                    line_func, = self.ax1.plot(px, py, lw = self.curve_thickness, color = self.curve_color, ls = self.curve_style, label = '${}$'.format(model._exp_model))
                     
                     # self.ax1.minorticks_on()
                     # self.ax2.minorticks_on()
@@ -255,7 +250,7 @@ class MPLCanvas(QObject):
                     else:
                         px, py      = model.get_predict(self.axes.figure, left, right)
                     
-                    line_func, = self.axes.plot(px, py, lw = self.curve_thickness, color = self.curve_color, ls = self.curve_style, label = '${}$'.format(self.expression))
+                    line_func, = self.axes.plot(px, py, lw = self.curve_thickness, color = self.curve_color, ls = self.curve_style, label = '${}$'.format(model._exp_model))
 
                     if self.legend:
                         self.axes.legend(fancybox=True)

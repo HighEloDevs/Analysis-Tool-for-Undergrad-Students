@@ -40,7 +40,7 @@ from PyQt5.QtQml import qmlRegisterType, QQmlApplicationEngine
 from PyQt5.QtGui import QIcon, QGuiApplication, QFont
 from matplotlib_backend_qtquick.backend_qtquickagg import FigureCanvasQtQuickAgg
 plt.rcParams["figure.autolayout"] = True
-plt.rcParams["figure.constrained_layout.hspace"] = 0.
+# plt.rcParams["figure.constrained_layout.hspace"] = 0.
 plt.rcParams["ytick.minor.visible"] = False
 plt.rcParams["xtick.minor.visible"] = False
 if __name__ == "__main__":
