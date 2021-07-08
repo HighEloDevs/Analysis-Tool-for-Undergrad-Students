@@ -41,14 +41,6 @@ build_exe_options = {
     'packages': includes,
     'excludes': ["tkinter",
                 'sympy',
-                'asyncio',
-                'atomicwrites'
-                'botocore',
-                'cryptography',
-                'markupsafe',
-                'sqlite3',
-                'shiboken2',
-                'test'
                 ],
     'include_files': files
 }
