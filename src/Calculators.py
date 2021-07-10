@@ -211,14 +211,9 @@ class CalculatorCanvas(QObject):
         
 
 def Plot(displayBridge, x, y, x_area, y_area):
-    try:
-        displayBridge.clearAxis()
-    except:
-        pass
-
+    displayBridge.clearAxis()
     displayBridge.axes = displayBridge.figure.add_subplot(111)
     displayBridge.axes.grid(True)
-    displayBridge.axes.minorticks_on()     
     displayBridge.axes.fill_between(x_area, y_area, color = 'blue', alpha = 0.3)
     displayBridge.axes.plot(x, y, lw = 1, c = 'red')
     displayBridge.axes.set_title("P.D.F.")
