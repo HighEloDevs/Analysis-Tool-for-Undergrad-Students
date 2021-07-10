@@ -24,6 +24,7 @@ SOFTWARE.
 """
 from matplotlib_backend_qtquick.backend_qtquick import NavigationToolbar2QtQuick
 import matplotlib as mpl
+import matplotlib.pyplot as plt
 # from matplotlib_backend_qtquick.qt_compat import QtCore, QtGui
 from PyQt5.QtCore import QObject, pyqtProperty, QUrl, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QGuiApplication, QPixmap
@@ -115,7 +116,7 @@ class MPLCanvas(QObject):
 
                 if self.residuals:
                     self.ax1, self.ax2 = self.figure.subplots(2, 1, sharex=True, gridspec_kw={'height_ratios': [3, 1.0]})
-                    self.figure.subplots_adjust(left = None, bottom = None, right = None, top = None, wspace = None, hspace = 0.)
+                    # self.figure.subplots_adjust(left = None, bottom = None, right = None, top = None, wspace = None, hspace = 0.)
 
                     if self.xdiv != 0. and (self.xmax != 0. or self.xmin != 0.):
                         self.ax1.set_xticks(np.linspace(self.xmin, self.xmax, self.xdiv + 1))
@@ -321,9 +322,6 @@ class MPLCanvas(QObject):
 
                 self.axes.errorbar(x, y, yerr=sy, xerr=sx, elinewidth = 1, ecolor = self.symbol_color, ms = self.symbol_size, marker = self.symbol, color = self.symbol_color, ls = 'none', capsize = 0)
                 
-                # self.axes.secondary_xaxis('top')
-                # self.axes.secondary_yaxis('right')
-
                 # self.axes.minorticks_on()
                 # self.axes.xaxis.set_minor_locator(mpl.ticker.AutoMinorLocator(3))
                 # self.axes.yaxis.set_minor_locator(mpl.ticker.AutoMinorLocator(3))
@@ -336,7 +334,8 @@ class MPLCanvas(QObject):
         # Reseting parameters
         px, py, y_r   = None, None, None
         model.isvalid = False
-
+        self.figure.tight_layout()
+        self.figure.subplots_adjust(left = None, bottom = None, right = None, top = None, wspace = None, hspace = 0.)
         self.canvas.draw_idle()
 
     def clearAxis(self):

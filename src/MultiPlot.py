@@ -309,6 +309,8 @@ class Multiplot(QObject):
         elif len(handles) == 1:
             by_label = dict(zip(labels, handles))
             self.displayBridge.axes.legend(by_label.values(), by_label.keys())
+        
+        self.displayBridge.figure.tight_layout()
 
     def Plot_sx_sy(self, df, options):
         if options['label'] != '':

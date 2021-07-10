@@ -127,6 +127,7 @@ class Histogram(QObject):
         self.canvas.axes.set(xlabel = data["props"]["xaxis"], ylabel = data["props"]["yaxis"])
         if has_legend:
             self.canvas.axes.legend()
+        self.canvas.figure.tight_layout()
         self.canvas.canvas.draw_idle()
 ########################### EDITE AQUI /\ #############################
 
