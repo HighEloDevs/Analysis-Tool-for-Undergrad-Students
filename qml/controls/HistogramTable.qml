@@ -91,7 +91,6 @@ Item{
                 delegate: Item{
                     width: modelData.width * root.width
                     height: root.headerHeight
-                    // color: Colors.color1
 
                     Text{
                         anchors.verticalCenter: parent.verticalCenter
@@ -128,7 +127,7 @@ Item{
                         PopupHistogram{
                             id: popupProps
                             width: 400
-                            height: 250
+                            height: 350
 
                             onClosed: dataDisplay.setProperty(index, "kargs", popupProps.kargs)
                         }

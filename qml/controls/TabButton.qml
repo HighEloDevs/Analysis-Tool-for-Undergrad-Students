@@ -54,9 +54,10 @@ Button{
             spacing: 0
             Image {
                 id: image
+                Layout.alignment: Qt.AlignHCenter
+                visible: iconUrl == "" ? false:true
                 width: 24
                 height: 24
-                Layout.alignment: Qt.AlignHCenter
                 source: iconUrl
                 mipmap: true
                 smooth: true

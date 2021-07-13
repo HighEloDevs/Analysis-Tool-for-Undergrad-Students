@@ -374,9 +374,6 @@ Rectangle {
                         label: "Orientação"
                         model: ["Vertical"]
                     }
-                    SliderCustom{
-                        
-                    }
                 }
             }
         }

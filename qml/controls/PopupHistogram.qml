@@ -19,7 +19,7 @@ Popup {
     margins: 5
 
     property var kargs: ({
-        alpha: alpha.text,          
+        alpha: alpha.value,          
         label:label.checked,       
         hatch:hatch.currentText,
         fill:fill.checked,        
@@ -29,7 +29,7 @@ Popup {
     })
 
     function setData(data){
-        alpha.text = data["alpha"]
+        alpha.value = Number(data["alpha"])
         label.checked = data["label"]
         hatch.currentIndex = hatch.find(data["hatch"])
         fill.checked = data["fill"]
@@ -41,29 +41,11 @@ Popup {
     background: Rectangle{
         id: bg
         anchors.fill: parent
-        radius: 10
-        opacity: 0.95
-        color: Colors.color2 
         border.width: 2
         border.color: "#fff"
-        LinearGradient{
-            end: Qt.point(bg.width, bg.height)
-            gradient: Gradient{
-                GradientStop{
-                    position: 0
-                    color: Colors.color2 + "80"
-                }
-                GradientStop{
-                    position: 1
-                    color: "#202020"
-                }
-            }
-            source: bg
-            start: Qt.point(0, 0)
-            anchors.fill: parent
-            anchors.margins: 2
-            smooth: true
-        }
+        color: Colors.color2 
+        opacity: 0.95
+        radius: 5
 
         IconButton{
             anchors.right: parent.right
@@ -92,13 +74,13 @@ Popup {
             Text{
                 id: popupTitle
                 Layout.fillWidth: true
-                Layout.topMargin: 20
+                Layout.topMargin: 15
                 Layout.alignment: Qt.AlignHCenter
                 text: "Configurações do conjunto de dados" 
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
                 font.bold: true
-                font.pointSize: 14
+                font.pointSize: 12
                 color: "#fff"
             }
 
@@ -106,19 +88,47 @@ Popup {
                 Layout.margins: 10
                 Layout.fillWidth: true
                 Layout.fillHeight: true
+                rowSpacing: 15
+                columnSpacing: 5
                 columns: 12
                 rows: 20
 
-                TextInputCustom{
+                Text{
+                    Layout.columnSpan: 6
+                    text: "Opacidade"
+                    color: "#fff"
+                    font.pointSize: 10
+                    font.bold: true
+                }
+
+                SliderCustom{
                     id: alpha
                     Layout.columnSpan: 6
                     Layout.fillWidth: true
-                    focusColor: Colors.mainColor2
-                    title: 'Opacidade'
-                    textHolder: 'Opacidade das barras. Ex.: 0.9, 0.32'
-                    defaultColor: '#fff'
-                    textColor: '#fff'
-                    validator: RegExpValidator{regExp: /^[0]+([\.]?[0-9]+)?$/}
+                    from: 0
+                    to: 1
+                    mainColor: Colors.mainColor2
+                    secondaryColor: Colors.c_button_hover
+                    handlerBorderColor: Colors.mainColor2
+                }
+
+                Text{
+                    Layout.columnSpan: 6
+                    text: "Espessura das bordas"
+                    color: "#fff"
+                    font.pointSize: 10
+                    font.bold: true
+                }
+
+                SliderCustom{
+                    id: lw
+                    Layout.columnSpan: 6
+                    Layout.fillWidth: true
+                    from: 0
+                    to: 10
+                    mainColor: Colors.mainColor2
+                    secondaryColor: Colors.c_button_hover
+                    handlerBorderColor: Colors.mainColor2
                 }
 
                 CheckBoxCustom{
@@ -130,9 +140,18 @@ Popup {
                     w: 22
                 }
 
+                CheckBoxCustom{
+                    id: fill
+                    Layout.columnSpan: 6
+                    Layout.alignment: Qt.AlignCenter
+                    checked: false
+                    texto: "Preencher barras"
+                    w: 22
+                }
+
                 ComboBoxCustom{
                     id: hatch
-                    Layout.columnSpan: 4
+                    Layout.columnSpan: 12
                     Layout.fillWidth: true
                     Layout.alignment: Qt.AlignCenter
                     highlightColor: Colors.mainColor2
@@ -140,18 +159,10 @@ Popup {
                     model: ["", "/", "\\", "|", "-", "+", "x", "o", "O", ".", "*"]
                 }
 
-                CheckBoxCustom{
-                    id: fill
-                    Layout.columnSpan: 4
-                    Layout.alignment: Qt.AlignCenter
-                    checked: false
-                    texto: "Preencher barras"
-                    w: 22
-                }
-
                 TextButton{ 
                     id: fc
-                    Layout.columnSpan: 4
+                    Layout.fillWidth: true
+                    Layout.columnSpan: 6
                     height: 20
                     width: 60
                     radius: 10
@@ -170,32 +181,10 @@ Popup {
                     onClicked: colorDialog1.open()
                 }
 
-                Text{
-                    Layout.columnSpan: 4
-                    Layout.fillWidth: true
-                    Layout.alignment: Qt.AlignHCenter
-                    text: "Espessura da borda" 
-                    horizontalAlignment: Text.AlignHCenter
-                    verticalAlignment: Text.AlignVCenter
-                    font.bold: true
-                    font.pointSize: 8
-                    color: "#fff"
-                }
-
-                SpinBox {
-                    id: lw
-                    Layout.columnSpan: 4
-                    Layout.preferredHeight: 30
-                    value: 2
-                    wrap: false
-                    stepSize: 1
-                    to: 10
-                    from: 1
-                }
-
                 TextButton{
                     id: ec
-                    Layout.columnSpan: 4
+                    Layout.fillWidth: true
+                    Layout.columnSpan: 6
                     height: 20
                     width: 60
                     radius: 10
