@@ -23,15 +23,19 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 from matplotlib_backend_qtquick.backend_qtquick import NavigationToolbar2QtQuick
-from matplotlib_backend_qtquick.qt_compat import QtCore, QtGui
+import matplotlib as mpl
+import matplotlib.pyplot as plt
+# from matplotlib_backend_qtquick.qt_compat import QtCore, QtGui
+from PyQt5.QtCore import QObject, pyqtProperty, QUrl, pyqtSignal, pyqtSlot
+from PyQt5.QtGui import QGuiApplication, QPixmap
 import numpy as np
 import os
 
-class MPLCanvas(QtCore.QObject):
+class MPLCanvas(QObject):
     """ A bridge class to interact with the plot in python
     """
     # Some signals for the frontend
-    coordinatesChanged = QtCore.Signal(str)
+    coordinatesChanged = pyqtSignal(str)
 
     def __init__(self, messageHandler):
         super().__init__()
@@ -45,6 +49,8 @@ class MPLCanvas(QtCore.QObject):
         self.axes    = None
         self.ax1     = ''
         self.ax2     = ''
+        self.oid     = 0
+        self.cid     = 0
 
         # Options
         self.axisTitle       = []
@@ -69,14 +75,13 @@ class MPLCanvas(QtCore.QObject):
         self.ymax            = 0.
         self.ydiv            = 0.
         self.resmin          = 0.
-        self.resmax          = 0. 
+        self.resmax          = 0.
 
         # This is used to display the coordinates of the mouse in the window
         self._coordinates = ""
 
     def updateWithCanvas(self, canvas):
-        """ initialize with the canvas for the figure
-        """
+        """Initialize with the canvas for the figure."""
         self.canvas  = canvas
         self.figure  = self.canvas.figure
         self.toolbar = NavigationToolbar2QtQuick(canvas=canvas)
@@ -106,12 +111,12 @@ class MPLCanvas(QtCore.QObject):
 
                 # Getting data
                 x, y, sy, sx = model.data
-                px, py       = model.get_predict()
+                # px, py       = model.get_predict()
                 y_r          = model.residuo
 
                 if self.residuals:
                     self.ax1, self.ax2 = self.figure.subplots(2, 1, sharex=True, gridspec_kw={'height_ratios': [3, 1.0]})
-                    self.figure.subplots_adjust(left = None, bottom = None, right = None, top = None, wspace = None, hspace = 0)
+                    # self.figure.subplots_adjust(left = None, bottom = None, right = None, top = None, wspace = None, hspace = 0.)
 
                     if self.xdiv != 0. and (self.xmax != 0. or self.xmin != 0.):
                         self.ax1.set_xticks(np.linspace(self.xmin, self.xmax, self.xdiv + 1))
@@ -131,7 +136,6 @@ class MPLCanvas(QtCore.QObject):
                     
                     if self.ydiv != 0. and (self.ymax != 0. or self.ymin != 0.):
                         self.ax1.set_yticks(np.linspace(self.ymin, self.ymax, self.ydiv + 1))
-                        self.ax2.set_yticks(np.linspace(self.ymin, self.ymax, self.ydiv + 1))
                         self.ax1.set_ylim(bottom = self.ymin, top = self.ymax)
                     else:
                         if self.ymin == 0. and self.ymax != 0.:
@@ -140,11 +144,8 @@ class MPLCanvas(QtCore.QObject):
                             self.ax1.set_ylim(bottom = self.ymin, top = None)
                         elif self.ymin != 0. and self.ymax != 0.:
                             self.ax1.set_ylim(bottom = self.ymin, top = self.ymax)
-                    
                     if self.resmin != 0. or self.resmax != 0.:
                         self.ax2.set_ylim(bottom = self.resmin, top = self.resmax)
-
-
 
                     if self.grid:
                         self.ax1.grid(True,  which='major')
@@ -156,33 +157,54 @@ class MPLCanvas(QtCore.QObject):
                     if self.log_x:
                         self.ax1.set_xscale('log')
 
-                    # Making Plots
-                    self.ax1.plot(px, py, lw = self.curve_thickness, color = self.curve_color, ls = self.curve_style, label = '${}$'.format(self.expression))
-
-                    if self.legend:
-                        self.ax1.legend(frameon=False)
-
-                    # if model._mode == 2:
-                    self.ax2.errorbar(x, y_r, yerr=sy, xerr = sx, ecolor = self.symbol_color, capsize = 0, elinewidth = 1, ms = self.symbol_size, marker = self.symbol, color = self.symbol_color, ls = 'none')
+                    ssy = model.predictInc(not self.sigma_x)
+                    self.ax2.errorbar(x, y_r, yerr=ssy, ecolor = self.symbol_color, capsize = 0, elinewidth = 1, ms = self.symbol_size, marker = self.symbol, color = self.symbol_color, ls = 'none')
                     self.ax1.errorbar(x, y, yerr=sy, xerr=sx, ecolor = self.symbol_color, capsize = 0, elinewidth = 1, ms = self.symbol_size, marker = self.symbol, color = self.symbol_color, ls = 'none')
-                    # elif model._has_sx:
-                    #     self.ax2.errorbar(x, y_r, xerr = sx, ecolor = self.symbol_color, capsize = 0, elinewidth = 1, ms = self.symbol_size, marker = self.symbol, color = self.symbol_color, ls = 'none')
-                    #     self.ax1.errorbar(x, y, xerr=sx, ecolor = self.symbol_color, capsize = 0, elinewidth = 1, ms = self.symbol_size, marker = self.symbol, color = self.symbol_color, ls = 'none')
-                    # elif model._has_sy:
-                    #     self.ax2.errorbar(x, y_r, yerr=sy, ecolor = self.symbol_color, capsize = 0, elinewidth = 1, ms = self.symbol_size, marker = self.symbol, color = self.symbol_color, ls = 'none')
-                    #     self.ax1.errorbar(x, y, yerr=sy, ecolor = self.symbol_color, capsize = 0, elinewidth = 1, ms = self.symbol_size, marker = self.symbol, color = self.symbol_color, ls = 'none')
-                    # else:
-                    #     self.ax2.errorbar(x, y_r, ecolor = self.symbol_color, capsize = 0, elinewidth = 1, ms = self.symbol_size, marker = self.symbol, color = self.symbol_color, ls = 'none')
-                    #     self.ax1.errorbar(x, y, ecolor = self.symbol_color, capsize = 0, elinewidth = 1, ms = self.symbol_size, marker = self.symbol, color = self.symbol_color, ls = 'none')
+                    
+                    left, right = self.ax1.get_xlim()
+                    self.ax1.set_xlim(left = left, right = right)
+                    self.ax2.set_xlim(left = left, right = right)
+                    px, py = 0., 0.
+                    if self.log_x:
+                        px, py      = model.get_predict_log(self.ax1.figure, left, right)
 
-                    self.ax1.minorticks_on()
-                    self.ax2.minorticks_on()
+                    else:
+                        px, py      = model.get_predict(self.ax1.figure, left, right)
+
+
+                    # Making Plots
+                    line_func, = self.ax1.plot(px, py, lw = self.curve_thickness, color = self.curve_color, ls = self.curve_style, label = '${}$'.format(model._exp_model))
+                    
+                    # self.ax1.minorticks_on()
+                    # self.ax2.minorticks_on()
+                    # self.ax1.xaxis.set_minor_locator(mpl.ticker.AutoMinorLocator(3))
+                    # self.ax1.yaxis.set_minor_locator(mpl.ticker.AutoMinorLocator(3))
+                    # self.ax2.xaxis.set_minor_locator(mpl.ticker.AutoMinorLocator(3))
+                    # self.ax2.yaxis.set_minor_locator(mpl.ticker.AutoMinorLocator(2))
 
                     # Setting titles
                     self.ax1.set_title(str(self.axisTitle[0]))
                     self.ax2.set(xlabel = str(self.axisTitle[1]))
                     self.ax1.set(ylabel = str(self.axisTitle[2]))
                     self.ax2.set(ylabel = "Resíduos")
+                    if self.legend:
+                        self.ax1.legend(frameon=False)
+
+                    def update(evt=None):
+                        left, right = self.ax1.get_xlim()
+                        ppx, ppy = model.get_predict(self.ax1.figure, left, right)
+                        line_func.set_data(ppx, ppy)
+                        self.ax1.figure.canvas.draw_idle()
+                    if self.log_x:
+                        def update(evt=None):
+                            left, right = self.ax1.get_xlim()
+                            ppx, ppy = model.get_predict_log(self.ax1.figure, left, right)
+                            line_func.set_data(ppx, ppy)
+                            self.ax1.figure.canvas.draw_idle()
+                    self.ax1.remove_callback(self.oid)
+                    self.ax1.figure.canvas.mpl_disconnect(self.cid)
+                    self.oid = self.ax1.callbacks.connect('xlim_changed', update)
+                    self.cid = self.ax1.figure.canvas.mpl_connect("resize_event", update)
                 else:
                     self.axes = self.figure.add_subplot(111)
 
@@ -218,28 +240,47 @@ class MPLCanvas(QtCore.QObject):
                             self.axes.set_ylim(bottom = self.ymin, top = self.ymax)
                     
                     # Making Plots
-                    # if model._mode == 2:
-                    self.axes.plot(px, py, lw = self.curve_thickness, color = self.curve_color, ls = self.curve_style, label = '${}$'.format(self.expression))
+
                     self.axes.errorbar(x, y, yerr=sy, xerr=sx, capsize = 0, elinewidth = 1, ecolor = self.symbol_color, ms = self.symbol_size, marker = self.symbol, color = self.symbol_color, ls = 'none')
-                    # elif model._has_sx:
-                    #     self.axes.plot(px, py, lw = self.curve_thickness, color = self.curve_color, ls = self.curve_style, label = '${}$'.format(self.expression))
-                    #     self.axes.errorbar(x, y, xerr=sx, capsize = 0, elinewidth = 1, ecolor = self.symbol_color, ms = self.symbol_size, marker = self.symbol, color = self.symbol_color, ls = 'none')
-                    # elif model._has_sy:
-                    #     self.axes.plot(px, py, lw = self.curve_thickness, color = self.curve_color, ls = self.curve_style, label = '${}$'.format(self.expression))
-                    #     self.axes.errorbar(x, y, yerr=sy, capsize = 0, elinewidth = 1, ecolor = self.symbol_color, ms = self.symbol_size, marker = self.symbol, color = self.symbol_color, ls = 'none')
-                    # else:
-                    #     self.axes.plot(px, py, lw = self.curve_thickness, color = self.curve_color, ls = self.curve_style, label = '${}$'.format(self.expression))
-                    #     self.axes.errorbar(x, y, capsize = 0, elinewidth = 1, ecolor = self.symbol_color, ms = self.symbol_size, marker = self.symbol, color = self.symbol_color, ls = 'none')
                     
+                    left, right = self.axes.get_xlim()
+                    self.axes.set_xlim(left = left, right = right)
+                    px, py = 0., 0.
+                    if self.log_x:
+                        px, py      = model.get_predict_log(self.axes.figure, left, right)
+                    else:
+                        px, py      = model.get_predict(self.axes.figure, left, right)
+                    
+                    line_func, = self.axes.plot(px, py, lw = self.curve_thickness, color = self.curve_color, ls = self.curve_style, label = '${}$'.format(model._exp_model))
+
                     if self.legend:
-                        self.axes.legend(frameon=False)
+                        self.axes.legend(fancybox=True)
                     
-                    self.axes.minorticks_on()
+                    # self.axes.minorticks_on()
+                    # self.axes.xaxis.set_minor_locator(mpl.ticker.AutoMinorLocator(3))
+                    # self.axes.yaxis.set_minor_locator(mpl.ticker.AutoMinorLocator(3))
 
                     # Setting titles
                     self.axes.set_title(str(self.axisTitle[0]))
                     self.axes.set(xlabel = str(self.axisTitle[1]))
                     self.axes.set(ylabel = str(self.axisTitle[2]))
+
+                    # One piece
+                    def update(evt=None):
+                        left, right = self.axes.get_xlim()
+                        ppx, ppy = model.get_predict(self.axes.figure, left, right)
+                        line_func.set_data(ppx,ppy)
+                        self.axes.figure.canvas.draw_idle()
+                    if self.log_x:
+                        def update(evt=None):
+                            left, right = self.axes.get_xlim()
+                            ppx, ppy = model.get_predict_log(self.axes.figure, left, right)
+                            line_func.set_data(ppx,ppy)
+                            self.axes.figure.canvas.draw_idle()
+                    self.axes.remove_callback(self.oid)
+                    self.axes.figure.canvas.mpl_disconnect(self.cid)
+                    self.oid = self.axes.callbacks.connect('xlim_changed', update)
+                    self.cid = self.axes.figure.canvas.mpl_connect("resize_event", update)
             else:
                 self.clearAxis()
                 self.axes = self.figure.add_subplot(111)
@@ -278,18 +319,12 @@ class MPLCanvas(QtCore.QObject):
                 x, y, sy, sx = model.data
 
                 # Making Plots
-                # if model._has_sx and model._has_sy:
-                self.axes.errorbar(x, y, yerr=sy, xerr=sx, elinewidth = 1, ecolor = self.symbol_color, ms = self.symbol_size, marker = self.symbol, color = self.symbol_color, ls = 'none', capsize = 0)
-                # elif model._has_sx:
-                #     self.axes.errorbar(x, y, xerr=sx, elinewidth = 1, ecolor = self.symbol_color, ms = self.symbol_size, marker = self.symbol, color = self.symbol_color, ls = 'none', capsize = 0)
-                # elif model._has_sy:
-                #     self.axes.errorbar(x, y, yerr=sy, elinewidth = 1, ecolor = self.symbol_color, ms = self.symbol_size, marker = self.symbol, color = self.symbol_color, ls = 'none', capsize = 0)
-                # else:
-                #     self.axes.errorbar(x, y, capsize = 0, elinewidth = 1, ecolor = self.symbol_color, ms = self.symbol_size, marker = self.symbol, color = self.symbol_color, ls = 'none')
 
-                self.axes.minorticks_on()
-                # self.axes.twinx()
-                # self.axes.twiny()
+                self.axes.errorbar(x, y, yerr=sy, xerr=sx, elinewidth = 1, ecolor = self.symbol_color, ms = self.symbol_size, marker = self.symbol, color = self.symbol_color, ls = 'none', capsize = 0)
+                
+                # self.axes.minorticks_on()
+                # self.axes.xaxis.set_minor_locator(mpl.ticker.AutoMinorLocator(3))
+                # self.axes.yaxis.set_minor_locator(mpl.ticker.AutoMinorLocator(3))
 
                 # Setting titles
                 self.axes.set_title(str(self.axisTitle[0]))
@@ -299,20 +334,31 @@ class MPLCanvas(QtCore.QObject):
         # Reseting parameters
         px, py, y_r   = None, None, None
         model.isvalid = False
-
+        self.figure.tight_layout()
+        self.figure.subplots_adjust(left = None, bottom = None, right = None, top = None, wspace = None, hspace = 0.)
         self.canvas.draw_idle()
 
     def clearAxis(self):
-        """Clear the current plot in the axis"""
+        """Clear the current plot in the axis."""
         try:
-            self.axes.remove()
+            self.figure.gca().remove()
         except:
             pass
         try:
+            # ax1, ax2 = self.figure.gca()
             self.ax1.remove()
             self.ax2.remove()
         except:
             pass
+        # try:
+        #     self.axes.remove()
+        # except:
+        #     pass
+        # try:
+        #     self.ax1.remove()
+        #     self.ax2.remove()
+        # except:
+        #     pass
 
     def setCanvasProps(self, props, expr):
         self.log_x      = bool(props['log_x'])
@@ -342,11 +388,13 @@ class MPLCanvas(QtCore.QObject):
         self.sigma_y         = bool(fitProps['wsy'])
 
     def reset(self):
-        '''Resets the class'''
+        '''Resets the class.'''
         # The figure, canvas, toolbar and axes
         self.clearAxis()
         self.axes = self.figure.add_subplot(111)
         self.canvas.draw_idle()
+        self.oid = 0
+        self.cid = 0
 
         # Options
         self.sigma_x         = False
@@ -368,21 +416,21 @@ class MPLCanvas(QtCore.QObject):
         self._coordinates = ""
     
     def getCoordinates(self):
-        """Gets the cordinates in the plot"""
+        """Gets the cordinates in the plot."""
         return self._coordinates
     
     def setCoordinates(self, coordinates):
-        """Sets the cordinates"""
+        """Sets the cordinates."""
         self._coordinates = coordinates
         self.coordinatesChanged.emit(self._coordinates)
 
-    coordinates = QtCore.Property(str, getCoordinates, setCoordinates, notify=coordinatesChanged)
+    coordinates = pyqtProperty(str, getCoordinates, setCoordinates, notify=coordinatesChanged)
 
     # The toolbar commands
-    @QtCore.Slot(str, bool)
+    @pyqtSlot(str, bool)
     def savePlot(self, save_path, transparent):
         """Gets the path from input and save the actual plot"""
-        path = QtCore.QUrl(save_path).toLocalFile()
+        path = QUrl(save_path).toLocalFile()
 
         # Getting extension
         filename, extension = os.path.splitext(path)
@@ -394,17 +442,17 @@ class MPLCanvas(QtCore.QObject):
             self.canvas.figure.savefig(path, dpi = 400, transparent=transparent)
             self.messageHandler.raiseSuccess('Imagem salva com sucesso!')
 
-    @QtCore.Slot()
+    @pyqtSlot()
     def copyToClipboard(self):
         '''Copy imagine to the clipboard'''
         # Getting clipboard
-        clipboard = QtGui.QGuiApplication.clipboard()
+        clipboard = QGuiApplication.clipboard()
 
         # Saving image to a path   
         try:
             path = os.path.join(os.path.expanduser('~\Documents'), 'image.png')
             self.canvas.figure.savefig(path, dpi = 400, transparent=False)
-            pixmap = QtGui.QPixmap()
+            pixmap = QPixmap()
             # Loading image as pixmap and saving to clipboard
             if pixmap.load(path):
                 clipboard.setImage(pixmap.toImage())
@@ -413,23 +461,23 @@ class MPLCanvas(QtCore.QObject):
         except:
             self.messageHandler.raiseError('Erro copiar para a área de transferência, contatar os desenvolvedores.')
 
-    @QtCore.Slot()
+    @pyqtSlot()
     def pan(self, *args):
         self.toolbar.pan(*args)
 
-    @QtCore.Slot()
+    @pyqtSlot()
     def zoom(self, *args):
         self.toolbar.zoom(*args)
 
-    @QtCore.Slot()
+    @pyqtSlot()
     def home(self, *args):
         self.toolbar.home(*args)
 
-    @QtCore.Slot()
+    @pyqtSlot()
     def back(self, *args):
         self.toolbar.back(*args)
 
-    @QtCore.Slot()
+    @pyqtSlot()
     def forward(self, *args):
         self.toolbar.forward(*args)
 

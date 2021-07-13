@@ -24,7 +24,7 @@ SOFTWARE.
 """
 
 import numpy as np
-from matplotlib_backend_qtquick.qt_compat import QtCore
+from PyQt5.QtCore import QObject
 from scipy.stats import chi2, norm, t
 from numpy import array
 
@@ -50,10 +50,10 @@ def calc_t_sim(ngl, nc):
     return array([t.ppf(0.5 - nc/2, df = ngl), t.ppf(0.5 + nc/2, df = ngl)])
 
 def calc_t_lim_inf(ngl, nc):
-    return chi2.ppf(1 - nc, df = ngl)
+    return t.ppf(1 - nc, df = ngl)
 
 def calc_t_lim_sup(ngl, nc):
-    return chi2.ppf(nc, df = ngl)
+    return t.ppf(nc, df = ngl)
 
 def calc_chi2r_sim(ngl, nc):
     return [chi2.ppf(0.5 - nc/2, ngl), chi2.ppf(0.5 + nc/2, ngl)]
@@ -161,7 +161,7 @@ def interpreter_calculator(f, opt, nc, ngl, mean, std):
     # If it's Student:    
     x_plot = np.linspace(t.ppf(lim_inf, df = ngl), t.ppf(lim_sup, df = ngl), 350)
     y_plot = t.pdf(x_plot, df = ngl)
-    x_plot = (x_plot * std) + mean
+    x_plot = x_plot * std + mean
 
     if opt == 0:
         result = calc_t_sim(ngl, nc)
@@ -175,7 +175,7 @@ def interpreter_calculator(f, opt, nc, ngl, mean, std):
             result = calc_t_lim_inf(ngl, nc)
             s      = "Limite inferior = %f \n Limite superior = inf"%(result*std + mean)
             x_area = np.linspace(result, t.ppf(lim_sup, df = ngl), 350)
-            y_area = t.pdf(x_area)
+            y_area = t.pdf(x_area, df = ngl)
             x_area = x_area*std + mean
             return s, x_plot, y_plot/std, x_area, y_area/std
 
@@ -186,7 +186,7 @@ def interpreter_calculator(f, opt, nc, ngl, mean, std):
     x_area = x_area*std + mean
     return s, x_plot, y_plot/std, x_area, y_area/std
 
-class CalculatorCanvas(QtCore.QObject):
+class CalculatorCanvas(QObject):
     """ A bridge class to interact with the plot in python
     """
     def __init__(self, parent=None):
@@ -211,15 +211,11 @@ class CalculatorCanvas(QtCore.QObject):
         
 
 def Plot(displayBridge, x, y, x_area, y_area):
-    try:
-        displayBridge.clearAxis()
-    except:
-        pass
-
+    displayBridge.clearAxis()
     displayBridge.axes = displayBridge.figure.add_subplot(111)
     displayBridge.axes.grid(True)
-    displayBridge.axes.minorticks_on()     
     displayBridge.axes.fill_between(x_area, y_area, color = 'blue', alpha = 0.3)
     displayBridge.axes.plot(x, y, lw = 1, c = 'red')
     displayBridge.axes.set_title("P.D.F.")
+    displayBridge.figure.tight_layout()
     displayBridge.canvas.draw_idle()

@@ -2,6 +2,7 @@ import QtQuick 2.0
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.11
 import QtQuick.Window 2.12
+import QtGraphicalEffects 1.15
 import "../controls"
 import "../colors.js" as Colors
 
@@ -166,8 +167,10 @@ Item {
                         Layout.preferredHeight: 25
                         Layout.fillWidth: true
                         Layout.columnSpan: 2
+                        Layout.leftMargin: 10
+                        Layout.rightMargin: 10
                         texto: 'CALCULAR / ATUALIZAR'
-                        primaryColor: Colors.c_button
+                        primaryColor: "#009900"
                         clickColor: Colors.c_button_active
                         hoverColor: Colors.c_button_hover
                         enabled: {
@@ -189,24 +192,49 @@ Item {
                     }
 
                     Rectangle {
-                        id: rectangle
-                        width: 200
-                        height: 200
-                        color: "#00000000"
                         Layout.columnSpan: 2
                         Layout.fillHeight: true
                         Layout.fillWidth: true
+                        Layout.topMargin: 10
 
-                        TextArea{
-                            id:infos
-                            color: "#ffffff"
-                            anchors.fill: parent
-                            horizontalAlignment: Text.AlignHCenter
-                            verticalAlignment: Text.AlignVCenter
-                            font.pointSize: 16
-                            selectByMouse: true
-                            readOnly: true
+                        layer.enabled: true
+                        layer.effect: DropShadow {
+                            horizontalOffset: 0.5
+                            verticalOffset: 1
+                            radius: 10
+                            spread: 0.05
+                            samples: 17
+                            color: "#252525"
                         }
+
+                        color: Colors.color3
+                        radius: 5
+
+                        ColumnLayout{
+                            anchors.fill: parent
+                            Text{
+                                Layout.alignment: Qt.AlignHCenter
+                                Layout.topMargin: 5
+                                text: "Limites Calculados"
+                                color: "#fff"
+                                font.pointSize: 9
+                                font.bold: true
+                            }
+                            ScrollView {
+                                Layout.fillHeight: true
+                                Layout.fillWidth: true
+                                TextArea{
+                                    id:infos
+                                    color: "#ffffff"
+                                    anchors.fill: parent
+                                    horizontalAlignment: Text.AlignHCenter
+                                    verticalAlignment: Text.AlignVCenter
+                                    font.pointSize: 14
+                                    selectByMouse: true
+                                    readOnly: true
+                                }
+                            }
+                        }   
                     }
                 }
             }

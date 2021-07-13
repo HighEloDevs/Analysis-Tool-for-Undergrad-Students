@@ -23,15 +23,18 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-from matplotlib_backend_qtquick.qt_compat import QtCore
+# from matplotlib_backend_qtquick.qt_compat import QtCore
+from PyQt5.QtCore import QObject, pyqtSignal
 
-class MessageHandler(QtCore.QObject):
-    '''Class that sends all messages (warning, errors, fatal errors) from the backend to frontend'''
+class MessageHandler(QObject):
+    '''
+        Class that sends all messages (warning, errors, fatal errors) from the backend to frontend
+    '''
 
     # Signals to the frontend
     # showMessage() shows a snackbar with the message and respective color to the type
     # Types -> warn, error or success
-    showMessage = QtCore.Signal(str, str, arguments=['message', 'type'])
+    showMessage = pyqtSignal(str, str, arguments=['message', 'type'])
 
     def __init__(self) -> None:
         super().__init__()

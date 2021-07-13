@@ -4,51 +4,58 @@ import Qt.labs.qmlmodels 1.0
 import QtQuick.Window 2.12
 import QtQuick.Layouts 1.12
 import QtQuick.Dialogs 1.3
+import QtGraphicalEffects 1.15
 import "../controls"
 import "../colors.js" as Colors
 
 Item {
     id: root
-    clip: true
-
     property var multiPlotData: ({
-                                     key: '2-b-multiplot',
-                                     id: id.text,
-                                     rowsData: [],
-                                     canvasProps: {
-                                         title: title.text,
-                                         xaxis: xaxis.text,
-                                         yaxis: yaxis.text,
-                                         xmin: xmin.text,
-                                         xmax: xmax.text,
-                                         xdiv: xdiv.text,
-                                         ymin: ymin.text,
-                                         ymax: ymax.text,
-                                         ydiv: ydiv.text,
-                                         logx: logx.checked,
-                                         logy: logy.checked,
-                                         grid: grid.checked,
-                                     }
-                                 })
+                                    key: '2-b-multiplot',
+                                    id: id.text,
+                                    rowsData: [],
+                                    canvasProps: {
+                                        title: title.text,
+                                        xaxis: xaxis.text,
+                                        yaxis: yaxis.text,
+                                        xmin: xmin.text,
+                                        xmax: xmax.text,
+                                        xdiv: xdiv.text,
+                                        ymin: ymin.text,
+                                        ymax: ymax.text,
+                                        ydiv: ydiv.text,
+                                        logx: logx.checked,
+                                        logy: logy.checked,
+                                        grid: grid.checked,
+                                    }
+                                })
     
     Rectangle {
         id: bg
-        color: "#40464c"
+        color: Colors.color3
         anchors.fill: parent
 
         ColumnLayout{
             anchors.fill: parent
-            spacing: 0
+            spacing: 10
 
             Rectangle{
                 id: projectBg
                 Layout.fillWidth: true
-                border.width: 2
                 Layout.minimumHeight: 70
                 Layout.fillHeight: true
-                border.color: Colors.color2
                 height: 100
                 color: Colors.color3
+                radius: 5
+                layer.enabled: true
+                layer.effect: DropShadow {
+                    horizontalOffset: 1
+                    verticalOffset: 1
+                    radius: 10
+                    spread: 0.1
+                    samples: 17
+                    color: "#252525"
+                }
 
                 ColumnLayout{
                     anchors.fill: parent
@@ -62,7 +69,7 @@ Item {
                             id: btnNew
                             height: 25
                             Layout.fillWidth: true
-                            texto: 'Novo Projeto'
+                            texto: 'Novo'
                             textSize: 10
                             radius: 3
                             primaryColor: Colors.c_button
@@ -166,17 +173,33 @@ Item {
                 id: multiPlotTable
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                // height: 200
+                layer.enabled: true
+                layer.effect: DropShadow {
+                    horizontalOffset: 1
+                    verticalOffset: 1
+                    radius: 10
+                    spread: 0.1
+                    samples: 17
+                    color: "#252525"
+                }
             }
 
             Rectangle{
                 id: optionsBg
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                color: Colors.color3
-                border.width: 2
                 Layout.minimumHeight: 250
-                border.color: Colors.color2
+                color: Colors.color3
+                radius: 5
+                layer.enabled: true
+                layer.effect: DropShadow {
+                    horizontalOffset: 1
+                    verticalOffset: 1
+                    radius: 10
+                    spread: 0.1
+                    samples: 17
+                    color: "#252525"
+                }
 
                 ScrollView {
                     id: scrollView
@@ -336,23 +359,19 @@ Item {
             }
 
             TextButton{
-                width: root.width*0.8
-                // Layout.columnSpan: 3
-                // Layout.alignment: Qt.AlignHCenter
-                height: 30
-                radius: 0
                 Layout.preferredHeight: 25
                 Layout.fillHeight: false
-                Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                 Layout.fillWidth: true
+                Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+                Layout.leftMargin: 10
+                Layout.rightMargin: 10
+                height: 30
+                radius: 5
                 texto: 'PLOT / ATUALIZAR'
-
-                primaryColor: Colors.c_button
+                primaryColor: "#009900"
                 hoverColor: Colors.c_button_hover
                 clickColor: Colors.c_button_active
-
                 enabled: multiPlotTable.hasData
-
                 onClicked:{
                     multiPlotData['rowsData'] = multiPlotTable.dataShaped
                     multiPlot.getData(multiPlotData)
@@ -391,7 +410,6 @@ Item {
             grid.checked = props['canvasProps']['grid']
         }
     }
-
 }
 
 /*##^##

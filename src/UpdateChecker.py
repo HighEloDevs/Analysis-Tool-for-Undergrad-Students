@@ -23,14 +23,13 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-from matplotlib_backend_qtquick.qt_compat import QtCore
+# from matplotlib_backend_qtquick.qt_compat import QtCore
+from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot, QJsonValue
 import requests
 import platform
 
-class UpdateChecker(QtCore.QObject):
-
-    # showUpdate = QtCore.Signal(str, str, str, arguments=['updateLog', 'version', 'downloadUrl'])
-    showUpdate = QtCore.Signal(QtCore.QJsonValue, arguments='infos')
+class UpdateChecker(QObject):
+    showUpdate = pyqtSignal(QJsonValue, arguments='infos')
 
     def __init__(self) -> None:
         super().__init__()
@@ -41,7 +40,7 @@ class UpdateChecker(QtCore.QObject):
             version.close()
         self.isUpdate = True
         
-    @QtCore.Slot()
+    @pyqtSlot()
     def checkUpdate(self):
         # GitHub API url
         gitHubApiUrl = 'https://api.github.com/repos/HighEloDevs/Analysis-Tool-for-Undergrad-Students/releases/latest'
@@ -51,12 +50,13 @@ class UpdateChecker(QtCore.QObject):
             infos = response.json()
             version = infos['tag_name']
             if version != self.__VERSION__:
-                self.showUpdate.emit(QtCore.QJsonValue.fromVariant(infos))
+                self.showUpdate.emit(QJsonValue.fromVariant(infos))
 
-    @QtCore.Slot(result=str)
+    @pyqtSlot(result=str)
     def getVersion(self):
         return 'v' + self.__VERSION__
 
-    @QtCore.Slot(result=str)
+    @pyqtSlot(result=str)
     def getOS(self):
         return platform.system()
+        # return 'Darwin'

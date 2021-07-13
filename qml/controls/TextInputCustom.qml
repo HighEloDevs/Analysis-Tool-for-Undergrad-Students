@@ -8,7 +8,7 @@ import "../controls"
 Item{
     id: root
     width: 200
-    height: 50
+    implicitHeight: 60
 
     // Some properties
     property color focusColor: '#f0f'
@@ -28,7 +28,6 @@ Item{
 
     Rectangle{
         id: bg
-        height: 53
         anchors.fill: parent
         color: 'transparent'
         clip: true
@@ -116,7 +115,7 @@ Item{
             anchors.top: row.bottom
             anchors.right: parent.right
             anchors.left: parent.left
-            anchors.topMargin: -12
+            anchors.topMargin: -15
             anchors.rightMargin: 5
             anchors.leftMargin: 5
             color: root.enabled ? defaultColor : disabledColor
@@ -128,7 +127,7 @@ Item{
             anchors.top: footer.bottom
             anchors.right: parent.right
             anchors.left: parent.left
-            anchors.topMargin: 0
+            anchors.topMargin: 1
             anchors.rightMargin: 5
             anchors.leftMargin: 5
             font.pixelSize: 10

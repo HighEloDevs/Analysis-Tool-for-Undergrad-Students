@@ -24,14 +24,14 @@ SOFTWARE.
 """
 
 import numpy as np
-import matplotlib.pyplot as plt
 import pandas as pd
-from matplotlib_backend_qtquick.qt_compat import QtCore
+
+# from matplotlib_backend_qtquick.qt_compat import QtCore
+from PyQt5.QtCore import QObject
 from lmfit.models import ExpressionModel
 from lmfit import Parameters
-from scipy.odr import ODR, Model as SciPyModel, Data, RealData
 
-class MultiModel(QtCore.QObject):
+class MultiModel(QObject):
     def __init__(self, options: dict, arquivos: list):
         super().__init__()
         self.options    = options
@@ -41,14 +41,21 @@ class MultiModel(QtCore.QObject):
             self.dfs[i].columns = ['x', 'y', 'sy', 'sx', 'bool']
             self.dfs[i]         = self.dfs[i][self.dfs[i]['bool'] == 1]
             del self.dfs[i]["bool"]
-        self.min_x      = np.inf
-        self.max_x      = -np.inf
         self.num_cols   = [len(df.columns) for df in self.dfs]
         self.models     = []
         self.parameters = []
-        for arquivo, df in zip(arquivos, self.dfs):
+        self.indVars    = []
+        for arquivo in arquivos:
             if arquivo['expr'] != '' and len(arquivo['params']) > 0:
-                self.models.append(ExpressionModel(arquivo['expr']))
+                expIndVar = arquivo['expr'].split(";")
+                if len(expIndVar) == 1:
+                    self.models.append(ExpressionModel(arquivo['expr'] + " + 0*x"))
+                    self.indVars.append("x")
+                elif len(expIndVar) == 2:
+                    self.models.append(ExpressionModel(expIndVar[0] + " + 0*%s"%expIndVar[1].strip(), independent_vars=[expIndVar[1].strip()]))
+                    self.indVars.append(expIndVar[1].strip())
+                else:
+                    continue
                 parametros = Parameters()
                 for parametro in arquivo['params'].keys():
                     parametros.add(parametro, value = arquivo['params'][parametro])
@@ -56,5 +63,4 @@ class MultiModel(QtCore.QObject):
             else:
                 self.models.append(0)
                 self.parameters.append(0)
-            self.min_x = np.minimum(self.min_x, df['x'].min())
-            self.max_x = np.maximum(self.max_x, df['x'].max())
+                self.indVars.append("") 

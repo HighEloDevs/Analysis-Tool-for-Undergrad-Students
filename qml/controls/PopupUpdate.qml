@@ -6,6 +6,7 @@ import "../colors.js" as Colors
 
 Popup {
         id: root
+        anchors.centerIn: Overlay.overlay
         modal: true
         focus: true
         closePolicy: Popup.CloseOnEscape
@@ -46,6 +47,8 @@ Popup {
                 iconColor: '#fff'
                 iconUrl: '../../images/icons/close-24px.svg'
                 iconWidth: 20
+                borderWidth: 2
+                borderColor: "#fff"
 
                 onClicked: updatePopup.close()
             }

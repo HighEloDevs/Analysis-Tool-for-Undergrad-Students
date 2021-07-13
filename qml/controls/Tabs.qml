@@ -10,8 +10,6 @@ Item {
     id: root
     width: 372
     height: 673
-    implicitWidth: 372
-    implicitHeight: 673
 
     property alias pageFunc: pageFuncaoAjuste.item
     property alias pageProp: pageProps.item
@@ -20,10 +18,20 @@ Item {
 
     Rectangle {
         id: bg
-        color: Colors.c_section
+        color: Colors.color3
         anchors.fill: parent
+        radius: 5
         clip: true
-        z: 1
+
+        layer.enabled: true
+        layer.effect: DropShadow {
+            horizontalOffset: 0.5
+            verticalOffset: 1
+            radius: 10
+            spread: 0.05
+            samples: 17
+            color: "#252525"
+        }
 
         ColumnLayout {
             id: columnLayout
@@ -46,6 +54,7 @@ Item {
                         text: "Função de Ajuste"
                         activeMenuColorRight: "#565e66"
                         isActiveMenu: true
+                        iconUrl: "../../images/icons/functions_white_24dp.svg"
 
                         onClicked: {
                             tabBtn1.isActiveMenu = true
@@ -59,9 +68,10 @@ Item {
                     TabButton {
                         id: tabBtn2
                         width: topBar.width / 2
-                        text: "Propriedades do gráfico"
+                        text: "Propriedades"
                         activeMenuColorRight: "#565e66"
                         isActiveMenu: false
+                        iconUrl: "../../images/icons/settings_white_24dp.svg"
 
                         onClicked: {
                             tabBtn1.isActiveMenu = false
@@ -104,7 +114,7 @@ Item {
                 Layout.topMargin: 5
                 Layout.fillWidth: true
                 texto: 'PLOT / ATUALIZAR'
-                primaryColor: Colors.c_button
+                primaryColor: "#009900"
                 clickColor: Colors.c_button_active
                 hoverColor: Colors.c_button_hover
                 enabled: root.isPlotable

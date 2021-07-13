@@ -34,29 +34,18 @@ Item {
 
     Rectangle {
         id: bg
-        color: Colors.c_section
+        color: "transparent"
         anchors.fill: parent
-        anchors.rightMargin: 0
-        anchors.bottomMargin: 0
-        anchors.leftMargin: 0
-        anchors.topMargin: 0
 
         ScrollView {
             id: scrollView
             anchors.fill: parent
-            rightPadding: 0
-            leftPadding: 0
-            anchors.rightMargin: 0
-            anchors.leftMargin: 0
-            anchors.bottomMargin: 0
             anchors.topMargin: 5
-
             ScrollBar.horizontal.policy: ScrollBar.AsNeeded
             ScrollBar.vertical.policy: ScrollBar.AsNeeded
-
             contentWidth: root.width
-            contentHeight: 700
-
+            contentHeight: 730
+            ScrollBar.vertical.interactive: true
             GridLayout {
                 id: gridLayout
                 anchors.right: parent.right
@@ -93,50 +82,43 @@ Item {
 
                 CheckBoxCustom{
                     id: log_eixox
-                    w: 25
+                    w: 20
                     texto: 'Log X'
                     checked: false
                 }
 
-                Rectangle {
-                    color: "#00000000"
-                    Layout.preferredHeight: 50
+                TextInputCustom{
+                    id: xmin
+                    Layout.columnSpan: 2
                     Layout.fillWidth: true
-                    Layout.columnSpan: 6
-
-                    RowLayout {
-                        anchors.fill: parent
-                        TextInputCustom{
-                            id: xmin
-                            Layout.fillWidth: true
-                            focusColor: Colors.mainColor2
-                            title: 'X Mínimo'
-                            textHolder: 'Menor valor de X no gráfico'
-                            defaultColor: '#fff'
-                            textColor: '#fff'
-                            validator: RegExpValidator{regExp: /^[\-]?[0-9]+([\.]?[0-9]+)?$/}
-                        }
-                        TextInputCustom{
-                            id: xmax
-                            Layout.fillWidth: true
-                            focusColor: Colors.mainColor2
-                            title: 'X Máximo'
-                            textHolder: 'Maior valor de X no gráfico'
-                            defaultColor: '#fff'
-                            textColor: '#fff'
-                            validator: RegExpValidator{regExp: /^[\-]?[0-9]+([\.]?[0-9]+)?$/}
-                        }
-                        TextInputCustom{
-                            id: xdiv
-                            Layout.fillWidth: true
-                            focusColor: Colors.mainColor2
-                            title: 'Intervalos'
-                            textHolder: 'Número de intervalos no eixo'
-                            defaultColor: '#fff'
-                            textColor: '#fff'
-                            validator: RegExpValidator{regExp: /^[0-9]+$/}
-                        }
-                    }
+                    focusColor: Colors.mainColor2
+                    title: 'X Mínimo'
+                    textHolder: 'Menor valor de X no gráfico'
+                    defaultColor: '#fff'
+                    textColor: '#fff'
+                    validator: RegExpValidator{regExp: /^[\-]?[0-9]+([\.]?[0-9]+)?$/}
+                }
+                TextInputCustom{
+                    id: xmax
+                    Layout.columnSpan: 2
+                    Layout.fillWidth: true
+                    focusColor: Colors.mainColor2
+                    title: 'X Máximo'
+                    textHolder: 'Maior valor de X no gráfico'
+                    defaultColor: '#fff'
+                    textColor: '#fff'
+                    validator: RegExpValidator{regExp: /^[\-]?[0-9]+([\.]?[0-9]+)?$/}
+                }
+                TextInputCustom{
+                    id: xdiv
+                    Layout.columnSpan: 2
+                    Layout.fillWidth: true
+                    focusColor: Colors.mainColor2
+                    title: 'Intervalos'
+                    textHolder: 'Número de intervalos no eixo'
+                    defaultColor: '#fff'
+                    textColor: '#fff'
+                    validator: RegExpValidator{regExp: /^[0-9]+$/}
                 }
 
                 TextInputCustom{
@@ -152,75 +134,69 @@ Item {
                 
                 CheckBoxCustom{
                     id: log_eixoy
-                    w: 25
+                    Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+                    w: 20
                     texto: 'Log Y'
                     checked: false
                 }
 
-                Rectangle {
-                    Layout.columnSpan: 6
-                    Layout.preferredHeight: 50
+                TextInputCustom{
+                    id: ymin
+                    Layout.columnSpan: 2
                     Layout.fillWidth: true
-                    color: "#00000000"
-
-                    RowLayout {
-                        anchors.fill: parent
-                        TextInputCustom{
-                            id: ymin
-                            Layout.fillWidth: true
-                            focusColor: Colors.mainColor2
-                            title: 'Y Mínimo'
-                            textHolder: 'Menor valor de Y no gráfico'
-                            defaultColor: '#fff'
-                            textColor: '#fff'
-                            validator: RegExpValidator{regExp: /^[\-]?[0-9]+([\.]?[0-9]+)?$/}
-                        }
-                        TextInputCustom{
-                            id: ymax
-                            Layout.fillWidth: true
-                            focusColor: Colors.mainColor2
-                            title: 'Y Máximo'
-                            textHolder: 'Maior valor de Y no gráfico'
-                            defaultColor: '#fff'
-                            textColor: '#fff'
-                            validator: RegExpValidator{regExp: /^[\-]?[0-9]+([\.]?[0-9]+)?$/}
-                        }
-                        TextInputCustom{
-                            id: ydiv
-                            Layout.fillWidth: true
-                            focusColor: Colors.mainColor2
-                            title: 'Intervalos'
-                            textHolder: 'Número de intervalos no eixo'
-                            defaultColor: '#fff'
-                            textColor: '#fff'
-                            validator: RegExpValidator{regExp: /^[0-9]+$/}
-                        }
-                    }
+                    focusColor: Colors.mainColor2
+                    title: 'Y Mínimo'
+                    textHolder: 'Menor valor de Y no gráfico'
+                    defaultColor: '#fff'
+                    textColor: '#fff'
+                    validator: RegExpValidator{regExp: /^[\-]?[0-9]+([\.]?[0-9]+)?$/}
+                }
+                TextInputCustom{
+                    id: ymax
+                    Layout.columnSpan: 2
+                    Layout.fillWidth: true
+                    focusColor: Colors.mainColor2
+                    title: 'Y Máximo'
+                    textHolder: 'Maior valor de Y no gráfico'
+                    defaultColor: '#fff'
+                    textColor: '#fff'
+                    validator: RegExpValidator{regExp: /^[\-]?[0-9]+([\.]?[0-9]+)?$/}
+                }
+                TextInputCustom{
+                    id: ydiv
+                    Layout.columnSpan: 2
+                    Layout.fillWidth: true
+                    focusColor: Colors.mainColor2
+                    title: 'Intervalos'
+                    textHolder: 'Número de intervalos no eixo'
+                    defaultColor: '#fff'
+                    textColor: '#fff'
+                    validator: RegExpValidator{regExp: /^[0-9]+$/}
                 }
 
                 CheckBoxCustom{
                     id: switchResiduos
-                    Layout.fillWidth: true
+                    Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                     Layout.columnSpan: 2
-                    w: 25
+                    w: 20
                     texto: 'Resíduos'
                     checked: false
                 }
 
                 CheckBoxCustom{
                     id: switchGrade
-                    Layout.fillWidth: true
+                    Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                     Layout.columnSpan: 2
-                    w: 25
+                    w: 20
                     texto: 'Grade'
                     checked: false
                 }
 
                 CheckBoxCustom{
                     id: switchLegend
-                    Layout.fillWidth: true
+                    Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                     Layout.columnSpan: 2
-                    w: 25
+                    w: 20
                     texto: 'Legenda'
                     checked: false
                 }
@@ -348,7 +324,6 @@ Item {
                             from: 1
                             value: 3
                         }
-
 
                         Label {
                             id: label12

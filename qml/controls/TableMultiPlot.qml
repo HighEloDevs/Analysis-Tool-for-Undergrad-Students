@@ -126,7 +126,16 @@ Item {
             id: header
             Layout.fillWidth: true
             height: 30
+            radius: 5
             color: Colors.color1
+
+            Rectangle{
+                anchors.bottom: parent.bottom
+                anchors.bottomMargin: 0
+                width: parent.width
+                height: parent.height/2
+                color: parent.color
+            }
 
             ListView{
                 anchors.fill: parent
@@ -142,7 +151,7 @@ Item {
                         anchors.horizontalCenter: parent.horizontalCenter
                         text: modelData.title
                         color: 'white'
-                        font.pointSize: 9
+                        font.pointSize: 8
                         font.bold: true
                     }
                 }
@@ -154,8 +163,6 @@ Item {
             Layout.fillHeight: true
             Layout.fillWidth: true
             color: Colors.color3
-            border.color: Colors.color1
-            border.width: 2
 
             ScrollView{
                 anchors.fill: parent
@@ -393,14 +400,24 @@ Item {
             id: footer
             Layout.fillWidth: true
             height: 20
+            radius: 5
             color: Colors.color1
+
+            Rectangle{
+                anchors.top: parent.top
+                anchors.topMargin: 0
+                width: parent.width
+                height: parent.height/2
+                color: parent.color
+            }
 
             IconButton{
                 id: addRowBtn
                 anchors.right: parent.right
-                anchors.rightMargin: 2
-                height: parent.height
-                width: addRowBtn.height
+                anchors.rightMargin: 10
+                anchors.verticalCenter: parent.verticalCenter
+                height: parent.height - 5
+                width: addRowBtn.height - 5
                 primaryColor: 'transparent'
                 hoverColor: 'transparent'
                 clickColor: 'transparent'

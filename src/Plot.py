@@ -23,20 +23,21 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-from matplotlib_backend_qtquick.qt_compat import QtCore
+# from matplotlib_backend_qtquick.qt_compat import QtCore
+from PyQt5.QtCore import QObject, QJsonValue, QUrl, pyqtSignal, pyqtSlot
 from src.Calculators import interpreter_calculator, Plot
 import numpy as np
 import pandas as pd
 import json
 import platform
 
-class SinglePlot(QtCore.QObject):
+class SinglePlot(QObject):
     '''Class that controls the single-plot page'''
 
     # Signal to write infos
-    writeCalculator       = QtCore.Signal(str, arguments='expr')
-    fillPlotPageSignal    = QtCore.Signal(QtCore.QJsonValue, arguments='props')
-    plot                  = QtCore.Signal()
+    writeCalculator       = pyqtSignal(str, arguments='expr')
+    fillPlotPageSignal    = pyqtSignal(QJsonValue, arguments='props')
+    plot                  = pyqtSignal()
 
     def __init__(self, canvas, model, messageHandler):
         super().__init__()
@@ -86,7 +87,7 @@ class SinglePlot(QtCore.QObject):
             'data': []
         }
 
-    @QtCore.Slot(QtCore.QJsonValue)
+    @pyqtSlot(QJsonValue)
     def getPlotData(self, plotData):
         self.model.reset()
         plotData    = plotData.toVariant()
@@ -94,9 +95,9 @@ class SinglePlot(QtCore.QObject):
         dataProps   = plotData['dataProps']
         fitProps    = plotData['fitProps']
         for i in ["xmin", "xmax", "ymin", "ymax", "resmin", "resmax"]:
-            canvasProps[i] = self.mk_float(canvasProps[i])
+            canvasProps[i] = self.makeFloat(canvasProps[i])
         for i in ["xdiv", "ydiv"]:
-            canvasProps[i] = self.mk_int(canvasProps[i])
+            canvasProps[i] = self.makeInt(canvasProps[i])
 
         # Loading data from the table
         self.model.loadDataTable(plotData['data'])
@@ -108,10 +109,14 @@ class SinglePlot(QtCore.QObject):
         fitProps['expr'] = fitProps['expr'].replace('arcsin', 'asin')
         fitProps['expr'] = fitProps['expr'].replace('arccos', 'acos')
         fitProps['expr'] = fitProps['expr'].replace('sen', 'sin')
-
+        expIndVar = fitProps['expr'].split(";")
         # Setting expression
-        if self.model._exp_model != fitProps['expr']:
-            self.model.set_expression(fitProps['expr'])
+        if len(expIndVar) == 2:
+            if self.model._exp_model != expIndVar[0]:
+                self.model.set_expression(expIndVar[0].strip(), expIndVar[1].strip())
+        elif len(expIndVar) == 1:
+            if self.model._exp_model != expIndVar[0]:
+                self.model.set_expression(expIndVar[0])
 
         # Getting initial parameters
         if fitProps['p0'] != '':
@@ -120,10 +125,10 @@ class SinglePlot(QtCore.QObject):
             p0 = p0.replace('/', ',')
             self.model.set_p0(p0)
         
-        self.model.xmin = self.mk_float(fitProps['xmin'])
-        self.model.xmax = self.mk_float(fitProps['xmax'])
+        self.model.xmin = self.makeFloat(fitProps['xmin'], value = -np.inf)
+        self.model.xmax = self.makeFloat(fitProps['xmax'], value = np.inf)
 
-        if (self.model.xmin != 0. or self.model.xmax != 0.) and (self.model.xmin >= self.model.xmax):
+        if self.model.xmin >= self.model.xmax:
             self.msg.raiseError("Intervalo de ajuste inválido. Rever intervalo de ajuste.")
             return None
 
@@ -135,11 +140,11 @@ class SinglePlot(QtCore.QObject):
     def fillPlotPage(self, props=None):
         # If no properties passed, emit the default values
         if props is None:
-            self.fillPlotPageSignal.emit(QtCore.QJsonValue.fromVariant(self.props))
+            self.fillPlotPageSignal.emit(QJsonValue.fromVariant(self.props))
         else:
-            self.fillPlotPageSignal.emit(QtCore.QJsonValue.fromVariant(props))
+            self.fillPlotPageSignal.emit(QJsonValue.fromVariant(props))
         
-    @QtCore.Slot()
+    @pyqtSlot()
     def new(self):
         # Reseting canvas and model
         self.model.reset()
@@ -151,13 +156,13 @@ class SinglePlot(QtCore.QObject):
         # Reseting path
         self.path = ''
 
-    @QtCore.Slot(str)
+    @pyqtSlot(str)
     def load(self, path):
         # Reseting frontend
         self.new()
 
         # Getting path
-        self.path = QtCore.QUrl(path).toLocalFile()
+        self.path = QUrl(path).toLocalFile()
 
         # Getting props
         with open(self.path, encoding='utf-8') as file:
@@ -181,7 +186,6 @@ class SinglePlot(QtCore.QObject):
             self.model.load_data(df=props['data'])
 
         self.fillPlotPage(props)
-        # self.plot.emit()
 
     def loadOldJson(self, props):
         props_tmp = self.props.copy()
@@ -219,7 +223,7 @@ class SinglePlot(QtCore.QObject):
 
         return props_tmp
 
-    @QtCore.Slot(QtCore.QJsonValue, result=int)
+    @pyqtSlot(QJsonValue, result=int)
     def save(self, props):
         # If there's no path for saving, saveAs()
         if self.path == '':
@@ -242,10 +246,10 @@ class SinglePlot(QtCore.QObject):
 
         return 0
     
-    @QtCore.Slot(str, QtCore.QJsonValue)
+    @pyqtSlot(str, QJsonValue)
     def saveAs(self, path, props):
         # Getting path
-        self.path = QtCore.QUrl(path).toLocalFile()
+        self.path = QUrl(path).toLocalFile()
 
         # Getting properties
         props = props.toVariant()
@@ -262,7 +266,7 @@ class SinglePlot(QtCore.QObject):
             with open(self.path, 'w', encoding='utf-8') as file:
                 json.dump(props, file, ensure_ascii=False, indent=4)
 
-    @QtCore.Slot(str, str, str, str, str, str)
+    @pyqtSlot(str, str, str, str, str, str)
     def calculator(self, function, opt1, nc, ngl, mean, std):
         functionDict = {
             'Chi²':0,
@@ -305,11 +309,13 @@ class SinglePlot(QtCore.QObject):
         s, x, y, x_area, y_area = interpreter_calculator(functionDict[function], methodDict[opt1], nc, ngl, mean, std)
         Plot(self.canvas, x, y, x_area, y_area)
         self.writeCalculator.emit(s)
-    def mk_float(self, s):
-        '''Make a float from the string'''
-        s = s.strip()
-        return np.float64(s) if s else 0.
-    def mk_int(self, s):
-        '''Make a float from the string'''
-        s = s.strip()
-        return np.int64(s) if s else 0
+    def makeFloat(self, var, value = 0.):
+        try:
+            return float(var)
+        except:
+            return value
+    def makeInt(self, var, value = 0):
+        try:
+            return int(var)
+        except:
+            return value

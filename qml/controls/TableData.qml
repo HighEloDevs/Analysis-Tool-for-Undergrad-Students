@@ -2,10 +2,21 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.11
 import QtQuick.Dialogs 1.3
+import QtGraphicalEffects 1.15
 import "../colors.js" as Colors
 
 Item{
     id: root
+
+    layer.enabled: true
+    layer.effect: DropShadow {
+        horizontalOffset: 1
+        verticalOffset: 1
+        radius: 10
+        spread: 0.1
+        samples: 17
+        color: "#252525"
+    }
 
     // Public Variables
     property variant headerModel: [
@@ -42,7 +53,7 @@ Item{
         width: parent.width
         height: 30
         color: Colors.color2
-        radius: 0
+        radius: 5
 
         // Half bottom of the header must be flat
         Rectangle{
@@ -69,7 +80,7 @@ Item{
                     text: modelData.text
                     anchors.verticalCenter: parent.verticalCenter
                     anchors.horizontalCenter: parent.horizontalCenter
-                    font.pixelSize: 14
+                    font.pixelSize: 12
                     font.bold: true
                     color: 'white'
                 }
@@ -87,8 +98,6 @@ Item{
         anchors.topMargin: 0
         anchors.bottomMargin: 0
         color: Colors.color3
-        border.width: 2
-        border.color: header.color
 
         ScrollView{
             id: dataTable
@@ -98,10 +107,8 @@ Item{
             antialiasing: true
             focus: true
             clip: true
-
             ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
             ScrollBar.vertical.policy: ScrollBar.AsNeeded
-
             contentHeight: dataModel.count * header.height
 
             RowLayout {
@@ -228,16 +235,6 @@ Item{
                             }
                         }
                     }
-
-                    // Animations
-                    // add: Transition {
-                    //     NumberAnimation{
-                    //         property: "opacity";
-                    //         from: 0;
-                    //         to: 1.0;
-                    //         duration: 400
-                    //     }
-                    // }
                 }
 
                 ListView {
@@ -301,7 +298,7 @@ Item{
         width: root.width
         height: 25
         color: Colors.color2
-        radius: 0
+        radius: 5
 
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 0
@@ -337,13 +334,13 @@ Item{
             anchors.verticalCenter: parent.verticalCenter
             anchors.right: parent.right
             anchors.rightMargin: 5
-            width: 22
-            height: 22
-            iconWidth: 18
+            width: 18
+            height: 18
+            iconWidth: 16
             primaryColor: 'transparent'
             hoverColor: 'transparent'
             clickColor: 'transparent'
-            iconColor: 'white'
+            iconColor: isLocked ? "#ff0033":"#4CAF50"
             iconUrl: '../../images/icons/lock-outline.svg'
 
             property bool isLocked: true

@@ -4,9 +4,43 @@ import QtQuick.Controls 2.15
 ComboBox {
     id: root
     model: ["Sólido", "Tracejado", "Ponto-tracejado", "Ponto"]
+    implicitHeight: 55
+    width: 200
+
+    property string label : ""
+    property color textColor: "#fff"
+    property color color    : "#fff"
+    property color highlightColor: "#f0f"
+
+    indicator: Image{
+        id: indicatorImg
+        source: "../../images/icons/expand_more_white_18dp.svg"
+        mipmap: true
+        smooth: true
+        fillMode: Image.PreserveAspectFit
+        anchors.right: parent.right
+        anchors.rightMargin: 5
+        anchors.verticalCenter: parent.verticalCenter
+
+        states: [
+            State{
+                name: "down"
+                PropertyChanges{
+                    target: indicatorImg
+                    rotation: 180
+                }
+                when: root.down
+            }
+        ]
+
+        transitions: Transition {
+            RotationAnimation { duration: 150; direction: RotationAnimation.Counterclockwise }
+        }
+    }
 
     delegate: ItemDelegate {
         width: root.width
+        highlighted: root.highlightedIndex === index
         contentItem: Text {
             text: modelData
             color: "#000"
@@ -14,53 +48,49 @@ ComboBox {
             elide: Text.ElideRight
             verticalAlignment: Text.AlignVCenter
         }
-        highlighted: root.highlightedIndex === index
-    }
-
-    indicator: Canvas {
-        id: canvas
-        x: root.width - width - root.rightPadding
-        y: root.topPadding + (root.availableHeight - height) / 2
-        width: 12
-        height: 8
-        contextType: "2d"
-
-        Connections {
-            target: root
-            function onPressedChanged() { canvas.requestPaint(); }
-        }
-
-        onPaint: {
-            context.reset();
-            context.moveTo(0, 0);
-            context.lineTo(width, 0);
-            context.lineTo(width / 2, height);
-            context.closePath();
-            context.fillStyle = "#000"
-            context.fill();
-        }
     }
 
     contentItem: Text {
         leftPadding: 5
-        rightPadding: root.indicator.width + root.spacing
-
         text: root.displayText
-        font: root.font
-        color: "#000"
+        color: root.textColor
         verticalAlignment: Text.AlignVCenter
         elide: Text.ElideRight
+        font.pixelSize: 13
+        font.bold: true
     }
 
     background: Rectangle {
-        implicitWidth: 120
-        implicitHeight: 40
-        border.color: "#000"
-        border.width: root.visualFocus ? 2 : 1
-        radius: 2
+        anchors.fill: parent
+        color: "transparent" 
+
+        Rectangle{
+            id: indicator
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: 10
+            anchors.right: parent.right
+            anchors.rightMargin: 5
+            anchors.left: parent.left
+            anchors.leftMargin: 5
+            color: root.down ? root.highlightColor:root.color
+            implicitHeight: 2
+        }
+
+        Text{
+            id: label
+            anchors.top: parent.top
+            anchors.topMargin: 2
+            anchors.left: parent.left
+            anchors.leftMargin: 5
+            text: root.label
+            font.bold: true
+            font.pixelSize: 9
+            color: root.down ? root.highlightColor:root.color
+        }
     }
 
     popup: Popup {
+        id: popup
         y: root.height - 1
         width: root.width
         implicitHeight: contentItem.implicitHeight

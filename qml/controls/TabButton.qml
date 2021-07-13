@@ -1,6 +1,7 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtGraphicalEffects 1.15
+import QtQuick.Layouts 1.11
 import "../colors.js" as Colors
 
 Button{
@@ -10,13 +11,11 @@ Button{
     // CUSTOM PROPERTIES
     property color activeMenuColor: Colors.mainColor2
     property color activeMenuColorRight: "#2c313c"
-
     property bool isActiveMenu: false
+    property string iconUrl: ""
 
     QtObject{
         id: internal
-
-        // MOUSE OVER AND CLICK CHANGE COLOR
         property var dynamicColor: if(btnTab.down){
                                        btnTab.down ? Colors.c_button_active : Colors.c_button
                                    } else {
@@ -26,7 +25,7 @@ Button{
     }
 
     implicitWidth: 250
-    implicitHeight: 60
+    implicitHeight: 50
 
     background: Rectangle{
         id: bgBtn
@@ -44,32 +43,34 @@ Button{
             anchors.leftMargin: 0
             visible: isActiveMenu
         }
-
-        Rectangle{
-            height: 4
-            anchors{
-                right: parent.right
-                bottom: parent.bottom
-            }
-            color: activeMenuColorRight
-            anchors.left: parent.left
-            anchors.leftMargin: 0
-            visible: isActiveMenu
-        }
-
     }
 
     contentItem: Item{
         anchors.fill: parent
         id: content
-        Text{
-            color: "#ffffff"
-            text: btnTab.text
-            // font: btnTab.font
-            font.bold: true
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.horizontalCenter: parent.horizontalCenter
+        ColumnLayout{
+            anchors.fill: parent
+            anchors.margins: 3
+            spacing: 0
+            Image {
+                id: image
+                Layout.alignment: Qt.AlignHCenter
+                visible: iconUrl == "" ? false:true
+                width: 24
+                height: 24
+                source: iconUrl
+                mipmap: true
+                smooth: true
+                fillMode: Image.PreserveAspectFit
+            }
+            Text{
+                color: "#ffffff"
+                text: btnTab.text
+                font.bold: true
+                Layout.alignment: Qt.AlignHCenter
+            }
         }
+        
     }
 }
 /*##^##
