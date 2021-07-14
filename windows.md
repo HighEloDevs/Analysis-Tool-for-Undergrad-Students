@@ -4,7 +4,7 @@ title: Windows
 permalink: /windows/
 ---
 
-O executável do programa pode ser encontrado [aqui](https://drive.google.com/drive/folders/1MYXxqCy1s9AMsKC2fDVu1SK556CrAqCo?usp=sharing).
+O executável do programa pode ser encontrado [aqui](https://github.com/HighEloDevs/Analysis-Tool-for-Undergrad-Students/releases/latest).
 
 Após clicar no executável, esta tela pode surgir:
 
