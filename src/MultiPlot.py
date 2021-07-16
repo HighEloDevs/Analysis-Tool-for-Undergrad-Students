@@ -26,8 +26,6 @@ SOFTWARE.
 import json
 import numpy as np
 import platform
-import matplotlib as mpl
-# from matplotlib_backend_qtquick.qt_compat import QtCore
 from PyQt5.QtCore import QObject, QJsonValue, QUrl, pyqtSignal, pyqtSlot
 from .Model_multiplot import MultiModel
 
