@@ -44,6 +44,7 @@ class Model(QObject):
 
     def __init__(self, messageHandler):
         super().__init__()
+        pd.set_option('display.expand_frame_repr', False)
         self._msgHandler = messageHandler
         self._data       = None
         self._data_json  = None
@@ -256,16 +257,16 @@ class Model(QObject):
         # Getting coefficients
         self._coef = [i for i in self._model.param_names]
         # If there's no p0, everything is set to 1.0
-        pi = list()   # Inital values
+        pi = [0]*len(self._model.param_names)   # Inital values
         if self._p0 is None:
             for i in range(len(self._model.param_names)):
-                pi.append(1.0)
+                pi[i] = 1.0
         else:
             for i in range(len(self._model.param_names)):
                 try:
-                    pi.append(float(self._p0[i]))
+                    pi[i] = float(self._p0[i])
                 except:
-                    pi.append(1.0)
+                    pi[i] = 1.0
         # Data
         x, y, sy, sx = self.data
         indices = np.arange(len(self._data.index))
@@ -289,10 +290,10 @@ class Model(QObject):
                 else:
                     return None
             elif wsy:
-                inc_considerada = self.__fit_ODR_special(x, y, sx, pi)
+                self.__fit_ODR_special(x, y, sx, pi)
                 if (self._result is None) == False:
                     self.__set_param_values_ODR(x)
-                    self.__set_report_ODR_special(x, inc_considerada)
+                    self.__set_report_ODR(x)
                 else:
                     return None
             else:
@@ -330,7 +331,7 @@ class Model(QObject):
                 self.__fit_ODR_special(x, y, sx, pi)
                 if (self._result is None) == False:
                     self.__set_param_values_ODR(x)
-                    self.__set_report_ODR_special(x)
+                    self.__set_report_ODR(x)
                 else:
                     return None
         else: # Caso sem incertezas
@@ -362,19 +363,41 @@ class Model(QObject):
             self._msgHandler.raiseError("Expressão de ajuste escrita de forma errada. Rever função de ajuste.")
             return None
     
-    def __fit_ODR_special(self, x, y, sx, pi):
+    def __fit_ODR_special(self, x_orig, y, sx, pi):
         '''Fit com ODR quando só há incertezas em x.'''
-        sy       = np.array([1e-15]*len(x), dtype = float)
-        data     = RealData(x, y, sx = sx, sy = sy)
+        x = np.copy(x_orig)
         def f(a, x):
             param = Parameters()
             for i in range(len(a)):
                 param.add(self._model.param_names[i], value=a[i])
             return eval("self._model.eval(%s=x, params=param)"%self._indVar, None,
                 {'x': x, 'param': param, 'self': self})
+        data  = RealData(x, y, sx = sx)
         model = SciPyModel(f)
         try:
-            myodr = ODR(data, model, beta0 = pi, maxit = 250)
+            myodr = ODR(data, model, beta0 = pi, maxit = 40)
+            self._result = myodr.run()
+        except TypeError:
+            self._msgHandler.raiseError("Expressão de ajuste escrita de forma errada. Rever função de ajuste.")
+            self._result = None
+            return None
+        self._params = Parameters()
+        for i in range(len(self._coef)):
+            self._params.add(self._coef[i], self._result.beta[i])
+        sy = np.zeros(len(self._data["x"]), dtype = float)
+        for i, x in enumerate(self._data["x"]):
+            x_var = np.array([x + self._data["sx"].iloc[i], x - self._data["sx"].iloc[i]])
+            y_prd = eval("self._model.eval(%s = x, params = self._params)"%self._indVar, None,
+        {'x': x, 'self': self})
+            y_var = eval("self._model.eval(%s = x_var, params = self._params)"%self._indVar, None,
+        {'x_var': x_var, 'self': self})
+            sy[i] = np.abs(y_var - y_prd).mean()
+        sy = sy.astype(float)/1000
+        x  = np.copy(x_orig)
+        data  = RealData(x, y, sx = sx, sy = sy)
+        model = SciPyModel(f)
+        try:
+            myodr = ODR(data, model, beta0 = self._result.beta, maxit = 100)
             self._result = myodr.run()
         except TypeError:
             self._msgHandler.raiseError("Expressão de ajuste escrita de forma errada. Rever função de ajuste.")
@@ -445,7 +468,6 @@ class Model(QObject):
         self._params = Parameters()
         ngl          = len(x) - len(self._coef)
         inc_cons     = np.sqrt(self._result.chisqr/ngl)
-        print(self._model.expr)
         for i in range(len(self._coef)):
             self._params.add(self._coef[i], self._result.values[self._coef[i]])
             self._dict.update({self._coef[i]: [self._result.values[self._coef[i]], np.sqrt(self._result.covar[i, i])*inc_cons]})
@@ -464,8 +486,8 @@ class Model(QObject):
         self._report_fit  = ""
         self._report_fit += "\nAjuste: y = %s\n"%self._exp_model
         self._report_fit += "\nNGL  = %d"%(len(x) - len(self._coef))
-        self._report_fit += "\nChi² = %f"%self._result.chisqr
-        self._report_fit += "\nMatriz de covariância:\n\n" + str(self._result.covar) + "\n"
+        self._report_fit += "\nChi² = %f\n"%self._result.chisqr
+        self._report_fit += "\nMatriz de covariância:\n\n" + self.matprint(self._result.covar) + "\n"
         lista             = list(self._params.keys())
         matriz_corr       = np.zeros((len(self._result.covar), len(self._result.covar)))
         z                 = range(len(matriz_corr))
@@ -473,7 +495,9 @@ class Model(QObject):
             for j in z:
                 matriz_corr[i, j] = self._result.covar[i, j]/(self._dict[lista[i]][1]*self._dict[lista[j]][1])
         matriz_corr       = matriz_corr.round(3)
-        self._report_fit += "\nMatriz de correlação:\n\n" + str(matriz_corr) + "\n\n"
+        self._report_fit += "\nMatriz de correlação:\n\n" + self.matprint(matriz_corr, ".3f") + "\n\n"
+        self._report_fit += self.paramsPrint()
+        self._report_fit += "\n"
         self._isvalid     = True
     
     def __set_report_lm_special(self, x):
@@ -487,7 +511,7 @@ class Model(QObject):
         self._report_fit += "\nSomatória dos resíduos absolutos ao quadrado = %f\n"%self._result.chisqr
         self._report_fit += "Incerteza considerada = %f\n"%inc_considerada
         try:
-            self._report_fit += "\nMatriz de covariância:\n\n" + str(self._result.covar*inc_considerada_q) + "\n"
+            self._report_fit += "\nMatriz de covariância:\n\n" + self.matprint(self._result.covar*inc_considerada_q) + "\n"
             lista             = list(self._params.keys())
             matriz_corr       = np.zeros((len(self._result.covar), len(self._result.covar)))
             z                 = range(len(matriz_corr))
@@ -495,11 +519,12 @@ class Model(QObject):
                 for j in z:
                     matriz_corr[i, j] = self._result.covar[i, j]/(self._dict2[lista[i]][1]*self._dict2[lista[j]][1])
             matriz_corr       = matriz_corr.round(3)
-            self._report_fit += "\nMatriz de correlação:\n\n" + str(matriz_corr) + "\n\n"
+            self._report_fit += "\nMatriz de correlação:\n\n" + self.matprint(matriz_corr, ".3f") + "\n\n"
+            self._report_fit += self.paramsPrint2(inc_considerada)
+            self._report_fit += "\n"
             self._isvalid     = True
         except TypeError:
             self._msgHandler.raiseError("A função ajustada provavelmente não possui parâmetros para serem ajustados. Rever ajuste.")
-            # A função ajustada provavelmente não possui parâmetros para serem ajustados. Rever ajuste.
             return None
 
     def __set_report_ODR(self, x):
@@ -507,8 +532,8 @@ class Model(QObject):
         self._report_fit  = ""
         self._report_fit += "\nAjuste: y = %s\n"%self._exp_model
         self._report_fit += "\nNGL  = %d"%(len(x) - len(self._coef))
-        self._report_fit += "\nChi² = %f"%self._result.sum_square
-        self._report_fit += "\nMatriz de covariância:\n\n" + str(self._result.cov_beta) + "\n"
+        self._report_fit += "\nChi² = %f\n"%self._result.sum_square
+        self._report_fit += "\nMatriz de covariância:\n\n" + self.matprint(self._result.cov_beta) + "\n"
         lista             = list(self._params.keys())
         matriz_corr       = np.zeros((len(self._result.cov_beta), len(self._result.cov_beta)))
         z                 = range(len(matriz_corr))
@@ -516,7 +541,9 @@ class Model(QObject):
             for j in z:
                 matriz_corr[i, j] = self._result.cov_beta[i, j]/(self._dict[lista[i]][1]*self._dict[lista[j]][1])
         matriz_corr       = matriz_corr.round(3)
-        self._report_fit += "\nMatriz de correlação:\n\n" + str(matriz_corr) + "\n\n"
+        self._report_fit += "\nMatriz de correlação:\n\n" + self.matprint(matriz_corr, ".3f") + "\n\n"
+        self._report_fit += self.paramsPrint()
+        self._report_fit += "\n"
         self._isvalid     = True
 
     def __set_report_ODR_special(self, x):
@@ -524,8 +551,8 @@ class Model(QObject):
         self._report_fit  = ""
         self._report_fit += "\nAjuste: y = %s\n"%self._exp_model
         self._report_fit += "\nNGL  = %d"%(len(x) - len(self._coef))
-        self._report_fit += "\nChi² = %f"%self._result.sum_square
-        self._report_fit += "\nMatriz de covariância:\n\n" + str(self._result.cov_beta) + "\n"
+        self._report_fit += "\nChi² = %f\n"%self._result.sum_square
+        self._report_fit += "\nMatriz de covariância:\n\n" + self.matprint(self._result.cov_beta) + "\n"
         lista             = list(self._params.keys())
         matriz_corr       = np.zeros((len(self._result.cov_beta), len(self._result.cov_beta)))
         z                 = range(len(matriz_corr))
@@ -533,8 +560,11 @@ class Model(QObject):
             for j in z:
                 matriz_corr[i, j] = self._result.cov_beta[i, j]/(self._dict[lista[i]][1]*self._dict[lista[j]][1])
         matriz_corr       = matriz_corr.round(3)
-        self._report_fit += "\nMatriz de correlação:\n\n" + str(matriz_corr) + "\n\n"
+        self._report_fit += "\nMatriz de correlação:\n\n" + self.matprint(matriz_corr, ".3f") + "\n\n"
+        self._report_fit += self.paramsPrint()
+        self._report_fit += "\n"
         self._isvalid     = True
+        
 
     @property
     def coefficients(self):
@@ -603,7 +633,30 @@ class Model(QObject):
             return sy
         return self._data["sy"]
 
+    def matprint(self, mat, fmt="f"):
+        col_maxes = [max([len(("{:"+fmt+"}").format(x)) for x in col]) for col in mat.T]
+        matrix    = ""
+        for x in mat:
+            for i, y in enumerate(x):
+                matrix += ("{:"+str(col_maxes[i])+fmt+"}").format(y) + "  "
+            matrix += "\n"
+        return matrix
     
+    def paramsPrint(self):
+        df         = pd.DataFrame(self._dict)
+        df         = df.transpose()
+        df.columns = ["Valor", "    Incerteza"]
+        df.index   = self._coef
+        return str(df)
+
+    def paramsPrint2(self, inc_considerada):
+        df         = pd.DataFrame(self._dict2)
+        df         = df.transpose()
+        df.columns = ["Valor", "    Incerteza"]
+        df["    Incerteza"] = df["    Incerteza"]*inc_considerada
+        df.index   = self._coef
+        return str(df)
+
     def reset(self):
         self._data       = None
         self._data_json  = None

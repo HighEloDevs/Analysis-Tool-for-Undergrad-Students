@@ -27,6 +27,8 @@ from PyQt5.QtCore import QObject, pyqtProperty, QUrl, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QGuiApplication, QPixmap
 import numpy as np
 import os
+import matplotlib.gridspec as gridspec
+from matplotlib.transforms import Bbox
 
 class MPLCanvas(QObject):
     """ A bridge class to interact with the plot in python
@@ -44,10 +46,11 @@ class MPLCanvas(QObject):
         self.canvas  = None
         self.toolbar = None
         self.axes    = None
-        self.ax1     = ''
-        self.ax2     = ''
+        self.axes1   = None
+        self.axes2   = None
         self.oid     = 0
         self.cid     = 0
+        self.grid    = False
 
         # This is used to display the coordinates of the mouse in the window
         self._coordinates = ""
@@ -57,19 +60,27 @@ class MPLCanvas(QObject):
         self.canvas  = canvas
         self.figure  = self.canvas.figure
         self.toolbar = NavigationToolbar2QtQuick(canvas=canvas)
-        self.axes    = self.figure.add_subplot(111)
-        self.axes.grid(False)
-        canvas.draw_idle()
+        self.gm      = gridspec.GridSpec(2, 1, figure =  self.figure, height_ratios = [3., 1.])
+        self.gs      = gridspec.GridSpec(1, 1, figure =  self.figure, height_ratios = [1.])
+        self.axes1   = self.figure.add_subplot(self.gm[0], picker = True)
+        self.axes2   = self.figure.add_subplot(self.gm[1], picker = False, sharex = self.axes1)
+        self.axes2.set_visible(False)
+        self.axes1.set_position(self.gs[:, :].get_position(self.figure), which = "original")
+        self.axes1.grid(False)
+        self.canvas.draw_idle()
 
         # Connect for displaying the coordinates
         self.figure.canvas.mpl_connect('motion_notify_event', self.on_motion)
+        self.teste = None
 
     def Plot(self, model, canvasProps, fitProps, dataProps):
+        self.figure.tight_layout(rect=[0.015, 0.045, 0.985, 0.985])
         log_x           = bool(canvasProps['log_x'])
         log_y           = bool(canvasProps['log_y'])
         legend          = bool(canvasProps['legend'])
         residuals       = bool(canvasProps['residuals'])
         grid            = bool(canvasProps['grid'])
+        self.grid = grid
         xmin            = canvasProps['xmin']
         xmax            = canvasProps['xmax']
         xdiv            = canvasProps['xdiv']
@@ -78,7 +89,13 @@ class MPLCanvas(QObject):
         ydiv            = canvasProps['ydiv']
         resmin          = canvasProps['resmin']
         resmax          = canvasProps['resmax']
-        axisTitle       = [canvasProps['title'], canvasProps['xaxis'], canvasProps['yaxis']]
+        partialTitles   = canvasProps['title'].split(";")
+        axisTitle       = []
+        if len(partialTitles) == 1:
+            axisTitle       = [canvasProps['title'].strip(), canvasProps['xaxis'].strip(), canvasProps['yaxis'].strip(), ""]
+        else:
+            axisTitle       = [partialTitles[0].strip(), canvasProps['xaxis'].strip(), canvasProps['yaxis'].strip(),
+             partialTitles[1].strip()]
         symbol_color    = dataProps['marker_color']
         symbol_size     = dataProps['marker_size']
         symbol          = dataProps['marker']
@@ -107,263 +124,210 @@ class MPLCanvas(QObject):
                 y_r          = model.residuo
 
                 if residuals:
-                    self.ax1, self.ax2 = self.figure.subplots(2, 1, sharex=True, gridspec_kw={'height_ratios': [3, 1.0]})
-
-                    if xdiv != 0. and (xmax != 0. or xmin != 0.):
-                        self.ax1.set_xticks(np.linspace(xmin, xmax, xdiv + 1))
-                        self.ax2.set_xticks(np.linspace(xmin, xmax, xdiv + 1))
-                        self.ax1.set_xlim(left = xmin, right = xmax)
-                        self.ax2.set_xlim(left = xmin, right = xmax)
-                    else:
-                        if xmin == 0. and xmax != 0.:
-                            self.ax1.set_xlim(left = None, right = xmax)
-                            self.ax2.set_xlim(left = None, right = xmax)
-                        elif xmin != 0. and xmax == 0.:
-                            self.ax1.set_xlim(left = xmin, right = None)
-                            self.ax2.set_xlim(left = xmin, right = None)
-                        elif xmin != 0. and xmax != 0.:
-                            self.ax1.set_xlim(left = xmin, right = xmax)
-                            self.ax2.set_xlim(left = xmin, right = xmax)
-                    
-                    if ydiv != 0. and (ymax != 0. or ymin != 0.):
-                        self.ax1.set_yticks(np.linspace(ymin, ymax, ydiv + 1))
-                        self.ax1.set_ylim(bottom = ymin, top = ymax)
-                    else:
-                        if ymin == 0. and ymax != 0.:
-                            self.ax1.set_ylim(bottom = None, top = ymax)
-                        elif ymin != 0. and ymax == 0.:
-                            self.ax1.set_ylim(bottom = ymin, top = None)
-                        elif ymin != 0. and ymax != 0.:
-                            self.ax1.set_ylim(bottom = ymin, top = ymax)
-                    if resmin != 0. or resmax != 0.:
-                        self.ax2.set_ylim(bottom = resmin, top = resmax)
-
-                    if grid:
-                        self.ax1.grid(True,  which='major')
-                        # self.ax1.grid(True, which='minor', alpha = 0.3)
-                        self.ax2.grid(True,  which='major')
-                        # self.ax2.grid(True, which='minor', alpha = 0.3)
-                    if log_y:
-                        self.ax1.set_yscale('log')
-                    if log_x:
-                        self.ax1.set_xscale('log')
+                    self.switchAxes(hideAxes2 = False)
+                    self.setAxesPropsWithAxes2(xmin, xmax, xdiv, ymin, ymax, ydiv, resmin, resmax, grid, log_x, log_y)
 
                     ssy = model.predictInc(not sigma_x)
-                    self.ax2.errorbar(x, y_r, yerr=ssy, ecolor = symbol_color, capsize = 0, elinewidth = 1, ms = symbol_size, marker = symbol, color = symbol_color, ls = 'none')
-                    self.ax1.errorbar(x, y, yerr=sy, xerr=sx, ecolor = symbol_color, capsize = 0, elinewidth = 1, ms = symbol_size, marker = symbol, color = symbol_color, ls = 'none')
+                    self.axes2.errorbar(x, y_r, yerr=ssy, ecolor = symbol_color, capsize = 0, elinewidth = 1, ms = symbol_size, marker = symbol, color = symbol_color, ls = 'none')
+                    self.axes1.errorbar(x, y, yerr=sy, xerr=sx, ecolor = symbol_color, capsize = 0, elinewidth = 1, ms = symbol_size, marker = symbol, color = symbol_color, ls = 'none')
                     
-                    left, right = self.ax1.get_xlim()
-                    self.ax1.set_xlim(left = left, right = right)
-                    self.ax2.set_xlim(left = left, right = right)
+                    left, right = self.axes1.get_xlim()
+                    self.axes1.set_xlim(left = left, right = right)
+                    self.axes2.set_xlim(left = left, right = right)
                     px, py = 0., 0.
                     if log_x:
-                        px, py      = model.get_predict_log(self.ax1.figure, left, right)
+                        px, py      = model.get_predict_log(self.axes1.figure, left, right)
 
                     else:
-                        px, py      = model.get_predict(self.ax1.figure, left, right)
+                        px, py      = model.get_predict(self.axes1.figure, left, right)
 
                     # Making Plots
-                    line_func, = self.ax1.plot(px, py, lw = curve_thickness, color = curve_color, ls = curve_style, label = '${}$'.format(model._exp_model))
+                    line_func, = self.axes1.plot(px, py, lw = curve_thickness, color = curve_color, ls = curve_style, label = '${}$'.format(model._exp_model))
 
                     # Setting titles
-                    self.ax1.set_title(str(axisTitle[0]))
-                    self.ax2.set(xlabel = str(axisTitle[1]))
-                    self.ax1.set(ylabel = str(axisTitle[2]))
-                    self.ax2.set(ylabel = "Resíduos")
+                    self.axes1.set_title(axisTitle[0])
+                    self.axes2.set(xlabel = axisTitle[1])
+                    self.axes1.set(ylabel = axisTitle[2])
+                    self.axes2.set(ylabel = axisTitle[3])
                     if legend:
-                        self.ax1.legend(frameon=False)
+                        self.axes1.legend(frameon=False)
 
                     def update(evt=None):
-                        left, right = self.ax1.get_xlim()
-                        ppx, ppy = model.get_predict(self.ax1.figure, left, right)
+                        left, right = self.axes1.get_xlim()
+                        ppx, ppy = model.get_predict(self.axes1.figure, left, right)
                         line_func.set_data(ppx, ppy)
-                        self.ax1.figure.canvas.draw_idle()
+                        self.axes1.figure.canvas.draw_idle()
                     if log_x:
                         def update(evt=None):
-                            left, right = self.ax1.get_xlim()
-                            ppx, ppy = model.get_predict_log(self.ax1.figure, left, right)
+                            left, right = self.axes1.get_xlim()
+                            ppx, ppy = model.get_predict_log(self.axes1.figure, left, right)
                             line_func.set_data(ppx, ppy)
-                            self.ax1.figure.canvas.draw_idle()
-                    self.ax1.remove_callback(self.oid)
-                    self.ax1.figure.canvas.mpl_disconnect(self.cid)
-                    self.oid = self.ax1.callbacks.connect('xlim_changed', update)
-                    self.cid = self.ax1.figure.canvas.mpl_connect("resize_event", update)
+                            self.axes1.figure.canvas.draw_idle()
+                    self.axes1.remove_callback(self.oid)
+                    self.axes1.figure.canvas.mpl_disconnect(self.cid)
+                    self.oid = self.axes1.callbacks.connect('xlim_changed', update)
+                    self.cid = self.axes1.figure.canvas.mpl_connect("resize_event", update)
+                    self.figure.subplots_adjust(left = None, bottom = None, right = None, top = None, wspace = None, hspace = 0.)
                 else:
-                    self.axes = self.figure.add_subplot(111)
+                    self.switchAxes(hideAxes2 = True)
+                    self.setAxesPropsWithoutAxes2(xmin, xmax, xdiv, ymin, ymax, ydiv, grid, log_x, log_y)
 
-                    if grid:
-                        self.axes.grid(True,  which='major')
-                        # self.axes.grid(True, which='minor', alpha = 0.3)
-                    if log_y:
-                        self.axes.set_yscale('log')
-                    if log_x:
-                        self.axes.set_xscale('log')
-
-                    if xdiv != 0. and (xmax != 0. or xmin != 0.):
-                        self.axes.set_xticks(np.linspace(xmin, xmax, xdiv + 1))
-                        self.axes.set_xlim(left = xmin, right = xmax)
-
-                    else:
-                        if xmin == 0. and xmax != 0.:
-                            self.axes.set_xlim(left = None, right = xmax)
-                        elif xmin != 0. and xmax == 0.:
-                            self.axes.set_xlim(left = xmin, right = None)
-                        elif xmin != 0. and xmax != 0.:
-                            self.axes.set_xlim(left = xmin, right = xmax)
-                    
-                    if ydiv != 0. and (ymax != 0. or ymin != 0.):
-                        self.axes.set_yticks(np.linspace(ymin, ymax, ydiv + 1))
-                        self.axes.set_ylim(bottom = ymin, top = ymax)
-                    else:
-                        if ymin == 0. and ymax != 0.:
-                            self.axes.set_ylim(bottom = None, top = ymax)
-                        elif ymin != 0. and ymax == 0.:
-                            self.axes.set_ylim(bottom = ymin, top = None)
-                        elif ymin != 0. and ymax != 0.:
-                            self.axes.set_ylim(bottom = ymin, top = ymax)
-                    
                     # Making Plots
 
-                    self.axes.errorbar(x, y, yerr=sy, xerr=sx, capsize = 0, elinewidth = 1, ecolor = symbol_color, ms = symbol_size, marker = symbol, color = symbol_color, ls = 'none')
+                    self.axes1.errorbar(x, y, yerr=sy, xerr=sx, capsize = 0, elinewidth = 1, ecolor = symbol_color, ms = symbol_size, marker = symbol, color = symbol_color, ls = 'none')
                     
-                    left, right = self.axes.get_xlim()
-                    self.axes.set_xlim(left = left, right = right)
+                    left, right = self.axes1.get_xlim()
+                    self.axes1.set_xlim(left = left, right = right)
                     px, py = 0., 0.
                     if log_x:
-                        px, py      = model.get_predict_log(self.axes.figure, left, right)
+                        px, py      = model.get_predict_log(self.axes1.figure, left, right)
                     else:
-                        px, py      = model.get_predict(self.axes.figure, left, right)
+                        px, py      = model.get_predict(self.axes1.figure, left, right)
                     
-                    line_func, = self.axes.plot(px, py, lw = curve_thickness, color = curve_color, ls = curve_style, label = '${}$'.format(model._exp_model))
-
+                    line_func, = self.axes1.plot(px, py, lw = curve_thickness, color = curve_color, ls = curve_style, label = '${}$'.format(model._exp_model), picker = True)
+                    self.teste = line_func
                     if legend:
-                        self.axes.legend(fancybox=True)
+                        self.axes1.legend(fancybox=True)
 
+                        # def on_pick(event):
+                        #     print("ok")
+                        #     visible = not self.teste.get_visible()
+                        #     self.teste.set_visible(visible)
+                        #     self.teste.set_alpha(1.0 if visible else 0.2)
+                        # self.figure.canvas.draw()
+                        # self.figure.canvas.mpl_connect('pick_event', on_pick)
                     # Setting titles
-                    self.axes.set_title(str(axisTitle[0]))
-                    self.axes.set(xlabel = str(axisTitle[1]))
-                    self.axes.set(ylabel = str(axisTitle[2]))
+                    self.axes1.set_title(str(axisTitle[0]))
+                    self.axes1.set(xlabel = str(axisTitle[1]))
+                    self.axes1.set(ylabel = str(axisTitle[2]))
 
                     # One piece
                     def update(evt=None):
-                        left, right = self.axes.get_xlim()
-                        ppx, ppy = model.get_predict(self.axes.figure, left, right)
+                        left, right = self.axes1.get_xlim()
+                        ppx, ppy = model.get_predict(self.axes1.figure, left, right)
                         line_func.set_data(ppx,ppy)
-                        self.axes.figure.canvas.draw_idle()
+                        self.axes1.figure.canvas.draw_idle()
                     if log_x:
                         def update(evt=None):
-                            left, right = self.axes.get_xlim()
-                            ppx, ppy = model.get_predict_log(self.axes.figure, left, right)
+                            left, right = self.axes1.get_xlim()
+                            ppx, ppy = model.get_predict_log(self.axes1.figure, left, right)
                             line_func.set_data(ppx,ppy)
-                            self.axes.figure.canvas.draw_idle()
-                    self.axes.remove_callback(self.oid)
-                    self.axes.figure.canvas.mpl_disconnect(self.cid)
-                    self.oid = self.axes.callbacks.connect('xlim_changed', update)
-                    self.cid = self.axes.figure.canvas.mpl_connect("resize_event", update)
+                            self.axes1.figure.canvas.draw_idle()
+                    self.axes1.remove_callback(self.oid)
+                    self.axes1.figure.canvas.mpl_disconnect(self.cid)
+                    self.oid = self.axes1.callbacks.connect('xlim_changed', update)
+                    self.cid = self.figure.canvas.mpl_connect("resize_event", update)
+
             else:
                 self.clearAxis()
-                self.axes = self.figure.add_subplot(111)
-
-                if grid:
-                    self.axes.grid(True, which='major')
-                    # self.axes.grid(True, which='minor', alpha = 0.3)
-                if log_y:
-                    self.axes.set_yscale('log')
-                if log_x:
-                    self.axes.set_xscale('log')
-
-                if xdiv != 0. and (xmax != 0. or xmin != 0.):
-                    self.axes.set_xticks(np.linspace(xmin, xmax, xdiv + 1))
-                    self.axes.set_xlim(left = xmin, right = xmax)
-
-                else:
-                    if xmin == 0. and xmax != 0.:
-                        self.axes.set_xlim(left = None, right = xmax)
-                    elif xmin != 0. and xmax == 0.:
-                        self.axes.set_xlim(left = xmin, right = None)
-                    elif xmin != 0. and xmax != 0.:
-                        self.axes.set_xlim(left = xmin, right = xmax)
-                
-                if ydiv != 0. and (ymax != 0. or ymin != 0.):
-                    self.axes.set_yticks(np.linspace(ymin, ymax, ydiv + 1))
-                    self.axes.set_ylim(bottom = ymin, top = ymax)
-                else:
-                    if ymin == 0. and ymax != 0.:
-                        self.axes.set_ylim(bottom = None, top = ymax)
-                    elif ymin != 0. and ymax == 0.:
-                        self.axes.set_ylim(bottom = ymin, top = None)
-                    elif ymin != 0. and ymax != 0.:
-                        self.axes.set_ylim(bottom = ymin, top = ymax)
+                self.switchAxes(hideAxes2 = True)
+                self.setAxesPropsWithoutAxes2(xmin, xmax, xdiv, ymin, ymax, ydiv, grid, log_x, log_y)
 
                 x, y, sy, sx = model.data
 
                 # Making Plots
 
-                self.axes.errorbar(x, y, yerr=sy, xerr=sx, elinewidth = 1, ecolor = symbol_color, ms = symbol_size, marker = symbol, color = symbol_color, ls = 'none', capsize = 0)
-                
-                # self.axes.minorticks_on()
-                # self.axes.xaxis.set_minor_locator(mpl.ticker.AutoMinorLocator(3))
-                # self.axes.yaxis.set_minor_locator(mpl.ticker.AutoMinorLocator(3))
+                self.axes1.errorbar(x, y, yerr=sy, xerr=sx, elinewidth = 1, ecolor = symbol_color, ms = symbol_size, marker = symbol, color = symbol_color, ls = 'none', capsize = 0)
 
                 # Setting titles
-                self.axes.set_title(str(axisTitle[0]))
-                self.axes.set(xlabel = str(axisTitle[1]))
-                self.axes.set(ylabel = str(axisTitle[2]))
+                self.axes1.set_title(str(axisTitle[0]))
+                self.axes1.set(xlabel = str(axisTitle[1]))
+                self.axes1.set(ylabel = str(axisTitle[2]))
 
         # Reseting parameters
         px, py, y_r   = None, None, None
         model.isvalid = False
-        self.figure.tight_layout()
-        self.figure.subplots_adjust(left = None, bottom = None, right = None, top = None, wspace = None, hspace = 0.)
         self.canvas.draw_idle()
 
     def clearAxis(self):
         """Clear the current plot in the axis."""
-        try:
-            self.figure.gca().remove()
-        except:
-            pass
-        try:
-            # ax1, ax2 = self.figure.gca()
-            self.ax1.remove()
-            self.ax2.remove()
-        except:
-            pass
+        self.axes1.cla()
+        self.axes2.cla()
+    
+    def switchAxes(self, hideAxes2: bool = True):
+        """Função que oculta ou não o eixo secundário."""
+        if hideAxes2:
+            self.axes2.set_visible(False)
+            self.axes1.set_position(self.gs[0].get_position(self.figure), which = 'both')
+        else:
+            self.axes2.set_visible(True)
+            self.axes1.set_position(self.gm[0].get_position(self.figure), which = 'both')
+            self.axes2.set_position(self.gm[1].get_position(self.figure), which = 'both')
 
-    def reset(self):
-        '''Resets the class.'''
-        # The figure, canvas, toolbar and axes
-        self.clearAxis()
-        self.axes = self.figure.add_subplot(111)
-        self.canvas.draw_idle()
-        self.oid = 0
-        self.cid = 0
+    def setAxesPropsWithoutAxes2(self, xmin, xmax, xdiv, ymin, ymax, ydiv, grid, log_x, log_y):
+        if grid:
+            self.axes1.grid(True,  which='major')
+        if log_y:
+            self.axes1.set_yscale('log')
+        if log_x:
+            self.axes1.set_xscale('log')
 
-        # Options
-        self.sigma_x         = False
-        self.sigma_y         = False
-        self.log_x           = False
-        self.log_y           = False
-        self.legend          = False
-        self.grid            = False
-        self.residuals       = False
-        self.symbol_color    = ''
-        self.symbol_size     = 3
-        self.symbol          = ''
-        self.curve_color     = ''
-        self.curve_thickness = 2
-        self.curve_style     = ''
-        self.expression      = ''
+        if xdiv != 0. and (xmax != 0. or xmin != 0.):
+            self.axes1.set_xticks(np.linspace(xmin, xmax, xdiv + 1))
+            self.axes1.set_xlim(left = xmin, right = xmax)
+        else:
+            if xmin == 0. and xmax != 0.:
+                self.axes1.set_xlim(left = None, right = xmax)
+            elif xmin != 0. and xmax == 0.:
+                self.axes1.set_xlim(left = xmin, right = None)
+            elif xmin != 0. and xmax != 0.:
+                self.axes1.set_xlim(left = xmin, right = xmax)
+        
+        if ydiv != 0. and (ymax != 0. or ymin != 0.):
+            self.axes1.set_yticks(np.linspace(ymin, ymax, ydiv + 1))
+            self.axes1.set_ylim(bottom = ymin, top = ymax)
+        else:
+            if ymin == 0. and ymax != 0.:
+                self.axes1.set_ylim(bottom = None, top = ymax)
+            elif ymin != 0. and ymax == 0.:
+                self.axes1.set_ylim(bottom = ymin, top = None)
+            elif ymin != 0. and ymax != 0.:
+                self.axes1.set_ylim(bottom = ymin, top = ymax)
 
-        # This is used to display the coordinates of the mouse in the window
-        self._coordinates = ""
+    def setAxesPropsWithAxes2(self, xmin, xmax, xdiv, ymin, ymax, ydiv, resmin, resmax, grid, log_x, log_y):
+        if xdiv != 0. and (xmax != 0. or xmin != 0.):
+            self.axes1.set_xticks(np.linspace(xmin, xmax, xdiv + 1))
+            self.axes2.set_xticks(np.linspace(xmin, xmax, xdiv + 1))
+            self.axes1.set_xlim(left = xmin, right = xmax)
+            self.axes2.set_xlim(left = xmin, right = xmax)
+        else:
+            if xmin == 0. and xmax != 0.:
+                self.axes1.set_xlim(left = None, right = xmax)
+                self.axes2.set_xlim(left = None, right = xmax)
+            elif xmin != 0. and xmax == 0.:
+                self.axes1.set_xlim(left = xmin, right = None)
+                self.axes2.set_xlim(left = xmin, right = None)
+            elif xmin != 0. and xmax != 0.:
+                self.axes1.set_xlim(left = xmin, right = xmax)
+                self.axes2.set_xlim(left = xmin, right = xmax)
+        if ydiv != 0. and (ymax != 0. or ymin != 0.):
+            self.axes1.set_yticks(np.linspace(ymin, ymax, ydiv + 1))
+            self.axes1.set_ylim(bottom = ymin, top = ymax)
+        else:
+            if ymin == 0. and ymax != 0.:
+                self.axes1.set_ylim(bottom = None, top = ymax)
+            elif ymin != 0. and ymax == 0.:
+                self.axes1.set_ylim(bottom = ymin, top = None)
+            elif ymin != 0. and ymax != 0.:
+                self.axes1.set_ylim(bottom = ymin, top = ymax)
+        if resmin != 0. or resmax != 0.:
+            self.axes2.set_ylim(bottom = resmin, top = resmax)
+        if grid:
+            self.axes1.grid(True,  which='major')
+            # self.axes1.grid(True, which='minor', alpha = 0.3)
+            self.axes2.grid(True,  which='major')
+            # self.axes2.grid(True, which='minor', alpha = 0.3)
+        if log_y:
+            self.axes1.set_yscale('log')
+        if log_x:
+            self.axes1.set_xscale('log')
     
     def getCoordinates(self):
-        """Gets the cordinates in the plot."""
+        """Retorna as coordenadas no gráfico."""
         return self._coordinates
     
     def setCoordinates(self, coordinates):
-        """Sets the cordinates."""
+        """Seta as coordenadas do gráfico."""
         self._coordinates = coordinates
         self.coordinatesChanged.emit(self._coordinates)
 
@@ -424,9 +388,30 @@ class MPLCanvas(QObject):
     def forward(self, *args):
         self.toolbar.forward(*args)
 
+    @pyqtSlot()
+    def SHORTGrid(self):
+        self.axes1.grid(not self.grid)
+        self.axes2.grid(not self.grid)
+        self.grid = not self.grid
+        self.canvas.draw_idle()
+
+    @pyqtSlot()
+    def SHORTAxis1(self):
+        if self.axes1.axison:
+            self.axes1.axis('off')
+        else:
+            self.axes1.axis('on')
+        self.canvas.draw_idle()
+
+    @pyqtSlot()
+    def SHORTAxis2(self):
+        if self.axes2.axison:
+            self.axes2.axis('off')
+        else:
+            self.axes2.axis('on')
+        self.canvas.draw_idle()
+
     def on_motion(self, event):
         """Update the coordinates on the display."""
-        if event.inaxes == self.axes or event.inaxes == self.ax1 or event.inaxes == self.ax2:
+        if event.inaxes == self.axes1 or event.inaxes == self.axes2:
             self.coordinates = f"({event.xdata:.2f}, {event.ydata:.2f})"
-
-        

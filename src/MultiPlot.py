@@ -252,99 +252,73 @@ class Multiplot(QObject):
         self.Plot()
 
     def Plot(self):
-        self.displayBridge.reset()
-
-        if self.grid:
-            self.displayBridge.axes.grid(True)
-        if self.logy:
-            self.displayBridge.axes.set_yscale('log')
-        if self.logx:
-            self.displayBridge.axes.set_xscale('log')
-        if self.xdiv != 0. and (self.xmax != 0. or self.xmin != 0.):
-            self.displayBridge.axes.set_xticks(np.linspace(self.xmin, self.xmax, self.xdiv + 1))
-            self.displayBridge.axes.set_xlim(left = self.xmin, right = self.xmax)
-        else:
-            if self.xmin == 0. and self.xmax != 0.:
-                self.displayBridge.axes.set_xlim(left = None, right = self.xmax)
-            elif self.xmin != 0. and self.xmax == 0.:
-                self.displayBridge.axes.set_xlim(left = self.xmin, right = None)
-            elif self.xmin != 0. and self.xmax != 0.:
-                self.displayBridge.axes.set_xlim(left = self.xmin, right = self.xmax)
-        
-        if self.ydiv != 0. and (self.ymax != 0. or self.ymin != 0.):
-            self.displayBridge.axes.set_yticks(np.linspace(self.ymin, self.ymax, self.ydiv + 1))
-            self.displayBridge.axes.set_ylim(bottom = self.ymin, top = self.ymax)
-        else:
-            if self.ymin == 0. and self.ymax != 0.:
-                self.displayBridge.axes.set_ylim(bottom = None, top = self.ymax)
-            elif self.ymin != 0. and self.ymax == 0.:
-                self.displayBridge.axes.set_ylim(bottom = self.ymin, top = None)
-            elif self.ymin != 0. and self.ymax != 0.:
-                self.displayBridge.axes.set_ylim(bottom = self.ymin, top = self.ymax)
-        
-        # self.displayBridge.axes.xaxis.set_minor_locator(mpl.ticker.AutoMinorLocator(3))
-        # self.displayBridge.axes.yaxis.set_minor_locator(mpl.ticker.AutoMinorLocator(3))
+        self.displayBridge.figure.tight_layout(rect=[0.015, 0.045, 0.985, 0.985])
+        self.displayBridge.clearAxis()
+        self.displayBridge.switchAxes(hideAxes2 = True)
+        self.displayBridge.grid = self.grid
+        self.displayBridge.setAxesPropsWithoutAxes2(self.xmin, self.xmax, self.xdiv,
+         self.ymin, self.ymax, self.ydiv, self.grid, self.logx, self.logy)
 
         for i in range(len(self.Multi_Model.models)):
             if self.Multi_Model.arquivos[i]['marker'] == True:
                 self.Plot_sx_sy(self.Multi_Model.dfs[i], self.Multi_Model.arquivos[i])
-        left, right = self.displayBridge.axes.get_xlim()
-        self.displayBridge.axes.set_xlim(left = left, right = right)
-        self.displayBridge.axes.set_xlim(left = left, right = right)
+        left, right = self.displayBridge.axes1.get_xlim()
+        self.displayBridge.axes1.set_xlim(left = left, right = right)
+        self.displayBridge.axes1.set_xlim(left = left, right = right)
         lines = list()
         for i in range(len(self.Multi_Model.models)):
             if self.Multi_Model.arquivos[i]['func'] == True and self.Multi_Model.models[i] != 0.:
                 self.Func_plot(self.Multi_Model.arquivos[i], self.Multi_Model.models[i], self.Multi_Model.parameters[i], self.Multi_Model.indVars[i], left, right, lines)
-        self.displayBridge.axes.set_title(self.title)
-        self.displayBridge.axes.set(xlabel = self.xaxis, ylabel = self.yaxis)
-        handles, labels = self.displayBridge.axes.get_legend_handles_labels()
+        self.displayBridge.axes1.set_title(self.title)
+        self.displayBridge.axes1.set(xlabel = self.xaxis, ylabel = self.yaxis)
+        handles, labels = self.displayBridge.axes1.get_legend_handles_labels()
 
         if len(handles) > 1:
             labels.reverse()
             handles.reverse()
             by_label = dict(zip(labels, handles))
-            self.displayBridge.axes.legend(by_label.values(), by_label.keys())
+            self.displayBridge.axes1.legend(by_label.values(), by_label.keys())
         elif len(handles) == 1:
             by_label = dict(zip(labels, handles))
-            self.displayBridge.axes.legend(by_label.values(), by_label.keys())
+            self.displayBridge.axes1.legend(by_label.values(), by_label.keys())
+        self.displayBridge.canvas.draw_idle()
         
-        self.displayBridge.figure.tight_layout()
 
     def Plot_sx_sy(self, df, options):
         if options['label'] != '':
-            self.displayBridge.axes.errorbar(df['x'], df['y'], yerr=df['sy'], xerr = df['sx'],
+            self.displayBridge.axes1.errorbar(df['x'], df['y'], yerr=df['sy'], xerr = df['sx'],
             ecolor = options['markerColor'], capsize = 0, elinewidth = 1, ms = 3, marker = '.', color = options['markerColor'], ls = 'none', label = options['label'])
         else:
-            self.displayBridge.axes.errorbar(df['x'], df['y'], yerr=df['sy'], xerr = df['sx'],
+            self.displayBridge.axes1.errorbar(df['x'], df['y'], yerr=df['sy'], xerr = df['sx'],
             ecolor = options['markerColor'], capsize = 0, elinewidth = 1, ms = 3, marker = '.', color = options['markerColor'], ls = 'none')
     
     def Plot_sy(self, df, options): # Depreciada
         if options['label'] != '':
-            self.displayBridge.axes.errorbar(df['x'], df['y'], yerr=df['sy'],
+            self.displayBridge.axes1.errorbar(df['x'], df['y'], yerr=df['sy'],
             ecolor = options['markerColor'], capsize = 0, elinewidth = 1, ms = 3, marker = '.', color = options['markerColor'], ls = 'none', label = options['label'])
         else:
-            self.displayBridge.axes.errorbar(df['x'], df['y'], yerr=df['sy'],
+            self.displayBridge.axes1.errorbar(df['x'], df['y'], yerr=df['sy'],
             ecolor = options['markerColor'], capsize = 0, elinewidth = 1, ms = 3, marker = '.', color = options['markerColor'], ls = 'none')
     
     def Plot_op(self, df, options): # Depreciada
         if options['label'] != '':
-            self.displayBridge.axes.errorbar(df['x'], df['y'],
+            self.displayBridge.axes1.errorbar(df['x'], df['y'],
             ecolor = options['markerColor'], capsize = 0, elinewidth = 1, ms = 3, marker = '.', color = options['markerColor'], ls = 'none', label = options['label'])
         else:
-            self.displayBridge.axes.errorbar(df['x'], df['y'],
+            self.displayBridge.axes1.errorbar(df['x'], df['y'],
             ecolor = options['markerColor'], capsize = 0, elinewidth = 1, ms = 3, marker = '.', color = options['markerColor'], ls = 'none')
     
     def Func_plot(self, options, model, params, var, left, right, lines):
         x_plot = None
         if self.logx:
-            x_plot = np.logspace(np.np.log10(left), np.np.log10(right), int(self.displayBridge.axes.figure.get_size_inches()[0]*self.displayBridge.axes.figure.dpi*1.75))
+            x_plot = np.logspace(np.np.log10(left), np.np.log10(right), int(self.displayBridge.axes1.figure.get_size_inches()[0]*self.displayBridge.axes1.figure.dpi*1.75))
         else:
-            x_plot = np.linspace(left, right, int(self.displayBridge.axes.figure.get_size_inches()[0]*self.displayBridge.axes.figure.dpi*1.75)) 
+            x_plot = np.linspace(left, right, int(self.displayBridge.axes1.figure.get_size_inches()[0]*self.displayBridge.axes1.figure.dpi*1.75)) 
         y_plot = eval("model.eval(%s = x_plot, params = params)"%var, None,
          {'x_plot': x_plot, 'model': model, 'params': params})
         if options['label'] != '':
-            line_func, = self.displayBridge.axes.plot(x_plot, y_plot, lw = 1.5, color = options['markerColor'], ls = options['curve'], label = options['label'])
+            line_func, = self.displayBridge.axes1.plot(x_plot, y_plot, lw = 1.5, color = options['markerColor'], ls = options['curve'], label = options['label'])
             lines.append(line_func)
         else:
-            line_func, = self.displayBridge.axes.plot(x_plot, y_plot, lw = 1.5, color = options['markerColor'], ls = options['curve'])
+            line_func, = self.displayBridge.axes1.plot(x_plot, y_plot, lw = 1.5, color = options['markerColor'], ls = options['curve'])
             lines.append(line_func)

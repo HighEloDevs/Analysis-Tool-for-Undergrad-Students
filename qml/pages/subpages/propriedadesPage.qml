@@ -63,7 +63,7 @@ Item {
                     Layout.fillWidth: true
                     Layout.columnSpan: 6
                     focusColor: Colors.mainColor2
-                    title: 'Título do Gráfico'
+                    title: 'Título do Gráfico ; Título dos resíduos'
                     textHolder: ''
                     defaultColor: '#fff'
                     textColor: '#fff'
