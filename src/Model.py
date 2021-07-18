@@ -365,25 +365,45 @@ class Model(QObject):
     
     def __fit_ODR_special(self, x_orig, y, sx, pi):
         '''Fit com ODR quando só há incertezas em x.'''
-        x = np.copy(x_orig)
+        # x = np.copy(x_orig)
         def f(a, x):
             param = Parameters()
             for i in range(len(a)):
                 param.add(self._model.param_names[i], value=a[i])
             return eval("self._model.eval(%s=x, params=param)"%self._indVar, None,
                 {'x': x, 'param': param, 'self': self})
-        data  = RealData(x, y, sx = sx)
+        # data  = RealData(x, y, sx = sx)
+        # model = SciPyModel(f)
+        # try:
+        #     myodr = ODR(data, model, beta0 = pi, maxit = 40)
+        #     self._result = myodr.run()
+        # except TypeError:
+        #     self._msgHandler.raiseError("Expressão de ajuste escrita de forma errada. Rever função de ajuste.")
+        #     self._result = None
+        #     return None
+        # self._params = Parameters()
+        # for i in range(len(self._coef)):
+        #     self._params.add(self._coef[i], self._result.beta[i])
+        # sy = np.zeros(len(self._data["x"]), dtype = float)
+        # for i, x in enumerate(self._data["x"]):
+        #     x_var = np.array([x + self._data["sx"].iloc[i], x - self._data["sx"].iloc[i]])
+        #     y_prd = eval("self._model.eval(%s = x, params = self._params)"%self._indVar, None,
+        # {'x': x, 'self': self})
+        #     y_var = eval("self._model.eval(%s = x_var, params = self._params)"%self._indVar, None,
+        # {'x_var': x_var, 'self': self})
+        #     sy[i] = np.abs(y_var - y_prd).mean()
+        # sy = sy.astype(float)/1000
+        x  = np.copy(x_orig)
+        sy = np.array([1e-50]*len(x))
+        data  = RealData(x, y, sx = sx, sy = sy)
         model = SciPyModel(f)
         try:
-            myodr = ODR(data, model, beta0 = pi, maxit = 40)
+            myodr = ODR(data, model, beta0 = pi, maxit = 100)
             self._result = myodr.run()
         except TypeError:
             self._msgHandler.raiseError("Expressão de ajuste escrita de forma errada. Rever função de ajuste.")
             self._result = None
             return None
-        self._params = Parameters()
-        for i in range(len(self._coef)):
-            self._params.add(self._coef[i], self._result.beta[i])
         sy = np.zeros(len(self._data["x"]), dtype = float)
         for i, x in enumerate(self._data["x"]):
             x_var = np.array([x + self._data["sx"].iloc[i], x - self._data["sx"].iloc[i]])
@@ -392,17 +412,9 @@ class Model(QObject):
             y_var = eval("self._model.eval(%s = x_var, params = self._params)"%self._indVar, None,
         {'x_var': x_var, 'self': self})
             sy[i] = np.abs(y_var - y_prd).mean()
-        sy = sy.astype(float)/1000
-        x  = np.copy(x_orig)
-        data  = RealData(x, y, sx = sx, sy = sy)
-        model = SciPyModel(f)
-        try:
-            myodr = ODR(data, model, beta0 = self._result.beta, maxit = 100)
-            self._result = myodr.run()
-        except TypeError:
-            self._msgHandler.raiseError("Expressão de ajuste escrita de forma errada. Rever função de ajuste.")
-            self._result = None
-            return None
+        x_var = self._data["x"]
+        self._result.sum_square = np.sum(((eval("self._model.eval(%s = x_var, params = self._params)"%self._indVar, None,
+        {'x_var': x_var, 'self': self}) - self._data["y"].to_numpy())/sy)**2)
 
     def __fit_lm(self, x, y, sy, pi):
         '''Fit com MMQ.'''
@@ -645,15 +657,15 @@ class Model(QObject):
     def paramsPrint(self):
         df         = pd.DataFrame(self._dict)
         df         = df.transpose()
-        df.columns = ["Valor", "    Incerteza"]
+        df.columns = ["Valor", "|    Incerteza"]
         df.index   = self._coef
         return str(df)
 
     def paramsPrint2(self, inc_considerada):
         df         = pd.DataFrame(self._dict2)
         df         = df.transpose()
-        df.columns = ["Valor", "    Incerteza"]
-        df["    Incerteza"] = df["    Incerteza"]*inc_considerada
+        df.columns = ["Valor", "|    Incerteza"]
+        df["|    Incerteza"] = df["|    Incerteza"]*inc_considerada
         df.index   = self._coef
         return str(df)
 
