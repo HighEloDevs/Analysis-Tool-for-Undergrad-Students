@@ -69,7 +69,7 @@ def interpreter_calculator(f, opt, nc, ngl, mean, std):
     '''
     lim_inf = 0.0001
     lim_sup = 0.9999
-    if nc > 0.99:
+    if nc > 0.999:
         dif = (1 - nc)/2
         lim_inf = dif
         lim_sup = nc + dif
