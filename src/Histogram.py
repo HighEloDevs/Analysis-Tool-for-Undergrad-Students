@@ -112,7 +112,8 @@ class Histogram(QObject):
     def new(self):
         self.path = ""
         self.fillPage.emit(None)
-        self.canvas.reset()
+        self.canvas.clearAxis()
+        self.canvas.switchAxes(True)
 
     @pyqtSlot(QJsonValue, result=bool)
     def save(self, data):

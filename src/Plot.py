@@ -145,7 +145,9 @@ class SinglePlot(QObject):
     def new(self):
         # Reseting canvas and model
         self.model.reset()
-        self.canvas.reset()
+        # self.canvas.reset()
+        self.canvas.clearAxis()
+        self.canvas.switchAxes(True)
 
         # Fill singlePlot page with default values
         self.fillPlotPage()
