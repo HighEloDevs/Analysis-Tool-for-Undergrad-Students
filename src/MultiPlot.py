@@ -85,7 +85,8 @@ class Multiplot(QObject):
         self.path = ''
 
         # Reseting frontend
-        self.displayBridge.reset()
+        self.displayBridge.clearAxis()
+        self.displayBridge.switchAxes(True)
         self.fillPage(self.defaultProps)
 
     @pyqtSlot(str)
