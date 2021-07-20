@@ -43,18 +43,12 @@ class Histogram(QObject):
         self.histAlign      = {"Centro" : "mid", "Direita" : "right", "Esquerda" : "left"}
         self.histOrient     = {"Vertical" : "vertical", "Horizontal" : "horizontal"}
 
-
-########################### EDITE AQUI \/ #############################
     @pyqtSlot(QJsonValue)
     def plot(self, data):
         data = QJsonValue.toVariant(data)
-        self.canvas.reset()
-        if data["props"]["grid"]:
-            self.canvas.axes.grid(True, which='major')
-        if data["props"]["logy"]:
-            self.canvas.axes.set_yscale('log')
-        if data["props"]["logx"]:
-            self.canvas.axes.set_xscale('log')
+        self.canvas.figure.tight_layout(rect=[0.015, 0.045, 0.985, 0.985])
+        self.canvas.clearAxis()
+        self.canvas.switchAxes(hideAxes2 = True)
 
         xdiv = self.makeInt(data["props"]["xdiv"], 0.)
         xmin = self.makeFloat(data["props"]["xmin"], 0.)
@@ -63,26 +57,11 @@ class Histogram(QObject):
         ymin = self.makeFloat(data["props"]["ymin"], 0.)
         ymax = self.makeFloat(data["props"]["ymax"], 0.)
 
-        if xdiv != 0. and (xmax != 0. or xmin != 0.):
-            self.canvas.axes.set_xticks(np.linspace(xmin, xmax, xdiv + 1))
-            self.canvas.axes.set_xlim(left = xmin, right = xmax)
-        else:
-            if xmin == 0. and xmax != 0.:
-                self.canvas.axes.set_xlim(left = None, right = xmax)
-            elif xmin != 0. and xmax == 0.:
-                self.canvas.axes.set_xlim(left = xmin, right = None)
-            elif xmin != 0. and xmax != 0.:
-                self.canvas.axes.set_xlim(left = xmin, right = xmax)
-        if ydiv != 0. and (ymax != 0. or ymin != 0.):
-            self.canvas.axes.set_yticks(np.linspace(ymin, ymax, ydiv + 1))
-            self.canvas.axes.set_ylim(bottom = ymin, top = ymax)
-        else:
-            if ymin == 0. and ymax != 0.:
-                self.canvas.axes.set_ylim(bottom = None, top = ymax)
-            elif ymin != 0. and ymax == 0.:
-                self.canvas.axes.set_ylim(bottom = ymin, top = None)
-            elif ymin != 0. and ymax != 0.:
-                self.canvas.axes.set_ylim(bottom = ymin, top = ymax)
+        self.canvas.grid = data["props"]["grid"]
+
+        self.canvas.setAxesPropsWithoutAxes2(xmin, xmax, xdiv, ymin, ymax, ydiv,
+         data["props"]["grid"], data["props"]["logx"], data["props"]["logy"])
+
         has_legend = False
         for arquivo in data["data"]:
             if arquivo["visible"]:
@@ -98,7 +77,7 @@ class Histogram(QObject):
                  self.makeInt(data["props"]["nbins"], 10) + 1)
                 counts = None
                 if arquivo["legend"] == "":
-                    counts, bins, _ = self.canvas.axes.hist(x = df["x"], bins = bins,
+                    counts, bins, _ = self.canvas.axes1.hist(x = df["x"], bins = bins,
                     density     = data["props"]["norm"], cumulative = False, bottom = 0,
                     histtype    = data["props"]["histType"],
                     align       = self.histAlign[data["props"]["histAlign"]],
@@ -107,7 +86,7 @@ class Histogram(QObject):
                     alpha = alpha,
                     **arquivo["kargs"])
                 else:
-                    counts, bins, _ = self.canvas.axes.hist(x = df["x"], bins = bins,
+                    counts, bins, _ = self.canvas.axes1.hist(x = df["x"], bins = bins,
                     density     = data["props"]["norm"], cumulative = False, bottom = 0,
                     histtype    = data["props"]["histType"],
                     align       = self.histAlign[data["props"]["histAlign"]],
@@ -117,19 +96,17 @@ class Histogram(QObject):
                     **arquivo["kargs"])
                     has_legend = True
                 if label:
-                    bottom, top = self.canvas.axes.get_ylim()
+                    bottom, top = self.canvas.axes1.get_ylim()
                     height = top - bottom
                     c = (bins[1] - bins[0])/2
                     for n, b in zip(counts, bins):
                         if n != 0:
-                            self.canvas.axes.text(b + c, n + height*0.02, str(n), ha = "center")
-        self.canvas.axes.set_title(data["props"]["title"])
-        self.canvas.axes.set(xlabel = data["props"]["xaxis"], ylabel = data["props"]["yaxis"])
+                            self.canvas.axes1.text(b + c, n + height*0.02, str(n), ha = "center")
+        self.canvas.axes1.set_title(data["props"]["title"])
+        self.canvas.axes1.set(xlabel = data["props"]["xaxis"], ylabel = data["props"]["yaxis"])
         if has_legend:
-            self.canvas.axes.legend()
-        self.canvas.figure.tight_layout()
+            self.canvas.axes1.legend()
         self.canvas.canvas.draw_idle()
-########################### EDITE AQUI /\ #############################
 
     @pyqtSlot()
     def new(self):

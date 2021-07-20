@@ -23,7 +23,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-# from matplotlib_backend_qtquick.qt_compat import QtCore
 from PyQt5.QtCore import QObject, QJsonValue, QUrl, pyqtSignal, pyqtSlot
 from src.Calculators import interpreter_calculator, Plot
 import numpy as np
@@ -132,10 +131,8 @@ class SinglePlot(QObject):
             self.msg.raiseError("Intervalo de ajuste inválido. Rever intervalo de ajuste.")
             return None
 
-        # Setting style of the plot 
-        self.canvas.setCanvasProps(canvasProps, fitProps['expr'])
-        self.canvas.setDataProps(dataProps, fitProps)
-        self.canvas.Plot(self.model)
+        # Setting style of the plot
+        self.canvas.Plot(self.model, canvasProps, fitProps, dataProps)
 
     def fillPlotPage(self, props=None):
         # If no properties passed, emit the default values

@@ -37,7 +37,7 @@ from src.GoogleDriveAPI import GDrive
 from src.Histogram import Histogram
 from PyQt5.QtCore import QCoreApplication, QUrl, QObject, Qt
 from PyQt5.QtQml import qmlRegisterType, QQmlApplicationEngine
-from PyQt5.QtGui import QIcon, QGuiApplication, QFont
+from PyQt5.QtGui import QIcon, QGuiApplication
 from matplotlib_backend_qtquick.backend_qtquickagg import FigureCanvasQtQuickAgg
 plt.rcParams["ytick.minor.visible"] = False
 plt.rcParams["xtick.minor.visible"] = False

@@ -802,6 +802,7 @@ Window {
                                                         objectName : "canvasPlot"
                                                         dpi_ratio: Screen.devicePixelRatio
                                                         anchors.fill: parent
+                                                        focus: true
                                                 }
                                             }
 

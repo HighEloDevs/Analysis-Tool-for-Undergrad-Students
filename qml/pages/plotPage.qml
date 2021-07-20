@@ -77,6 +77,24 @@ Item {
             model.loadDataClipboard()
         }
     }
+    Shortcut {
+        sequences: ["Ctrl+1"]
+        onActivated: {
+            canvas.SHORTGrid()
+        }
+    }
+    Shortcut {
+        sequences: ["Ctrl+2"]
+        onActivated: {
+            canvas.SHORTAxis1()
+        }
+    }
+    Shortcut {
+        sequences: ["Ctrl+3"]
+        onActivated: {
+            canvas.SHORTAxis2()
+        }
+    }
 
     Rectangle {
         id: bg

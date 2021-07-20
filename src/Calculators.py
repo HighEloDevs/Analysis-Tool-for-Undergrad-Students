@@ -67,9 +67,9 @@ def calc_chi2r_lim_sup(ngl, nc):
 def interpreter_calculator(f, opt, nc, ngl, mean, std):
     ''' Return the plot string and the arrays for the graph plot.
     '''
-    lim_inf = 0.001
-    lim_sup = 0.999
-    if nc > 0.99:
+    lim_inf = 0.0001
+    lim_sup = 0.9999
+    if nc > 0.9999:
         dif = (1 - nc)/2
         lim_inf = dif
         lim_sup = nc + dif
@@ -194,28 +194,29 @@ class CalculatorCanvas(QObject):
 
         # The figure, canvas, toolbar and axes
         self.figure  = None
-        self.canvas  = None
-        self.toolbar = None
-        self.axes    = None
-        self.ax1     = None
-        self.ax2     = None
+        # self.canvas  = None
+        # self.toolbar = None
+        # self.axes    = None
+        # self.ax1     = None
+        # self.ax2     = None
 
-    def updateWithCanvas(self, canvas):
-        """ initialize with the canvas for the figure
-        """
-        self.canvas = canvas
-        self.figure = self.canvas.figure
-        self.axes = self.figure.add_subplot(111)
-        self.axes.grid(True)
-        self.canvas.draw_idle()
+    # def updateWithCanvas(self, canvas):
+    #     """ initialize with the canvas for the figure
+    #     """
+    #     self.canvas = canvas
+    #     self.figure = self.canvas.figure
+    #     self.axes = self.figure.add_subplot(111)
+    #     self.axes.grid(True)
+    #     self.canvas.draw_idle()
         
 
 def Plot(displayBridge, x, y, x_area, y_area):
+    displayBridge.figure.tight_layout(rect=[0.015, 0.045, 0.985, 0.985])
     displayBridge.clearAxis()
-    displayBridge.axes = displayBridge.figure.add_subplot(111)
-    displayBridge.axes.grid(True)
-    displayBridge.axes.fill_between(x_area, y_area, color = 'blue', alpha = 0.3)
-    displayBridge.axes.plot(x, y, lw = 1, c = 'red')
-    displayBridge.axes.set_title("P.D.F.")
-    displayBridge.figure.tight_layout()
+    displayBridge.switchAxes(hideAxes2 = True)
+    displayBridge.grid = True
+    displayBridge.axes1.grid(True)
+    displayBridge.axes1.fill_between(x_area, y_area, color = 'blue', alpha = 0.3)
+    displayBridge.axes1.plot(x, y, lw = 1, c = 'red')
+    displayBridge.axes1.set_title("P.D.F.")
     displayBridge.canvas.draw_idle()
