@@ -31,8 +31,7 @@ import matplotlib.gridspec as gridspec
 from matplotlib.transforms import Bbox
 
 class MPLCanvas(QObject):
-    """ A bridge class to interact with the plot in python
-    """
+    """A bridge class to interact with the plot in python."""
     # Some signals for the frontend
     coordinatesChanged = pyqtSignal(str)
 
@@ -71,7 +70,6 @@ class MPLCanvas(QObject):
 
         # Connect for displaying the coordinates
         self.figure.canvas.mpl_connect('motion_notify_event', self.on_motion)
-        self.teste = None
 
     def Plot(self, model, canvasProps, fitProps, dataProps):
         self.figure.tight_layout(rect=[0.015, 0.045, 0.985, 0.985])
@@ -126,11 +124,21 @@ class MPLCanvas(QObject):
                 if residuals:
                     self.switchAxes(hideAxes2 = False)
                     self.setAxesPropsWithAxes2(xmin, xmax, xdiv, ymin, ymax, ydiv, resmin, resmax, grid, log_x, log_y)
-
-                    ssy = model.predictInc(not sigma_x)
-                    self.axes2.errorbar(x, y_r, yerr=ssy, ecolor = symbol_color, capsize = 0, elinewidth = 1, ms = symbol_size, marker = symbol, color = symbol_color, ls = 'none')
-                    self.axes1.errorbar(x, y, yerr=sy, xerr=sx, ecolor = symbol_color, capsize = 0, elinewidth = 1, ms = symbol_size, marker = symbol, color = symbol_color, ls = 'none')
-                    
+                    if sigma_x and sigma_y:                     # Caso considerar as duas incertezas
+                        ssy = model.predictInc(not sigma_x)
+                        self.axes1.errorbar(x, y, yerr=sy, xerr=sx, ecolor = symbol_color, capsize = 0, elinewidth = 1, ms = symbol_size, marker = symbol, color = symbol_color, ls = 'none')
+                        self.axes2.errorbar(x, y_r, yerr=ssy, ecolor = symbol_color, capsize = 0, elinewidth = 1, ms = symbol_size, marker = symbol, color = symbol_color, ls = 'none')
+                    elif sigma_x == False and sigma_y == False: # Caso desconsiderar as duas
+                        self.axes1.errorbar(x, y, ecolor = symbol_color, capsize = 0, elinewidth = 1, ms = symbol_size, marker = symbol, color = symbol_color, ls = 'none')
+                        self.axes2.errorbar(x, y_r, ecolor = symbol_color, capsize = 0, elinewidth = 1, ms = symbol_size, marker = symbol, color = symbol_color, ls = 'none')
+                    elif sigma_x == False and sigma_y == True:  # Caso considerar só sy
+                        ssy = model.predictInc(not sigma_x)
+                        self.axes1.errorbar(x, y, yerr=sy, ecolor = symbol_color, capsize = 0, elinewidth = 1, ms = symbol_size, marker = symbol, color = symbol_color, ls = 'none')
+                        self.axes2.errorbar(x, y_r, yerr=ssy, ecolor = symbol_color, capsize = 0, elinewidth = 1, ms = symbol_size, marker = symbol, color = symbol_color, ls = 'none')
+                    else:                                       # Caso considerar só sx
+                        ssy = model.predictInc(not sigma_x)
+                        self.axes1.errorbar(x, y, xerr=sx, ecolor = symbol_color, capsize = 0, elinewidth = 1, ms = symbol_size, marker = symbol, color = symbol_color, ls = 'none')
+                        self.axes2.errorbar(x, y_r, yerr=ssy, ecolor = symbol_color, capsize = 0, elinewidth = 1, ms = symbol_size, marker = symbol, color = symbol_color, ls = 'none')
                     left, right = self.axes1.get_xlim()
                     self.axes1.set_xlim(left = left, right = right)
                     self.axes2.set_xlim(left = left, right = right)
@@ -173,9 +181,15 @@ class MPLCanvas(QObject):
                     self.setAxesPropsWithoutAxes2(xmin, xmax, xdiv, ymin, ymax, ydiv, grid, log_x, log_y)
 
                     # Making Plots
+                    if sigma_x and sigma_y:                     # Caso considerar as duas incertezas
+                        self.axes1.errorbar(x, y, yerr=sy, xerr=sx, ecolor = symbol_color, capsize = 0, elinewidth = 1, ms = symbol_size, marker = symbol, color = symbol_color, ls = 'none')
+                    elif sigma_x == False and sigma_y == False: # Caso desconsiderar as duas
+                        self.axes1.errorbar(x, y, ecolor = symbol_color, capsize = 0, elinewidth = 1, ms = symbol_size, marker = symbol, color = symbol_color, ls = 'none')                        
+                    elif sigma_x == False and sigma_y == True:  # Caso considerar só sy
+                        self.axes1.errorbar(x, y, yerr=sy, ecolor = symbol_color, capsize = 0, elinewidth = 1, ms = symbol_size, marker = symbol, color = symbol_color, ls = 'none')
+                    else:                                       # Caso considerar só sx
+                        self.axes1.errorbar(x, y, xerr=sx, ecolor = symbol_color, capsize = 0, elinewidth = 1, ms = symbol_size, marker = symbol, color = symbol_color, ls = 'none')
 
-                    self.axes1.errorbar(x, y, yerr=sy, xerr=sx, capsize = 0, elinewidth = 1, ecolor = symbol_color, ms = symbol_size, marker = symbol, color = symbol_color, ls = 'none')
-                    
                     left, right = self.axes1.get_xlim()
                     self.axes1.set_xlim(left = left, right = right)
                     px, py = 0., 0.
@@ -185,7 +199,6 @@ class MPLCanvas(QObject):
                         px, py      = model.get_predict(self.axes1.figure, left, right)
                     
                     line_func, = self.axes1.plot(px, py, lw = curve_thickness, color = curve_color, ls = curve_style, label = '${}$'.format(model._exp_model), picker = True)
-                    self.teste = line_func
                     if legend:
                         self.axes1.legend(fancybox=True)
 
@@ -226,8 +239,14 @@ class MPLCanvas(QObject):
                 x, y, sy, sx = model.data
 
                 # Making Plots
-
-                self.axes1.errorbar(x, y, yerr=sy, xerr=sx, elinewidth = 1, ecolor = symbol_color, ms = symbol_size, marker = symbol, color = symbol_color, ls = 'none', capsize = 0)
+                if sigma_x and sigma_y:                     # Caso considerar as duas incertezas
+                    self.axes1.errorbar(x, y, yerr=sy, xerr=sx, ecolor = symbol_color, capsize = 0, elinewidth = 1, ms = symbol_size, marker = symbol, color = symbol_color, ls = 'none')
+                elif sigma_x == False and sigma_y == False: # Caso desconsiderar as duas
+                    self.axes1.errorbar(x, y, ecolor = symbol_color, capsize = 0, elinewidth = 1, ms = symbol_size, marker = symbol, color = symbol_color, ls = 'none')                        
+                elif sigma_x == False and sigma_y == True:  # Caso considerar só sy
+                    self.axes1.errorbar(x, y, yerr=sy, ecolor = symbol_color, capsize = 0, elinewidth = 1, ms = symbol_size, marker = symbol, color = symbol_color, ls = 'none')
+                else:                                       # Caso considerar só sx
+                    self.axes1.errorbar(x, y, xerr=sx, ecolor = symbol_color, capsize = 0, elinewidth = 1, ms = symbol_size, marker = symbol, color = symbol_color, ls = 'none')
 
                 # Setting titles
                 self.axes1.set_title(str(axisTitle[0]))
@@ -243,6 +262,7 @@ class MPLCanvas(QObject):
         """Clear the current plot in the axis."""
         self.axes1.cla()
         self.axes2.cla()
+        self.canvas.draw_idle()
     
     def switchAxes(self, hideAxes2: bool = True):
         """Função que oculta ou não o eixo secundário."""
@@ -336,7 +356,7 @@ class MPLCanvas(QObject):
     # The toolbar commands
     @pyqtSlot(str, bool)
     def savePlot(self, save_path, transparent):
-        """Gets the path from input and save the actual plot"""
+        """Gets the path from input and save the actual plot."""
         path = QUrl(save_path).toLocalFile()
 
         # Getting extension
@@ -351,7 +371,7 @@ class MPLCanvas(QObject):
 
     @pyqtSlot()
     def copyToClipboard(self):
-        '''Copy imagine to the clipboard'''
+        '''Copy imagine to the clipboard.'''
         # Getting clipboard
         clipboard = QGuiApplication.clipboard()
 
