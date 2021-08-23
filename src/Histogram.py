@@ -24,6 +24,7 @@ SOFTWARE.
 """
 
 from PyQt5.QtCore import QObject, QJsonValue, QUrl, pyqtSignal, pyqtSlot
+from matplotlib.ticker import MaxNLocator
 import pandas as pd
 import numpy as np
 import platform
@@ -59,6 +60,7 @@ class Histogram(QObject):
 
         self.canvas.grid = data["props"]["grid"]
 
+        self.canvas.axes1.yaxis.set_major_locator(MaxNLocator(integer=True))
         self.canvas.setAxesPropsWithoutAxes2(xmin, xmax, xdiv, ymin, ymax, ydiv,
          data["props"]["grid"], data["props"]["logx"], data["props"]["logy"])
 
@@ -68,8 +70,8 @@ class Histogram(QObject):
                 df    = pd.DataFrame.from_dict(json.loads(arquivo["data"]))
                 alpha = self.makeFloat(arquivo["kargs"].pop("alpha"), 1.0)
                 label = arquivo["kargs"].pop("label")
-                left  = self.makeFloat(data["props"]["rangexmin"], np.floor(df["x"].min()))
-                right = self.makeFloat(data["props"]["rangexmax"], np.ceil(df["x"].max()))
+                left  = self.makeFloat(data["props"]["rangexmin"], df["x"].min())
+                right = self.makeFloat(data["props"]["rangexmax"], df["x"].max())
                 if left >= right:
                     self.msg.raiseError("Intervalo de bins inválido. Rever intervalo de bins.")
                     return None
