@@ -432,9 +432,9 @@ Item {
                 id: addRowBtn
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.right: parent.right
-                anchors.rightMargin: 100
+                anchors.rightMargin: 5
                 height: parent.height-5
-                width: parent.height-5
+                // width: 100
                 primaryColor: 'transparent'
                 hoverColor: 'transparent'
                 clickColor: 'transparent'

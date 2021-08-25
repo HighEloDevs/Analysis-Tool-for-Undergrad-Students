@@ -317,7 +317,6 @@ Item{
                 anchors.right: parent.right
                 anchors.rightMargin: 100
                 height: parent.height-5
-                width: parent.height-5
                 primaryColor: 'transparent'
                 hoverColor: 'transparent'
                 clickColor: 'transparent'
