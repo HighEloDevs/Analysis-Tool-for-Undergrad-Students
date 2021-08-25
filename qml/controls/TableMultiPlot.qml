@@ -444,7 +444,7 @@ Item {
                 textSize: 9
                 r: 0
                 
-                onClicked: addRow(root.defaultDataRow)
+                onClicked: addRow()
             }
         }
     }
