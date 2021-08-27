@@ -253,7 +253,7 @@ class Multiplot(QObject):
         self.Plot()
 
     def Plot(self):
-        self.displayBridge.figure.tight_layout(rect=[0.015, 0.045, 0.985, 0.985])
+        self.displayBridge.set_tight_layout()
         self.displayBridge.clearAxis()
         self.displayBridge.switchAxes(hideAxes2 = True)
         self.displayBridge.grid = self.grid

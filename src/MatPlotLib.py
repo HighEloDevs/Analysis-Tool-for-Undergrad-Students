@@ -28,7 +28,7 @@ from PyQt5.QtGui import QGuiApplication, QPixmap
 import numpy as np
 import os
 import matplotlib.gridspec as gridspec
-from matplotlib.transforms import Bbox
+import matplotlib.pyplot as plt
 
 class MPLCanvas(QObject):
     """A bridge class to interact with the plot in python."""
@@ -63,6 +63,7 @@ class MPLCanvas(QObject):
         self.gs      = gridspec.GridSpec(1, 1, figure =  self.figure, height_ratios = [1.])
         self.axes1   = self.figure.add_subplot(self.gm[0], picker = True)
         self.axes2   = self.figure.add_subplot(self.gm[1], picker = False, sharex = self.axes1)
+        self.set_tight_layout()
         self.axes2.set_visible(False)
         self.axes1.set_position(self.gs[:, :].get_position(self.figure), which = "original")
         self.axes1.grid(False)
@@ -72,12 +73,13 @@ class MPLCanvas(QObject):
         self.figure.canvas.mpl_connect('motion_notify_event', self.on_motion)
 
     def Plot(self, model, canvasProps, fitProps, dataProps):
-        self.figure.tight_layout(rect=[0.015, 0.045, 0.985, 0.985])
-        log_x           = bool(canvasProps['log_x'])
-        log_y           = bool(canvasProps['log_y'])
-        legend          = bool(canvasProps['legend'])
-        residuals       = bool(canvasProps['residuals'])
-        grid            = bool(canvasProps['grid'])
+        self.set_tight_layout()
+        self.set_tight_layout()
+        log_x           = not not canvasProps['log_x']  # O mesmo que bool porém mais rápido
+        log_y           = not not canvasProps['log_y']
+        legend          = not not canvasProps['legend']
+        residuals       = not not canvasProps['residuals']
+        grid            = not not canvasProps['grid']
         self.grid = grid
         xmin            = canvasProps['xmin']
         xmax            = canvasProps['xmax']
@@ -256,6 +258,7 @@ class MPLCanvas(QObject):
         # Reseting parameters
         px, py, y_r   = None, None, None
         model.isvalid = False
+        self.figure.updateGeometry()
         self.canvas.draw_idle()
 
     def clearAxis(self):
@@ -342,6 +345,9 @@ class MPLCanvas(QObject):
         if log_x:
             self.axes1.set_xscale('log')
     
+    def set_tight_layout(self):
+        self.canvas.figure.tight_layout(rect=[0.025, 0.045, 0.985, 0.985])
+
     def getCoordinates(self):
         """Retorna as coordenadas no gráfico."""
         return self._coordinates

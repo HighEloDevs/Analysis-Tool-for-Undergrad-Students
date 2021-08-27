@@ -211,7 +211,7 @@ class CalculatorCanvas(QObject):
         
 
 def Plot(displayBridge, x, y, x_area, y_area):
-    displayBridge.figure.tight_layout(rect=[0.015, 0.045, 0.985, 0.985])
+    displayBridge.set_tight_layout()
     displayBridge.clearAxis()
     displayBridge.switchAxes(hideAxes2 = True)
     displayBridge.grid = True

@@ -47,7 +47,7 @@ class Histogram(QObject):
     @pyqtSlot(QJsonValue)
     def plot(self, data):
         data = QJsonValue.toVariant(data)
-        self.canvas.figure.tight_layout(rect=[0.015, 0.045, 0.985, 0.985])
+        self.canvas.set_tight_layout()
         self.canvas.clearAxis()
         self.canvas.switchAxes(hideAxes2 = True)
 
