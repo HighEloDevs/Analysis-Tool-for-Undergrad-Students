@@ -39,7 +39,7 @@ Item{
             alpha: "1.0",
             label: false,
             hatch: "",
-            fill: true,
+            fill: false,
             fc: "#006e00",
             lw: 2,
             ec: "#006e00",

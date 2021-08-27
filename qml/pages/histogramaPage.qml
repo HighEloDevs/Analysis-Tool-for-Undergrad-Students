@@ -23,7 +23,6 @@ Rectangle {
             grid  : Boolean(grid.checkState),
             logx  : Boolean(logx.checkState),
             logy  : Boolean(logy.checkState),
-            norm  : Boolean(norm.checkState),
             xmin  : xmin.text,
             xmax  : xmax.text,
             xdiv  : xdiv.text,
@@ -230,8 +229,8 @@ Rectangle {
                         Layout.fillWidth: true
                         Layout.alignment: Qt.AlignCenter
                         highlightColor: Colors.mainColor2
-                        label: "Tipo de histograma"
-                        model: ["bar", "step", "stepfilled"]
+                        label: "Tipo de barra"
+                        model: ["step", "bar", "stepfilled"]
                     }
                     ComboBoxCustom{
                         id: histAlign
@@ -350,7 +349,7 @@ Rectangle {
                             rows: 2
                             TextInputCustom{
                                 id: yaxis
-                                Layout.columnSpan: 8
+                                Layout.columnSpan: 10
                                 Layout.fillWidth: true
                                 focusColor: Colors.mainColor2
                                 title: 'Eixo Y'
@@ -358,14 +357,14 @@ Rectangle {
                                 defaultColor: '#fff'
                                 textColor: '#fff'
                             }
-                            CheckBoxCustom{
-                                id: norm
-                                Layout.columnSpan: 2
-                                Layout.alignment: Qt.AlignCenter
-                                texto: "Densidade"
-                                checked: false
-                                w: 22
-                            }
+                            // CheckBoxCustom{
+                            //     id: norm
+                            //     Layout.columnSpan: 2
+                            //     Layout.alignment: Qt.AlignCenter
+                            //     texto: "Densidade"
+                            //     checked: false
+                            //     w: 22
+                            // }
                             CheckBoxCustom{
                                 id: logy
                                 Layout.columnSpan: 2

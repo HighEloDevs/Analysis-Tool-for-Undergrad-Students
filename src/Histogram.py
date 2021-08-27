@@ -80,7 +80,8 @@ class Histogram(QObject):
                 counts = None
                 if arquivo["legend"] == "":
                     counts, bins, _ = self.canvas.axes1.hist(x = df["x"], bins = bins,
-                    density     = data["props"]["norm"], cumulative = False, bottom = 0,
+                    # density     = data["props"]["norm"], cumulative = False, bottom = 0,
+                    density     = False, cumulative = False, bottom = 0,
                     histtype    = data["props"]["histType"],
                     align       = self.histAlign[data["props"]["histAlign"]],
                     orientation = self.histOrient[data["props"]["histOrientation"]],
@@ -89,7 +90,8 @@ class Histogram(QObject):
                     **arquivo["kargs"])
                 else:
                     counts, bins, _ = self.canvas.axes1.hist(x = df["x"], bins = bins,
-                    density     = data["props"]["norm"], cumulative = False, bottom = 0,
+                    # density     = data["props"]["norm"], cumulative = False, bottom = 0,
+                    density     = False, cumulative = False, bottom = 0,
                     histtype    = data["props"]["histType"],
                     align       = self.histAlign[data["props"]["histAlign"]],
                     orientation = self.histOrient[data["props"]["histOrientation"]],
