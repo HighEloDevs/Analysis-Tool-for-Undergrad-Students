@@ -258,7 +258,7 @@ Rectangle {
                         Layout.alignment: Qt.AlignCenter
                         highlightColor: Colors.mainColor2
                         label: "Orientação"
-                        model: ["Vertical"]
+                        model: ["Vertical", "Horizontal"]
                     }
                     TextInputCustom{
                         id: title

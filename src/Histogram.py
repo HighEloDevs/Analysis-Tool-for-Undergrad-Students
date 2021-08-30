@@ -72,7 +72,7 @@ class Histogram(QObject):
                 elif data["props"]["histMode"] == "Frequência relativa":
                     has_legend = self.plot_freq_rel(arquivo, data, has_legend)
                 else:
-                    has_legend = self.plot_freq_dens(arquivo, data, has_legend)
+                    has_legend = self.plot_dens(arquivo, data, has_legend)
         self.canvas.axes1.set_title(data["props"]["title"])
         self.canvas.axes1.set(xlabel = data["props"]["xaxis"], ylabel = data["props"]["yaxis"])
         if has_legend:
@@ -111,12 +111,20 @@ class Histogram(QObject):
             **arquivo["kargs"])
             has_legend = True
         if label:
-            bottom, top = self.canvas.axes1.get_ylim()
-            height = top - bottom
-            c = (bins[1] - bins[0])/2
-            for n, b in zip(counts, bins):
-                if n != 0:
-                    self.canvas.axes1.text(b + c, n + height*0.02, str(n), ha = "center")
+            if data["props"]["histOrientation"] == "Vertical":
+                bottom, top = self.canvas.axes1.get_ylim()
+                height = top - bottom
+                c = (bins[1] - bins[0])/2
+                for n, b in zip(counts, bins):
+                    if n != 0:
+                        self.canvas.axes1.text(b + c, n + height*0.02, str(n), ha = "center")
+            else:
+                left, right = self.canvas.axes1.get_xlim()
+                dif = right - left
+                c = (bins[1] - bins[0])/2
+                for n, b in zip(counts, bins):
+                    if n != 0:
+                        self.canvas.axes1.text(n + dif*0.02, b + c, str(n), ha = "center")
         return has_legend
 
     def plot_freq_rel(self, arquivo, data, has_legend):
@@ -151,15 +159,23 @@ class Histogram(QObject):
             **arquivo["kargs"])
             has_legend = True
         if label:
-            bottom, top = self.canvas.axes1.get_ylim()
-            height = top - bottom
-            c = (bins[1] - bins[0])/2
-            for n, b in zip(counts, bins):
-                if n != 0:
-                    self.canvas.axes1.text(b + c, n + height*0.02, f"{n:.3g}", ha = "center")
+            if data["props"]["histOrientation"] == "Vertical":
+                bottom, top = self.canvas.axes1.get_ylim()
+                height = top - bottom
+                c = (bins[1] - bins[0])/2
+                for n, b in zip(counts, bins):
+                    if n != 0:
+                        self.canvas.axes1.text(b + c, n + height*0.02, f"{n:.3g}", ha = "center")
+            else:
+                left, right = self.canvas.axes1.get_xlim()
+                dif = right - left
+                c = (bins[1] - bins[0])/2
+                for n, b in zip(counts, bins):
+                    if n != 0:
+                        self.canvas.axes1.text(n + dif*0.02, b + c, f"{n:.3g}", ha = "center")
         return has_legend
 
-    def plot_freq_dens(self, arquivo, data, has_legend):
+    def plot_dens(self, arquivo, data, has_legend):
         df    = pd.DataFrame.from_dict(json.loads(arquivo["data"]))
         alpha = self.makeFloat(arquivo["kargs"].pop("alpha"), 1.0)
         label = arquivo["kargs"].pop("label")
@@ -191,12 +207,20 @@ class Histogram(QObject):
             **arquivo["kargs"])
             has_legend = True
         if label:
-            bottom, top = self.canvas.axes1.get_ylim()
-            height = top - bottom
-            c = (bins[1] - bins[0])/2
-            for n, b in zip(counts, bins):
-                if n != 0:
-                    self.canvas.axes1.text(b + c, n + height*0.02, f"{n:.3g}", ha = "center")
+            if data["props"]["histOrientation"] == "Vertical":
+                bottom, top = self.canvas.axes1.get_ylim()
+                height = top - bottom
+                c = (bins[1] - bins[0])/2
+                for n, b in zip(counts, bins):
+                    if n != 0:
+                        self.canvas.axes1.text(b + c, n + height*0.02, f"{n:.3g}", ha = "center")
+            else:
+                left, right = self.canvas.axes1.get_xlim()
+                dif = right - left
+                c = (bins[1] - bins[0])/2
+                for n, b in zip(counts, bins):
+                    if n != 0:
+                        self.canvas.axes1.text(n + dif*0.02, b + c, f"{n:.3g}", ha = "center")
         return has_legend
 
     @pyqtSlot()
