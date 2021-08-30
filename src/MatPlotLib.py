@@ -102,8 +102,8 @@ class MPLCanvas(QObject):
         curve_color     = dataProps['curve_color']
         curve_thickness = dataProps['curve_thickness']
         curve_style     = dataProps['curve_style']
-        sigma_x         = bool(fitProps['wsx'])
-        sigma_y         = bool(fitProps['wsy'])
+        sigma_x         = not not fitProps['wsx']
+        sigma_y         = not not fitProps['wsy']
         px, py, y_r     = None, None, None
 
         if model._has_data:

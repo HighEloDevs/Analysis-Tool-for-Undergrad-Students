@@ -240,7 +240,7 @@ Rectangle {
                         Layout.alignment: Qt.AlignCenter
                         highlightColor: Colors.mainColor2
                         label: "Alinhamento"
-                        model: ["Centro", "Esquerda", "Direita"]
+                        model: ["Centro"] // , "Esquerda", "Direita"]
                     }
                     ComboBoxCustom{
                         id: histMode
