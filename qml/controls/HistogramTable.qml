@@ -315,7 +315,7 @@ Item{
                 id: addRowBtn
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.right: parent.right
-                anchors.rightMargin: 100
+                anchors.rightMargin: 5
                 height: parent.height-5
                 primaryColor: 'transparent'
                 hoverColor: 'transparent'

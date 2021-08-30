@@ -35,6 +35,7 @@ Rectangle {
             histType        : histType.currentText,
             histAlign       : histAlign.currentText,
             histOrientation : histOrientation.currentText,
+            histMode        : histMode.currentText
         },
         data: "",
     })
@@ -225,7 +226,7 @@ Rectangle {
                     }
                     ComboBoxCustom{
                         id: histType
-                        Layout.columnSpan: 4
+                        Layout.columnSpan: 6
                         Layout.fillWidth: true
                         Layout.alignment: Qt.AlignCenter
                         highlightColor: Colors.mainColor2
@@ -234,7 +235,7 @@ Rectangle {
                     }
                     ComboBoxCustom{
                         id: histAlign
-                        Layout.columnSpan: 4
+                        Layout.columnSpan: 6
                         Layout.fillWidth: true
                         Layout.alignment: Qt.AlignCenter
                         highlightColor: Colors.mainColor2
@@ -242,8 +243,17 @@ Rectangle {
                         model: ["Centro", "Esquerda", "Direita"]
                     }
                     ComboBoxCustom{
+                        id: histMode
+                        Layout.columnSpan: 6
+                        Layout.fillWidth: true
+                        Layout.alignment: Qt.AlignCenter
+                        highlightColor: Colors.mainColor2
+                        label: "Tipo de histograma"
+                        model: ["Frequência absoluta", "Frequência relativa", "Densidade"]
+                    }
+                    ComboBoxCustom{
                         id: histOrientation
-                        Layout.columnSpan: 4
+                        Layout.columnSpan: 6
                         Layout.fillWidth: true
                         Layout.alignment: Qt.AlignCenter
                         highlightColor: Colors.mainColor2
