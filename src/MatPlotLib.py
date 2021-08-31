@@ -23,12 +23,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 from matplotlib_backend_qtquick.backend_qtquick import NavigationToolbar2QtQuick
-from PyQt5.QtCore import QObject, pyqtProperty, QUrl, pyqtSignal, pyqtSlot
+from PyQt5.QtCore import QObject, QVariant, pyqtProperty, QUrl, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QGuiApplication, QPixmap
 import numpy as np
 import os
 import matplotlib.gridspec as gridspec
-import matplotlib.pyplot as plt
 
 class MPLCanvas(QObject):
     """A bridge class to interact with the plot in python."""
@@ -73,7 +72,6 @@ class MPLCanvas(QObject):
         self.figure.canvas.mpl_connect('motion_notify_event', self.on_motion)
 
     def Plot(self, model, canvasProps, fitProps, dataProps):
-        self.set_tight_layout()
         self.set_tight_layout()
         log_x           = not not canvasProps['log_x']  # O mesmo que bool porém mais rápido
         log_y           = not not canvasProps['log_y']
@@ -258,7 +256,6 @@ class MPLCanvas(QObject):
         # Reseting parameters
         px, py, y_r   = None, None, None
         model.isvalid = False
-        self.figure.updateGeometry()
         self.canvas.draw_idle()
 
     def clearAxis(self):
@@ -436,6 +433,29 @@ class MPLCanvas(QObject):
         else:
             self.axes2.axis('on')
         self.canvas.draw_idle()
+
+    @pyqtSlot(int, int)
+    def set_canvas_size(self, width, height):
+        if width == 0 or height == 0:
+            self.resize_canvas()
+            return
+        dpi = self.canvas.figure.get_dpi()
+        self.canvas.figure.set_size_inches(width/dpi, height/dpi)
+        self.canvas.draw_idle()
+
+    @pyqtSlot(result=list)
+    def get_canvas_size(self):
+        # Getting the dpi of the figure
+        dpi = self.canvas.figure.get_dpi()
+        # Getting the size of the figure
+        width, height = self.canvas.figure.get_size_inches()
+
+        return [int(width*dpi), int(height*dpi), dpi]
+
+    @pyqtSlot()
+    def resize_canvas(self):
+        '''Resizes the figure to fit the canvas'''
+        self.canvas.geometryChanged(self.canvas.boundingRect(), self.canvas.boundingRect())
 
     def on_motion(self, event):
         """Update the coordinates on the display."""
