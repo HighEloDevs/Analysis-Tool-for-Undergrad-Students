@@ -23,7 +23,6 @@ Rectangle {
             grid  : Boolean(grid.checkState),
             logx  : Boolean(logx.checkState),
             logy  : Boolean(logy.checkState),
-            norm  : Boolean(norm.checkState),
             xmin  : xmin.text,
             xmax  : xmax.text,
             xdiv  : xdiv.text,
@@ -36,13 +35,13 @@ Rectangle {
             histType        : histType.currentText,
             histAlign       : histAlign.currentText,
             histOrientation : histOrientation.currentText,
+            histMode        : histMode.currentText
         },
         data: "",
     })
 
     ColumnLayout{
         anchors.fill: parent
-        // anchors.margins: 2
         spacing: 10
 
         Rectangle{
@@ -196,128 +195,6 @@ Rectangle {
                     rows: 20
 
                     TextInputCustom{
-                        id: title
-                        Layout.columnSpan: 10
-                        Layout.fillWidth: true
-                        focusColor: Colors.mainColor2
-                        title: 'Título do gráfico'
-                        textHolder: ''
-                        defaultColor: '#fff'
-                        textColor: '#fff'
-                    }
-                    CheckBoxCustom{
-                        id: grid
-                        Layout.columnSpan: 2
-                        Layout.alignment: Qt.AlignCenter
-                        texto: "Grade"
-                        checked: false
-                        w: 22
-                    }
-                    TextInputCustom{
-                        id: xaxis
-                        Layout.columnSpan: 10
-                        Layout.fillWidth: true
-                        focusColor: Colors.mainColor2
-                        title: 'Eixo X'
-                        textHolder: ''
-                        defaultColor: '#fff'
-                        textColor: '#fff'
-                    }
-                    CheckBoxCustom{
-                        id: logx
-                        Layout.columnSpan: 2
-                        Layout.alignment: Qt.AlignCenter
-                        texto: "Log X"
-                        checked: false
-                        w: 22
-                    }
-                    TextInputCustom{
-                        id: xmin
-                        Layout.columnSpan: 4
-                        Layout.fillWidth: true
-                        focusColor: Colors.mainColor2
-                        title: 'X Mínimo'
-                        textHolder: ''
-                        defaultColor: '#fff'
-                        textColor: '#fff'
-                    }
-                    TextInputCustom{
-                        id: xmax
-                        Layout.columnSpan: 4
-                        Layout.fillWidth: true
-                        focusColor: Colors.mainColor2
-                        title: 'X Máximo'
-                        textHolder: ''
-                        defaultColor: '#fff'
-                        textColor: '#fff'
-                    }
-                    TextInputCustom{
-                        id: xdiv
-                        Layout.columnSpan: 4
-                        Layout.fillWidth: true
-                        focusColor: Colors.mainColor2
-                        title: 'Intervalos'
-                        textHolder: ''
-                        defaultColor: '#fff'
-                        textColor: '#fff'
-                    }
-                    TextInputCustom{
-                        id: yaxis
-                        Layout.columnSpan: 8
-                        Layout.fillWidth: true
-                        focusColor: Colors.mainColor2
-                        title: 'Eixo Y'
-                        textHolder: ''
-                        defaultColor: '#fff'
-                        textColor: '#fff'
-                    }
-                    CheckBoxCustom{
-                        id: norm
-                        Layout.columnSpan: 2
-                        Layout.alignment: Qt.AlignCenter
-                        texto: "Densidade"
-                        checked: false
-                        w: 22
-                    }
-                    CheckBoxCustom{
-                        id: logy
-                        Layout.columnSpan: 2
-                        Layout.alignment: Qt.AlignCenter
-                        texto: "Log Y"
-                        checked: false
-                        w: 22
-                    }
-                    TextInputCustom{
-                        id: ymin
-                        Layout.columnSpan: 4
-                        Layout.fillWidth: true
-                        focusColor: Colors.mainColor2
-                        title: 'Y Mínimo'
-                        textHolder: ''
-                        defaultColor: '#fff'
-                        textColor: '#fff'
-                    }
-                    TextInputCustom{
-                        id: ymax
-                        Layout.columnSpan: 4
-                        Layout.fillWidth: true
-                        focusColor: Colors.mainColor2
-                        title: 'Y Máximo'
-                        textHolder: ''
-                        defaultColor: '#fff'
-                        textColor: '#fff'
-                    }
-                    TextInputCustom{
-                        id: ydiv
-                        Layout.columnSpan: 4
-                        Layout.fillWidth: true
-                        focusColor: Colors.mainColor2
-                        title: 'Intervalos'
-                        textHolder: ''
-                        defaultColor: '#fff'
-                        textColor: '#fff'
-                    }
-                    TextInputCustom{
                         id: rangexmin
                         Layout.columnSpan: 4
                         Layout.fillWidth: true
@@ -342,37 +219,201 @@ Rectangle {
                         Layout.columnSpan: 4
                         Layout.fillWidth: true
                         focusColor: Colors.mainColor2
-                        title: 'Número de barras'
+                        title: 'Número de canais'
                         textHolder: ''
                         defaultColor: '#fff'
                         textColor: '#fff'
                     }
                     ComboBoxCustom{
                         id: histType
-                        Layout.columnSpan: 4
+                        Layout.columnSpan: 6
                         Layout.fillWidth: true
                         Layout.alignment: Qt.AlignCenter
                         highlightColor: Colors.mainColor2
-                        label: "Tipo de histograma"
-                        model: ["bar", "step", "stepfilled"]
+                        label: "Tipo de barra"
+                        model: ["step", "bar", "stepfilled"]
                     }
                     ComboBoxCustom{
                         id: histAlign
-                        Layout.columnSpan: 4
+                        Layout.columnSpan: 6
                         Layout.fillWidth: true
                         Layout.alignment: Qt.AlignCenter
                         highlightColor: Colors.mainColor2
                         label: "Alinhamento"
-                        model: ["Centro", "Esquerda", "Direita"]
+                        model: ["Centro"] // , "Esquerda", "Direita"]
+                    }
+                    ComboBoxCustom{
+                        id: histMode
+                        Layout.columnSpan: 6
+                        Layout.fillWidth: true
+                        Layout.alignment: Qt.AlignCenter
+                        highlightColor: Colors.mainColor2
+                        label: "Tipo de histograma"
+                        model: ["Frequência absoluta", "Frequência relativa", "Densidade"]
                     }
                     ComboBoxCustom{
                         id: histOrientation
-                        Layout.columnSpan: 4
+                        Layout.columnSpan: 6
                         Layout.fillWidth: true
                         Layout.alignment: Qt.AlignCenter
                         highlightColor: Colors.mainColor2
                         label: "Orientação"
-                        model: ["Vertical"]
+                        model: ["Vertical", "Horizontal"]
+                    }
+                    TextInputCustom{
+                        id: title
+                        Layout.columnSpan: 10
+                        Layout.fillWidth: true
+                        focusColor: Colors.mainColor2
+                        title: 'Título do gráfico'
+                        textHolder: ''
+                        defaultColor: '#fff'
+                        textColor: '#fff'
+                    }
+                    CheckBoxCustom{
+                        id: grid
+                        Layout.columnSpan: 2
+                        Layout.alignment: Qt.AlignCenter
+                        texto: "Grade"
+                        checked: false
+                        w: 22
+                    }
+
+                    GroupBox{
+                        Layout.columnSpan: 12
+                        Layout.fillWidth: true
+                        label: Label {
+                            text: "Configurações do eixo x"
+                            font.bold: true
+                            color: "#fff"
+                            elide: Text.ElideRight
+                        }
+                        GridLayout{
+                            anchors.fill: parent
+                            columns: 12
+                            rows: 2
+
+                            TextInputCustom{
+                                id: xaxis
+                                Layout.columnSpan: 10
+                                Layout.fillWidth: true
+                                focusColor: Colors.mainColor2
+                                title: 'Eixo X'
+                                textHolder: ''
+                                defaultColor: '#fff'
+                                textColor: '#fff'
+                            }
+                            CheckBoxCustom{
+                                id: logx
+                                Layout.columnSpan: 2
+                                Layout.alignment: Qt.AlignCenter
+                                texto: "Log X"
+                                checked: false
+                                w: 22
+                            }
+                            TextInputCustom{
+                                id: xmin
+                                Layout.columnSpan: 4
+                                Layout.fillWidth: true
+                                focusColor: Colors.mainColor2
+                                title: 'X Mínimo'
+                                textHolder: ''
+                                defaultColor: '#fff'
+                                textColor: '#fff'
+                            }
+                            TextInputCustom{
+                                id: xmax
+                                Layout.columnSpan: 4
+                                Layout.fillWidth: true
+                                focusColor: Colors.mainColor2
+                                title: 'X Máximo'
+                                textHolder: ''
+                                defaultColor: '#fff'
+                                textColor: '#fff'
+                            }
+                            TextInputCustom{
+                                id: xdiv
+                                Layout.columnSpan: 4
+                                Layout.fillWidth: true
+                                focusColor: Colors.mainColor2
+                                title: 'Intervalos'
+                                textHolder: ''
+                                defaultColor: '#fff'
+                                textColor: '#fff'
+                            }
+                        }
+                    }
+
+                    GroupBox{
+                        Layout.columnSpan: 12
+                        Layout.fillWidth: true
+                        label: Label {
+                            text: "Configurações do eixo y"
+                            font.bold: true
+                            color: "#fff"
+                            elide: Text.ElideRight
+                        }
+                        GridLayout{
+                            anchors.fill: parent
+                            columns: 12
+                            rows: 2
+                            TextInputCustom{
+                                id: yaxis
+                                Layout.columnSpan: 10
+                                Layout.fillWidth: true
+                                focusColor: Colors.mainColor2
+                                title: 'Eixo Y'
+                                textHolder: ''
+                                defaultColor: '#fff'
+                                textColor: '#fff'
+                            }
+                            // CheckBoxCustom{
+                            //     id: norm
+                            //     Layout.columnSpan: 2
+                            //     Layout.alignment: Qt.AlignCenter
+                            //     texto: "Densidade"
+                            //     checked: false
+                            //     w: 22
+                            // }
+                            CheckBoxCustom{
+                                id: logy
+                                Layout.columnSpan: 2
+                                Layout.alignment: Qt.AlignCenter
+                                texto: "Log Y"
+                                checked: false
+                                w: 22
+                            }
+                            TextInputCustom{
+                                id: ymin
+                                Layout.columnSpan: 4
+                                Layout.fillWidth: true
+                                focusColor: Colors.mainColor2
+                                title: 'Y Mínimo'
+                                textHolder: ''
+                                defaultColor: '#fff'
+                                textColor: '#fff'
+                            }
+                            TextInputCustom{
+                                id: ymax
+                                Layout.columnSpan: 4
+                                Layout.fillWidth: true
+                                focusColor: Colors.mainColor2
+                                title: 'Y Máximo'
+                                textHolder: ''
+                                defaultColor: '#fff'
+                                textColor: '#fff'
+                            }
+                            TextInputCustom{
+                                id: ydiv
+                                Layout.columnSpan: 4
+                                Layout.fillWidth: true
+                                focusColor: Colors.mainColor2
+                                title: 'Intervalos'
+                                textHolder: ''
+                                defaultColor: '#fff'
+                                textColor: '#fff'
+                            }
+                        }
                     }
                 }
             }

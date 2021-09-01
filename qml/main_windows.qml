@@ -848,6 +848,33 @@ Window {
                                                         checked: false
                                                     }
                                                     IconTextButton{
+                                                        id: canvasSettingsButton
+
+                                                        PopupCanvasSettings{
+                                                            id: canvasSettingsPopup
+                                                        }
+
+                                                        Layout.fillHeight: true
+                                                        texto: 'Configurações'
+                                                        textSize: 11
+                                                        primaryColor: 'transparent'
+                                                        hoverColor: 'transparent'
+                                                        clickColor: 'transparent'
+                                                        iconColor: enabled ? '#fff':'#707070'
+                                                        textColor: enabled ? '#fff':'#707070'
+                                                        iconUrl: '../../images/icons/settings_white_24dp.svg'
+                                                        iconWidth: 17
+                                                        enabled: !bgTransparent.checked
+                                                        // visible: {
+                                                        //     if(mainWindow.os != 'Windows') false
+                                                        //     else true
+                                                        // }
+
+                                                        onClicked: {
+                                                            canvasSettingsPopup.open()
+                                                        }
+                                                    }
+                                                    IconTextButton{
                                                         id: copyClipboard
                                                         Layout.fillHeight: true
                                                         texto: 'Copiar'

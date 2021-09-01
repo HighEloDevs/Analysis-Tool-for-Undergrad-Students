@@ -39,7 +39,7 @@ Item{
             alpha: "1.0",
             label: false,
             hatch: "",
-            fill: true,
+            fill: false,
             fc: "#006e00",
             lw: 2,
             ec: "#006e00",
@@ -294,18 +294,36 @@ Item{
                 color: parent.color
             }
 
-            IconButton{
+            // IconButton{
+            //     id: addRowBtn
+            //     anchors.verticalCenter: parent.verticalCenter
+            //     anchors.right: parent.right
+            //     anchors.rightMargin: 5
+            //     height: parent.height-5
+            //     width: parent.height-5
+            //     primaryColor: 'transparent'
+            //     hoverColor: 'transparent'
+            //     clickColor: 'transparent'
+            //     iconColor: '#fff'
+            //     iconUrl: '../../images/icons/add_white-24px.svg'
+            //     r: 0
+                
+            //     onClicked: addRow(root.defaultDataRow)
+            // }
+
+            IconTextButton{
                 id: addRowBtn
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.right: parent.right
                 anchors.rightMargin: 5
                 height: parent.height-5
-                width: parent.height-5
                 primaryColor: 'transparent'
                 hoverColor: 'transparent'
                 clickColor: 'transparent'
                 iconColor: '#fff'
                 iconUrl: '../../images/icons/add_white-24px.svg'
+                texto: "Adicionar dados"
+                textSize: 9
                 r: 0
                 
                 onClicked: addRow(root.defaultDataRow)

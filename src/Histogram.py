@@ -24,6 +24,7 @@ SOFTWARE.
 """
 
 from PyQt5.QtCore import QObject, QJsonValue, QUrl, pyqtSignal, pyqtSlot
+from matplotlib.ticker import MaxNLocator
 import pandas as pd
 import numpy as np
 import platform
@@ -46,7 +47,7 @@ class Histogram(QObject):
     @pyqtSlot(QJsonValue)
     def plot(self, data):
         data = QJsonValue.toVariant(data)
-        self.canvas.figure.tight_layout(rect=[0.015, 0.045, 0.985, 0.985])
+        self.canvas.set_tight_layout()
         self.canvas.clearAxis()
         self.canvas.switchAxes(hideAxes2 = True)
 
@@ -59,54 +60,168 @@ class Histogram(QObject):
 
         self.canvas.grid = data["props"]["grid"]
 
+        self.canvas.axes1.yaxis.set_major_locator(MaxNLocator(integer=True))
         self.canvas.setAxesPropsWithoutAxes2(xmin, xmax, xdiv, ymin, ymax, ydiv,
          data["props"]["grid"], data["props"]["logx"], data["props"]["logy"])
 
         has_legend = False
         for arquivo in data["data"]:
             if arquivo["visible"]:
-                df    = pd.DataFrame.from_dict(json.loads(arquivo["data"]))
-                alpha = self.makeFloat(arquivo["kargs"].pop("alpha"), 1.0)
-                label = arquivo["kargs"].pop("label")
-                left  = self.makeFloat(data["props"]["rangexmin"], np.floor(df["x"].min()))
-                right = self.makeFloat(data["props"]["rangexmax"], np.ceil(df["x"].max()))
-                if left >= right:
-                    self.msg.raiseError("Intervalo de bins inválido. Rever intervalo de bins.")
-                    return None
-                bins  = np.linspace(left, right,
-                 self.makeInt(data["props"]["nbins"], 10) + 1)
-                counts = None
-                if arquivo["legend"] == "":
-                    counts, bins, _ = self.canvas.axes1.hist(x = df["x"], bins = bins,
-                    density     = data["props"]["norm"], cumulative = False, bottom = 0,
-                    histtype    = data["props"]["histType"],
-                    align       = self.histAlign[data["props"]["histAlign"]],
-                    orientation = self.histOrient[data["props"]["histOrientation"]],
-                    log = False, rwidth = 1, capstyle = "round", ls = "-", aa = True,
-                    alpha = alpha,
-                    **arquivo["kargs"])
+                if data["props"]["histMode"] == "Frequência absoluta":
+                    has_legend = self.plot_freq_abs(arquivo, data, has_legend)
+                elif data["props"]["histMode"] == "Frequência relativa":
+                    has_legend = self.plot_freq_rel(arquivo, data, has_legend)
                 else:
-                    counts, bins, _ = self.canvas.axes1.hist(x = df["x"], bins = bins,
-                    density     = data["props"]["norm"], cumulative = False, bottom = 0,
-                    histtype    = data["props"]["histType"],
-                    align       = self.histAlign[data["props"]["histAlign"]],
-                    orientation = self.histOrient[data["props"]["histOrientation"]],
-                    log = False, rwidth = 1, capstyle = "round", ls = "-", aa = True,
-                    alpha = alpha, label = arquivo["legend"],
-                    **arquivo["kargs"])
-                    has_legend = True
-                if label:
-                    bottom, top = self.canvas.axes1.get_ylim()
-                    height = top - bottom
-                    c = (bins[1] - bins[0])/2
-                    for n, b in zip(counts, bins):
-                        if n != 0:
-                            self.canvas.axes1.text(b + c, n + height*0.02, str(n), ha = "center")
+                    has_legend = self.plot_dens(arquivo, data, has_legend)
         self.canvas.axes1.set_title(data["props"]["title"])
         self.canvas.axes1.set(xlabel = data["props"]["xaxis"], ylabel = data["props"]["yaxis"])
         if has_legend:
             self.canvas.axes1.legend()
         self.canvas.canvas.draw_idle()
+
+    def plot_freq_abs(self, arquivo, data, has_legend):
+        df    = pd.DataFrame.from_dict(json.loads(arquivo["data"]))
+        alpha = self.makeFloat(arquivo["kargs"].pop("alpha"), 1.0)
+        label = arquivo["kargs"].pop("label")
+        left  = self.makeFloat(data["props"]["rangexmin"], df["x"].min())
+        right = self.makeFloat(data["props"]["rangexmax"], df["x"].max())
+        if left >= right:
+            self.messageHandler.raiseError("Intervalo de bins inválido. Rever intervalo de bins.")
+            return -1
+        bins  = np.linspace(left, right,
+            self.makeInt(data["props"]["nbins"], 10) + 1)
+        counts = None
+        if arquivo["legend"] == "":
+            counts, bins, _ = self.canvas.axes1.hist(x = df["x"], bins = bins,
+            density     = False, cumulative = False, bottom = 0,
+            histtype    = data["props"]["histType"],
+            align       = self.histAlign[data["props"]["histAlign"]],
+            orientation = self.histOrient[data["props"]["histOrientation"]],
+            log = False, rwidth = 1, capstyle = "round", ls = "-", aa = True,
+            alpha = alpha,
+            **arquivo["kargs"])
+        else:
+            counts, bins, _ = self.canvas.axes1.hist(x = df["x"], bins = bins,
+            density     = False, cumulative = False, bottom = 0,
+            histtype    = data["props"]["histType"],
+            align       = self.histAlign[data["props"]["histAlign"]],
+            orientation = self.histOrient[data["props"]["histOrientation"]],
+            log = False, rwidth = 1, capstyle = "round", ls = "-", aa = True,
+            alpha = alpha, label = arquivo["legend"],
+            **arquivo["kargs"])
+            has_legend = True
+        if label:
+            if data["props"]["histOrientation"] == "Vertical":
+                bottom, top = self.canvas.axes1.get_ylim()
+                height = top - bottom
+                c = (bins[1] - bins[0])/2
+                for n, b in zip(counts, bins):
+                    if n != 0:
+                        self.canvas.axes1.text(b + c, n + height*0.02, str(n), ha = "center")
+            else:
+                left, right = self.canvas.axes1.get_xlim()
+                dif = right - left
+                c = (bins[1] - bins[0])/2
+                for n, b in zip(counts, bins):
+                    if n != 0:
+                        self.canvas.axes1.text(n + dif*0.02, b + c, str(n), ha = "center")
+        return has_legend
+
+    def plot_freq_rel(self, arquivo, data, has_legend):
+        df    = pd.DataFrame.from_dict(json.loads(arquivo["data"]))
+        alpha = self.makeFloat(arquivo["kargs"].pop("alpha"), 1.0)
+        label = arquivo["kargs"].pop("label")
+        left  = self.makeFloat(data["props"]["rangexmin"], df["x"].min())
+        right = self.makeFloat(data["props"]["rangexmax"], df["x"].max())
+        if left >= right:
+            self.messageHandler.raiseError("Intervalo de bins inválido. Rever intervalo de bins.")
+            return -1
+        bins  = np.linspace(left, right,
+            self.makeInt(data["props"]["nbins"], 10) + 1)
+        counts = None
+        if arquivo["legend"] == "":
+            counts, bins, _ = self.canvas.axes1.hist(x = df["x"], bins = bins, weights = np.ones_like(df["x"])/len(df["x"]),
+            density     = False, cumulative = False, bottom = 0,
+            histtype    = data["props"]["histType"],
+            align       = self.histAlign[data["props"]["histAlign"]],
+            orientation = self.histOrient[data["props"]["histOrientation"]],
+            log = False, rwidth = 1, capstyle = "round", ls = "-", aa = True,
+            alpha = alpha,
+            **arquivo["kargs"])
+        else:
+            counts, bins, _ = self.canvas.axes1.hist(x = df["x"], bins = bins, weights = np.ones_like(df["x"])/len(df["x"]),
+            density     = False, cumulative = False, bottom = 0,
+            histtype    = data["props"]["histType"],
+            align       = self.histAlign[data["props"]["histAlign"]],
+            orientation = self.histOrient[data["props"]["histOrientation"]],
+            log = False, rwidth = 1, capstyle = "round", ls = "-", aa = True,
+            alpha = alpha, label = arquivo["legend"],
+            **arquivo["kargs"])
+            has_legend = True
+        if label:
+            if data["props"]["histOrientation"] == "Vertical":
+                bottom, top = self.canvas.axes1.get_ylim()
+                height = top - bottom
+                c = (bins[1] - bins[0])/2
+                for n, b in zip(counts, bins):
+                    if n != 0:
+                        self.canvas.axes1.text(b + c, n + height*0.02, f"{n:.3g}", ha = "center")
+            else:
+                left, right = self.canvas.axes1.get_xlim()
+                dif = right - left
+                c = (bins[1] - bins[0])/2
+                for n, b in zip(counts, bins):
+                    if n != 0:
+                        self.canvas.axes1.text(n + dif*0.02, b + c, f"{n:.3g}", ha = "center")
+        return has_legend
+
+    def plot_dens(self, arquivo, data, has_legend):
+        df    = pd.DataFrame.from_dict(json.loads(arquivo["data"]))
+        alpha = self.makeFloat(arquivo["kargs"].pop("alpha"), 1.0)
+        label = arquivo["kargs"].pop("label")
+        left  = self.makeFloat(data["props"]["rangexmin"], df["x"].min())
+        right = self.makeFloat(data["props"]["rangexmax"], df["x"].max())
+        if left >= right:
+            self.messageHandler.raiseError("Intervalo de bins inválido. Rever intervalo de bins.")
+            return -1
+        bins  = np.linspace(left, right,
+            self.makeInt(data["props"]["nbins"], 10) + 1)
+        counts = None
+        if arquivo["legend"] == "":
+            counts, bins, _ = self.canvas.axes1.hist(x = df["x"], bins = bins,
+            density     = True, cumulative = False, bottom = 0,
+            histtype    = data["props"]["histType"],
+            align       = self.histAlign[data["props"]["histAlign"]],
+            orientation = self.histOrient[data["props"]["histOrientation"]],
+            log = False, rwidth = 1, capstyle = "round", ls = "-", aa = True,
+            alpha = alpha,
+            **arquivo["kargs"])
+        else:
+            counts, bins, _ = self.canvas.axes1.hist(x = df["x"], bins = bins,
+            density     = True, cumulative = False, bottom = 0,
+            histtype    = data["props"]["histType"],
+            align       = self.histAlign[data["props"]["histAlign"]],
+            orientation = self.histOrient[data["props"]["histOrientation"]],
+            log = False, rwidth = 1, capstyle = "round", ls = "-", aa = True,
+            alpha = alpha, label = arquivo["legend"],
+            **arquivo["kargs"])
+            has_legend = True
+        if label:
+            if data["props"]["histOrientation"] == "Vertical":
+                bottom, top = self.canvas.axes1.get_ylim()
+                height = top - bottom
+                c = (bins[1] - bins[0])/2
+                for n, b in zip(counts, bins):
+                    if n != 0:
+                        self.canvas.axes1.text(b + c, n + height*0.02, f"{n:.3g}", ha = "center")
+            else:
+                left, right = self.canvas.axes1.get_xlim()
+                dif = right - left
+                c = (bins[1] - bins[0])/2
+                for n, b in zip(counts, bins):
+                    if n != 0:
+                        self.canvas.axes1.text(n + dif*0.02, b + c, f"{n:.3g}", ha = "center")
+        return has_legend
 
     @pyqtSlot()
     def new(self):
