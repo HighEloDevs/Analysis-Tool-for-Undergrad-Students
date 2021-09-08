@@ -102,17 +102,17 @@ class Model(QObject):
         # Instantiating clipboard
         clipboard = QGuiApplication.clipboard()
         clipboardText = clipboard.mimeData().text()
-        try:
+        # try:
             # Creating a dataframe from the string
-            df = pd.read_csv(StringIO(clipboardText), sep = '\t', header = None, dtype = str).replace(np.nan, "0")
-            # Replacing all commas for dots
-            for i in df.columns:
-                df[i] = [x.replace(',', '.') for x in df[i]]
-                df[i] = df[i].astype(str)
-            self.load_data(df=df)
-        except Exception:
-            self._msgHandler.raiseError("Falha ao carregar clipboard. Rever dados de entrada.")
-            return None
+        df = pd.read_csv(StringIO(clipboardText), sep = '\t', header = None, dtype = str).replace(np.nan, "0")
+        # Replacing all commas for dots
+        for i in df.columns:
+            df[i] = [x.replace(',', '.') for x in df[i]]
+            df[i] = df[i].astype(str)
+        self.load_data(df=df)
+        # except Exception:
+        #     self._msgHandler.raiseError("Falha ao carregar clipboard. Rever dados de entrada.")
+        #     return None
                 
     @pyqtSlot(str)
     def load_data(self, data_path='', df=None, df_array=None):
@@ -174,7 +174,15 @@ class Model(QObject):
         self._mode   = len(df.columns) - 2
 
         # Naming columns
-        if self._mode == 0:
+        if self._mode == -1:
+            self._has_sy            = not self._has_sy
+            self._has_sx            = not self._has_sx
+            df["x"]                 = np.arange(len(df), dtype = float)
+            self._data_json         = deepcopy(df.astype(str))
+            self._data_json.columns = ['y', 'x']
+            df["sy"]                = 0.
+            df["sx"]                = 0.
+        elif self._mode == 0:
             self._has_sy            = not self._has_sy
             self._has_sx            = not self._has_sx
             self._data_json.columns = ['x', 'y']
@@ -210,27 +218,33 @@ class Model(QObject):
                 for i in self._data_json.index:
                     self.fillDataTable.emit(self._data_json["x"][i], self._data_json["y"][i], self._data_json["sy"][i], self._data_json["sx"][i], '1', fileName)
             elif self._has_sx:
+                dummy = str(0)
                 for i in self._data_json.index:
-                    self.fillDataTable.emit(self._data_json["x"][i], self._data_json["y"][i], str(0), self._data_json["sx"][i], '1', fileName)
+                    self.fillDataTable.emit(self._data_json["x"][i], self._data_json["y"][i], dummy, self._data_json["sx"][i], '1', fileName)
             elif self._has_sy:
+                dummy = str(0)
                 for i in self._data_json.index:
-                    self.fillDataTable.emit(self._data_json["x"][i], self._data_json["y"][i], self._data_json["sy"][i], str(0), '1', fileName)
+                    self.fillDataTable.emit(self._data_json["x"][i], self._data_json["y"][i], self._data_json["sy"][i], dummy, '1', fileName)
             else:
+                dummy = str(0)
                 for i in self._data_json.index:
-                    self.fillDataTable.emit(self._data_json["x"][i], self._data_json["y"][i], str(0), str(0), '1', fileName)
+                    self.fillDataTable.emit(self._data_json["x"][i], self._data_json["y"][i], dummy, dummy, '1', fileName)
         else:
             if self._has_sx and self._has_sy:
                 for i in self._data_json.index:
                     self.fillDataTable.emit(self._data_json["x"][i], self._data_json["y"][i], self._data_json["sy"][i], self._data_json["sx"][i], bools[i], fileName)
             elif self._has_sx:
+                dummy = str(0)
                 for i in self._data_json.index:
-                    self.fillDataTable.emit(self._data_json["x"][i], self._data_json["y"][i], str(0), self._data_json["sx"][i], bools[i], fileName)
+                    self.fillDataTable.emit(self._data_json["x"][i], self._data_json["y"][i], dummy, self._data_json["sx"][i], bools[i], fileName)
             elif self._has_sy:
+                dummy = str(0)
                 for i in self._data_json.index:
-                    self.fillDataTable.emit(self._data_json["x"][i], self._data_json["y"][i], self._data_json["sy"][i], str(0), bools[i], fileName)
+                    self.fillDataTable.emit(self._data_json["x"][i], self._data_json["y"][i], self._data_json["sy"][i], dummy, bools[i], fileName)
             else:
+                dummy = str(0)
                 for i in self._data_json.index:
-                    self.fillDataTable.emit(self._data_json["x"][i], self._data_json["y"][i], str(0), str(0), bools[i], fileName)
+                    self.fillDataTable.emit(self._data_json["x"][i], self._data_json["y"][i], dummy, dummy, bools[i], fileName)
 
     def set_p0(self, p0):
         ''' Coloca os chutes iniciais. '''
