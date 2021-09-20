@@ -25,6 +25,7 @@ SOFTWARE.
 from matplotlib_backend_qtquick.backend_qtquick import NavigationToolbar2QtQuick
 from PyQt5.QtCore import QObject, QVariant, pyqtProperty, QUrl, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QGuiApplication, QPixmap
+import matplotlib.pyplot as plt
 import numpy as np
 import os
 import matplotlib.gridspec as gridspec
@@ -49,6 +50,11 @@ class MPLCanvas(QObject):
         self.oid     = 0
         self.cid     = 0
         self.grid    = False
+        self.top     = 0.92
+        self.bottom  = 0.12
+        self.left    = 0.10
+        self.right   = 0.95
+        self.figmode = 0
 
         # This is used to display the coordinates of the mouse in the window
         self._coordinates = ""
@@ -78,7 +84,7 @@ class MPLCanvas(QObject):
         legend          = not not canvasProps['legend']
         residuals       = not not canvasProps['residuals']
         grid            = not not canvasProps['grid']
-        self.grid = grid
+        self.grid       = grid
         xmin            = canvasProps['xmin']
         xmax            = canvasProps['xmax']
         xdiv            = canvasProps['xdiv']
@@ -107,10 +113,16 @@ class MPLCanvas(QObject):
         if model._has_data:
 
             # Fitting expression to data, if there's any expression
-            if model._exp_model != '':
-                model.fit(wsx = not sigma_x, wsy = not sigma_y)
+            if fitProps["adjust"]:
+                if model._exp_model != '':
+                    model.fit(wsx = not sigma_x, wsy = not sigma_y)
+                else:
+                    model._isvalid = False
             else:
-                model._isvalid = False
+                if model._exp_model != '':
+                    model.createDummyModel()
+                else:
+                    model._isvalid = False
 
             # Plotting if the model is valid
             if model._isvalid:
@@ -119,11 +131,13 @@ class MPLCanvas(QObject):
 
                 # Getting data
                 x, y, sy, sx = model.data
-                y_r          = model.residuo
-
+                y_r          = None
+                if fitProps["adjust"]:
+                    y_r      = model.residuo
+                else:
+                    y_r      = model.residuoDummy 
                 if residuals:
                     self.switchAxes(hideAxes2 = False)
-                    self.setAxesPropsWithAxes2(xmin, xmax, xdiv, ymin, ymax, ydiv, resmin, resmax, grid, log_x, log_y)
                     if sigma_x and sigma_y:                     # Caso considerar as duas incertezas
                         ssy = model.predictInc(not sigma_x)
                         self.axes1.errorbar(x, y, yerr=sy, xerr=sx, ecolor = symbol_color, capsize = 0, elinewidth = 1, ms = symbol_size, marker = symbol, color = symbol_color, ls = 'none')
@@ -139,6 +153,7 @@ class MPLCanvas(QObject):
                         ssy = model.predictInc(not sigma_x)
                         self.axes1.errorbar(x, y, xerr=sx, ecolor = symbol_color, capsize = 0, elinewidth = 1, ms = symbol_size, marker = symbol, color = symbol_color, ls = 'none')
                         self.axes2.errorbar(x, y_r, yerr=ssy, ecolor = symbol_color, capsize = 0, elinewidth = 1, ms = symbol_size, marker = symbol, color = symbol_color, ls = 'none')
+                    self.setAxesPropsWithAxes2(xmin, xmax, xdiv, ymin, ymax, ydiv, resmin, resmax, grid, log_x, log_y)
                     left, right = self.axes1.get_xlim()
                     self.axes1.set_xlim(left = left, right = right)
                     self.axes2.set_xlim(left = left, right = right)
@@ -175,10 +190,8 @@ class MPLCanvas(QObject):
                     self.axes1.figure.canvas.mpl_disconnect(self.cid)
                     self.oid = self.axes1.callbacks.connect('xlim_changed', update)
                     self.cid = self.axes1.figure.canvas.mpl_connect("resize_event", update)
-                    self.figure.subplots_adjust(left = None, bottom = None, right = None, top = None, wspace = None, hspace = 0.)
                 else:
                     self.switchAxes(hideAxes2 = True)
-                    self.setAxesPropsWithoutAxes2(xmin, xmax, xdiv, ymin, ymax, ydiv, grid, log_x, log_y)
 
                     # Making Plots
                     if sigma_x and sigma_y:                     # Caso considerar as duas incertezas
@@ -190,6 +203,7 @@ class MPLCanvas(QObject):
                     else:                                       # Caso considerar só sx
                         self.axes1.errorbar(x, y, xerr=sx, ecolor = symbol_color, capsize = 0, elinewidth = 1, ms = symbol_size, marker = symbol, color = symbol_color, ls = 'none')
 
+                    self.setAxesPropsWithoutAxes2(xmin, xmax, xdiv, ymin, ymax, ydiv, grid, log_x, log_y)
                     left, right = self.axes1.get_xlim()
                     self.axes1.set_xlim(left = left, right = right)
                     px, py = 0., 0.
@@ -234,7 +248,6 @@ class MPLCanvas(QObject):
             else:
                 self.clearAxis()
                 self.switchAxes(hideAxes2 = True)
-                self.setAxesPropsWithoutAxes2(xmin, xmax, xdiv, ymin, ymax, ydiv, grid, log_x, log_y)
 
                 x, y, sy, sx = model.data
 
@@ -252,9 +265,11 @@ class MPLCanvas(QObject):
                 self.axes1.set_title(str(axisTitle[0]))
                 self.axes1.set(xlabel = str(axisTitle[1]))
                 self.axes1.set(ylabel = str(axisTitle[2]))
+                self.setAxesPropsWithoutAxes2(xmin, xmax, xdiv, ymin, ymax, ydiv, grid, log_x, log_y)
+                # self.figure.subplots_adjust(left = 0.3, bottom = None, right = None, top = None, wspace = None, hspace = None)
 
         # Reseting parameters
-        px, py, y_r   = None, None, None
+        # px, py, y_r   = None, None, None
         model.isvalid = False
         self.canvas.draw_idle()
 
@@ -269,12 +284,26 @@ class MPLCanvas(QObject):
         if hideAxes2:
             self.axes2.set_visible(False)
             self.axes1.set_position(self.gs[0].get_position(self.figure), which = 'both')
+            self.figmode = 0
         else:
             self.axes2.set_visible(True)
             self.axes1.set_position(self.gm[0].get_position(self.figure), which = 'both')
             self.axes2.set_position(self.gm[1].get_position(self.figure), which = 'both')
+            self.figmode = 1
 
     def setAxesPropsWithoutAxes2(self, xmin, xmax, xdiv, ymin, ymax, ydiv, grid, log_x, log_y):
+        left, right = self.axes1.get_xlim()
+        bottom, top = self.axes1.get_ylim()
+        divs_x      = len(self.axes1.get_xticks()) - 1
+        divs_y      = len(self.axes1.get_yticks()) - 1
+
+        xmin = self.makeFloat(xmin, left)
+        xmax = self.makeFloat(xmax, right)
+        xdiv = self.makeInt(xdiv, divs_x)
+        ymin = self.makeFloat(ymin, bottom)
+        ymax = self.makeFloat(ymax, top)
+        ydiv = self.makeInt(ydiv, divs_y)
+
         if grid:
             self.axes1.grid(True,  which='major')
         if log_y:
@@ -282,56 +311,110 @@ class MPLCanvas(QObject):
         if log_x:
             self.axes1.set_xscale('log')
 
-        if xdiv != 0. and (xmax != 0. or xmin != 0.):
+        if xdiv != divs_x:
             self.axes1.set_xticks(np.linspace(xmin, xmax, xdiv + 1))
             self.axes1.set_xlim(left = xmin, right = xmax)
         else:
-            if xmin == 0. and xmax != 0.:
-                self.axes1.set_xlim(left = None, right = xmax)
-            elif xmin != 0. and xmax == 0.:
-                self.axes1.set_xlim(left = xmin, right = None)
-            elif xmin != 0. and xmax != 0.:
+            if left != xmin or right != xmax:
+                self.axes1.set_xticks(np.linspace(xmin, xmax, xdiv + 1))
                 self.axes1.set_xlim(left = xmin, right = xmax)
-        
-        if ydiv != 0. and (ymax != 0. or ymin != 0.):
+
+        if ydiv != divs_y:
             self.axes1.set_yticks(np.linspace(ymin, ymax, ydiv + 1))
             self.axes1.set_ylim(bottom = ymin, top = ymax)
         else:
-            if ymin == 0. and ymax != 0.:
-                self.axes1.set_ylim(bottom = None, top = ymax)
-            elif ymin != 0. and ymax == 0.:
-                self.axes1.set_ylim(bottom = ymin, top = None)
-            elif ymin != 0. and ymax != 0.:
+            if bottom != ymin or top != ymax:
+                self.axes1.set_yticks(np.linspace(ymin, ymax, ydiv + 1))
                 self.axes1.set_ylim(bottom = ymin, top = ymax)
 
+        # if xdiv != 0. and (xmax != 0. or xmin != 0.):
+        #     self.axes1.set_xticks(np.linspace(xmin, xmax, xdiv + 1))
+        #     self.axes1.set_xlim(left = xmin, right = xmax)
+        # else:
+        #     if xmin == 0. and xmax != 0.:
+        #         self.axes1.set_xlim(left = None, right = xmax)
+        #     elif xmin != 0. and xmax == 0.:
+        #         self.axes1.set_xlim(left = xmin, right = None)
+        #     elif xmin != 0. and xmax != 0.:
+        #         self.axes1.set_xlim(left = xmin, right = xmax)
+        
+        # if ydiv != 0. and (ymax != 0. or ymin != 0.):
+        #     self.axes1.set_yticks(np.linspace(ymin, ymax, ydiv + 1))
+        #     self.axes1.set_ylim(bottom = ymin, top = ymax)
+        # else:
+        #     if ymin == 0. and ymax != 0.:
+        #         self.axes1.set_ylim(bottom = None, top = ymax)
+        #     elif ymin != 0. and ymax == 0.:
+        #         self.axes1.set_ylim(bottom = ymin, top = None)
+        #     elif ymin != 0. and ymax != 0.:
+        #         self.axes1.set_ylim(bottom = ymin, top = ymax)
+
     def setAxesPropsWithAxes2(self, xmin, xmax, xdiv, ymin, ymax, ydiv, resmin, resmax, grid, log_x, log_y):
-        if xdiv != 0. and (xmax != 0. or xmin != 0.):
+        
+        left, right    = self.axes1.get_xlim()
+        bottom, top    = self.axes2.get_ylim()
+        botres, topres = self.axes2.get_ylim()
+        divs_x         = len(self.axes1.get_xticks()) - 1
+        divs_y         = len(self.axes1.get_yticks()) - 1
+
+        xmin   = self.makeFloat(xmin, left)
+        xmax   = self.makeFloat(xmax, right)
+        xdiv   = self.makeInt(xdiv, divs_x)
+        ymin   = self.makeFloat(ymin, bottom)
+        ymax   = self.makeFloat(ymax, top)
+        ydiv   = self.makeInt(ydiv, divs_y)
+        self.axes2.set_ylim(bottom = self.makeFloat(resmin, botres), top = self.makeFloat(resmax, topres))
+        if xdiv != divs_x:
             self.axes1.set_xticks(np.linspace(xmin, xmax, xdiv + 1))
             self.axes2.set_xticks(np.linspace(xmin, xmax, xdiv + 1))
+            # self.axes1.locator_params(axis = 'x', nbins = xdiv + 1)
             self.axes1.set_xlim(left = xmin, right = xmax)
             self.axes2.set_xlim(left = xmin, right = xmax)
         else:
-            if xmin == 0. and xmax != 0.:
-                self.axes1.set_xlim(left = None, right = xmax)
-                self.axes2.set_xlim(left = None, right = xmax)
-            elif xmin != 0. and xmax == 0.:
-                self.axes1.set_xlim(left = xmin, right = None)
-                self.axes2.set_xlim(left = xmin, right = None)
-            elif xmin != 0. and xmax != 0.:
+            if left != xmin or right != xmax:
+                self.axes1.set_xticks(np.linspace(xmin, xmax, xdiv + 1))
+                self.axes2.set_xticks(np.linspace(xmin, xmax, xdiv + 1))
                 self.axes1.set_xlim(left = xmin, right = xmax)
                 self.axes2.set_xlim(left = xmin, right = xmax)
-        if ydiv != 0. and (ymax != 0. or ymin != 0.):
+            else:
+                self.axes1.set_xlim(left = xmin, right = xmax)
+                self.axes2.set_xlim(left = xmin, right = xmax)
+
+        if ydiv != divs_y:
             self.axes1.set_yticks(np.linspace(ymin, ymax, ydiv + 1))
             self.axes1.set_ylim(bottom = ymin, top = ymax)
         else:
-            if ymin == 0. and ymax != 0.:
-                self.axes1.set_ylim(bottom = None, top = ymax)
-            elif ymin != 0. and ymax == 0.:
-                self.axes1.set_ylim(bottom = ymin, top = None)
-            elif ymin != 0. and ymax != 0.:
+            if bottom != ymin or top != ymax:
+                self.axes1.set_yticks(np.linspace(ymin, ymax, ydiv + 1))
                 self.axes1.set_ylim(bottom = ymin, top = ymax)
-        if resmin != 0. or resmax != 0.:
-            self.axes2.set_ylim(bottom = resmin, top = resmax)
+        
+        # if xdiv != 0. and (xmax != 0. or xmin != 0.):
+        #     self.axes1.set_xticks(np.linspace(xmin, xmax, xdiv + 1))
+        #     self.axes2.set_xticks(np.linspace(xmin, xmax, xdiv + 1))
+        #     self.axes1.set_xlim(left = xmin, right = xmax)
+        #     self.axes2.set_xlim(left = xmin, right = xmax)
+        # else:
+        #     if xmin == 0. and xmax != 0.:
+        #         self.axes1.set_xlim(left = None, right = xmax)
+        #         self.axes2.set_xlim(left = None, right = xmax)
+        #     elif xmin != 0. and xmax == 0.:
+        #         self.axes1.set_xlim(left = xmin, right = None)
+        #         self.axes2.set_xlim(left = xmin, right = None)
+        #     elif xmin != 0. and xmax != 0.:
+        #         self.axes1.set_xlim(left = xmin, right = xmax)
+        #         self.axes2.set_xlim(left = xmin, right = xmax)
+        # if ydiv != 0. and (ymax != 0. or ymin != 0.):
+        #     self.axes1.set_yticks(np.linspace(ymin, ymax, ydiv + 1))
+        #     self.axes1.set_ylim(bottom = ymin, top = ymax)
+        # else:
+        #     if ymin == 0. and ymax != 0.:
+        #         self.axes1.set_ylim(bottom = None, top = ymax)
+        #     elif ymin != 0. and ymax == 0.:
+        #         self.axes1.set_ylim(bottom = ymin, top = None)
+        #     elif ymin != 0. and ymax != 0.:
+        #         self.axes1.set_ylim(bottom = ymin, top = ymax)
+        # if resmin != 0. or resmax != 0.:
+        #     self.axes2.set_ylim(bottom = resmin, top = resmax)
         if grid:
             self.axes1.grid(True,  which='major')
             # self.axes1.grid(True, which='minor', alpha = 0.3)
@@ -343,7 +426,19 @@ class MPLCanvas(QObject):
             self.axes1.set_xscale('log')
     
     def set_tight_layout(self):
-        self.canvas.figure.tight_layout(rect=[0.025, 0.085, 0.985, 0.985])
+        self.figure.subplots_adjust(left = self.left, bottom = self.bottom, right = self.right, top = self.top)
+
+    def makeFloat(self, var, valor):
+        try:
+            return float(var)
+        except:
+            return valor
+
+    def makeInt(self, var, valor):
+        try:
+            return int(var)
+        except:
+            return valor
 
     def getCoordinates(self):
         """Retorna as coordenadas no gráfico."""
@@ -355,6 +450,24 @@ class MPLCanvas(QObject):
         self.coordinatesChanged.emit(self._coordinates)
 
     coordinates = pyqtProperty(str, getCoordinates, setCoordinates, notify=coordinatesChanged)
+
+    @pyqtSlot(str, str, str, str)
+    def setPaddings(self, top, bottom, left, right):
+        self.top    = self.makeFloat(top, valor = 0.92)
+        self.bottom = self.makeFloat(bottom, valor = 0.12)
+        self.left   = self.makeFloat(left, valor = 0.10)
+        self.right  = self.makeFloat(right, valor = 0.95)
+        if self.figmode:
+            self.figure.subplots_adjust(left = self.left, bottom = self.bottom, right = self.right, top = self.top)
+        else:
+            self.figure.subplots_adjust(left = self.left, bottom = self.bottom, right = self.right, top = self.top)
+            self.switchAxes()
+        self.canvas.draw_idle()
+        # self.messageHandler.raiseSuccess("Valores alterados com sucesso.")
+
+    @pyqtSlot(result = str)
+    def getPaddings(self):
+        return "0.92;0.12;0.1;0.95"
 
     # The toolbar commands
     @pyqtSlot(str, bool)

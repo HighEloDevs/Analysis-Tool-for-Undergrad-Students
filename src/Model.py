@@ -622,6 +622,26 @@ class Model(QObject):
         '''Retorna os valores de y_i - f(x_i).'''
         return self._data["y"] - self._model.eval(x = self._data["x"])
 
+    @property
+    def residuoDummy(self):
+        '''Retorna os valores de y_i - f(x_i).'''
+        self._coef = [i for i in self._model.param_names]
+        # If there's no p0, everything is set to 1.0
+        pi = [0]*len(self._model.param_names)   # Inital values
+        if self._p0 is None:
+            for i in range(len(self._model.param_names)):
+                pi[i] = 1.0
+        else:
+            for i in range(len(self._model.param_names)):
+                try:
+                    pi[i] = float(self._p0[i])
+                except:
+                    pi[i] = 1.0
+        params = Parameters()
+        for i in range(len(self._coef)):
+            params.add(self._coef[i], pi[i])
+        return self._data["y"] - self._model.eval(x = self._data["x"], params = params)
+
     def get_predict(self, fig, x_min = None, x_max = None):
         '''Retorna a previsão do modelo.'''
         x_plot = np.linspace(x_min, x_max, int(fig.get_size_inches()[0]*fig.dpi*1.75))
@@ -657,6 +677,18 @@ class Model(QObject):
                 sy[i] = np.abs(y_var - y_prd).mean()
             return sy
         return self._data["sy"]
+    
+    def createDummyModel(self):
+        try:
+            self._model = ExpressionModel(self._exp_model + " + 0*%s"%self._indVar, independent_vars=[self._indVar])
+        except ValueError:
+            self._msgHandler.raiseError("Expressão de ajuste escrita de forma errada. Rever função de ajuste.")
+            return None
+        except SyntaxError:
+            self._msgHandler.raiseError("Expressão de ajuste escrita de forma errada. Rever função de ajuste.")
+            return None
+        self._isvalid = True
+
 
     def matprint(self, mat, fmt="f"):
         col_maxes = [max([len(("{:"+fmt+"}").format(x)) for x in col]) for col in mat.T]

@@ -103,7 +103,7 @@ Popup {
                 Layout.columnSpan: 3
                 focusColor: Colors.mainColor2
                 textHolder: ""
-                title: "Topo (px)"
+                title: "Topo"
                 textColor: "#fff"
                 defaultColor: "#fff"
                 validator: RegExpValidator{regExp: /^[1-9]+([0-9]+)?$/}
@@ -113,7 +113,7 @@ Popup {
                 Layout.columnSpan: 3
                 focusColor: Colors.mainColor2
                 textHolder: ""
-                title: "Baixo (px)"
+                title: "Baixo"
                 textColor: "#fff"
                 defaultColor: "#fff"
                 validator: RegExpValidator{regExp: /^[1-9]+([0-9]+)?$/}
@@ -123,7 +123,7 @@ Popup {
                 Layout.columnSpan: 3
                 focusColor: Colors.mainColor2
                 textHolder: ""
-                title: "Esquerda (px)"
+                title: "Esquerda"
                 textColor: "#fff"
                 defaultColor: "#fff"
                 validator: RegExpValidator{regExp: /^[1-9]+([0-9]+)?$/}
@@ -133,7 +133,7 @@ Popup {
                 Layout.columnSpan: 3
                 focusColor: Colors.mainColor2
                 textHolder: ""
-                title: "Direita (px)"
+                title: "Direita"
                 textColor: "#fff"
                 defaultColor: "#fff"
                 validator: RegExpValidator{regExp: /^[1-9]+([0-9]+)?$/}
@@ -153,6 +153,11 @@ Popup {
 
                 onClicked: {
                     canvas.resize_canvas()
+                    let defaultValues  = canvas.getPaddings().split(";")
+                    paddingTop.text    = defaultValues[0]
+                    paddingBottom.text = defaultValues[1]
+                    paddingLeft.text   = defaultValues[2]
+                    paddingRight.text  = defaultValues[3]
                 }
             }
             TextButton{
@@ -162,17 +167,7 @@ Popup {
                 texto: "Aplicar"
                 onClicked: {
                     canvas.set_canvas_size(Number(figWidth.text), Number(figHeight.text))
-                    // Aqui, burro, você coloca sua função que chama o backend
-                    // Vou te dar um exemplo, tá? :)
-                    // canvas.suafunçãoAQUI(ARGUMENTOS, ARGUMENTOS, ARGUMENTOS)
-                    // canvas é o objeto, tá?
-                    // canvas.suafunçãoAQUI é o método, tá?
-                    // ARGUMENTOS é o que você passa como argumento, tá?
-                    // id.paddingRight.text é a distância do gráfico à direita
-                    // id.paddingLeft.text  é a distância do gráfico à esquerda
-                    // id.paddingTop.text  é a distância do gráfico à cima
-                    // id.paddingBottom.text  é a distância do gráfico à baixo
-                    // ":D"
+                    canvas.setPaddings(paddingTop.text, paddingBottom.text, paddingLeft.text, paddingRight.text)
                 }
             }
         }

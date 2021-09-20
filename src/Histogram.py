@@ -51,18 +51,16 @@ class Histogram(QObject):
         self.canvas.clearAxis()
         self.canvas.switchAxes(hideAxes2 = True)
 
-        xdiv = self.makeInt(data["props"]["xdiv"], 0.)
-        xmin = self.makeFloat(data["props"]["xmin"], 0.)
-        xmax = self.makeFloat(data["props"]["xmax"], 0.)
-        ydiv = self.makeInt(data["props"]["ydiv"], 0.)
-        ymin = self.makeFloat(data["props"]["ymin"], 0.)
-        ymax = self.makeFloat(data["props"]["ymax"], 0.)
+        xdiv = data["props"]["xdiv"]
+        xmin = data["props"]["xmin"]
+        xmax = data["props"]["xmax"]
+        ydiv = data["props"]["ydiv"]
+        ymin = data["props"]["ymin"]
+        ymax = data["props"]["ymax"]
 
         self.canvas.grid = data["props"]["grid"]
 
         self.canvas.axes1.yaxis.set_major_locator(MaxNLocator(integer=True))
-        self.canvas.setAxesPropsWithoutAxes2(xmin, xmax, xdiv, ymin, ymax, ydiv,
-         data["props"]["grid"], data["props"]["logx"], data["props"]["logy"])
 
         has_legend = False
         for arquivo in data["data"]:
@@ -75,6 +73,8 @@ class Histogram(QObject):
                     has_legend = self.plot_dens(arquivo, data, has_legend)
         self.canvas.axes1.set_title(data["props"]["title"])
         self.canvas.axes1.set(xlabel = data["props"]["xaxis"], ylabel = data["props"]["yaxis"])
+        self.canvas.setAxesPropsWithoutAxes2(xmin, xmax, xdiv, ymin, ymax, ydiv,
+         data["props"]["grid"], data["props"]["logx"], data["props"]["logy"])
         if has_legend:
             self.canvas.axes1.legend()
         self.canvas.canvas.draw_idle()

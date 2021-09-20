@@ -14,6 +14,7 @@ Item {
     property alias initParams: p0
     property alias sigmax: switch_sigmax
     property alias sigmay: switch_sigmay
+    property alias adjust: switch_adjust
     property alias xmin  : x_min
     property alias xmax  : x_max
     property alias info  : infos.text
@@ -36,12 +37,12 @@ Item {
             columnSpacing: 0
             rowSpacing: 5
             rows: 6
-            columns: 4
+            columns: 12
 
             TextInputCustom{
                 id: expression
                 Layout.fillWidth: true
-                Layout.columnSpan: 4
+                Layout.columnSpan: 12
                 focusColor: Colors.mainColor2
                 title: 'Expressão | y(x) ='
                 textHolder: 'Função a ser ajustada. Ex.: a*x + b'
@@ -53,7 +54,7 @@ Item {
             TextInputCustom{
                 id: p0
                 Layout.fillWidth: true
-                Layout.columnSpan: 4
+                Layout.columnSpan: 12
                 focusColor: Colors.mainColor2
                 title: 'Parâmetros Iniciais'
                 textHolder: 'Ex.: 0, 32, 4.3, 23.4'
@@ -65,7 +66,7 @@ Item {
             TextInputCustom{
                 id: x_min
                 Layout.fillWidth: true
-                Layout.columnSpan: 2
+                Layout.columnSpan: 6
                 focusColor: Colors.mainColor2
                 title: 'Ajuste - X mín.'
                 textHolder: 'Ex.: 0, 32, 4.3, 23.4'
@@ -77,7 +78,7 @@ Item {
             TextInputCustom{
                 id: x_max
                 Layout.fillWidth: true
-                Layout.columnSpan: 2
+                Layout.columnSpan: 6
                 focusColor: Colors.mainColor2
                 title: 'Ajuste - X máx.'
                 textHolder: 'Ex.: 0, 32, 4.3, 23.4'
@@ -89,7 +90,7 @@ Item {
             CheckBoxCustom{
                 id: switch_sigmax
                 Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-                Layout.columnSpan: 2
+                Layout.columnSpan: 4
                 w: 20
                 checked: true
                 texto: "Usar σx"
@@ -98,16 +99,25 @@ Item {
             CheckBoxCustom{
                 id: switch_sigmay
                 Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-                Layout.columnSpan: 2
+                Layout.columnSpan: 4
                 w: 20
                 checked: true
                 texto: "Usar σy"
+            }
+            
+            CheckBoxCustom{
+                id: switch_adjust
+                Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+                Layout.columnSpan: 4
+                w: 20
+                checked: true
+                texto: "Ajustar função"
             }
 
             Table{
                 id: tableParams
                 height: 130
-                Layout.columnSpan: 4
+                Layout.columnSpan: 12
                 Layout.preferredHeight: 50
                 Layout.rightMargin: 0
                 Layout.leftMargin: 0
@@ -124,7 +134,7 @@ Item {
             }
 
             Rectangle {
-                Layout.columnSpan: 4
+                Layout.columnSpan: 12
                 Layout.preferredHeight: 50
                 Layout.bottomMargin: 10
                 Layout.fillHeight: true

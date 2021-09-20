@@ -93,10 +93,10 @@ class SinglePlot(QObject):
         canvasProps = plotData['canvasProps']
         dataProps   = plotData['dataProps']
         fitProps    = plotData['fitProps']
-        for i in ["xmin", "xmax", "ymin", "ymax", "resmin", "resmax"]:
-            canvasProps[i] = self.makeFloat(canvasProps[i])
-        for i in ["xdiv", "ydiv"]:
-            canvasProps[i] = self.makeInt(canvasProps[i])
+        # for i in ["xmin", "xmax", "ymin", "ymax", "resmin", "resmax"]:
+        #     canvasProps[i] = self.makeFloat(canvasProps[i])
+        # for i in ["xdiv", "ydiv"]:
+        #     canvasProps[i] = self.makeInt(canvasProps[i])
 
         # Loading data from the table
         self.model.loadDataTable(plotData['data'])

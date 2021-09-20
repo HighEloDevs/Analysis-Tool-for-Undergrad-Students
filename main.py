@@ -39,8 +39,15 @@ from PyQt5.QtCore import QCoreApplication, QUrl, QObject, Qt
 from PyQt5.QtQml import qmlRegisterType, QQmlApplicationEngine
 from PyQt5.QtGui import QIcon, QGuiApplication
 from matplotlib_backend_qtquick.backend_qtquickagg import FigureCanvasQtQuickAgg
-plt.rcParams["ytick.minor.visible"] = False
-plt.rcParams["xtick.minor.visible"] = False
+# import warnings
+# warnings.filterwarnings("ignore")
+plt.rcParams["ytick.minor.visible"]   = False
+plt.rcParams["xtick.minor.visible"]   = False
+plt.rcParams["figure.subplot.left"]   = 0.1
+plt.rcParams["figure.subplot.right"]  = 0.95
+plt.rcParams["figure.subplot.bottom"] = 0.12
+plt.rcParams["figure.subplot.top"]    = 0.92
+plt.rcParams["figure.subplot.hspace"] = 0.
 if __name__ == "__main__":
     # Matplotlib stuff
     qmlRegisterType(FigureCanvasQtQuickAgg, "Canvas", 1, 0, "FigureCanvas")

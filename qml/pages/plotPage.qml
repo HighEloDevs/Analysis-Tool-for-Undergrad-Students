@@ -60,12 +60,13 @@ Item {
                                     resmax    : pageProp.resMax.text,
                                 },
                                 fitProps: {
-                                    expr : pageFunc.expr.text,
-                                    p0   : pageFunc.initParams.text,
-                                    wsx  : pageFunc.sigmax.checked,
-                                    wsy  : pageFunc.sigmay.checked,
-                                    xmin : pageFunc.xmin.text,
-                                    xmax : pageFunc.xmax.text,
+                                    expr   : pageFunc.expr.text,
+                                    p0     : pageFunc.initParams.text,
+                                    wsx    : pageFunc.sigmax.checked,
+                                    wsy    : pageFunc.sigmay.checked,
+                                    xmin   : pageFunc.xmin.text,
+                                    xmax   : pageFunc.xmax.text,
+                                    adjust : pageFunc.adjust.checked,
                                 },
                                 data : table.dataShaped
                             })
