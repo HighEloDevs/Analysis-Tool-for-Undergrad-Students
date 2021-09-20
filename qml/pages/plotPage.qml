@@ -292,6 +292,14 @@ Item {
             label_fileName.text = fileName
             table.addRow(x, y, sy, sx, Boolean(Number(isEditable)))
         }
+
+        function onUploadData(data, fileName){
+            label_fileName.text = fileName
+            let dataLength = data['x'].length
+            for (let i = 0; i < (dataLength >= 100 ? 100 : dataLength ); i++){
+                table.addRow(data['x'][i], data['y'][i], (data['sy'] === undefined ? 0:data['sy'][i]), (data['sx'] === undefined ? 0:data['sx'][i]), true)
+            }
+        }
     }
 
     Connections{

@@ -26,7 +26,7 @@ SOFTWARE.
 import numpy as np
 import pandas as pd
 from PyQt5.QtGui import QGuiApplication
-from PyQt5.QtCore import QObject, QJsonValue, QUrl, pyqtSignal, pyqtSlot
+from PyQt5.QtCore import QObject, QJsonValue, QUrl, QVariant, pyqtSignal, pyqtSlot
 from scipy.odr import ODR, Model as SciPyModel, RealData
 from lmfit.models import ExpressionModel
 from lmfit import Parameters
@@ -41,6 +41,7 @@ class Model(QObject):
     fillDataTable   = pyqtSignal(str, str, str, str, str, str, arguments=['x', 'y', 'sy', 'sx', 'filename'])
     fillParamsTable = pyqtSignal(str, float, float, arguments=['param', 'value', 'uncertainty'])
     writeInfos      = pyqtSignal(str, arguments='expr')
+    uploadData      = pyqtSignal(QVariant, str, arguments=['data', 'fileName'])
 
     def __init__(self, messageHandler):
         super().__init__()
@@ -212,39 +213,37 @@ class Model(QObject):
         # df.columns     = ['x', 'y', 'sy', 'sx']
         self._data     = deepcopy(df)
         self._has_data = True
+
+        self.uploadData.emit(self._data_json.to_dict(orient='list'), fileName)
+
+        # print(self._data_json.to_dict())
         
-        if df_array is None:
-            if self._has_sx and self._has_sy:
-                for i in self._data_json.index:
-                    self.fillDataTable.emit(self._data_json["x"][i], self._data_json["y"][i], self._data_json["sy"][i], self._data_json["sx"][i], '1', fileName)
-            elif self._has_sx:
-                dummy = str(0)
-                for i in self._data_json.index:
-                    self.fillDataTable.emit(self._data_json["x"][i], self._data_json["y"][i], dummy, self._data_json["sx"][i], '1', fileName)
-            elif self._has_sy:
-                dummy = str(0)
-                for i in self._data_json.index:
-                    self.fillDataTable.emit(self._data_json["x"][i], self._data_json["y"][i], self._data_json["sy"][i], dummy, '1', fileName)
-            else:
-                dummy = str(0)
-                for i in self._data_json.index:
-                    self.fillDataTable.emit(self._data_json["x"][i], self._data_json["y"][i], dummy, dummy, '1', fileName)
-        else:
-            if self._has_sx and self._has_sy:
-                for i in self._data_json.index:
-                    self.fillDataTable.emit(self._data_json["x"][i], self._data_json["y"][i], self._data_json["sy"][i], self._data_json["sx"][i], bools[i], fileName)
-            elif self._has_sx:
-                dummy = str(0)
-                for i in self._data_json.index:
-                    self.fillDataTable.emit(self._data_json["x"][i], self._data_json["y"][i], dummy, self._data_json["sx"][i], bools[i], fileName)
-            elif self._has_sy:
-                dummy = str(0)
-                for i in self._data_json.index:
-                    self.fillDataTable.emit(self._data_json["x"][i], self._data_json["y"][i], self._data_json["sy"][i], dummy, bools[i], fileName)
-            else:
-                dummy = str(0)
-                for i in self._data_json.index:
-                    self.fillDataTable.emit(self._data_json["x"][i], self._data_json["y"][i], dummy, dummy, bools[i], fileName)
+        # if df_array is None:
+        #     if self._has_sx and self._has_sy:
+        #         for i in self._data_json.index:
+        #             self.fillDataTable.emit(self._data_json["x"][i], self._data_json["y"][i], self._data_json["sy"][i], self._data_json["sx"][i], '1', fileName)
+        #     elif self._has_sx:
+        #         for i in self._data_json.index:
+        #             self.fillDataTable.emit(self._data_json["x"][i], self._data_json["y"][i], str(0), self._data_json["sx"][i], '1', fileName)
+        #     elif self._has_sy:
+        #         for i in self._data_json.index:
+        #             self.fillDataTable.emit(self._data_json["x"][i], self._data_json["y"][i], self._data_json["sy"][i], str(0), '1', fileName)
+        #     else:
+        #         for i in self._data_json.index:
+        #             self.fillDataTable.emit(self._data_json["x"][i], self._data_json["y"][i], str(0), str(0), '1', fileName)
+        # else:
+        #     if self._has_sx and self._has_sy:
+        #         for i in self._data_json.index:
+        #             self.fillDataTable.emit(self._data_json["x"][i], self._data_json["y"][i], self._data_json["sy"][i], self._data_json["sx"][i], bools[i], fileName)
+        #     elif self._has_sx:
+        #         for i in self._data_json.index:
+        #             self.fillDataTable.emit(self._data_json["x"][i], self._data_json["y"][i], str(0), self._data_json["sx"][i], bools[i], fileName)
+        #     elif self._has_sy:
+        #         for i in self._data_json.index:
+        #             self.fillDataTable.emit(self._data_json["x"][i], self._data_json["y"][i], self._data_json["sy"][i], str(0), bools[i], fileName)
+        #     else:
+        #         for i in self._data_json.index:
+        #             self.fillDataTable.emit(self._data_json["x"][i], self._data_json["y"][i], str(0), str(0), bools[i], fileName)
 
     def set_p0(self, p0):
         ''' Coloca os chutes iniciais. '''

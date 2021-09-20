@@ -343,7 +343,7 @@ class MPLCanvas(QObject):
             self.axes1.set_xscale('log')
     
     def set_tight_layout(self):
-        self.canvas.figure.tight_layout(rect=[0.025, 0.045, 0.985, 0.985])
+        self.canvas.figure.tight_layout(rect=[0.025, 0.085, 0.985, 0.985])
 
     def getCoordinates(self):
         """Retorna as coordenadas no gráfico."""

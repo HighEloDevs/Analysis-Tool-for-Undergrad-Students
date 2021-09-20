@@ -17,8 +17,6 @@ Popup {
     bottomInset: 0
     topInset: 0
     margins: 5
-    // width: 500
-    // height: 500
 
     background: Rectangle {
         anchors.fill: parent
@@ -72,6 +70,7 @@ Popup {
             TextInputCustom{
                 id: figWidth
                 Layout.columnSpan: 6
+                Layout.fillWidth: true
                 focusColor: Colors.mainColor2
                 textHolder: ""
                 title: "Largura (px)"
@@ -82,9 +81,59 @@ Popup {
             TextInputCustom{
                 id: figHeight
                 Layout.columnSpan: 6
+                Layout.fillWidth: true
                 focusColor: Colors.mainColor2
                 textHolder: ""
                 title: "Altura (px)"
+                textColor: "#fff"
+                defaultColor: "#fff"
+                validator: RegExpValidator{regExp: /^[1-9]+([0-9]+)?$/}
+            }
+
+            Text{
+                Layout.columnSpan: 12
+                Layout.alignment: Qt.AlignHCenter
+                text: "Distância do gráfico às bordas"
+                font.bold: true
+                font.pointSize: 11
+                color: "#a4a4a4"
+            }
+            TextInputCustom{
+                id: paddingTop
+                Layout.columnSpan: 3
+                focusColor: Colors.mainColor2
+                textHolder: ""
+                title: "Topo (px)"
+                textColor: "#fff"
+                defaultColor: "#fff"
+                validator: RegExpValidator{regExp: /^[1-9]+([0-9]+)?$/}
+            }
+            TextInputCustom{
+                id: paddingBottom
+                Layout.columnSpan: 3
+                focusColor: Colors.mainColor2
+                textHolder: ""
+                title: "Baixo (px)"
+                textColor: "#fff"
+                defaultColor: "#fff"
+                validator: RegExpValidator{regExp: /^[1-9]+([0-9]+)?$/}
+            }
+            TextInputCustom{
+                id: paddingLeft
+                Layout.columnSpan: 3
+                focusColor: Colors.mainColor2
+                textHolder: ""
+                title: "Esquerda (px)"
+                textColor: "#fff"
+                defaultColor: "#fff"
+                validator: RegExpValidator{regExp: /^[1-9]+([0-9]+)?$/}
+            }
+            TextInputCustom{
+                id: paddingRight
+                Layout.columnSpan: 3
+                focusColor: Colors.mainColor2
+                textHolder: ""
+                title: "Direita (px)"
                 textColor: "#fff"
                 defaultColor: "#fff"
                 validator: RegExpValidator{regExp: /^[1-9]+([0-9]+)?$/}
@@ -106,12 +155,6 @@ Popup {
                     canvas.resize_canvas()
                 }
             }
-            // TextButton{
-            //     radius: 0
-            //     primaryColor: "transparent"
-            //     textColor: "#FF5252"
-            //     texto: "Descartar"
-            // }
             TextButton{
                 radius: 0
                 primaryColor: "transparent"
@@ -119,6 +162,17 @@ Popup {
                 texto: "Aplicar"
                 onClicked: {
                     canvas.set_canvas_size(Number(figWidth.text), Number(figHeight.text))
+                    // Aqui, burro, você coloca sua função que chama o backend
+                    // Vou te dar um exemplo, tá? :)
+                    // canvas.suafunçãoAQUI(ARGUMENTOS, ARGUMENTOS, ARGUMENTOS)
+                    // canvas é o objeto, tá?
+                    // canvas.suafunçãoAQUI é o método, tá?
+                    // ARGUMENTOS é o que você passa como argumento, tá?
+                    // id.paddingRight.text é a distância do gráfico à direita
+                    // id.paddingLeft.text  é a distância do gráfico à esquerda
+                    // id.paddingTop.text  é a distância do gráfico à cima
+                    // id.paddingBottom.text  é a distância do gráfico à baixo
+                    // ":D"
                 }
             }
         }
