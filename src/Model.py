@@ -637,10 +637,11 @@ class Model(QObject):
                     pi[i] = float(self._p0[i])
                 except:
                     pi[i] = 1.0
-        params = Parameters()
+        paramss = Parameters()
         for i in range(len(self._coef)):
-            params.add(self._coef[i], pi[i])
-        return self._data["y"] - self._model.eval(x = self._data["x"], params = params)
+            paramss.add(self._coef[i], pi[i])
+        return self._data["y"] - eval("self._model.eval(%s = self._data['x'], params = paramss)"%self._indVar, None,
+        {'self': self, 'paramss' : paramss})
 
     def get_predict(self, fig, x_min = None, x_max = None):
         '''Retorna a previsão do modelo.'''
