@@ -168,10 +168,13 @@ class SinglePlot(QObject):
             props = json.load(file)
 
         if "key" in props:
-            if props["key"][0] != "2":
+            if props["key"] != "2-b":
                 self.msg.raiseWarn("O carregamento de arquivos antigos está limitado à uma versão anterior. Adaptação feita automaticamente.")
             if props["key"].split('-')[-1] == 'multiplot':
                 self.msg.raiseError("O projeto carregado pertence ao multiplot, esse arquivo é incompatível.")
+                return 0
+            elif props["key"].split('-')[-1] == 'hist':
+                self.msg.raiseError("O projeto carregado pertence ao histograma, esse arquivo é incompatível.")
                 return 0
             # Loading data from the project
             self.model.load_data(df_array=props['data'])
