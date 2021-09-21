@@ -247,7 +247,7 @@ class Model(QObject):
 
     def set_p0(self, p0):
         ''' Coloca os chutes iniciais. '''
-        self._p0 = p0
+        self._p0 = p0.split(",")
         
     def set_expression(self, exp = "", varInd = "x"):
         """ Set new expression to model. """
@@ -625,23 +625,23 @@ class Model(QObject):
     @property
     def residuoDummy(self):
         '''Retorna os valores de y_i - f(x_i).'''
-        self._coef = [i for i in self._model.param_names]
+        # self._coef = [i for i in self._model.param_names]
         # If there's no p0, everything is set to 1.0
-        pi = [0]*len(self._model.param_names)   # Inital values
-        if self._p0 is None:
-            for i in range(len(self._model.param_names)):
-                pi[i] = 1.0
-        else:
-            for i in range(len(self._model.param_names)):
-                try:
-                    pi[i] = float(self._p0[i])
-                except:
-                    pi[i] = 1.0
-        paramss = Parameters()
-        for i in range(len(self._coef)):
-            paramss.add(self._coef[i], pi[i])
-        return self._data["y"] - eval("self._model.eval(%s = self._data['x'], params = paramss)"%self._indVar, None,
-        {'self': self, 'paramss' : paramss})
+        # pi = [0]*len(self._model.param_names)   # Inital values
+        # if self._p0 is None:
+        #     for i in range(len(self._model.param_names)):
+        #         pi[i] = 1.0
+        # else:
+        #     for i in range(len(self._model.param_names)):
+        #         try:
+        #             pi[i] = float(self._p0[i])
+        #         except:
+        #             pi[i] = 1.0
+        # paramss = Parameters()
+        # for i in range(len(self._coef)):
+        #     paramss.add(self._coef[i], pi[i])
+        return self._data["y"] - eval("self._model.eval(%s = self._data['x'], params = self._params)"%self._indVar, None,
+        {'self': self})
 
     def get_predict(self, fig, x_min = None, x_max = None):
         '''Retorna a previsão do modelo.'''
@@ -688,6 +688,20 @@ class Model(QObject):
         except SyntaxError:
             self._msgHandler.raiseError("Expressão de ajuste escrita de forma errada. Rever função de ajuste.")
             return None
+        pi = [0]*len(self._model.param_names)
+        if self._p0 is None:
+            for i in range(len(self._model.param_names)):
+                pi[i] = 1.0
+        else:
+            for i in range(len(self._model.param_names)):
+                try:
+                    pi[i] = float(self._p0[i])
+                except:
+                    pi[i] = 1.0
+        self._params = Parameters()
+        self._coef = [i for i in self._model.param_names]
+        for i in range(len(self._coef)):
+            self._params.add(self._coef[i], pi[i])
         self._isvalid = True
 
 
