@@ -103,6 +103,7 @@ Popup {
                 Layout.columnSpan: 3
                 focusColor: Colors.mainColor2
                 textHolder: ""
+                text: "0.92"
                 title: "Topo"
                 textColor: "#fff"
                 defaultColor: "#fff"
@@ -113,6 +114,7 @@ Popup {
                 Layout.columnSpan: 3
                 focusColor: Colors.mainColor2
                 textHolder: ""
+                text: "0.12"
                 title: "Baixo"
                 textColor: "#fff"
                 defaultColor: "#fff"
@@ -123,6 +125,7 @@ Popup {
                 Layout.columnSpan: 3
                 focusColor: Colors.mainColor2
                 textHolder: ""
+                text: "0.10"
                 title: "Esquerda"
                 textColor: "#fff"
                 defaultColor: "#fff"
@@ -133,6 +136,7 @@ Popup {
                 Layout.columnSpan: 3
                 focusColor: Colors.mainColor2
                 textHolder: ""
+                text: "0.95"
                 title: "Direita"
                 textColor: "#fff"
                 defaultColor: "#fff"

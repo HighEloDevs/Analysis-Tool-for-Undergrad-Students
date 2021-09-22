@@ -416,7 +416,7 @@ class MPLCanvas(QObject):
 
     @pyqtSlot(result = str)
     def getPaddings(self):
-        return "0.92;0.12;0.1;0.95"
+        return "0.92;0.12;0.10;0.95"
 
     # The toolbar commands
     @pyqtSlot(str, bool)
