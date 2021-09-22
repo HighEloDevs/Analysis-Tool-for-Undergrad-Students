@@ -266,7 +266,6 @@ class MPLCanvas(QObject):
                 self.axes1.set(xlabel = str(axisTitle[1]))
                 self.axes1.set(ylabel = str(axisTitle[2]))
                 self.setAxesPropsWithoutAxes2(xmin, xmax, xdiv, ymin, ymax, ydiv, grid, log_x, log_y)
-                # self.figure.subplots_adjust(left = 0.3, bottom = None, right = None, top = None, wspace = None, hspace = None)
 
         # Reseting parameters
         # px, py, y_r   = None, None, None
@@ -327,28 +326,6 @@ class MPLCanvas(QObject):
                 self.axes1.set_yticks(np.linspace(ymin, ymax, ydiv + 1))
                 self.axes1.set_ylim(bottom = ymin, top = ymax)
 
-        # if xdiv != 0. and (xmax != 0. or xmin != 0.):
-        #     self.axes1.set_xticks(np.linspace(xmin, xmax, xdiv + 1))
-        #     self.axes1.set_xlim(left = xmin, right = xmax)
-        # else:
-        #     if xmin == 0. and xmax != 0.:
-        #         self.axes1.set_xlim(left = None, right = xmax)
-        #     elif xmin != 0. and xmax == 0.:
-        #         self.axes1.set_xlim(left = xmin, right = None)
-        #     elif xmin != 0. and xmax != 0.:
-        #         self.axes1.set_xlim(left = xmin, right = xmax)
-        
-        # if ydiv != 0. and (ymax != 0. or ymin != 0.):
-        #     self.axes1.set_yticks(np.linspace(ymin, ymax, ydiv + 1))
-        #     self.axes1.set_ylim(bottom = ymin, top = ymax)
-        # else:
-        #     if ymin == 0. and ymax != 0.:
-        #         self.axes1.set_ylim(bottom = None, top = ymax)
-        #     elif ymin != 0. and ymax == 0.:
-        #         self.axes1.set_ylim(bottom = ymin, top = None)
-        #     elif ymin != 0. and ymax != 0.:
-        #         self.axes1.set_ylim(bottom = ymin, top = ymax)
-
     def setAxesPropsWithAxes2(self, xmin, xmax, xdiv, ymin, ymax, ydiv, resmin, resmax, grid, log_x, log_y):
         
         left, right    = self.axes1.get_xlim()
@@ -367,7 +344,6 @@ class MPLCanvas(QObject):
         if xdiv != divs_x:
             self.axes1.set_xticks(np.linspace(xmin, xmax, xdiv + 1))
             self.axes2.set_xticks(np.linspace(xmin, xmax, xdiv + 1))
-            # self.axes1.locator_params(axis = 'x', nbins = xdiv + 1)
             self.axes1.set_xlim(left = xmin, right = xmax)
             self.axes2.set_xlim(left = xmin, right = xmax)
         else:
@@ -387,34 +363,7 @@ class MPLCanvas(QObject):
             if bottom != ymin or top != ymax:
                 self.axes1.set_yticks(np.linspace(ymin, ymax, ydiv + 1))
                 self.axes1.set_ylim(bottom = ymin, top = ymax)
-        
-        # if xdiv != 0. and (xmax != 0. or xmin != 0.):
-        #     self.axes1.set_xticks(np.linspace(xmin, xmax, xdiv + 1))
-        #     self.axes2.set_xticks(np.linspace(xmin, xmax, xdiv + 1))
-        #     self.axes1.set_xlim(left = xmin, right = xmax)
-        #     self.axes2.set_xlim(left = xmin, right = xmax)
-        # else:
-        #     if xmin == 0. and xmax != 0.:
-        #         self.axes1.set_xlim(left = None, right = xmax)
-        #         self.axes2.set_xlim(left = None, right = xmax)
-        #     elif xmin != 0. and xmax == 0.:
-        #         self.axes1.set_xlim(left = xmin, right = None)
-        #         self.axes2.set_xlim(left = xmin, right = None)
-        #     elif xmin != 0. and xmax != 0.:
-        #         self.axes1.set_xlim(left = xmin, right = xmax)
-        #         self.axes2.set_xlim(left = xmin, right = xmax)
-        # if ydiv != 0. and (ymax != 0. or ymin != 0.):
-        #     self.axes1.set_yticks(np.linspace(ymin, ymax, ydiv + 1))
-        #     self.axes1.set_ylim(bottom = ymin, top = ymax)
-        # else:
-        #     if ymin == 0. and ymax != 0.:
-        #         self.axes1.set_ylim(bottom = None, top = ymax)
-        #     elif ymin != 0. and ymax == 0.:
-        #         self.axes1.set_ylim(bottom = ymin, top = None)
-        #     elif ymin != 0. and ymax != 0.:
-        #         self.axes1.set_ylim(bottom = ymin, top = ymax)
-        # if resmin != 0. or resmax != 0.:
-        #     self.axes2.set_ylim(bottom = resmin, top = resmax)
+
         if grid:
             self.axes1.grid(True,  which='major')
             # self.axes1.grid(True, which='minor', alpha = 0.3)

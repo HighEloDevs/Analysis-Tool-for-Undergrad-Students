@@ -83,13 +83,13 @@ class Histogram(QObject):
         df    = pd.DataFrame.from_dict(json.loads(arquivo["data"]))
         alpha = self.makeFloat(arquivo["kargs"].pop("alpha"), 1.0)
         label = arquivo["kargs"].pop("label")
-        left  = self.makeFloat(data["props"]["rangexmin"], df["x"].min())
-        right = self.makeFloat(data["props"]["rangexmax"], df["x"].max())
+        left  = self.makeFloat(arquivo["kargs"].pop("rangexmin", ""), df["x"].min())
+        right = self.makeFloat(arquivo["kargs"].pop("rangexmax", ""), df["x"].max())
         if left >= right:
             self.messageHandler.raiseError("Intervalo de bins inválido. Rever intervalo de bins.")
             return -1
         bins  = np.linspace(left, right,
-            self.makeInt(data["props"]["nbins"], 10) + 1)
+            self.makeInt(arquivo["kargs"].pop("nbins", 10), 10) + 1)
         counts = None
         if arquivo["legend"] == "":
             counts, bins, _ = self.canvas.axes1.hist(x = df["x"], bins = bins,
@@ -131,13 +131,13 @@ class Histogram(QObject):
         df    = pd.DataFrame.from_dict(json.loads(arquivo["data"]))
         alpha = self.makeFloat(arquivo["kargs"].pop("alpha"), 1.0)
         label = arquivo["kargs"].pop("label")
-        left  = self.makeFloat(data["props"]["rangexmin"], df["x"].min())
-        right = self.makeFloat(data["props"]["rangexmax"], df["x"].max())
+        left  = self.makeFloat(arquivo["kargs"].pop("rangexmin", ""), df["x"].min())
+        right = self.makeFloat(arquivo["kargs"].pop("rangexmax", ""), df["x"].max())
         if left >= right:
             self.messageHandler.raiseError("Intervalo de bins inválido. Rever intervalo de bins.")
             return -1
         bins  = np.linspace(left, right,
-            self.makeInt(data["props"]["nbins"], 10) + 1)
+            self.makeInt(arquivo["kargs"].pop("nbins", 10), 10) + 1)
         counts = None
         if arquivo["legend"] == "":
             counts, bins, _ = self.canvas.axes1.hist(x = df["x"], bins = bins, weights = np.ones_like(df["x"])/len(df["x"]),
@@ -179,13 +179,13 @@ class Histogram(QObject):
         df    = pd.DataFrame.from_dict(json.loads(arquivo["data"]))
         alpha = self.makeFloat(arquivo["kargs"].pop("alpha"), 1.0)
         label = arquivo["kargs"].pop("label")
-        left  = self.makeFloat(data["props"]["rangexmin"], df["x"].min())
-        right = self.makeFloat(data["props"]["rangexmax"], df["x"].max())
+        left  = self.makeFloat(arquivo["kargs"].pop("rangexmin", ""), df["x"].min())
+        right = self.makeFloat(arquivo["kargs"].pop("rangexmax", ""), df["x"].max())
         if left >= right:
             self.messageHandler.raiseError("Intervalo de bins inválido. Rever intervalo de bins.")
             return -1
         bins  = np.linspace(left, right,
-            self.makeInt(data["props"]["nbins"], 10) + 1)
+            self.makeInt(arquivo["kargs"].pop("nbins", 10), 10) + 1)
         counts = None
         if arquivo["legend"] == "":
             counts, bins, _ = self.canvas.axes1.hist(x = df["x"], bins = bins,
@@ -274,6 +274,8 @@ class Histogram(QObject):
             if props["key"].split('-')[-1] != 'hist':
                 self.messageHandler.raiseError("Este projeto pertence à outra aba do ATUS.")
                 return 0
+            if props["key"][0] == "2":
+                self.messageHandler.raiseWarn("Arquivo da versão anterior. Procure salvar o arquivo nesta versão para evitar problemas.")
         else:
             self.messageHandler.raiseError("O arquivo carregado é incompatível com o ATUS.")
             return 0

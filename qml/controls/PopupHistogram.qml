@@ -25,7 +25,10 @@ Popup {
         fill:fill.checked,        
         fc:String(fc.primaryColor),     
         lw:lw.value,            
-        ec:String(ec.primaryColor),     
+        ec:String(ec.primaryColor),  
+        rangexmin:rangexmin.text,
+        rangexmax:rangexmax.text,
+        nbins:nbins.text,
     })
 
     function setData(data){
@@ -201,6 +204,36 @@ Popup {
                             }
                         }
                     onClicked: colorDialog2.open()
+                }
+                TextInputCustom{
+                    id: rangexmin
+                    Layout.columnSpan: 4
+                    Layout.fillWidth: true
+                    focusColor: Colors.mainColor2
+                    title: 'Contagem - X Mín.'
+                    textHolder: 'Padrão = valor mínimo do conjunto'
+                    defaultColor: '#fff'
+                    textColor: '#fff'
+                }
+                TextInputCustom{
+                    id: rangexmax
+                    Layout.columnSpan: 4
+                    Layout.fillWidth: true
+                    focusColor: Colors.mainColor2
+                    title: 'Contagem - X Máx.'
+                    textHolder: 'Padrão = valor máximo do conjunto'
+                    defaultColor: '#fff'
+                    textColor: '#fff'
+                }
+                TextInputCustom{
+                    id: nbins
+                    Layout.columnSpan: 4
+                    Layout.fillWidth: true
+                    focusColor: Colors.mainColor2
+                    title: 'Número de canais'
+                    textHolder: 'Padrão = 10'
+                    defaultColor: '#fff'
+                    textColor: '#fff'
                 }
             }
         }
