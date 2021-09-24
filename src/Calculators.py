@@ -219,4 +219,5 @@ def Plot(displayBridge, x, y, x_area, y_area):
     displayBridge.axes1.fill_between(x_area, y_area, color = 'blue', alpha = 0.3)
     displayBridge.axes1.plot(x, y, lw = 1, c = 'red')
     displayBridge.axes1.set_title("P.D.F.")
+    displayBridge.setAxesPropsWithoutAxes2(None, None, None, None, None, None, None, False, False)
     displayBridge.canvas.draw_idle()

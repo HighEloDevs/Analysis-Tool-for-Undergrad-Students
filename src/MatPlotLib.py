@@ -66,8 +66,8 @@ class MPLCanvas(QObject):
         self.toolbar = NavigationToolbar2QtQuick(canvas=canvas)
         self.gm      = gridspec.GridSpec(2, 1, figure =  self.figure, height_ratios = [3., 1.])
         self.gs      = gridspec.GridSpec(1, 1, figure =  self.figure, height_ratios = [1.])
-        self.axes1   = self.figure.add_subplot(self.gm[0], picker = True)
-        self.axes2   = self.figure.add_subplot(self.gm[1], picker = False, sharex = self.axes1)
+        self.axes1   = self.figure.add_subplot(self.gm[0], picker = True, autoscale_on = True)
+        self.axes2   = self.figure.add_subplot(self.gm[1], picker = True, sharex = self.axes1, autoscale_on = False)
         self.set_tight_layout()
         self.axes2.set_visible(False)
         self.axes1.set_position(self.gs[:, :].get_position(self.figure), which = "original")
@@ -135,7 +135,7 @@ class MPLCanvas(QObject):
                 if fitProps["adjust"]:
                     y_r      = model.residuo
                 else:
-                    y_r      = model.residuoDummy 
+                    y_r      = model.residuoDummy
                 if residuals:
                     self.switchAxes(hideAxes2 = False)
                     if sigma_x and sigma_y:                     # Caso considerar as duas incertezas
@@ -155,12 +155,11 @@ class MPLCanvas(QObject):
                         self.axes2.errorbar(x, y_r, yerr=ssy, ecolor = symbol_color, capsize = 0, elinewidth = 1, ms = symbol_size, marker = symbol, color = symbol_color, ls = 'none')
                     self.setAxesPropsWithAxes2(xmin, xmax, xdiv, ymin, ymax, ydiv, resmin, resmax, grid, log_x, log_y)
                     left, right = self.axes1.get_xlim()
-                    self.axes1.set_xlim(left = left, right = right)
-                    self.axes2.set_xlim(left = left, right = right)
+                    # self.axes1.set_xlim(left = left, right = right)
+                    # self.axes2.set_xlim(left = left, right = right)
                     px, py = 0., 0.
                     if log_x:
                         px, py      = model.get_predict_log(self.axes1.figure, left, right)
-
                     else:
                         px, py      = model.get_predict(self.axes1.figure, left, right)
 
@@ -191,6 +190,7 @@ class MPLCanvas(QObject):
                     self.oid = self.axes1.callbacks.connect('xlim_changed', update)
                     self.cid = self.axes1.figure.canvas.mpl_connect("resize_event", update)
                 else:
+                    self.clearAxis()
                     self.switchAxes(hideAxes2 = True)
 
                     # Making Plots
@@ -205,7 +205,7 @@ class MPLCanvas(QObject):
 
                     self.setAxesPropsWithoutAxes2(xmin, xmax, xdiv, ymin, ymax, ydiv, grid, log_x, log_y)
                     left, right = self.axes1.get_xlim()
-                    self.axes1.set_xlim(left = left, right = right)
+                    # self.axes1.set_xlim(left = left, right = right)
                     px, py = 0., 0.
                     if log_x:
                         px, py      = model.get_predict_log(self.axes1.figure, left, right)
@@ -276,6 +276,8 @@ class MPLCanvas(QObject):
         """Clear the current plot in the axis."""
         self.axes1.cla()
         self.axes2.cla()
+        self.axes1.relim()
+        self.axes2.relim()
         self.canvas.draw_idle()
     
     def switchAxes(self, hideAxes2: bool = True):
@@ -295,7 +297,6 @@ class MPLCanvas(QObject):
         bottom, top = self.axes1.get_ylim()
         divs_x      = len(self.axes1.get_xticks()) - 1
         divs_y      = len(self.axes1.get_yticks()) - 1
-
         xmin = self.makeFloat(xmin, left)
         xmax = self.makeFloat(xmax, right)
         xdiv = self.makeInt(xdiv, divs_x)
@@ -327,9 +328,8 @@ class MPLCanvas(QObject):
                 self.axes1.set_ylim(bottom = ymin, top = ymax)
 
     def setAxesPropsWithAxes2(self, xmin, xmax, xdiv, ymin, ymax, ydiv, resmin, resmax, grid, log_x, log_y):
-        
         left, right    = self.axes1.get_xlim()
-        bottom, top    = self.axes2.get_ylim()
+        bottom, top    = self.axes1.get_ylim()
         botres, topres = self.axes2.get_ylim()
         divs_x         = len(self.axes1.get_xticks()) - 1
         divs_y         = len(self.axes1.get_yticks()) - 1
@@ -355,6 +355,7 @@ class MPLCanvas(QObject):
             else:
                 self.axes1.set_xlim(left = xmin, right = xmax)
                 self.axes2.set_xlim(left = xmin, right = xmax)
+        # self.axes1.set_xticks([])
 
         if ydiv != divs_y:
             self.axes1.set_yticks(np.linspace(ymin, ymax, ydiv + 1))
@@ -373,6 +374,7 @@ class MPLCanvas(QObject):
             self.axes1.set_yscale('log')
         if log_x:
             self.axes1.set_xscale('log')
+        plt.setp(self.axes1.get_xticklabels(), visible=False)
     
     def set_tight_layout(self):
         self.figure.subplots_adjust(left = self.left, bottom = self.bottom, right = self.right, top = self.top)

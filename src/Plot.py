@@ -103,11 +103,8 @@ class SinglePlot(QObject):
 
         # Getting function to fit
         # Anti-dummies system
-        fitProps['expr'] = fitProps['expr'].replace('^', '**')
-        fitProps['expr'] = fitProps['expr'].replace('arctan', 'atan')
-        fitProps['expr'] = fitProps['expr'].replace('arcsin', 'asin')
-        fitProps['expr'] = fitProps['expr'].replace('arccos', 'acos')
-        fitProps['expr'] = fitProps['expr'].replace('sen', 'sin')
+        fitProps['expr'] = fitProps['expr'].replace('^', '**').replace('arctan', 'atan').replace('arcsin', 'asin')
+        fitProps['expr'] = fitProps['expr'].replace('arccos', 'acos').replace('sen', 'sin').replace('raiz', 'sqrt')
         expIndVar = fitProps['expr'].split(";")
         # Setting expression
         if len(expIndVar) == 2:
