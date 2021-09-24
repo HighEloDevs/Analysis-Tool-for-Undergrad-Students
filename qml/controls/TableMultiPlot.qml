@@ -354,8 +354,8 @@ Item {
                                     anchors.fill: parent
                                     anchors.rightMargin: 10
                                     anchors.leftMargin: 10
-                                    anchors.topMargin: 8
-                                    anchors.bottomMargin: 8
+                                    anchors.topMargin: 0
+                                    anchors.bottomMargin: -2
                                     currentIndex: curve
 
                                     onActivated: {

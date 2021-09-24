@@ -445,7 +445,7 @@ class MPLCanvas(QObject):
         # Saving image to a path   
         try:
             path = os.path.join(os.path.expanduser('~\Documents'), 'image.png')
-            self.canvas.figure.savefig(path, dpi = 400, transparent=False)
+            self.canvas.figure.savefig(path, dpi = 150, transparent=False)
             pixmap = QPixmap()
             # Loading image as pixmap and saving to clipboard
             if pixmap.load(path):

@@ -7,6 +7,7 @@ import "../controls"
 
 Item{
     id: root
+    width: 200
     implicitHeight: 60
 
     // Some properties

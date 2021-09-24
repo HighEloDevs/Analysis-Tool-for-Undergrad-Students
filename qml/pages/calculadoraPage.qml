@@ -30,10 +30,7 @@ Item {
 
             Rectangle {
                 id: bg_props
-                width: 200
-                height: 200
                 color: "#00000000"
-                Layout.preferredWidth: 100
                 Layout.fillHeight: true
                 Layout.fillWidth: true
 
@@ -44,27 +41,16 @@ Item {
                     anchors.topMargin: 10
                     anchors.rightMargin: 10
                     anchors.leftMargin: 10
-                    rows: 7
-                    columns: 2
+                    rows: 10
+                    columns: 12
 
-                    Label {
-                        id: label
-                        color: "#ffffff"
-                        text: qsTr("Função Densidade de Probabilidade")
-                        Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-                    }
-
-                    ComboBox {
+                    ComboBoxCustom{
                         id: comboFunc
-                        Layout.preferredHeight: 30
                         Layout.fillWidth: true
-
-                        model: ListModel {
-                                ListElement { text: "Chi²" }
-                                ListElement { text: "Chi² Reduzido" }
-                                ListElement { text: "Gaussiana" }
-                                ListElement { text: "Student" }
-                        }
+                        Layout.columnSpan: 6
+                        model: ["Chi²", "Chi² Reduzido", "Gaussiana", "Student"]
+                        highlightColor: Colors.mainColor2
+                        label: "P.D.F."
 
                         onActivated: {
                             if(comboFunc.currentText == "Chi²"){
@@ -91,31 +77,19 @@ Item {
                         }
                     }
 
-                    Label {
-                        id: label2
-                        color: "#ffffff"
-                        text: qsTr("Tipo de Cálculo")
-                        Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-                    }
-
-                    ComboBox {
+                    ComboBoxCustom{
                         id: comboMethod
-                        Layout.preferredHeight: 30
                         Layout.fillWidth: true
-
-                        model: ListModel {
-                                ListElement { text: "Simétrico de Dois Lados" }
-                                ListElement { text: "Apenas Limite Inferior" }
-                                ListElement { text: "Apenas Limite Superior" }
-                        }
-
-                        
+                        Layout.columnSpan: 6
+                        model: ["Simétrico por dois lados", "Apenas limite inferior", "Apenas limite superior"]
+                        highlightColor: Colors.mainColor2
+                        label: "Tipo de Cálculo"
                     }
 
                     TextInputCustom{
                         id: nivelConfianca
                         Layout.fillWidth: true
-                        Layout.columnSpan: 2
+                        Layout.columnSpan: 12
                         focusColor: Colors.mainColor2
                         title: 'Nível de Confiança'
                         textHolder: 'Ex.: 0.95, 0.90'
@@ -127,7 +101,7 @@ Item {
                     TextInputCustom{
                         id: ngl
                         Layout.fillWidth: true
-                        Layout.columnSpan: 2
+                        Layout.columnSpan: 12
                         focusColor: Colors.mainColor2
                         title: 'Número de Graus de Liberdade'
                         textHolder: "Ex.: 30, 31, 32..."
@@ -139,9 +113,9 @@ Item {
                     TextInputCustom{
                         id: mean
                         Layout.fillWidth: true
-                        Layout.columnSpan: 2
+                        Layout.columnSpan: 12
                         focusColor: Colors.mainColor2
-                        title: 'Média'
+                        title: 'Valor Verdadeiro'
                         textHolder: "Ex.: 1.0, 3.2, 4"
                         defaultColor: '#fff'
                         textColor: '#fff'
@@ -152,7 +126,7 @@ Item {
                     TextInputCustom{
                         id: std
                         Layout.fillWidth: true
-                        Layout.columnSpan: 2
+                        Layout.columnSpan: 12
                         focusColor: Colors.mainColor2
                         title: 'Desvio Padrão'
                         textHolder: "Ex.: 1.0, 3.2, 4"
@@ -166,7 +140,7 @@ Item {
                         id: btnSinglePlot
                         Layout.preferredHeight: 25
                         Layout.fillWidth: true
-                        Layout.columnSpan: 2
+                        Layout.columnSpan: 12
                         Layout.leftMargin: 10
                         Layout.rightMargin: 10
                         texto: 'CALCULAR / ATUALIZAR'
@@ -192,7 +166,7 @@ Item {
                     }
 
                     Rectangle {
-                        Layout.columnSpan: 2
+                        Layout.columnSpan: 12
                         Layout.fillHeight: true
                         Layout.fillWidth: true
                         Layout.topMargin: 10

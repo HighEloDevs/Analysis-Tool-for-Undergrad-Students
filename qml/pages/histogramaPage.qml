@@ -367,14 +367,6 @@ Rectangle {
                                 defaultColor: '#fff'
                                 textColor: '#fff'
                             }
-                            // CheckBoxCustom{
-                            //     id: norm
-                            //     Layout.columnSpan: 2
-                            //     Layout.alignment: Qt.AlignCenter
-                            //     texto: "Densidade"
-                            //     checked: false
-                            //     w: 22
-                            // }
                             CheckBoxCustom{
                                 id: logy
                                 Layout.columnSpan: 2

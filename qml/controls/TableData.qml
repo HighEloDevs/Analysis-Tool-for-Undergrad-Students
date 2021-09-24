@@ -130,9 +130,11 @@ Item{
                     clip: true  
 
                     model: dataModel
-                    delegate: Item{
+                    delegate: Rectangle{
                         width: root.width
                         height: header.height
+                        color: {if (index % 2 == 0) Colors.color3
+                                else Colors.color2}
 
                         property variant    data_row: [x_v, y_v, sy, sx]
                         property int        row: index
@@ -248,9 +250,11 @@ Item{
                     clip: true
 
                     model: dataModel
-                    delegate: Item{
+                    delegate: Rectangle{
                         width: 0.2 * root.width
                         height: header.height
+                        color: {if (index % 2 == 0) Colors.color3
+                                else Colors.color2}
 
                         property int        row: index
                         property bool       edit: isEditable

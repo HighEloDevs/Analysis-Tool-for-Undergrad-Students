@@ -66,6 +66,16 @@ Popup {
             Layout.leftMargin: 10
             Layout.rightMargin: 10
             columns: 12
+            rows: 10
+
+            Text{
+                Layout.columnSpan: 12
+                Layout.alignment: Qt.AlignHCenter
+                text: "Dimensões do gráfico"
+                font.bold: true
+                font.pointSize: 11
+                color: "#a4a4a4"
+            }
             
             TextInputCustom{
                 id: figWidth
@@ -100,7 +110,8 @@ Popup {
             }
             TextInputCustom{
                 id: paddingTop
-                Layout.columnSpan: 3
+                Layout.columnSpan: 6
+                Layout.fillWidth: true
                 focusColor: Colors.mainColor2
                 textHolder: ""
                 text: "0.92"
@@ -111,7 +122,8 @@ Popup {
             }
             TextInputCustom{
                 id: paddingBottom
-                Layout.columnSpan: 3
+                Layout.columnSpan: 6
+                Layout.fillWidth: true
                 focusColor: Colors.mainColor2
                 textHolder: ""
                 text: "0.12"
@@ -122,7 +134,8 @@ Popup {
             }
             TextInputCustom{
                 id: paddingLeft
-                Layout.columnSpan: 3
+                Layout.columnSpan: 6
+                Layout.fillWidth: true
                 focusColor: Colors.mainColor2
                 textHolder: ""
                 text: "0.10"
@@ -133,7 +146,8 @@ Popup {
             }
             TextInputCustom{
                 id: paddingRight
-                Layout.columnSpan: 3
+                Layout.columnSpan: 6
+                Layout.fillWidth: true
                 focusColor: Colors.mainColor2
                 textHolder: ""
                 text: "0.95"
@@ -142,7 +156,6 @@ Popup {
                 defaultColor: "#fff"
                 validator: RegExpValidator{regExp: /^[1-9]+([0-9]+)?$/}
             }
-            
         }
 
         RowLayout{

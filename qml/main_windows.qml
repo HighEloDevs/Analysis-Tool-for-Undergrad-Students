@@ -370,7 +370,7 @@ Window {
                     width: 100
                     height: {
                         if(rowBtns.visible) rowBtns.height
-                        else topBarDescription.height
+                        else 0
                     }
                     Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
                     Layout.fillWidth: true
