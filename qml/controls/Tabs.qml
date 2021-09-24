@@ -117,7 +117,7 @@ Item {
                 primaryColor: "#009900"
                 clickColor: Colors.c_button_active
                 hoverColor: Colors.c_button_hover
-                enabled: root.isPlotable
+                enabled: {root.isPlotable || (!pageFunc.adjust.checked && pageFunc.expr.text.length > 0)}
             }
 
         }
