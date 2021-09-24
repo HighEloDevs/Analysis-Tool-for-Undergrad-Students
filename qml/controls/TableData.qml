@@ -34,6 +34,10 @@ Item{
         dataSet.insert(dataSet.count, {x_v: String(x_v), y_v: String(y_v), sy: String(sy), sx: String(sx), isChecked: isChecked, isEditable: !lockBtn.isLocked})
     }
 
+    function addExtraRow(x_v, y_v, sy, sx) {
+        dataShaped.push([x_v, y_v, sy, sx, 1])
+    }
+
     function clear(){
         dataShaped = []
         dataSet.clear()

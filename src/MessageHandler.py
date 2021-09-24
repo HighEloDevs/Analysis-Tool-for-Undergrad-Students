@@ -24,7 +24,7 @@ SOFTWARE.
 """
 
 # from matplotlib_backend_qtquick.qt_compat import QtCore
-from PyQt5.QtCore import QObject, pyqtSignal
+from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot
 
 class MessageHandler(QObject):
     '''
@@ -39,11 +39,14 @@ class MessageHandler(QObject):
     def __init__(self) -> None:
         super().__init__()
 
+    @pyqtSlot(str)
     def raiseWarn(self, message=''):
         self.showMessage.emit(message, 'warn')
 
+    @pyqtSlot(str)
     def raiseError(self, message=''):
         self.showMessage.emit(message, 'error')
 
+    @pyqtSlot(str)
     def raiseSuccess(self, message=''):
         self.showMessage.emit(message, 'success')

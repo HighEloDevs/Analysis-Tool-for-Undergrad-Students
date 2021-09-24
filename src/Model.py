@@ -110,9 +110,6 @@ class Model(QObject):
             df[i] = [x.replace(',', '.') for x in df[i]]
             df[i] = df[i].astype(str)
         self.load_data(df=df)
-        # except Exception:
-        #     self._msgHandler.raiseError("Falha ao carregar clipboard. Rever dados de entrada.")
-        #     return None
                 
     @pyqtSlot(str)
     def load_data(self, data_path='', df=None, df_array=None):
@@ -209,40 +206,9 @@ class Model(QObject):
                 self._msgHandler.raiseError("Há mais do que 4 colunas. Rever entrada de dados.")
                 return None
 
-        # df.columns     = ['x', 'y', 'sy', 'sx']
         self._data     = deepcopy(df)
         self._has_data = True
-
         self.uploadData.emit(self._data_json.to_dict(orient='list'), fileName)
-
-        # print(self._data_json.to_dict())
-        
-        # if df_array is None:
-        #     if self._has_sx and self._has_sy:
-        #         for i in self._data_json.index:
-        #             self.fillDataTable.emit(self._data_json["x"][i], self._data_json["y"][i], self._data_json["sy"][i], self._data_json["sx"][i], '1', fileName)
-        #     elif self._has_sx:
-        #         for i in self._data_json.index:
-        #             self.fillDataTable.emit(self._data_json["x"][i], self._data_json["y"][i], str(0), self._data_json["sx"][i], '1', fileName)
-        #     elif self._has_sy:
-        #         for i in self._data_json.index:
-        #             self.fillDataTable.emit(self._data_json["x"][i], self._data_json["y"][i], self._data_json["sy"][i], str(0), '1', fileName)
-        #     else:
-        #         for i in self._data_json.index:
-        #             self.fillDataTable.emit(self._data_json["x"][i], self._data_json["y"][i], str(0), str(0), '1', fileName)
-        # else:
-        #     if self._has_sx and self._has_sy:
-        #         for i in self._data_json.index:
-        #             self.fillDataTable.emit(self._data_json["x"][i], self._data_json["y"][i], self._data_json["sy"][i], self._data_json["sx"][i], bools[i], fileName)
-        #     elif self._has_sx:
-        #         for i in self._data_json.index:
-        #             self.fillDataTable.emit(self._data_json["x"][i], self._data_json["y"][i], str(0), self._data_json["sx"][i], bools[i], fileName)
-        #     elif self._has_sy:
-        #         for i in self._data_json.index:
-        #             self.fillDataTable.emit(self._data_json["x"][i], self._data_json["y"][i], self._data_json["sy"][i], str(0), bools[i], fileName)
-        #     else:
-        #         for i in self._data_json.index:
-        #             self.fillDataTable.emit(self._data_json["x"][i], self._data_json["y"][i], str(0), str(0), bools[i], fileName)
 
     def set_p0(self, p0):
         ''' Coloca os chutes iniciais. '''
@@ -257,6 +223,7 @@ class Model(QObject):
         ''' Interpretador de qual ajuste deve ser feito. '''
         wsx = kargs.pop("wsx", True)
         wsy = kargs.pop("wsy", True)
+
         # Getting Model
         try:
             self._model = ExpressionModel(self._exp_model + " + 0*%s"%self._indVar, independent_vars=[self._indVar])

@@ -191,19 +191,6 @@ Window {
                     Layout.fillHeight: true
                     Layout.rowSpan: 2
 
-                // MouseArea{
-                //     anchors.fill: parent
-                //     hoverEnabled: true
-                //     z: 1
-
-                //     onEntered:{
-                //         animationMenu.running = true
-                //     }
-
-                //     onExited:{
-                //         animationMenu.running = true
-                //     }
-
                     ColumnLayout {
                         id: layout_menu
                         anchors.fill: parent
@@ -220,26 +207,12 @@ Window {
                             Layout.fillHeight: false
                             Layout.fillWidth: true
 
-                            // Image {
-                            //     id: logo
-                            //     anchors.fill: parent
-                            //     cache: true
-                            //     smooth: true
-                            //     mipmap: true
-                            //     autoTransform: true
-                            //     asynchronous: false
-                            //     source: "../images/main_icon/ATUS_logo_preto.svg"
-                            //     sourceSize.height: 55
-                            //     sourceSize.width: 55
-                            //     fillMode: Image.Pad
-                            // }
-
                             IconButton{
                                 anchors.fill: parent
                                 primaryColor: "transparent"
                                 hoverColor: "transparent"
                                 clickColor: "transparent"
-                                iconUrl: "../../images/svg_images/menu_icon.svg"
+                                iconUrl: "../../images/svg_images/menu_white_24dp.svg"
                                 iconWidth: 24
                                 r: 0
 
@@ -247,16 +220,9 @@ Window {
                                     animationMenu.running = true
                                 }
                             }
-
-                            // ColorOverlay{
-                            //     id: logoOverlay
-                            //     source: logo
-                            //     cached: false
-                            //     color: "#fff"
-                            //     anchors.fill: parent
-                            //     antialiasing: true
-                            // }
                         }
+
+                        // api do google \/ :(
 
                         // Rectangle{
                         //     implicitHeight: 60
@@ -488,8 +454,8 @@ Window {
                                 Layout.preferredWidth: 40
                                 Layout.fillHeight: true
                                 Layout.fillWidth: false
-                                iconUrl: '../../images/svg_images/minimize_icon.svg'
-                                iconWidth: 15
+                                iconUrl: '../../images/svg_images/minimize_white_24dp.svg'
+                                iconWidth: 24
                                 r: 0
 
                                 primaryColor: 'transparent'
@@ -506,11 +472,11 @@ Window {
                                 Layout.fillHeight: true
                                 Layout.fillWidth: false
 
-                                property string restoreIcon: '../../images/svg_images/restore_icon.svg'
-                                property string maximizeIcon: '../../images/svg_images/maximize_icon.svg'
+                                property string restoreIcon: '../../images/svg_images/expand_more_white_24dp.svg'
+                                property string maximizeIcon: '../../images/svg_images/expand_less_white_24dp.svg'
 
                                 iconUrl: mainWindow.visibility == 4 ? restoreIcon:maximizeIcon
-                                iconWidth: 15
+                                iconWidth: 24
                                 r: 0
 
                                 primaryColor: 'transparent'
@@ -526,8 +492,8 @@ Window {
                                 Layout.preferredWidth: 40
                                 Layout.fillHeight: true
                                 Layout.fillWidth: false
-                                iconUrl: '../../images/svg_images/close_icon.svg'
-                                iconWidth: 15
+                                iconUrl: '../../images/svg_images/close_white_24dp.svg'
+                                iconWidth: 24
                                 r: 0
 
                                 primaryColor: 'transparent'
@@ -738,8 +704,7 @@ Window {
                                                     isActiveMenu: false
 
                                                     onClicked: {
-                                                        if (zoomBtn.checked) {
-                                                            zoomBtn.checked = false;
+                                                        if (zoomBtn.isActiveMenu) {
                                                             zoomBtn.isActiveMenu = false;
                                                         }
                                                         canvas.pan();
@@ -759,9 +724,7 @@ Window {
                                                     isActiveMenu: false
 
                                                     onClicked: {
-                                                        if (panBtn.checked) {
-                                                            // toggle pan off
-                                                            panBtn.checked = false;
+                                                        if (panBtn.isActiveMenu) {
                                                             panBtn.isActiveMenu = false;
                                                         }
                                                         zoomBtn.isActiveMenu = true;
@@ -869,10 +832,6 @@ Window {
                                                         iconUrl: '../../images/icons/settings_white_24dp.svg'
                                                         iconWidth: 17
                                                         enabled: !bgTransparent.checked
-                                                        // visible: {
-                                                        //     if(mainWindow.os != 'Windows') false
-                                                        //     else true
-                                                        // }
 
                                                         onClicked: {
                                                             canvasSettingsPopup.open()
@@ -1070,7 +1029,7 @@ Window {
             if(type === 'error'){
                 messageSnackbar.timer = 8000
             } else if(type === 'warn'){
-                messageSnackbar.timer = 4000
+                messageSnackbar.timer = 6000
             }
             messageSnackbar.open()
         }
