@@ -73,8 +73,7 @@ class Model(QObject):
     @pyqtSlot(QJsonValue)
     def loadDataTable(self, data = None):
         """ Getting data from table. """
-        df = pd.DataFrame.from_records(data)
-        df.columns = ['x', 'y', 'sy', 'sx', 'bool']
+        df = pd.DataFrame.from_records(data, columns = ['x', 'y', 'sy', 'sx', 'bool'])
 
         # Removing not chosen rows
         df = df[df['bool'] == 1]
