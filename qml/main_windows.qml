@@ -396,17 +396,18 @@ Window {
                             transformOrigin: Item.Center
                             spacing: 0
 
-                            Item {
+                            DragHandler{
+                                onActiveChanged: if(active){
+                                                    mainWindow.showNormal()
+                                                    mainWindow.startSystemMove() 
+                                                    }
+                            }
+
+                            Rectangle  {
                                 id: topBarHandler
-                                // color: "transparent"
+                                color: "transparent"
                                 Layout.fillHeight: true
                                 Layout.fillWidth: true
-                                DragHandler{
-                                    onActiveChanged: if(active){
-                                                        mainWindow.startSystemMove() 
-                                                        mainWindow.showNormal()
-                                                     }
-                                }
                                 MouseArea{
                                     visible: true
                                     anchors.fill: parent
