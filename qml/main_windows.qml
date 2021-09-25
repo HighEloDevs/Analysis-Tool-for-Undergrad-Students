@@ -456,7 +456,7 @@ Window {
                                 Layout.fillHeight: true
                                 Layout.fillWidth: false
                                 iconUrl: '../../images/svg_images/minimize_white_24dp.svg'
-                                iconWidth: 24
+                                iconWidth: 20
                                 r: 0
 
                                 primaryColor: 'transparent'
@@ -477,7 +477,7 @@ Window {
                                 property string maximizeIcon: '../../images/svg_images/expand_less_white_24dp.svg'
 
                                 iconUrl: mainWindow.visibility == 4 ? restoreIcon:maximizeIcon
-                                iconWidth: 24
+                                iconWidth: 20
                                 r: 0
 
                                 primaryColor: 'transparent'
@@ -494,7 +494,7 @@ Window {
                                 Layout.fillHeight: true
                                 Layout.fillWidth: false
                                 iconUrl: '../../images/svg_images/close_white_24dp.svg'
-                                iconWidth: 24
+                                iconWidth: 20
                                 r: 0
 
                                 primaryColor: 'transparent'

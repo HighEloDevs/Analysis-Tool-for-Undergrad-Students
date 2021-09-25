@@ -19,6 +19,9 @@ Item{
     }
 
     // Public Variables
+    property variant dataModel: null
+    property variant dataShaped: []
+    property variant hasData:  dataShaped.length != 0 ? true : false
     property variant headerModel: [
         {text: 'x', width: 0.2},
         {text: 'y', width: 0.2},
@@ -26,9 +29,15 @@ Item{
         {text: 'σx', width: 0.2},
         {text: 'Ação', width: 0.2},
     ]
-    property variant dataModel: null
-    property variant dataShaped: []
-    property variant hasData:  dataShaped.length != 0 ? true : false
+
+    function getSignificantDigitCount(n) {
+        var log10 = Math.log(10);
+        n = Math.abs(String(n).replace(".", "")); //remove decimal and make positive
+        if (n == 0) return 0;
+        while (n != 0 && n % 10 == 0) n /= 10; //kill the 0s at the end of n
+
+        return Math.floor(Math.log(n) / log10) + 1; //get number of digits
+    }
 
     function addRow(x_v, y_v, sy, sx, isChecked = true) {
         dataSet.insert(dataSet.count, {x_v: String(x_v), y_v: String(y_v), sy: String(sy), sx: String(sx), isChecked: isChecked, isEditable: !lockBtn.isLocked})
@@ -45,6 +54,129 @@ Item{
 
     function checkData(){
         root.hasData = dataShaped.length != 0 ? true : false
+    }
+
+    function applyOperation(op, column1, column2, value){
+        Array.prototype.swapItems = function(a, b){
+            this[a] = this.splice(b, 1, this[a])[0];
+            return this;
+        }
+
+        value = Number(value)
+        let tmpResult, tmpValue
+        let exch = column1 + column2
+        let columns = {"x": 0, "y": 1, "sy": 2, "sx": 3}
+
+        if(op !== "Trocar" && op !== "Adicionar linhas"){
+            for (let i = 0; i < dataModel.count; i++) {
+                switch(column1){
+                    case "x":
+                        tmpValue = dataModel.get(i).x_v
+                        break;
+                    case "sx":
+                        tmpValue = dataModel.get(i).sx
+                        break;
+                    case "y":
+                        tmpValue = dataModel.get(i).y_v
+                        break;
+                    case "sy":
+                        tmpValue = dataModel.get(i).sy
+                        break;
+                }
+                switch(op){
+                    case "Somar":
+                        tmpResult = String((Number(tmpValue) + value).toPrecision())
+                        break;
+                    case "Subtrair":
+                        tmpResult = String((Number(tmpValue) - value).toPrecision())
+                        break;
+                    case "Multiplicar":
+                        tmpResult = String((Number(tmpValue) * value).toPrecision())
+                        break;
+                    case "Dividir":
+                        tmpResult = String((Number(tmpValue) / value).toPrecision())
+                        break;
+                }
+                switch(column1){
+                    case "x":
+                        dataModel.get(i).x_v = tmpResult
+                        break;
+                    case "sx":
+                        dataModel.get(i).sx  = tmpResult
+                        break;
+                    case "y":
+                        dataModel.get(i).y_v  = tmpResult
+                        break;
+                    case "sy":
+                        dataModel.get(i).sy = tmpResult
+                        break;
+                }   
+            }
+            for (let i = 0; i < dataShaped.length; i++){
+                switch(op){
+                    case "Somar":
+                        dataShaped[i][columns[column1]] = (Number(dataShaped[i][columns[column1]]) + value).toPrecision()
+                        break;
+                    case "Subtrair":
+                        dataShaped[i][columns[column1]] = (Number(dataShaped[i][columns[column1]]) - value).toPrecision()
+                        break;
+                    case "Multiplicar":
+                        dataShaped[i][columns[column1]] = (Number(dataShaped[i][columns[column1]]) * value).toPrecision()
+                        break;
+                    case "Dividir":
+                        dataShaped[i][columns[column1]] = (Number(dataShaped[i][columns[column1]]) / value).toPrecision()
+                        break;
+                }
+            }
+        }else if(op === "Trocar"){
+            if(exch === "xy" || exch === "yx"){
+                for (let i = 0; i < dataModel.count; i++) {
+                    temp = dataModel.get(i).x_v;
+                    dataModel.get(i).x_v = dataModel.get(i).y_v;
+                    dataModel.get(i).y_v = temp;
+                }
+                for (let i = 0; i < dataShaped.length; i++) dataShaped[i].swapItems(0, 1)
+            }else if(exch === "xsx" || exch === "sxx"){
+                for (let i = 0; i < dataModel.count; i++) {
+                    temp = dataModel.get(i).x_v;
+                    dataModel.get(i).x_v = dataModel.get(i).sx;
+                    dataModel.get(i).sx = temp;
+                }
+                for (let i = 0; i < dataShaped.length; i++) dataShaped[i].swapItems(0, 3)
+            }else if(exch === "xsy" || exch === "syx"){
+                for (let i = 0; i < dataModel.count; i++) {
+                    temp = dataModel.get(i).x_v;
+                    dataModel.get(i).x_v = dataModel.get(i).sy;
+                    dataModel.get(i).sy = temp;
+                }
+                for (let i = 0; i < dataShaped.length; i++) dataShaped[i].swapItems(0, 2)
+            }else if(exch === "sxy" || exch === "ysx"){
+                for (let i = 0; i < dataModel.count; i++) {
+                    temp = dataModel.get(i).sx;
+                    dataModel.get(i).sx = dataModel.get(i).y_v;
+                    dataModel.get(i).y_v = temp;
+                }
+                for (let i = 0; i < dataShaped.length; i++) dataShaped[i].swapItems(1, 3)
+            }else if(exch === "sysx" || exch === "sxsy"){
+                for (let i = 0; i < dataModel.count; i++) {
+                    temp = dataModel.get(i).sx;
+                    dataModel.get(i).sx = dataModel.get(i).sy;
+                    dataModel.get(i).sy = temp;
+                }
+                for (let i = 0; i < dataShaped.length; i++) dataShaped[i].swapItems(3, 4)
+            }else if(exch === "syy" || exch === "ysy"){
+                for (let i = 0; i < dataModel.count; i++) {
+                    temp = dataModel.get(i).sy;
+                    dataModel.get(i).sy = dataModel.get(i).y_v;
+                    dataModel.get(i).y_v = temp;
+                }
+                for (let i = 0; i < dataShaped.length; i++) dataShaped[i].swapItems(1, 2)
+            }
+        }else if(op === "Adicionar linhas"){
+            for (let i = 0; i < value; i++) {
+                root.addRow(0, 0, 0, 0)
+            }
+        }
     }
 
     // Private
@@ -318,6 +450,30 @@ Item{
             
             anchors.top: parent.top
             anchors.topMargin: 0
+        }
+        IconButton{
+            id: editBtn
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.left: parent.left
+            anchors.leftMargin: 5
+            width: 18
+            height: 18
+            iconWidth: 16
+            primaryColor: 'transparent'
+            hoverColor: 'transparent'
+            clickColor: 'transparent'
+            iconUrl: '../../images/svg_images/create_white_24dp.svg'
+
+            PopupTableSinglePlot{
+                id: editPopup
+                onApplied: {
+                    applyOperation(operation, column1, column2, value)
+                }
+            }
+
+            onClicked: {
+                editPopup.open()    
+            }
         }
         IconButton{
             anchors.horizontalCenter: parent.horizontalCenter
