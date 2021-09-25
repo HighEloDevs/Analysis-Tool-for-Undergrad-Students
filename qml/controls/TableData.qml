@@ -63,7 +63,7 @@ Item{
         }
 
         value = Number(value)
-        let tmpResult, tmpValue
+        let tmpResult, tmpValue, temp
         let exch = column1 + column2
         let columns = {"x": 0, "y": 1, "sy": 2, "sx": 3}
 
