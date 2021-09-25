@@ -730,20 +730,27 @@ class Model(QObject):
         except SyntaxError:
             self._msgHandler.raiseError("Expressão de ajuste escrita de forma errada. Rever função de ajuste.")
             return None
-        pi = [0]*len(self._model.param_names)
-        if self._p0 is None:
-            for i in range(len(self._model.param_names)):
-                pi[i] = 1.0
-        else:
-            for i in range(len(self._model.param_names)):
-                try:
-                    pi[i] = float(self._p0[i])
-                except:
-                    pi[i] = 1.0
-        self._params = Parameters()
         self._coef = [i for i in self._model.param_names]
-        for i in range(len(self._coef)):
-            self._params.add(self._coef[i], pi[i])
+        if self._p0 is None:
+            for i in range(len(self._coef)):
+                self._params.add(self._coef[i], 1.)
+        else:
+            for i in range(len(self._coef)):
+                try:
+                    p_i = self._p0[i].split("=")
+                    if len(p_i) == 2:
+                        if "@" in p_i[1]:
+                            p_i[1] = p_i[1].replace("@", "")
+                            self._params.add(p_i[0].strip(), float(p_i[1].strip()), vary = False)
+                        else:
+                            self._params.add(p_i[0].strip(), float(p_i[1].strip()), vary = True)
+                    else:
+                        if "@" in self._p0[i]:
+                            self._params.add(self._coef[i], float(self._p0[i].replace("@", "")), vary = False)
+                        else:
+                            self._params.add(self._coef[i], float(self._p0[i]), vary = True)
+                except:
+                    self._params.add(self._coef[i], 1.)
         self._isvalid = True
 
     def matprint(self, mat, fmt="f"):
