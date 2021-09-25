@@ -81,7 +81,7 @@ Item {
                         id: comboMethod
                         Layout.fillWidth: true
                         Layout.columnSpan: 6
-                        model: ["Simétrico por dois lados", "Apenas limite inferior", "Apenas limite superior"]
+                        model: ["Simétrico de Dois Lados", "Apenas Limite Inferior", "Apenas Limite Superior"]
                         highlightColor: Colors.mainColor2
                         label: "Tipo de Cálculo"
                     }
