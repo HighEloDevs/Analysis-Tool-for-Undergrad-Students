@@ -100,10 +100,34 @@ Item {
         CheckBoxCustom{
             id: switch_adjust
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-            Layout.columnSpan: 12
+            Layout.columnSpan: 6
             w: 20
             checked: true
             texto: "Ajustar função"
+        }
+
+        IconTextButton{
+            Layout.columnSpan: 6
+            Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+            texto: 'Parâmetros'
+            primaryColor: 'transparent'
+            hoverColor: 'transparent'
+            clickColor: 'transparent'
+            iconColor: enabled ? '#fff':'#707070'
+            textColor: enabled ? '#fff':'#707070'
+            iconUrl: '../../images/icons/content_copy_black_24dp.svg'
+            height: 20
+            textSize: 11
+            iconWidth: 18
+            visible: mainWindow.os == 'Windows'
+
+            PopupParamsClipboard{
+                id: popupTableParams
+            }
+
+            onClicked: {
+                popupTableParams.open()
+            }
         }
 
         Table{

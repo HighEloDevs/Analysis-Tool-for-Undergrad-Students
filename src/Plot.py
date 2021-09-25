@@ -222,6 +222,18 @@ class SinglePlot(QObject):
 
         return props_tmp
 
+    def makeFloat(self, var, value = 0.):
+        try:
+            return float(var)
+        except:
+            return value
+            
+    def makeInt(self, var, value = 0):
+        try:
+            return int(var)
+        except:
+            return value
+
     @pyqtSlot(QJsonValue, result=int)
     def save(self, props):
         # If there's no path for saving, saveAs()
@@ -308,13 +320,3 @@ class SinglePlot(QObject):
         s, x, y, x_area, y_area = interpreter_calculator(functionDict[function], methodDict[opt1], nc, ngl, mean, std)
         Plot(self.canvas, x, y, x_area, y_area)
         self.writeCalculator.emit(s)
-    def makeFloat(self, var, value = 0.):
-        try:
-            return float(var)
-        except:
-            return value
-    def makeInt(self, var, value = 0):
-        try:
-            return int(var)
-        except:
-            return value

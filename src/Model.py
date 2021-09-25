@@ -780,6 +780,16 @@ class Model(QObject):
         df.index   = self._par_var
         return str(df)
 
+    def paramsPrint3(self):
+        df         = pd.DataFrame(self._dict)
+        df         = df.transpose()
+        df.columns = ["Valor", "Incerteza"]
+        try:
+            df.index   = self._coef
+        except:
+            df.index   = self._par_var
+        return df
+
     def reset(self):
         self._data       = None
         self._data_json  = None
@@ -799,3 +809,60 @@ class Model(QObject):
         self._isvalid    = False
         self._has_sx     = True
         self._has_sy     = True
+
+    @pyqtSlot(str, str)
+    def copyParamsClipboard(self, sep, decimal):
+        '''Copy parameters to the clipboard.'''
+        sepDecimal = {
+            "Ponto": ".",
+            "Vírgula": ",",
+        }
+        sepColumns = {
+            "Tabulação": "\t",
+            "Espaço": " ",
+            ",": ",",
+            "|": "|",
+            ";": ";"
+        }
+        try:
+            self.paramsPrint3().to_clipboard(sep=sepColumns[sep], decimal=sepDecimal[decimal])
+        except:
+            print("Não foi possível copiar os parâmetros para a área de transferência.")
+
+    @pyqtSlot(str, str)
+    def copyCovarianceClipboard(self, sep, decimal):
+        '''Copy parameters to the clipboard.'''
+        sepDecimal = {
+            "Ponto": ".",
+            "Vírgula": ",",
+        }
+        sepColumns = {
+            "Tabulação": "\t",
+            "Espaço": " ",
+            ",": ",",
+            "|": "|",
+            ";": ";"
+        }
+        try:
+            print("oie")
+        except:
+            print("Não foi possível copiar os parâmetros para a área de transferência.")
+
+    @pyqtSlot(str, str)
+    def copyCorrelationClipboard(self, sep, decimal):
+        '''Copy parameters to the clipboard.'''
+        sepDecimal = {
+            "Ponto": ".",
+            "Vírgula": ",",
+        }
+        sepColumns = {
+            "Tabulação": "\t",
+            "Espaço": " ",
+            ",": ",",
+            "|": "|",
+            ";": ";"
+        }
+        try:
+            print("oie")
+        except:
+            print("Não foi possível copiar os parâmetros para a área de transferência.")

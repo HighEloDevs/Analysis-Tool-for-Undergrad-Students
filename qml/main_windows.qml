@@ -149,6 +149,10 @@ Window {
         id: messageSnackbar
     }
 
+    PopupSuccess{
+        id: popupSuccess
+    }
+
     PopupUpdate {
         id: updatePopup
         anchors.centerIn: parent
@@ -1034,6 +1038,8 @@ Window {
             }
             messageSnackbar.open()
         }
+
+        
     }
 
     Connections{
@@ -1055,6 +1061,7 @@ Window {
         updater.checkUpdate()
         labelVersion.text = updater.getVersion()
         os = updater.getOS()
+        popupSuccess.open()
         // gdrive.tryLogin()
     }
 }
