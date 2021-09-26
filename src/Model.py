@@ -53,6 +53,9 @@ class Model(QObject):
         self._indVar     = "x"
         self._model      = None
         self._report_fit = ""
+        self._mat_corr   = ""
+        self._mat_cov    = ""
+        self._dict_param = dict()
         self._result     = None
         self._coef       = list()
         self._par_var    = list()
@@ -512,6 +515,7 @@ class Model(QObject):
     def __set_param_values_lm(self, x):
         '''Constrói o dicionário e o Parameters dos valores do ajuste.'''
         self._dict.clear()
+        self._dict_param.clear()
         self._params = Parameters()
         self._par_var = []
         for i in list(self._result.params.keys()):
@@ -521,11 +525,13 @@ class Model(QObject):
             self._params.add(param_name, self._result.values[param_name])
             # self._dict.update({self._coef[i]: [self._result.values[self._coef[i]], np.sqrt(self._result.covar[i, i])*inc_cons]})
             self._dict.update({param_name: [self._result.values[param_name], np.sqrt(self._result.covar[i, i])]})
+            self._dict_param.update({param_name: [self._result.values[param_name], np.sqrt(self._result.covar[i, i])]})
 
     def __set_param_values_lm_special(self, x):
         '''Constrói o dicionário e o Parameters dos valores do ajuste, quando não há incertezas.'''
         self._dict.clear()
         self._dict2.clear()
+        self._dict_param.clear()
         self._params = Parameters()
         ngl          = len(x) - self._result.nvarys
         inc_cons     = np.sqrt(self._result.chisqr/ngl)
@@ -537,14 +543,17 @@ class Model(QObject):
             self._params.add(param_name, self._result.values[param_name])
             self._dict.update({param_name: [self._result.values[param_name], np.sqrt(self._result.covar[i, i])*inc_cons]})
             self._dict2.update({param_name: [self._result.values[param_name], np.sqrt(self._result.covar[i, i])]})
+            self._dict_param.update({param_name: [self._result.values[param_name], np.sqrt(self._result.covar[i, i])*inc_cons]})
 
     def __set_param_values_ODR(self, x):
         '''Constrói o dicionário e o Parameters dos valores do ajuste.'''
         self._dict.clear()
+        self._dict_param.clear()
         self._params = Parameters()
         for i in range(len(self._coef)):
             self._params.add(self._coef[i], self._result.beta[i])
             self._dict.update({self._coef[i]: [self._result.beta[i], np.sqrt(self._result.cov_beta[i, i])]})
+            self._dict_param.update({self._coef[i]: [self._result.beta[i], np.sqrt(self._result.cov_beta[i, i])]})
 
     def __set_report_lm(self, x):
         '''Constrói a string com os resultados.'''
@@ -552,6 +561,7 @@ class Model(QObject):
         self._report_fit += "\nAjuste: y = %s\n"%self._exp_model
         self._report_fit += "\nNGL  = %d"%(len(x) - len(self._coef))
         self._report_fit += "\nChi² = %f\n"%self._result.chisqr
+        self._mat_cov     = self._result.covar
         self._report_fit += "\nMatriz de covariância:\n\n" + self.matprint(self._result.covar) + "\n"
         lista             = list(self._params.keys())
         matriz_corr       = np.zeros((len(self._result.covar), len(self._result.covar)))
@@ -559,8 +569,8 @@ class Model(QObject):
         for i in z:
             for j in z:
                 matriz_corr[i, j] = self._result.covar[i, j]/(self._dict[lista[i]][1]*self._dict[lista[j]][1])
-        matriz_corr       = matriz_corr.round(3)
-        self._report_fit += "\nMatriz de correlação:\n\n" + self.matprint(matriz_corr, ".3f") + "\n\n"
+        self._mat_corr    = matriz_corr.round(3)
+        self._report_fit += "\nMatriz de correlação:\n\n" + self.matprint(self._mat_corr, ".3f") + "\n\n"
         self._report_fit += self.paramsPrint()
         self._report_fit += "\n"
         self._isvalid     = True
@@ -576,15 +586,16 @@ class Model(QObject):
         self._report_fit += "\nSomatória dos resíduos absolutos ao quadrado = %f\n"%self._result.chisqr
         self._report_fit += "Incerteza considerada = %f\n"%inc_considerada
         try:
-            self._report_fit += "\nMatriz de covariância:\n\n" + self.matprint(self._result.covar*inc_considerada_q) + "\n"
+            self._mat_cov     = self._result.covar*inc_considerada_q
+            self._report_fit += "\nMatriz de covariância:\n\n" + self.matprint(self._mat_cov) + "\n"
             lista             = list(self._params.keys())
             matriz_corr       = np.zeros((len(self._result.covar), len(self._result.covar)))
             z                 = range(len(matriz_corr))
             for i in z:
                 for j in z:
                     matriz_corr[i, j] = self._result.covar[i, j]/(self._dict2[lista[i]][1]*self._dict2[lista[j]][1])
-            matriz_corr       = matriz_corr.round(3)
-            self._report_fit += "\nMatriz de correlação:\n\n" + self.matprint(matriz_corr, ".3f") + "\n\n"
+            self._mat_corr    = matriz_corr.round(3)
+            self._report_fit += "\nMatriz de correlação:\n\n" + self.matprint(self._mat_corr, ".3f") + "\n\n"
             self._report_fit += self.paramsPrint2(inc_considerada)
             self._report_fit += "\n"
             self._isvalid     = True
@@ -598,9 +609,10 @@ class Model(QObject):
         self._report_fit += "\nAjuste: y = %s\n"%self._exp_model
         self._report_fit += "\nNGL  = %d"%(len(x) - len(self._par_var))
         self._report_fit += "\nChi² = %f\n"%self._result.sum_square
+        self._mat_cov     = self._result.cov_beta
         self._report_fit += "\nMatriz de covariância:\n\n" + self.matprint(self._result.cov_beta) + "\n"
         lista             = list(self._params.keys())
-        matriz_corr       = np.zeros((len(self._result.cov_beta), len(self._result.cov_beta)))
+        matriz_corr       = np.zeros((len(self._result.cov_beta), len(self._result.cov_beta)), dtype = float)
         z                 = range(len(matriz_corr))
         for i in z:
             for j in z:
@@ -608,14 +620,14 @@ class Model(QObject):
                     matriz_corr[i, j] = np.nan
                 else:
                     matriz_corr[i, j] = self._result.cov_beta[i, j]/(self._dict[lista[i]][1]*self._dict[lista[j]][1])
-        matriz_corr       = matriz_corr.round(3)
-        self._report_fit += "\nMatriz de correlação:\n\n" + self.matprint(matriz_corr, ".3f") + "\n\n"
+        self._mat_corr    = matriz_corr.round(3)
+        self._report_fit += "\nMatriz de correlação:\n\n" + self.matprint(self._mat_corr, ".3f") + "\n\n"
         self._report_fit += self.paramsPrint()
         self._report_fit += "\n"
         self._isvalid     = True
 
     def __set_report_ODR_special(self, x):
-        '''Constrói a string com os resultados, neste caso quando só há incertezas em x.'''
+        '''Constrói a string com os resultados, neste caso quando só há incertezas em x. Depreciada.'''
         self._report_fit  = ""
         self._report_fit += "\nAjuste: y = %s\n"%self._exp_model
         self._report_fit += "\nNGL  = %d"%(len(x) - len(self._coef))
@@ -781,14 +793,70 @@ class Model(QObject):
         return str(df)
 
     def paramsPrint3(self):
-        df         = pd.DataFrame(self._dict)
-        df         = df.transpose()
-        df.columns = ["Valor", "Incerteza"]
+        df         = pd.DataFrame(self._dict, columns = ["Valor", "Incerteza"]).transpose()
+        # df.columns = ["Valor", "Incerteza"]
         try:
             df.index   = self._coef
         except:
             df.index   = self._par_var
         return df
+
+    @pyqtSlot(str, str)
+    def copyParamsClipboard(self, sep, decimal):
+        '''Copy parameters to the clipboard.'''
+        sepDecimal = {
+            "Ponto": ".",
+            "Vírgula": ",",
+        }
+        sepColumns = {
+            "Tabulação": "\t",
+            "Espaço": " ",
+            ",": ",",
+            "|": "|",
+            ";": ";"
+        }
+        try:
+            pd.DataFrame(self._dict_param).transpose().to_clipboard(sep=sepColumns[sep], decimal=sepDecimal[decimal])
+        except:
+            print("Não foi possível copiar os parâmetros para a área de transferência.")
+
+    @pyqtSlot(str, str)
+    def copyCovarianceClipboard(self, sep, decimal):
+        '''Copy parameters to the clipboard.'''
+        sepDecimal = {
+            "Ponto": ".",
+            "Vírgula": ",",
+        }
+        sepColumns = {
+            "Tabulação": "\t",
+            "Espaço": " ",
+            ",": ",",
+            "|": "|",
+            ";": ";"
+        }
+        try:
+            pd.DataFrame(self._mat_corr).to_clipboard(sep=sepColumns[sep], decimal=sepDecimal[decimal], index=False, header=False)
+        except:
+            self._msgHandler.raiseError("Não foi possível copiar os parâmetros para a área de transferência.")
+
+    @pyqtSlot(str, str)
+    def copyCorrelationClipboard(self, sep, decimal):
+        '''Copy parameters to the clipboard.'''
+        sepDecimal = {
+            "Ponto": ".",
+            "Vírgula": ",",
+        }
+        sepColumns = {
+            "Tabulação": "\t",
+            "Espaço": " ",
+            ",": ",",
+            "|": "|",
+            ";": ";"
+        }
+        try:
+            pd.DataFrame(self._mat_cov).to_clipboard(sep=sepColumns[sep], decimal=sepDecimal[decimal], index=False, heade=False)
+        except:
+            self._msgHandler.raiseError("Não foi possível copiar os parâmetros para a área de transferência.")
 
     def reset(self):
         self._data       = None
@@ -809,60 +877,3 @@ class Model(QObject):
         self._isvalid    = False
         self._has_sx     = True
         self._has_sy     = True
-
-    @pyqtSlot(str, str)
-    def copyParamsClipboard(self, sep, decimal):
-        '''Copy parameters to the clipboard.'''
-        sepDecimal = {
-            "Ponto": ".",
-            "Vírgula": ",",
-        }
-        sepColumns = {
-            "Tabulação": "\t",
-            "Espaço": " ",
-            ",": ",",
-            "|": "|",
-            ";": ";"
-        }
-        try:
-            self.paramsPrint3().to_clipboard(sep=sepColumns[sep], decimal=sepDecimal[decimal])
-        except:
-            print("Não foi possível copiar os parâmetros para a área de transferência.")
-
-    @pyqtSlot(str, str)
-    def copyCovarianceClipboard(self, sep, decimal):
-        '''Copy parameters to the clipboard.'''
-        sepDecimal = {
-            "Ponto": ".",
-            "Vírgula": ",",
-        }
-        sepColumns = {
-            "Tabulação": "\t",
-            "Espaço": " ",
-            ",": ",",
-            "|": "|",
-            ";": ";"
-        }
-        try:
-            print("oie")
-        except:
-            print("Não foi possível copiar os parâmetros para a área de transferência.")
-
-    @pyqtSlot(str, str)
-    def copyCorrelationClipboard(self, sep, decimal):
-        '''Copy parameters to the clipboard.'''
-        sepDecimal = {
-            "Ponto": ".",
-            "Vírgula": ",",
-        }
-        sepColumns = {
-            "Tabulação": "\t",
-            "Espaço": " ",
-            ",": ",",
-            "|": "|",
-            ";": ";"
-        }
-        try:
-            print("oie")
-        except:
-            print("Não foi possível copiar os parâmetros para a área de transferência.")
