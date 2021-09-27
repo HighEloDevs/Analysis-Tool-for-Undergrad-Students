@@ -835,7 +835,7 @@ class Model(QObject):
             ";": ";"
         }
         try:
-            pd.DataFrame(self._mat_corr).to_clipboard(sep=sepColumns[sep], decimal=sepDecimal[decimal], index=False, header=False)
+            pd.DataFrame(self._mat_cov).to_clipboard(sep=sepColumns[sep], decimal=sepDecimal[decimal], index=False, header=False)
         except:
             self._msgHandler.raiseError("Não foi possível copiar os parâmetros para a área de transferência.")
 
@@ -854,7 +854,7 @@ class Model(QObject):
             ";": ";"
         }
         try:
-            pd.DataFrame(self._mat_cov).to_clipboard(sep=sepColumns[sep], decimal=sepDecimal[decimal], index=False, heade=False)
+            pd.DataFrame(self._mat_corr).to_clipboard(sep=sepColumns[sep], decimal=sepDecimal[decimal], index=False, header=False)
         except:
             self._msgHandler.raiseError("Não foi possível copiar os parâmetros para a área de transferência.")
 
