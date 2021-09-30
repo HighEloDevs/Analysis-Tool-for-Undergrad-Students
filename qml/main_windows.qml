@@ -1061,7 +1061,7 @@ Window {
         updater.checkUpdate()
         labelVersion.text = updater.getVersion()
         os = updater.getOS()
-        popupSuccess.open()
+        // popupSuccess.open()
         // gdrive.tryLogin()
     }
 }
