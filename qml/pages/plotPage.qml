@@ -167,7 +167,6 @@ Item {
                             FileDialog{
                                 id: projectOpen
                                 title: "Escolha o projeto"
-                                folder: shortcuts.desktop
                                 selectMultiple: false
                                 nameFilters: ["Arquivos JSON (*.json)"]
                                 onAccepted:{
@@ -175,9 +174,13 @@ Item {
                                     middleTabs.pageFunc.info = ''
                                     middleTabs.pageFunc.clearTableParams()
                                     singlePlot.load(projectOpen.fileUrl)
+                                    globalManager.setLastFolder(projectOpen.fileUrl)
                                 }
                             }
-                            onClicked: projectOpen.open()
+                            onClicked: {
+                                projectOpen.folder = globalManager.getLastFolder()
+                                projectOpen.open()
+                            }
                         }
                         TextButton{
                             id: btnSave
@@ -211,10 +214,14 @@ Item {
                                 selectExisting: false
                                 nameFilters: ["Arquivo JSON (*.json)"]
                                 onAccepted: {
+                                    globalManager.setLastFolder(projectSaver.fileUrl)
                                     singlePlot.saveAs(fileUrl, plotData)
                                 }
                             }
-                            onClicked: projectSaver.open()
+                            onClicked: {
+                                projectSaver.folder = globalManager.getLastFolder()
+                                projectSaver.open()
+                            }
                         }
                         TextInputCustom{
                             id: nomeProjeto
@@ -243,11 +250,13 @@ Item {
                                 nameFilters: ["Arquivos de dados (*.txt *.csv *.tsv)"]
                                 onAccepted:{
                                     table.clear()
+                                    globalManager.setLastFolder(fileOpen.fileUrl)
                                     model.load_data(fileOpen.fileUrl)
                                 }
                             }
 
                             onClicked:{
+                                fileOpen.folder = globalManager.getLastFolder()
                                 fileOpen.open()
                             }
                         }

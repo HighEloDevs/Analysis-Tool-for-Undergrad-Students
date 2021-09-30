@@ -816,9 +816,10 @@ class Model(QObject):
             ";": ";"
         }
         try:
-            pd.DataFrame(self._dict_param).transpose().to_clipboard(sep=sepColumns[sep], decimal=sepDecimal[decimal])
+            pd.DataFrame(self._dict_param, index = ["Valor", "Incerteza"]).transpose().to_clipboard(sep=sepColumns[sep], decimal=sepDecimal[decimal])
         except:
-            print("Não foi possível copiar os parâmetros para a área de transferência.")
+            self._msgHandler.raiseError("Não foi possível copiar para a área de transferência.")
+
 
     @pyqtSlot(str, str)
     def copyCovarianceClipboard(self, sep, decimal):
@@ -837,7 +838,7 @@ class Model(QObject):
         try:
             pd.DataFrame(self._mat_cov).to_clipboard(sep=sepColumns[sep], decimal=sepDecimal[decimal], index=False, header=False)
         except:
-            self._msgHandler.raiseError("Não foi possível copiar os parâmetros para a área de transferência.")
+            self._msgHandler.raiseError("Não foi possível copiar para a área de transferência.")
 
     @pyqtSlot(str, str)
     def copyCorrelationClipboard(self, sep, decimal):
@@ -856,7 +857,7 @@ class Model(QObject):
         try:
             pd.DataFrame(self._mat_corr).to_clipboard(sep=sepColumns[sep], decimal=sepDecimal[decimal], index=False, header=False)
         except:
-            self._msgHandler.raiseError("Não foi possível copiar os parâmetros para a área de transferência.")
+            self._msgHandler.raiseError("Não foi possível copiar para a área de transferência.")
 
     def reset(self):
         self._data       = None

@@ -18,6 +18,12 @@ Popup {
     topInset: 0
     margins: 5
 
+    onAboutToShow:{
+        let canvasSize = canvas.get_canvas_size()
+        figWidth.text = canvasSize[0]
+        figHeight.text = canvasSize[1]
+    }
+
     background: Rectangle {
         anchors.fill: parent
         color: Colors.color2

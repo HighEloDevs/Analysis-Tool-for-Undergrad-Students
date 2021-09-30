@@ -10,8 +10,6 @@ Rectangle {
     id: root
     anchors.fill: parent
     color: Colors.color3
-    // border.width: 2
-    // border.color: Colors.color2
 
     property var plotData: ({
         key   : "0.2-hist",
@@ -29,9 +27,6 @@ Rectangle {
             ymin  : ymin.text,
             ymax  : ymax.text,
             ydiv  : ydiv.text,
-            // rangexmin : rangexmin.text,
-            // rangexmax : rangexmax.text,
-            // nbins     : nbins.text,
             histType        : histType.currentText,
             histAlign       : histAlign.currentText,
             histOrientation : histOrientation.currentText,
@@ -96,9 +91,13 @@ Rectangle {
                         nameFilters: ["Arquivos JSON (*.json)"]
                         onAccepted:{
                             hist.load(projectOpen.fileUrl)
+                            globalManager.setLastFolder(projectOpen.fileUrl)
                         }
                     }
-                    onClicked: projectOpen.open()
+                    onClicked: {
+                        projectOpen.folder = globalManager.getLastFolder()
+                        projectOpen.open()
+                    }
                 }
                 TextButton{
                     Layout.fillWidth: true
@@ -133,12 +132,14 @@ Rectangle {
                         selectExisting: false
                         nameFilters: ["Arquivo JSON (*.json)"]
                         onAccepted: {
+                            globalManager.setLastFolder(projectSaver.fileUrl)
                             plotData["data"] = dataTable.getDataShaped()
                             hist.saveAs(fileUrl, plotData)
                         }
                     }
 
                     onClicked:{
+                        projectSaver.folder = globalManager.getLastFolder()
                         projectSaver.open()
                     }
                 }
@@ -193,37 +194,6 @@ Rectangle {
                     columns: 12
                     rowSpacing: 5
                     rows: 20
-
-                    // TextInputCustom{
-                    //     id: rangexmin
-                    //     Layout.columnSpan: 4
-                    //     Layout.fillWidth: true
-                    //     focusColor: Colors.mainColor2
-                    //     title: 'Contagem - X Mín.'
-                    //     textHolder: ''
-                    //     defaultColor: '#fff'
-                    //     textColor: '#fff'
-                    // }
-                    // TextInputCustom{
-                    //     id: rangexmax
-                    //     Layout.columnSpan: 4
-                    //     Layout.fillWidth: true
-                    //     focusColor: Colors.mainColor2
-                    //     title: 'Contagem - X Máx.'
-                    //     textHolder: ''
-                    //     defaultColor: '#fff'
-                    //     textColor: '#fff'
-                    // }
-                    // TextInputCustom{
-                    //     id: nbins
-                    //     Layout.columnSpan: 4
-                    //     Layout.fillWidth: true
-                    //     focusColor: Colors.mainColor2
-                    //     title: 'Número de canais'
-                    //     textHolder: ''
-                    //     defaultColor: '#fff'
-                    //     textColor: '#fff'
-                    // }
                     ComboBoxCustom{
                         id: histType
                         Layout.columnSpan: 6

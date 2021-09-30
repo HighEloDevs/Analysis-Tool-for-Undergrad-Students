@@ -234,6 +234,7 @@ Item {
                                             onAccepted: {
                                                 multiPlot.loadData(fileUrl, row)
                                                 root.checkData()
+                                                globalManager.setLastFolder(chooseProject.fileUrl)
                                             }
                                             onRejected: {
                                                 dataShaped.splice(row, 1)
@@ -242,7 +243,10 @@ Item {
                                             }
                                         }
 
-                                        onClicked: chooseProject.open()
+                                        onClicked: {
+                                            chooseProject.folder = globalManager.getLastFolder()
+                                            chooseProject.open()
+                                        }
 
                                         Component.onCompleted: {
                                             if(fromBtn) chooseProject.open()

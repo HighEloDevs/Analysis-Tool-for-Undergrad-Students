@@ -35,12 +35,12 @@ from src.UpdateChecker import UpdateChecker
 from src.MessageHandler import MessageHandler
 from src.GoogleDriveAPI import GDrive
 from src.Histogram import Histogram
+from src.GlobalManager import GlobalManager
 from PyQt5.QtCore import QCoreApplication, QUrl, QObject, Qt
 from PyQt5.QtQml import qmlRegisterType, QQmlApplicationEngine
 from PyQt5.QtGui import QIcon, QGuiApplication
 from matplotlib_backend_qtquick.backend_qtquickagg import FigureCanvasQtQuickAgg
-# import warnings
-# warnings.filterwarnings("ignore")
+
 plt.rcParams["ytick.minor.visible"]   = False
 plt.rcParams["xtick.minor.visible"]   = False
 plt.rcParams["figure.subplot.left"]   = 0.1
@@ -48,6 +48,7 @@ plt.rcParams["figure.subplot.right"]  = 0.95
 plt.rcParams["figure.subplot.bottom"] = 0.12
 plt.rcParams["figure.subplot.top"]    = 0.92
 plt.rcParams["figure.subplot.hspace"] = 0.
+
 if __name__ == "__main__":
     # Matplotlib stuff
     qmlRegisterType(FigureCanvasQtQuickAgg, "Canvas", 1, 0, "FigureCanvas")
@@ -69,6 +70,7 @@ if __name__ == "__main__":
     updater         = UpdateChecker()
     histogram       = Histogram(canvas, messageHandler)
     gdrive          = GDrive(messageHandler)
+    globalManager   = GlobalManager()
 
     # Creating 'link' between front-end and back-end
     context = engine.rootContext()
@@ -80,6 +82,7 @@ if __name__ == "__main__":
     context.setContextProperty("messageHandler", messageHandler)
     context.setContextProperty("hist", histogram)
     context.setContextProperty("gdrive", gdrive)
+    context.setContextProperty("globalManager", globalManager)
     
     engine.load(QUrl.fromLocalFile(os.path.join(os.path.dirname(__file__), "qml/main_windows.qml")))
         

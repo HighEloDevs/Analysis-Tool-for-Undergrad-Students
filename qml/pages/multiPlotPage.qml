@@ -102,10 +102,12 @@ Item {
                                 onAccepted:{
                                     multiPlotTable.clear()
                                     multiPlot.load(projectOpen.fileUrl)
+                                    globalManager.setLastFolder(projectOpen.fileUrl)
                                 }
                             }
 
                             onClicked: {
+                                projectOpen.folder = globalManager.getLastFolder()
                                 projectOpen.open()
                             }
                         }
@@ -148,11 +150,13 @@ Item {
                                 selectExisting: false
                                 nameFilters: ["Arquivo JSON (*.json)"]
                                 onAccepted: {
+                                    globalManager.setLastFolder(projectSaver.fileUrl)
                                     multiPlot.saveAs(fileUrl, multiPlotData)
                                 }
                             }
 
                             onClicked: {
+                                projectSaver.folder = globalManager.getLastFolder()
                                 projectSaver.open()
                             }
                         }
