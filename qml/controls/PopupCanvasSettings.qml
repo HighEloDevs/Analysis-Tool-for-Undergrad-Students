@@ -109,7 +109,7 @@ Popup {
             Text{
                 Layout.columnSpan: 12
                 Layout.alignment: Qt.AlignHCenter
-                text: "Distância do gráfico às bordas"
+                text: "Distância normalizada do gráfico às bordas"
                 font.bold: true
                 font.pointSize: 11
                 color: "#a4a4a4"
