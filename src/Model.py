@@ -141,9 +141,7 @@ class Model(QObject):
             # Getting file name
             fileName = data_path.split('/')[-1]
         elif df is None:
-            df = pd.DataFrame.from_records(df_array)
-            df.columns = ['x', 'y', 'sy', 'sx', 'bool']
-            bools = df['bool'].astype(str)
+            df = pd.DataFrame.from_records(df_array, columns = ['x', 'y', 'sy', 'sx', 'bool'])
             del df['bool']
             uniqueSi = df["sy"].unique().astype(float)
             if 0. in uniqueSi:

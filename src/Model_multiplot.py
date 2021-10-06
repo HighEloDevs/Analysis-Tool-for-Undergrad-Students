@@ -36,9 +36,8 @@ class MultiModel(QObject):
         super().__init__()
         self.options    = options
         self.arquivos   = arquivos
-        self.dfs        = [pd.DataFrame.from_records(arquivo['df']).astype(float) for arquivo in self.arquivos]
+        self.dfs        = [pd.DataFrame.from_records(arquivo['df'], columns = ['x', 'y', 'sy', 'sx', 'bool']).astype(float) for arquivo in self.arquivos]
         for i in range(len(self.dfs)):
-            self.dfs[i].columns = ['x', 'y', 'sy', 'sx', 'bool']
             self.dfs[i]         = self.dfs[i][self.dfs[i]['bool'] == 1]
             del self.dfs[i]["bool"]
         self.num_cols   = [len(df.columns) for df in self.dfs]

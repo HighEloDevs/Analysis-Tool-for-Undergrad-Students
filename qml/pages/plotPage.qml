@@ -386,6 +386,7 @@ Item {
             pageFunc.initParams.text        = props['fitProps']['p0']
             pageFunc.sigmax.checked         = props['fitProps']['wsx']
             pageFunc.sigmay.checked         = props['fitProps']['wsy']
+            pageFunc.adjust.checked         = props['fitProps']['adjust']
             pageFunc.xmin.text              = props['fitProps']['xmin']
             pageFunc.xmax.text              = props['fitProps']['xmax']
         }

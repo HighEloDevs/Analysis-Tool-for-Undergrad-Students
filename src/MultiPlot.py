@@ -267,6 +267,8 @@ class Multiplot(QObject):
         for i in range(len(self.Multi_Model.models)):
             if self.Multi_Model.arquivos[i]['marker'] == True:
                 self.Plot_sx_sy(self.Multi_Model.dfs[i], self.Multi_Model.arquivos[i])
+        self.displayBridge.setAxesPropsWithoutAxes2(self.xmin, self.xmax, self.xdiv,
+         self.ymin, self.ymax, self.ydiv, self.grid, self.logx, self.logy)
         left, right = self.displayBridge.axes1.get_xlim()
         self.displayBridge.axes1.set_xlim(left = left, right = right)
         self.displayBridge.axes1.set_xlim(left = left, right = right)
@@ -277,8 +279,6 @@ class Multiplot(QObject):
         self.displayBridge.axes1.set_title(self.title)
         self.displayBridge.axes1.set(xlabel = self.xaxis, ylabel = self.yaxis)
         handles, labels = self.displayBridge.axes1.get_legend_handles_labels()
-        self.displayBridge.setAxesPropsWithoutAxes2(self.xmin, self.xmax, self.xdiv,
-         self.ymin, self.ymax, self.ydiv, self.grid, self.logx, self.logy)
 
         if len(handles) > 1:
             labels.reverse()

@@ -81,7 +81,8 @@ class SinglePlot(QObject):
                 'wsy'        : True,
                 'xmin'       : '',
                 'xmax'       : '',
-                'parameters' : {}
+                'parameters' : {},
+                'adjust'     : True
             },
             'data': []
         }
