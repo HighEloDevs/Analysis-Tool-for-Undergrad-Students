@@ -249,7 +249,10 @@ Item {
                                         }
 
                                         Component.onCompleted: {
-                                            if(fromBtn) chooseProject.open()
+                                            if(fromBtn) {
+                                                chooseProject.folder = globalManager.getLastFolder()
+                                                chooseProject.open()
+                                            }
                                         }
                                     }
                                     Text{
