@@ -115,7 +115,7 @@ Item {
                         Layout.fillWidth: true
                         Layout.columnSpan: 12
                         focusColor: Colors.mainColor2
-                        title: 'Valor Verdadeiro'
+                        title: 'Centroide (Valor Verdadeiro)'
                         textHolder: "Ex.: 1.0, 3.2, 4"
                         defaultColor: '#fff'
                         textColor: '#fff'
