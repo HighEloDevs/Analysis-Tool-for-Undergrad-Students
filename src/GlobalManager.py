@@ -29,8 +29,7 @@ import os
 class GlobalManager(QObject):
     def __init__(self) -> None:
         super().__init__()
-        
-        self.atus_dir = os.path.expanduser("~\Documents") + "\ATUS"
+        self.atus_dir = os.path.join(os.path.expanduser("~/Documents"), "ATUS")
         self.last_folder = self.atus_dir
 
         # Checking if the ATUS's directory exists
