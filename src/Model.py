@@ -342,6 +342,10 @@ class Model(QObject):
                         pi[i] = float(self._p0[i])
                 except:
                     pass
+        self._par_var = []
+        for i, parametro in enumerate(self._coef):
+            if fixed[i] < 1:
+                self._par_var.append(parametro)
         def f(a, x):
             param = Parameters()
             for i in range(len(a)):
@@ -381,6 +385,10 @@ class Model(QObject):
                         pi[i] = float(self._p0[i])
                 except:
                     pass
+        self._par_var = []
+        for i, parametro in enumerate(self._coef):
+            if fixed[i] < 1:
+                self._par_var.append(parametro)
         def f(a, x):
             param = Parameters()
             for i in range(len(a)):
@@ -557,7 +565,7 @@ class Model(QObject):
         '''Constrói a string com os resultados.'''
         self._report_fit  = ""
         self._report_fit += "\nAjuste: y = %s\n"%self._exp_model
-        self._report_fit += "\nNGL  = %d"%(len(x) - len(self._coef))
+        self._report_fit += "\nNGL  = %d"%(len(x) - self._result.nvarys)
         self._report_fit += "\nChi² = %f\n"%self._result.chisqr
         self._mat_cov     = self._result.covar
         self._report_fit += "\nMatriz de covariância:\n\n" + self.matprint(self._result.covar) + "\n"
@@ -575,7 +583,7 @@ class Model(QObject):
     
     def __set_report_lm_special(self, x):
         '''Constrói a string com os resultados, neste caso quando não há incertezas.'''
-        ngl               = len(x) - len(self._coef)
+        ngl               = len(x) - self._result.nvarys
         inc_considerada   = np.sqrt(self._result.chisqr/ngl)
         inc_considerada_q = inc_considerada**2
         self._report_fit  = ""
@@ -602,7 +610,7 @@ class Model(QObject):
             return None
 
     def __set_report_ODR(self, x):
-        ''' Constrói a string com os resultados. '''
+        '''Constrói a string com os resultados.'''
         self._report_fit  = ""
         self._report_fit += "\nAjuste: y = %s\n"%self._exp_model
         self._report_fit += "\nNGL  = %d"%(len(x) - len(self._par_var))
