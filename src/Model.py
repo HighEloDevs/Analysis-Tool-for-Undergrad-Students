@@ -344,7 +344,7 @@ class Model(QObject):
                     pass
         self._par_var = []
         for i, parametro in enumerate(self._coef):
-            if fixed[i] < 1:
+            if fixed[i] > 0:
                 self._par_var.append(parametro)
         def f(a, x):
             param = Parameters()
@@ -387,7 +387,7 @@ class Model(QObject):
                     pass
         self._par_var = []
         for i, parametro in enumerate(self._coef):
-            if fixed[i] < 1:
+            if fixed[i] > 0:
                 self._par_var.append(parametro)
         def f(a, x):
             param = Parameters()
