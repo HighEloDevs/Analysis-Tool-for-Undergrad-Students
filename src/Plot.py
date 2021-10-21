@@ -318,6 +318,6 @@ class SinglePlot(QObject):
         except:
             pass
         
-        s, x, y, x_area, y_area = interpreter_calculator(functionDict[function], methodDict[opt1], nc, ngl, mean, std)
-        Plot(self.canvas, x, y, x_area, y_area)
+        s, x, y, x_area, y_area, title, xlabel, ylabel = interpreter_calculator(functionDict[function], methodDict[opt1], nc, ngl, mean, std)
+        Plot(self.canvas, x, y, x_area, y_area, title, xlabel, ylabel)
         self.writeCalculator.emit(s)

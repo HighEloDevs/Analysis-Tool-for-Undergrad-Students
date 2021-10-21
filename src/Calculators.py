@@ -85,20 +85,20 @@ def interpreter_calculator(f, opt, nc, ngl, mean, std):
             s     += "Intervalo simétrico.\nLimite inferior = %f \n Limite superior  = %f"%(result[0], result[1])
             x_area = np.linspace(result[0], result[1], 350)
             y_area = chi2.pdf(x_area, ngl)
-            return s, x_plot, y_plot, x_area, y_area
+            return s, x_plot, y_plot, x_area, y_area, f"Chi² com NGL = {int(ngl)}", "Chi²", "Densidade de probabilidade"
 
         elif opt == 1:
             result = calc_chi2_lim_inf(ngl, nc)
             s     += "Apenas limite inferior.\nLimite inferior = %f \n Limite superior = inf"%result
             x_area = np.linspace(result, chi2.ppf(lim_sup, ngl), 350)
             y_area = chi2.pdf(x_area, ngl)
-            return s, x_plot, y_plot, x_area, y_area 
+            return s, x_plot, y_plot, x_area, y_area, f"Chi² com NGL = {int(ngl)}", "Chi²", "Densidade de probabilidade" 
 
         result = calc_chi2_lim_sup(ngl, nc)
         s     += "Apenas limite superior.\nLimite inferior = -inf \n Limite superior = %f"%result
         x_area = np.linspace(chi2.ppf(lim_inf, ngl), result, 350)
         y_area = chi2.pdf(x_area, ngl)
-        return s, x_plot, y_plot, x_area, y_area
+        return s, x_plot, y_plot, x_area, y_area, f"Chi² com NGL = {int(ngl)}", "Chi²", "Densidade de probabilidade"
 
     elif f == 1:
         # If it's Red Chi²
@@ -114,7 +114,7 @@ def interpreter_calculator(f, opt, nc, ngl, mean, std):
             x_area = np.linspace(result[0], result[1], 350)
             y_area = chi2.pdf(x_area, ngl)*ngl
             x_area = x_area/ngl
-            return s, x_plot, y_plot, x_area, y_area
+            return s, x_plot, y_plot, x_area, y_area, f"Chi² reduzido com NGL = {int(ngl)}", "Chi² reduzido", "Densidade de probabilidade"
 
         elif opt == 1:
             result = calc_chi2r_lim_inf(ngl, nc)
@@ -122,14 +122,14 @@ def interpreter_calculator(f, opt, nc, ngl, mean, std):
             x_area = np.linspace(result, chi2.ppf(lim_sup, ngl), 350)
             y_area = chi2.pdf(x_area, ngl)*ngl
             x_area = x_area/ngl
-            return s, x_plot, y_plot, x_area, y_area 
+            return s, x_plot, y_plot, x_area, y_area, f"Chi² reduzido com NGL = {int(ngl)}", "Chi² reduzido", "Densidade de probabilidade"
 
         result = calc_chi2r_lim_sup(ngl, nc)
         s     += "Apenas limite superior.\nLimite inferior = -inf \n Limite superior = %f"%(result/ngl)
         x_area = np.linspace(chi2.ppf(lim_inf, ngl), result, 350)
         y_area = chi2.pdf(x_area, ngl)*ngl
         x_area = x_area/ngl
-        return s, x_plot, y_plot, x_area, y_area
+        return s, x_plot, y_plot, x_area, y_area, f"Chi² reduzido com NGL = {int(ngl)}", "Chi² reduzido", "Densidade de probabilidade"
 
     elif f == 2:
         # If it's Gaussian
@@ -144,7 +144,7 @@ def interpreter_calculator(f, opt, nc, ngl, mean, std):
             x_area = np.linspace(result[0], result[1], 350)
             y_area = norm.pdf(x_area)
             x_area = x_area*std + mean
-            return s, x_plot, y_plot/std, x_area, y_area/std
+            return s, x_plot, y_plot/std, x_area, y_area/std, "Gaussiana", "Valor", "Densidade de probabilidade"
 
         elif opt == 1:
             result = calc_gauss_lim_inf(nc)
@@ -152,14 +152,14 @@ def interpreter_calculator(f, opt, nc, ngl, mean, std):
             x_area = np.linspace(result, norm.ppf(lim_sup), 350)
             y_area = norm.pdf(x_area)
             x_area = x_area*std + mean
-            return s, x_plot, y_plot/std, x_area, y_area/std
+            return s, x_plot, y_plot/std, x_area, y_area/std, "Gaussiana", "Valor", "Densidade de probabilidade"
 
         result = calc_gauss_lim_sup(nc)
         s     += "Apenas limite superior.\nLimite inferior = -inf \n Limite superior = %f"%(result*std + mean)
         x_area = np.linspace(result, norm.ppf(lim_inf), 350)
         y_area = norm.pdf(x_area)
         x_area = x_area*std + mean
-        return s, x_plot, y_plot/std, x_area, y_area/std
+        return s, x_plot, y_plot/std, x_area, y_area/std, "Gaussiana", "Valor", "Densidade de probabilidade"
 
     # If it's Student:    
     x_plot = np.linspace(t.ppf(lim_inf, df = ngl), t.ppf(lim_sup, df = ngl), 350)
@@ -173,7 +173,7 @@ def interpreter_calculator(f, opt, nc, ngl, mean, std):
         x_area = np.linspace(result[0], result[1], 350)
         y_area = t.pdf(x_area, df = ngl)
         x_area = x_area*std + mean
-        return s, x_plot, y_plot/std, x_area, y_area/std
+        return s, x_plot, y_plot/std, x_area, y_area/std, "Student", "Valor", "Densidade de probabilidade"
     
     elif opt == 1:
             result = calc_t_lim_inf(ngl, nc)
@@ -181,14 +181,14 @@ def interpreter_calculator(f, opt, nc, ngl, mean, std):
             x_area = np.linspace(result, t.ppf(lim_sup, df = ngl), 350)
             y_area = t.pdf(x_area, df = ngl)
             x_area = x_area*std + mean
-            return s, x_plot, y_plot/std, x_area, y_area/std
+            return s, x_plot, y_plot/std, x_area, y_area/std, "Student", "Valor", "Densidade de probabilidade"
 
     result = calc_t_lim_sup(ngl, nc)
     s     += "Apenas limite superior.\nLimite inferior = -inf \n Limite superior = %f"%(result*std + mean)
     x_area = np.linspace(result, t.ppf(lim_inf, df = ngl), 350)
     y_area = t.pdf(x_area, df = ngl)
     x_area = x_area*std + mean
-    return s, x_plot, y_plot/std, x_area, y_area/std
+    return s, x_plot, y_plot/std, x_area, y_area/std, "Student", "Valor", "Densidade de probabilidade"
 
 class CalculatorCanvas(QObject):
     """ A bridge class to interact with the plot in python
@@ -214,7 +214,7 @@ class CalculatorCanvas(QObject):
     #     self.canvas.draw_idle()
         
 
-def Plot(displayBridge, x, y, x_area, y_area):
+def Plot(displayBridge, x, y, x_area, y_area, title, xlabel, ylabel):
     displayBridge.set_tight_layout()
     displayBridge.clearAxis()
     displayBridge.switchAxes(hideAxes2 = True)
@@ -222,6 +222,7 @@ def Plot(displayBridge, x, y, x_area, y_area):
     displayBridge.axes1.grid(True)
     displayBridge.axes1.fill_between(x_area, y_area, color = 'blue', alpha = 0.3)
     displayBridge.axes1.plot(x, y, lw = 1, c = 'red')
-    displayBridge.axes1.set_title("P.D.F.")
+    displayBridge.axes1.set_title("P.D.F. " + title)
+    displayBridge.axes1.set(xlabel = xlabel, ylabel = ylabel)
     displayBridge.setAxesPropsWithoutAxes2(None, None, None, None, None, None, None, False, False)
     displayBridge.canvas.draw_idle()
