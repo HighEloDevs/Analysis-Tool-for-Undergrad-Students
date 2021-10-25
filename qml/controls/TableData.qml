@@ -96,6 +96,9 @@ Item{
                     case "Dividir":
                         tmpResult = String((Number(tmpValue) / value).toPrecision())
                         break;
+                    case "Substituir":
+                        tmpResult = String(value)
+                        break;
                 }
                 switch(column1){
                     case "x":
@@ -125,6 +128,9 @@ Item{
                         break;
                     case "Dividir":
                         dataShaped[i][columns[column1]] = (Number(dataShaped[i][columns[column1]]) / value).toPrecision()
+                        break;
+                    case "Substituir":
+                        dataShaped[i][columns[column1]] = Number(value).toPrecision()
                         break;
                 }
             }

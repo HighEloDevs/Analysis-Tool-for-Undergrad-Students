@@ -166,6 +166,7 @@ Item {
                     }
 
                     Rectangle {
+                        id: infosBg
                         Layout.columnSpan: 12
                         Layout.fillHeight: true
                         Layout.fillWidth: true
@@ -200,10 +201,9 @@ Item {
                                 TextArea{
                                     id:infos
                                     color: "#ffffff"
-                                    anchors.fill: parent
                                     horizontalAlignment: Text.AlignHCenter
                                     verticalAlignment: Text.AlignVCenter
-                                    font.pointSize: 14
+                                    font.pointSize: 12
                                     selectByMouse: true
                                     readOnly: true
                                 }

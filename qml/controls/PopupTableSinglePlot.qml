@@ -61,7 +61,7 @@ Popup {
                 id: operation
                 Layout.fillWidth: true
                 Layout.columnSpan: 12
-                model: ["Somar", "Subtrair", "Multiplicar", "Dividir", "Trocar", "Adicionar linhas"]
+                model: ["Substituir", "Somar", "Subtrair", "Multiplicar", "Dividir", "Trocar", "Adicionar linhas"]
                 highlightColor: Colors.mainColor2
                 label: "Operação"
             }
