@@ -78,26 +78,27 @@ def interpreter_calculator(f, opt, nc, ngl, mean, std):
         # If it's Chi²
         x_plot = np.linspace(chi2.ppf(lim_inf, ngl), chi2.ppf(lim_sup, ngl), 350)
         y_plot = chi2.pdf(x_plot, ngl)
+        s      = f"Calculadora de intervalo de confiança do Chi quadrado.\nNível de confiança {nc}.\nNível de significância {1 - nc:.7}\n"
 
         if opt == 0:
             result = calc_chi2_sim(ngl, nc)
-            s      = "Limite inferior = %f \n Limite superior  = %f"%(result[0], result[1])
+            s     += "Intervalo simétrico.\nLimite inferior = %f \n Limite superior  = %f"%(result[0], result[1])
             x_area = np.linspace(result[0], result[1], 350)
             y_area = chi2.pdf(x_area, ngl)
-            return s, x_plot, y_plot, x_area, y_area
+            return s, x_plot, y_plot, x_area, y_area, f"Chi² com NGL = {int(ngl)}", "Chi²", "Densidade de probabilidade"
 
         elif opt == 1:
             result = calc_chi2_lim_inf(ngl, nc)
-            s      = "Limite inferior = %f \n Limite superior = inf"%result
+            s     += "Apenas limite inferior.\nLimite inferior = %f \n Limite superior = inf"%result
             x_area = np.linspace(result, chi2.ppf(lim_sup, ngl), 350)
             y_area = chi2.pdf(x_area, ngl)
-            return s, x_plot, y_plot, x_area, y_area 
+            return s, x_plot, y_plot, x_area, y_area, f"Chi² com NGL = {int(ngl)}", "Chi²", "Densidade de probabilidade" 
 
         result = calc_chi2_lim_sup(ngl, nc)
-        s      = "Limite inferior = -inf \n Limite superior = %f"%result
+        s     += "Apenas limite superior.\nLimite inferior = -inf \n Limite superior = %f"%result
         x_area = np.linspace(chi2.ppf(lim_inf, ngl), result, 350)
         y_area = chi2.pdf(x_area, ngl)
-        return s, x_plot, y_plot, x_area, y_area
+        return s, x_plot, y_plot, x_area, y_area, f"Chi² com NGL = {int(ngl)}", "Chi²", "Densidade de probabilidade"
 
     elif f == 1:
         # If it's Red Chi²
@@ -105,86 +106,89 @@ def interpreter_calculator(f, opt, nc, ngl, mean, std):
         y_plot = chi2.pdf(x_plot, ngl)
         x_plot = x_plot/ngl
         y_plot = y_plot*ngl
+        s      = f"Calculadora de intervalo de confiança do Chi quadrado reduzido.\nNível de confiança {nc}.\nNível de significância {1 - nc:.7}\n"
 
         if opt == 0:
             result = calc_chi2r_sim(ngl, nc)
-            s      = "Limite inferior = %f \n Limite superior  = %f"%(result[0]/ngl, result[1]/ngl)
+            s     += "Intervalo simétrico.\nLimite inferior = %f \n Limite superior  = %f"%(result[0]/ngl, result[1]/ngl)
             x_area = np.linspace(result[0], result[1], 350)
             y_area = chi2.pdf(x_area, ngl)*ngl
             x_area = x_area/ngl
-            return s, x_plot, y_plot, x_area, y_area
+            return s, x_plot, y_plot, x_area, y_area, f"Chi² reduzido com NGL = {int(ngl)}", "Chi² reduzido", "Densidade de probabilidade"
 
         elif opt == 1:
             result = calc_chi2r_lim_inf(ngl, nc)
-            s      = "Limite inferior = %f \n Limite superior = inf"%(result/ngl)
+            s     += "Apenas limite inferior.\nLimite inferior = %f \n Limite superior = inf"%(result/ngl)
             x_area = np.linspace(result, chi2.ppf(lim_sup, ngl), 350)
             y_area = chi2.pdf(x_area, ngl)*ngl
             x_area = x_area/ngl
-            return s, x_plot, y_plot, x_area, y_area 
+            return s, x_plot, y_plot, x_area, y_area, f"Chi² reduzido com NGL = {int(ngl)}", "Chi² reduzido", "Densidade de probabilidade"
 
         result = calc_chi2r_lim_sup(ngl, nc)
-        s      = "Limite inferior = -inf \n Limite superior = %f"%(result/ngl)
+        s     += "Apenas limite superior.\nLimite inferior = -inf \n Limite superior = %f"%(result/ngl)
         x_area = np.linspace(chi2.ppf(lim_inf, ngl), result, 350)
         y_area = chi2.pdf(x_area, ngl)*ngl
         x_area = x_area/ngl
-        return s, x_plot, y_plot, x_area, y_area
+        return s, x_plot, y_plot, x_area, y_area, f"Chi² reduzido com NGL = {int(ngl)}", "Chi² reduzido", "Densidade de probabilidade"
 
     elif f == 2:
         # If it's Gaussian
         x_plot = np.linspace(norm.ppf(lim_inf) , norm.ppf(lim_sup), 350)
         y_plot = norm.pdf(x_plot)
         x_plot = (x_plot * std) + mean
+        s      = f"Calculadora de intervalo de confiança de Gaussiana.\nNível de confiança {nc}.\nNível de significância {1 - nc:.7}\n"
 
         if opt == 0:
             result = calc_gauss_sim(nc)
-            s      = "Limite inferior = %f \n Limite superior  = %f"%(result[0]*std + mean, result[1]*std + mean)
+            s     += "Intervalo simétrico.\nLimite inferior = %f \n Limite superior  = %f"%(result[0]*std + mean, result[1]*std + mean)
             x_area = np.linspace(result[0], result[1], 350)
             y_area = norm.pdf(x_area)
             x_area = x_area*std + mean
-            return s, x_plot, y_plot/std, x_area, y_area/std
+            return s, x_plot, y_plot/std, x_area, y_area/std, "Gaussiana", "z", "Densidade de probabilidade"
 
         elif opt == 1:
             result = calc_gauss_lim_inf(nc)
-            s      = "Limite inferior = %f \n Limite superior = inf"%(result*std + mean)
+            s     += "Apenas limite inferior.\nLimite inferior = %f \n Limite superior = inf"%(result*std + mean)
             x_area = np.linspace(result, norm.ppf(lim_sup), 350)
             y_area = norm.pdf(x_area)
             x_area = x_area*std + mean
-            return s, x_plot, y_plot/std, x_area, y_area/std
+            return s, x_plot, y_plot/std, x_area, y_area/std, "Gaussiana", "z", "Densidade de probabilidade"
 
         result = calc_gauss_lim_sup(nc)
-        s      = "Limite inferior = -inf \n Limite superior = %f"%(result*std + mean)
+        s     += "Apenas limite superior.\nLimite inferior = -inf \n Limite superior = %f"%(result*std + mean)
         x_area = np.linspace(result, norm.ppf(lim_inf), 350)
         y_area = norm.pdf(x_area)
         x_area = x_area*std + mean
-        return s, x_plot, y_plot/std, x_area, y_area/std
+        return s, x_plot, y_plot/std, x_area, y_area/std, "Gaussiana", "z", "Densidade de probabilidade"
 
     # If it's Student:    
     x_plot = np.linspace(t.ppf(lim_inf, df = ngl), t.ppf(lim_sup, df = ngl), 350)
     y_plot = t.pdf(x_plot, df = ngl)
     x_plot = x_plot * std + mean
+    s      = f"Calculadora de intervalo de confiança de Student.\nNível de confiança {nc} | Nível de significância {1 - nc:.7}\n"
 
     if opt == 0:
         result = calc_t_sim(ngl, nc)
-        s      = "Limite inferior = %f \n Limite superior  = %f"%(result[0]*std + mean, result[1]*std + mean)
+        s     += "Intervalo simétrico.\nLimite inferior = %f \n Limite superior  = %f"%(result[0]*std + mean, result[1]*std + mean)
         x_area = np.linspace(result[0], result[1], 350)
         y_area = t.pdf(x_area, df = ngl)
         x_area = x_area*std + mean
-        return s, x_plot, y_plot/std, x_area, y_area/std
+        return s, x_plot, y_plot/std, x_area, y_area/std, "Student", "t", "Densidade de probabilidade"
     
     elif opt == 1:
             result = calc_t_lim_inf(ngl, nc)
-            s      = "Limite inferior = %f \n Limite superior = inf"%(result*std + mean)
+            s     += "Apenas limite inferior.\nLimite inferior = %f \n Limite superior = inf"%(result*std + mean)
             x_area = np.linspace(result, t.ppf(lim_sup, df = ngl), 350)
             y_area = t.pdf(x_area, df = ngl)
             x_area = x_area*std + mean
-            return s, x_plot, y_plot/std, x_area, y_area/std
+            return s, x_plot, y_plot/std, x_area, y_area/std, "Student", "t", "Densidade de probabilidade"
 
     result = calc_t_lim_sup(ngl, nc)
-    s      = "Limite inferior = -inf \n Limite superior = %f"%(result*std + mean)
+    s     += "Apenas limite superior.\nLimite inferior = -inf \n Limite superior = %f"%(result*std + mean)
     x_area = np.linspace(result, t.ppf(lim_inf, df = ngl), 350)
     y_area = t.pdf(x_area, df = ngl)
     x_area = x_area*std + mean
-    return s, x_plot, y_plot/std, x_area, y_area/std
+    return s, x_plot, y_plot/std, x_area, y_area/std, "Student", "t", "Densidade de probabilidade"
 
 class CalculatorCanvas(QObject):
     """ A bridge class to interact with the plot in python
@@ -210,7 +214,7 @@ class CalculatorCanvas(QObject):
     #     self.canvas.draw_idle()
         
 
-def Plot(displayBridge, x, y, x_area, y_area):
+def Plot(displayBridge, x, y, x_area, y_area, title, xlabel, ylabel):
     displayBridge.set_tight_layout()
     displayBridge.clearAxis()
     displayBridge.switchAxes(hideAxes2 = True)
@@ -218,5 +222,7 @@ def Plot(displayBridge, x, y, x_area, y_area):
     displayBridge.axes1.grid(True)
     displayBridge.axes1.fill_between(x_area, y_area, color = 'blue', alpha = 0.3)
     displayBridge.axes1.plot(x, y, lw = 1, c = 'red')
-    displayBridge.axes1.set_title("P.D.F.")
+    displayBridge.axes1.set_title("P.D.F. " + title)
+    displayBridge.axes1.set(xlabel = xlabel, ylabel = ylabel)
+    displayBridge.setAxesPropsWithoutAxes2(None, None, None, None, None, None, None, False, False)
     displayBridge.canvas.draw_idle()

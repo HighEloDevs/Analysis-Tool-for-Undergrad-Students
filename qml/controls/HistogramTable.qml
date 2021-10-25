@@ -43,6 +43,9 @@ Item{
             fc: "#006e00",
             lw: 2,
             ec: "#006e00",
+            rangexmin: "",
+            rangexmax: "",
+            nbins: "10",
         },
         legend: "",
         visible: true,
@@ -166,6 +169,7 @@ Item{
                                             nameFilters: ["Arquivos de dados (*.txt *.tsv *.csv)"]
 
                                             onAccepted:{
+                                                globalManager.setLastFolder(fileUrl)
                                                 // Response from backend
                                                 var res = hist.checkData(fileUrl)
                                                 if (res["isValid"]){
@@ -188,11 +192,13 @@ Item{
                                         }
 
                                         onClicked: {
+                                            chooseProject.folder = globalManager.getLastFolder()
                                             chooseProject.open()
                                             iconBtn.signalFromBtn = true
                                         }
                                         Component.onCompleted: {
                                             if(__btn){
+                                                chooseProject.folder = globalManager.getLastFolder()
                                                 chooseProject.open()
                                             }
                                             dataDisplay.setProperty(index, "__btn", false)

@@ -241,12 +241,18 @@ class Multiplot(QObject):
         self.logx          = graph_options['logx']
         self.logy          = graph_options['logy']
 
-        self.xmin          = mk_float(graph_options['xmin'])
-        self.xmax          = mk_float(graph_options['xmax'])
-        self.xdiv          = mk_int(graph_options['xdiv'])
-        self.ymin          = mk_float(graph_options['ymin'])
-        self.ymax          = mk_float(graph_options['ymax'])
-        self.ydiv          = mk_int(graph_options['ydiv'])
+        self.xmin          = graph_options['xmin']
+        self.xmax          = graph_options['xmax']
+        self.xdiv          = graph_options['xdiv']
+        self.ymin          = graph_options['ymin']
+        self.ymax          = graph_options['ymax']
+        self.ydiv          = graph_options['ydiv']
+        self.xmin          = graph_options['xmin']
+        self.xmax          = graph_options['xmax']
+        self.xdiv          = graph_options['xdiv']
+        self.ymin          = graph_options['ymin']
+        self.ymax          = graph_options['ymax']
+        self.ydiv          = graph_options['ydiv']
         self.title         = graph_options['title']
         self.xaxis         = graph_options['xaxis']
         self.yaxis         = graph_options['yaxis']
@@ -257,12 +263,12 @@ class Multiplot(QObject):
         self.displayBridge.clearAxis()
         self.displayBridge.switchAxes(hideAxes2 = True)
         self.displayBridge.grid = self.grid
-        self.displayBridge.setAxesPropsWithoutAxes2(self.xmin, self.xmax, self.xdiv,
-         self.ymin, self.ymax, self.ydiv, self.grid, self.logx, self.logy)
 
         for i in range(len(self.Multi_Model.models)):
             if self.Multi_Model.arquivos[i]['marker'] == True:
                 self.Plot_sx_sy(self.Multi_Model.dfs[i], self.Multi_Model.arquivos[i])
+        self.displayBridge.setAxesPropsWithoutAxes2(self.xmin, self.xmax, self.xdiv,
+         self.ymin, self.ymax, self.ydiv, self.grid, self.logx, self.logy)
         left, right = self.displayBridge.axes1.get_xlim()
         self.displayBridge.axes1.set_xlim(left = left, right = right)
         self.displayBridge.axes1.set_xlim(left = left, right = right)

@@ -25,7 +25,10 @@ Popup {
         fill:fill.checked,        
         fc:String(fc.primaryColor),     
         lw:lw.value,            
-        ec:String(ec.primaryColor),     
+        ec:String(ec.primaryColor),  
+        rangexmin:rangexmin.text,
+        rangexmax:rangexmax.text,
+        nbins:nbins.text,
     })
 
     function setData(data){
@@ -85,7 +88,7 @@ Popup {
             }
 
             GridLayout{
-                Layout.margins: 10
+                Layout.margins: 5
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 rowSpacing: 15
@@ -149,16 +152,6 @@ Popup {
                     w: 22
                 }
 
-                ComboBoxCustom{
-                    id: hatch
-                    Layout.columnSpan: 12
-                    Layout.fillWidth: true
-                    Layout.alignment: Qt.AlignCenter
-                    highlightColor: Colors.mainColor2
-                    label: "Textura"
-                    model: ["", "/", "\\", "|", "-", "+", "x", "o", "O", ".", "*"]
-                }
-
                 TextButton{ 
                     id: fc
                     Layout.fillWidth: true
@@ -201,6 +194,46 @@ Popup {
                             }
                         }
                     onClicked: colorDialog2.open()
+                }
+
+                ComboBoxCustom{
+                    id: hatch
+                    Layout.columnSpan: 6
+                    Layout.fillWidth: true
+                    Layout.alignment: Qt.AlignCenter
+                    highlightColor: Colors.mainColor2
+                    label: "Textura"
+                    model: ["", "/", "\\", "|", "-", "+", "x", "o", "O", ".", "*"]
+                }
+                TextInputCustom{
+                    id: nbins
+                    Layout.columnSpan: 6
+                    Layout.fillWidth: true
+                    focusColor: Colors.mainColor2
+                    title: 'Número de canais'
+                    textHolder: 'Padrão = 10'
+                    defaultColor: '#fff'
+                    textColor: '#fff'
+                }
+                TextInputCustom{
+                    id: rangexmin
+                    Layout.columnSpan: 6
+                    Layout.fillWidth: true
+                    focusColor: Colors.mainColor2
+                    title: 'Contagem - X Mín.'
+                    textHolder: 'Padrão = valor mínimo do conjunto'
+                    defaultColor: '#fff'
+                    textColor: '#fff'
+                }
+                TextInputCustom{
+                    id: rangexmax
+                    Layout.columnSpan: 6
+                    Layout.fillWidth: true
+                    focusColor: Colors.mainColor2
+                    title: 'Contagem - X Máx.'
+                    textHolder: 'Padrão = valor máximo do conjunto'
+                    defaultColor: '#fff'
+                    textColor: '#fff'
                 }
             }
         }

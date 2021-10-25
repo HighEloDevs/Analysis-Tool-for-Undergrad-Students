@@ -17,8 +17,12 @@ Popup {
     bottomInset: 0
     topInset: 0
     margins: 5
-    // width: 500
-    // height: 500
+
+    onAboutToShow:{
+        let canvasSize = canvas.get_canvas_size()
+        figWidth.text = canvasSize[0]
+        figHeight.text = canvasSize[1]
+    }
 
     background: Rectangle {
         anchors.fill: parent
@@ -68,10 +72,21 @@ Popup {
             Layout.leftMargin: 10
             Layout.rightMargin: 10
             columns: 12
+            rows: 10
+
+            Text{
+                Layout.columnSpan: 12
+                Layout.alignment: Qt.AlignHCenter
+                text: "Dimensões do gráfico"
+                font.bold: true
+                font.pointSize: 11
+                color: "#a4a4a4"
+            }
             
             TextInputCustom{
                 id: figWidth
                 Layout.columnSpan: 6
+                Layout.fillWidth: true
                 focusColor: Colors.mainColor2
                 textHolder: ""
                 title: "Largura (px)"
@@ -82,6 +97,7 @@ Popup {
             TextInputCustom{
                 id: figHeight
                 Layout.columnSpan: 6
+                Layout.fillWidth: true
                 focusColor: Colors.mainColor2
                 textHolder: ""
                 title: "Altura (px)"
@@ -89,7 +105,63 @@ Popup {
                 defaultColor: "#fff"
                 validator: RegExpValidator{regExp: /^[1-9]+([0-9]+)?$/}
             }
-            
+
+            Text{
+                Layout.columnSpan: 12
+                Layout.alignment: Qt.AlignHCenter
+                text: "Distância normalizada do gráfico às bordas"
+                font.bold: true
+                font.pointSize: 11
+                color: "#a4a4a4"
+            }
+            TextInputCustom{
+                id: paddingTop
+                Layout.columnSpan: 6
+                Layout.fillWidth: true
+                focusColor: Colors.mainColor2
+                textHolder: ""
+                text: "0.92"
+                title: "Topo"
+                textColor: "#fff"
+                defaultColor: "#fff"
+                validator: RegExpValidator{regExp: /^[1-9]+([0-9]+)?$/}
+            }
+            TextInputCustom{
+                id: paddingBottom
+                Layout.columnSpan: 6
+                Layout.fillWidth: true
+                focusColor: Colors.mainColor2
+                textHolder: ""
+                text: "0.12"
+                title: "Baixo"
+                textColor: "#fff"
+                defaultColor: "#fff"
+                validator: RegExpValidator{regExp: /^[1-9]+([0-9]+)?$/}
+            }
+            TextInputCustom{
+                id: paddingLeft
+                Layout.columnSpan: 6
+                Layout.fillWidth: true
+                focusColor: Colors.mainColor2
+                textHolder: ""
+                text: "0.10"
+                title: "Esquerda"
+                textColor: "#fff"
+                defaultColor: "#fff"
+                validator: RegExpValidator{regExp: /^[1-9]+([0-9]+)?$/}
+            }
+            TextInputCustom{
+                id: paddingRight
+                Layout.columnSpan: 6
+                Layout.fillWidth: true
+                focusColor: Colors.mainColor2
+                textHolder: ""
+                text: "0.95"
+                title: "Direita"
+                textColor: "#fff"
+                defaultColor: "#fff"
+                validator: RegExpValidator{regExp: /^[1-9]+([0-9]+)?$/}
+            }
         }
 
         RowLayout{
@@ -104,14 +176,13 @@ Popup {
 
                 onClicked: {
                     canvas.resize_canvas()
+                    let defaultValues  = canvas.getPaddings().split(";")
+                    paddingTop.text    = defaultValues[0]
+                    paddingBottom.text = defaultValues[1]
+                    paddingLeft.text   = defaultValues[2]
+                    paddingRight.text  = defaultValues[3]
                 }
             }
-            // TextButton{
-            //     radius: 0
-            //     primaryColor: "transparent"
-            //     textColor: "#FF5252"
-            //     texto: "Descartar"
-            // }
             TextButton{
                 radius: 0
                 primaryColor: "transparent"
@@ -119,6 +190,7 @@ Popup {
                 texto: "Aplicar"
                 onClicked: {
                     canvas.set_canvas_size(Number(figWidth.text), Number(figHeight.text))
+                    canvas.setPaddings(paddingTop.text, paddingBottom.text, paddingLeft.text, paddingRight.text)
                 }
             }
         }

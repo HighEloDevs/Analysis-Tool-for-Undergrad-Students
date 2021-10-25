@@ -10,11 +10,9 @@ Rectangle {
     id: root
     anchors.fill: parent
     color: Colors.color3
-    // border.width: 2
-    // border.color: Colors.color2
 
     property var plotData: ({
-        key   : "2-b-hist",
+        key   : "0.2-hist",
         props: {
             id    : id.text,
             title : title.text,
@@ -29,9 +27,6 @@ Rectangle {
             ymin  : ymin.text,
             ymax  : ymax.text,
             ydiv  : ydiv.text,
-            rangexmin : rangexmin.text,
-            rangexmax : rangexmax.text,
-            nbins     : nbins.text,
             histType        : histType.currentText,
             histAlign       : histAlign.currentText,
             histOrientation : histOrientation.currentText,
@@ -96,9 +91,13 @@ Rectangle {
                         nameFilters: ["Arquivos JSON (*.json)"]
                         onAccepted:{
                             hist.load(projectOpen.fileUrl)
+                            globalManager.setLastFolder(projectOpen.fileUrl)
                         }
                     }
-                    onClicked: projectOpen.open()
+                    onClicked: {
+                        projectOpen.folder = globalManager.getLastFolder()
+                        projectOpen.open()
+                    }
                 }
                 TextButton{
                     Layout.fillWidth: true
@@ -133,12 +132,14 @@ Rectangle {
                         selectExisting: false
                         nameFilters: ["Arquivo JSON (*.json)"]
                         onAccepted: {
+                            globalManager.setLastFolder(projectSaver.fileUrl)
                             plotData["data"] = dataTable.getDataShaped()
                             hist.saveAs(fileUrl, plotData)
                         }
                     }
 
                     onClicked:{
+                        projectSaver.folder = globalManager.getLastFolder()
                         projectSaver.open()
                     }
                 }
@@ -193,37 +194,6 @@ Rectangle {
                     columns: 12
                     rowSpacing: 5
                     rows: 20
-
-                    TextInputCustom{
-                        id: rangexmin
-                        Layout.columnSpan: 4
-                        Layout.fillWidth: true
-                        focusColor: Colors.mainColor2
-                        title: 'Contagem - X Mín.'
-                        textHolder: ''
-                        defaultColor: '#fff'
-                        textColor: '#fff'
-                    }
-                    TextInputCustom{
-                        id: rangexmax
-                        Layout.columnSpan: 4
-                        Layout.fillWidth: true
-                        focusColor: Colors.mainColor2
-                        title: 'Contagem - X Máx.'
-                        textHolder: ''
-                        defaultColor: '#fff'
-                        textColor: '#fff'
-                    }
-                    TextInputCustom{
-                        id: nbins
-                        Layout.columnSpan: 4
-                        Layout.fillWidth: true
-                        focusColor: Colors.mainColor2
-                        title: 'Número de canais'
-                        textHolder: ''
-                        defaultColor: '#fff'
-                        textColor: '#fff'
-                    }
                     ComboBoxCustom{
                         id: histType
                         Layout.columnSpan: 6
@@ -367,14 +337,6 @@ Rectangle {
                                 defaultColor: '#fff'
                                 textColor: '#fff'
                             }
-                            // CheckBoxCustom{
-                            //     id: norm
-                            //     Layout.columnSpan: 2
-                            //     Layout.alignment: Qt.AlignCenter
-                            //     texto: "Densidade"
-                            //     checked: false
-                            //     w: 22
-                            // }
                             CheckBoxCustom{
                                 id: logy
                                 Layout.columnSpan: 2
@@ -449,16 +411,16 @@ Rectangle {
                 grid.checkState = 0
                 logx.checkState = 0
                 logy.checkState = 0
-                norm.checkState = 0
+                // norm.checkState = 0
                 xmin.text = ""
                 xmax.text = ""
                 xdiv.text = ""
                 ymin.text = ""
                 ymax.text = ""
                 ydiv.text = ""
-                rangexmin.text = ""
-                rangexmax.text = ""
-                nbins.text = ""
+                // rangexmin.text = ""
+                // rangexmax.text = ""
+                // nbins.text = ""
                 histType.currentIndex = histType.find("bar")
                 histAlign.currentIndex = histAlign.find("Centro")
                 histOrientation.currentIndex = histOrientation.find("Vertical")
@@ -471,16 +433,16 @@ Rectangle {
                 grid.checked = p["grid"]
                 logx.checked = p["logx"]
                 logy.checked = p["logy"]
-                norm.checked = p["norm"]
+                // norm.checked = p["norm"]
                 xmin.text =  p["xmin"]
                 xmax.text =  p["xmax"]
                 xdiv.text =  p["xdiv"]
                 ymin.text =  p["ymin"]
                 ymax.text =  p["ymax"]
                 ydiv.text =  p["ydiv"]
-                rangexmin.text =  p["rangexmin"]
-                rangexmax.text =  p["rangexmax"]
-                nbins.text =  p["nbins"]
+                // rangexmin.text =  p["rangexmin"]
+                // rangexmax.text =  p["rangexmax"]
+                // nbins.text =  p["nbins"]
                 histType.currentIndex = histType.find(p["histType"])
                 histAlign.currentIndex = histAlign.find(p["histAlign"])
                 histOrientation.currentIndex = histOrientation.find(p["histOrientation"])

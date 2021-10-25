@@ -76,21 +76,22 @@ Popup{
             verticalAlignment: Text.AlignVCenter
             text: root.message
             color: '#fff'
-            font.pointSize: 13
-            minimumPointSize: 10
+            font.pointSize: 12
             fontSizeMode: Text.Fit
+            minimumPointSize: 10
             maximumLineCount: 2
             wrapMode: Text.Wrap
         }
         TextButton{
             Layout.fillHeight: true
             Layout.alignment: Qt.AlignVCenter
-            primaryColor: root.dynamicColor
-            hoverColor: root.dynamicColor
-            clickColor: root.dynamicColor
+            primaryColor: "transparent"
+            hoverColor: "transparent"
+            clickColor: "transparent"
             textColor: '#fff'
             texto: 'Fechar'
             textSize: 19
+            dropShadow: false
             onClicked: root.close()
         }
     }

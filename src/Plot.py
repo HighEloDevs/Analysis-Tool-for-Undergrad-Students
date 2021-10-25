@@ -81,7 +81,8 @@ class SinglePlot(QObject):
                 'wsy'        : True,
                 'xmin'       : '',
                 'xmax'       : '',
-                'parameters' : {}
+                'parameters' : {},
+                'adjust'     : True
             },
             'data': []
         }
@@ -93,21 +94,18 @@ class SinglePlot(QObject):
         canvasProps = plotData['canvasProps']
         dataProps   = plotData['dataProps']
         fitProps    = plotData['fitProps']
-        for i in ["xmin", "xmax", "ymin", "ymax", "resmin", "resmax"]:
-            canvasProps[i] = self.makeFloat(canvasProps[i])
-        for i in ["xdiv", "ydiv"]:
-            canvasProps[i] = self.makeInt(canvasProps[i])
+        # for i in ["xmin", "xmax", "ymin", "ymax", "resmin", "resmax"]:
+        #     canvasProps[i] = self.makeFloat(canvasProps[i])
+        # for i in ["xdiv", "ydiv"]:
+        #     canvasProps[i] = self.makeInt(canvasProps[i])
 
         # Loading data from the table
         self.model.loadDataTable(plotData['data'])
 
         # Getting function to fit
         # Anti-dummies system
-        fitProps['expr'] = fitProps['expr'].replace('^', '**')
-        fitProps['expr'] = fitProps['expr'].replace('arctan', 'atan')
-        fitProps['expr'] = fitProps['expr'].replace('arcsin', 'asin')
-        fitProps['expr'] = fitProps['expr'].replace('arccos', 'acos')
-        fitProps['expr'] = fitProps['expr'].replace('sen', 'sin')
+        fitProps['expr'] = fitProps['expr'].replace('^', '**').replace('arctan', 'atan').replace('arcsin', 'asin')
+        fitProps['expr'] = fitProps['expr'].replace('arccos', 'acos').replace('sen', 'sin').replace('raiz', 'sqrt')
         expIndVar = fitProps['expr'].split(";")
         # Setting expression
         if len(expIndVar) == 2:
@@ -168,10 +166,13 @@ class SinglePlot(QObject):
             props = json.load(file)
 
         if "key" in props:
-            if props["key"][0] != "2":
+            if props["key"] != "2-b":
                 self.msg.raiseWarn("O carregamento de arquivos antigos está limitado à uma versão anterior. Adaptação feita automaticamente.")
             if props["key"].split('-')[-1] == 'multiplot':
                 self.msg.raiseError("O projeto carregado pertence ao multiplot, esse arquivo é incompatível.")
+                return 0
+            elif props["key"].split('-')[-1] == 'hist':
+                self.msg.raiseError("O projeto carregado pertence ao histograma, esse arquivo é incompatível.")
                 return 0
             # Loading data from the project
             self.model.load_data(df_array=props['data'])
@@ -221,6 +222,18 @@ class SinglePlot(QObject):
         props_tmp['data']                         = pd.read_json(props['data'], dtype=str)
 
         return props_tmp
+
+    def makeFloat(self, var, value = 0.):
+        try:
+            return float(var)
+        except:
+            return value
+            
+    def makeInt(self, var, value = 0):
+        try:
+            return int(var)
+        except:
+            return value
 
     @pyqtSlot(QJsonValue, result=int)
     def save(self, props):
@@ -305,16 +318,6 @@ class SinglePlot(QObject):
         except:
             pass
         
-        s, x, y, x_area, y_area = interpreter_calculator(functionDict[function], methodDict[opt1], nc, ngl, mean, std)
-        Plot(self.canvas, x, y, x_area, y_area)
+        s, x, y, x_area, y_area, title, xlabel, ylabel = interpreter_calculator(functionDict[function], methodDict[opt1], nc, ngl, mean, std)
+        Plot(self.canvas, x, y, x_area, y_area, title, xlabel, ylabel)
         self.writeCalculator.emit(s)
-    def makeFloat(self, var, value = 0.):
-        try:
-            return float(var)
-        except:
-            return value
-    def makeInt(self, var, value = 0):
-        try:
-            return int(var)
-        except:
-            return value

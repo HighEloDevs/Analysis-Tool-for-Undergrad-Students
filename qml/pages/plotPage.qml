@@ -60,12 +60,13 @@ Item {
                                     resmax    : pageProp.resMax.text,
                                 },
                                 fitProps: {
-                                    expr : pageFunc.expr.text,
-                                    p0   : pageFunc.initParams.text,
-                                    wsx  : pageFunc.sigmax.checked,
-                                    wsy  : pageFunc.sigmay.checked,
-                                    xmin : pageFunc.xmin.text,
-                                    xmax : pageFunc.xmax.text,
+                                    expr   : pageFunc.expr.text,
+                                    p0     : pageFunc.initParams.text,
+                                    wsx    : pageFunc.sigmax.checked,
+                                    wsy    : pageFunc.sigmay.checked,
+                                    xmin   : pageFunc.xmin.text,
+                                    xmax   : pageFunc.xmax.text,
+                                    adjust : pageFunc.adjust.checked,
                                 },
                                 data : table.dataShaped
                             })
@@ -166,7 +167,6 @@ Item {
                             FileDialog{
                                 id: projectOpen
                                 title: "Escolha o projeto"
-                                folder: shortcuts.desktop
                                 selectMultiple: false
                                 nameFilters: ["Arquivos JSON (*.json)"]
                                 onAccepted:{
@@ -174,9 +174,13 @@ Item {
                                     middleTabs.pageFunc.info = ''
                                     middleTabs.pageFunc.clearTableParams()
                                     singlePlot.load(projectOpen.fileUrl)
+                                    globalManager.setLastFolder(projectOpen.fileUrl)
                                 }
                             }
-                            onClicked: projectOpen.open()
+                            onClicked: {
+                                projectOpen.folder = globalManager.getLastFolder()
+                                projectOpen.open()
+                            }
                         }
                         TextButton{
                             id: btnSave
@@ -210,10 +214,14 @@ Item {
                                 selectExisting: false
                                 nameFilters: ["Arquivo JSON (*.json)"]
                                 onAccepted: {
+                                    globalManager.setLastFolder(projectSaver.fileUrl)
                                     singlePlot.saveAs(fileUrl, plotData)
                                 }
                             }
-                            onClicked: projectSaver.open()
+                            onClicked: {
+                                projectSaver.folder = globalManager.getLastFolder()
+                                projectSaver.open()
+                            }
                         }
                         TextInputCustom{
                             id: nomeProjeto
@@ -242,11 +250,13 @@ Item {
                                 nameFilters: ["Arquivos de dados (*.txt *.csv *.tsv)"]
                                 onAccepted:{
                                     table.clear()
+                                    globalManager.setLastFolder(fileOpen.fileUrl)
                                     model.load_data(fileOpen.fileUrl)
                                 }
                             }
 
                             onClicked:{
+                                fileOpen.folder = globalManager.getLastFolder()
                                 fileOpen.open()
                             }
                         }
@@ -291,6 +301,18 @@ Item {
         function onFillDataTable(x, y, sy, sx, isEditable, fileName){
             label_fileName.text = fileName
             table.addRow(x, y, sy, sx, Boolean(Number(isEditable)))
+        }
+
+        function onUploadData(data, fileName){
+            label_fileName.text = fileName
+            let dataLength = data['x'].length
+            if (dataLength > 150) messageHandler.raiseWarn(`Seus ${dataLength} dados são poderesos demais, apenas as 150 primeiras linhas serão mostradas na tabela.`)
+            for (let i = 0; i < dataLength; i++){
+                if (i < 150)
+                    table.addRow(data['x'][i], data['y'][i], (data['sy'] === undefined ? '0':data['sy'][i]), (data['sx'] === undefined ? '0':data['sx'][i]), true)
+                else
+                    table.addExtraRow(data['x'][i], data['y'][i], (data['sy'] === undefined ? '0':data['sy'][i]), (data['sx'] === undefined ? '0':data['sx'][i]))
+            }
         }
     }
 
@@ -364,6 +386,7 @@ Item {
             pageFunc.initParams.text        = props['fitProps']['p0']
             pageFunc.sigmax.checked         = props['fitProps']['wsx']
             pageFunc.sigmay.checked         = props['fitProps']['wsy']
+            pageFunc.adjust.checked         = props['fitProps']['adjust']
             pageFunc.xmin.text              = props['fitProps']['xmin']
             pageFunc.xmax.text              = props['fitProps']['xmax']
         }

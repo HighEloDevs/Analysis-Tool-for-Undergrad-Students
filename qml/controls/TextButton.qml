@@ -14,6 +14,7 @@ Button{
     property color hoverColor: 'blue'
     property color clickColor: 'red'
     property color textColor: 'white'
+    property bool dropShadow: true
     property string texto: 'Botão'
     property int textSize: 14
     property alias radius: bg.radius
@@ -81,5 +82,6 @@ Button{
         samples: 17
         color: "#212121"
         source: bg
+        visible: root.dropShadow
     }
 }

@@ -23,30 +23,39 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-# from matplotlib_backend_qtquick.qt_compat import QtCore
-from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot
+from PyQt5.QtCore import QObject, pyqtSlot, QUrl
+import os
 
-class MessageHandler(QObject):
-    '''
-        Class that sends all messages (warning, errors, fatal errors) from the backend to frontend
-    '''
-
-    # Signals to the frontend
-    # showMessage() shows a snackbar with the message and respective color to the type
-    # Types -> warn, error or success
-    showMessage = pyqtSignal(str, str, arguments=['message', 'type'])
-
+class GlobalManager(QObject):
     def __init__(self) -> None:
         super().__init__()
+        self.atus_dir = os.path.join(os.path.expanduser("~/Documents"), "ATUS")
+        self.last_folder = self.atus_dir
+
+        # Checking if the ATUS's directory exists
+        if not os.path.exists(self.atus_dir):
+            try:
+                os.mkdir(self.atus_dir)
+            except:
+                print("Cannot create ATUS's directory")
+                self.atus_dir = os.path.expanduser("~\Desktop")
 
     @pyqtSlot(str)
-    def raiseWarn(self, message=''):
-        self.showMessage.emit(message, 'warn')
+    def setLastFolder(self, path):
+        '''Set last folder opened by user'''
+        path = QUrl(path).toLocalFile()
 
-    @pyqtSlot(str)
-    def raiseError(self, message=''):
-        self.showMessage.emit(message, 'error')
+        if os.path.isfile(path):
+            self.last_folder = os.path.split(path)[0]
+        else:
+            self.last_folder = path
 
-    @pyqtSlot(str)
-    def raiseSuccess(self, message=''):
-        self.showMessage.emit(message, 'success')
+    @pyqtSlot(result=QUrl)
+    def getLastFolder(self):
+        '''Get last folder opened by user'''
+        return QUrl.fromLocalFile(self.last_folder)
+
+    @pyqtSlot(result=QUrl)
+    def getAtusDir(self):
+        '''Get ATUS's directory'''
+        return QUrl.fromLocalFile(self.atus_dir)

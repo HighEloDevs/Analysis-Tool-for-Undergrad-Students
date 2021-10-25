@@ -149,6 +149,10 @@ Window {
         id: messageSnackbar
     }
 
+    PopupSuccess{
+        id: popupSuccess
+    }
+
     PopupUpdate {
         id: updatePopup
         anchors.centerIn: parent
@@ -191,198 +195,177 @@ Window {
                     Layout.fillHeight: true
                     Layout.rowSpan: 2
 
-                    MouseArea{
+                    ColumnLayout {
+                        id: layout_menu
                         anchors.fill: parent
-                        hoverEnabled: true
+                        spacing: 0
                         z: 1
+                        clip: true
 
-                        onEntered:{
-                            animationMenu.running = true
+                        Rectangle {
+                            id: logoContainer
+                            width: 70
+                            height: 60
+                            color: "#00000000"
+                            Layout.preferredHeight: 60
+                            Layout.fillHeight: false
+                            Layout.fillWidth: true
+
+                            IconButton{
+                                anchors.fill: parent
+                                primaryColor: "transparent"
+                                hoverColor: "transparent"
+                                clickColor: "transparent"
+                                iconUrl: "../../images/svg_images/menu_white_24dp.svg"
+                                iconWidth: 24
+                                r: 0
+
+                                onClicked: {
+                                    animationMenu.running = true
+                                }
+                            }
                         }
 
-                        onExited:{
-                            animationMenu.running = true
-                        }
+                        // api do google \/ :(
 
-                        ColumnLayout {
-                            id: layout_menu
-                            anchors.fill: parent
-                            spacing: 0
-                            z: 1
-                            clip: true
+                        // Rectangle{
+                        //     implicitHeight: 60
+                        //     Layout.fillWidth: true
 
-                            Rectangle {
-                                id: logoContainer
-                                width: 70
-                                height: 60
-                                color: "#00000000"
-                                Layout.preferredHeight: 60
-                                Layout.fillHeight: false
+                        //     clip: true
+
+                        //     color: Colors.color1
+
+                        //     GridLayout{
+                        //         anchors.fill : parent
+                        //         columns      : 3
+                        //         rows         : 2
+
+                        //         Rectangle{
+                        //             implicitWidth: 70
+                        //             Layout.alignment: Qt.AlignLeft
+                        //             Layout.fillHeight: true
+                        //             Layout.rowSpan: 2
+                        //             color: 'transparent'
+                        //             Image{
+                        //                 id: avatar
+                        //                 anchors.centerIn: parent
+                        //                 width: 40
+                        //                 height: 40
+                        //                 fillMode: Image.PreserveAspectFit
+                        //                 smooth: true
+                        //                 mipmap: true
+                        //                 source: 'https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png'
+                        //                 layer.enabled: true
+                        //                 layer.effect: OpacityMask {
+                        //                     maskSource: mask
+                        //                 }
+
+                        //                 Rectangle {
+                        //                     id: mask
+                        //                     anchors.fill: parent
+                        //                     radius: 250
+                        //                     visible: false
+                        //                 }
+                        //             }
+                        //         }
+
+                        //         Text{
+                        //             id: nameLabel
+                        //             Layout.topMargin: 13
+                        //             Layout.fillWidth: true
+                        //             text: 'Desconectado'
+                        //             color: 'white'
+                        //             elide: Text.ElideRight
+
+                        //             font.pointSize: 9
+                        //             font.bold: true
+                        //             // font.family: "Roboto Condensed"
+                        //         }
+
+                        //         TextButton{
+                        //             Layout.alignment: Qt.AlignRight
+                        //             Layout.rightMargin: 5
+                        //             Layout.rowSpan: 2
+
+                        //             texto: isGoogleConnected ? 'SAIR':'ENTRAR'
+                        //             primaryColor: 'transparent'
+                        //             hoverColor: 'transparent'
+                        //             clickColor: 'transparent'
+                        //             textColor: isGoogleConnected ? '#ba342b':'#48cf4d'
+                        //             textSize: 11
+
+                        //             onClicked: {
+                        //                 if(isGoogleConnected){
+                        //                     gdrive.logout()
+                        //                     // Setting default values
+                        //                     isGoogleConnected = false
+                        //                     nameLabel.text = 'Desconectado'
+                        //                     emailLabel.text = ''
+                        //                     avatar.source = 'https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png'
+
+                        //                 } else {
+                        //                     gdrive.login()
+                        //                 }
+                        //             }
+
+                        //         }
+
+                        //         Text{
+                        //             id: emailLabel
+                        //             Layout.bottomMargin: 13
+                        //             Layout.fillWidth: true
+                        //             text: ''
+                        //             color: 'white'
+                        //             elide: Text.ElideRight
+
+                        //             font.pointSize: 8
+                        //         }
+                        //     }
+                        // }
+
+                        Repeater{
+                            model: leftMenuBtns
+
+                            Component{
+                                id: button
+                                LeftMenuButton {
+                                    text            : rowModel.text
+                                    btnIconSource   : rowModel.icon
+                                    isActiveMenu    : rowModel.active
+                                    visible         : rowModel.visible
+                                    enabled         : rowModel.enabled
+                                    onClicked       : switchPage(rowModel.page, rowModel.canvas)
+                                }
+                            }
+
+                            Component{
+                                id: divider
+                                Rectangle {
+                                    color: "#00000000"
+                                }
+                            }
+                            
+                            delegate: Loader{
                                 Layout.fillWidth: true
+                                Layout.fillHeight: model.divider ? true:false
 
-                                Image {
-                                    id: logo
-                                    anchors.fill: parent
-                                    cache: true
-                                    smooth: true
-                                    mipmap: true
-                                    autoTransform: true
-                                    asynchronous: false
-                                    source: "../images/main_icon/ATUS_logo_preto.svg"
-                                    sourceSize.height: 55
-                                    sourceSize.width: 55
-                                    fillMode: Image.Pad
-                                }
+                                sourceComponent: model.divider ? leftMenuBtns.divider:button
 
-                                ColorOverlay{
-                                    id: logoOverlay
-                                    source: logo
-                                    cached: false
-                                    color: "#fff"
-                                    anchors.fill: parent
-                                    antialiasing: true
-                                }
+                                property var rowModel: model
                             }
-
-                            // Rectangle{
-                            //     implicitHeight: 60
-                            //     Layout.fillWidth: true
-
-                            //     clip: true
-
-                            //     color: Colors.color1
-
-                            //     GridLayout{
-                            //         anchors.fill : parent
-                            //         columns      : 3
-                            //         rows         : 2
-
-                            //         Rectangle{
-                            //             implicitWidth: 70
-                            //             Layout.alignment: Qt.AlignLeft
-                            //             Layout.fillHeight: true
-                            //             Layout.rowSpan: 2
-                            //             color: 'transparent'
-                            //             Image{
-                            //                 id: avatar
-                            //                 anchors.centerIn: parent
-                            //                 width: 40
-                            //                 height: 40
-                            //                 fillMode: Image.PreserveAspectFit
-                            //                 smooth: true
-                            //                 mipmap: true
-                            //                 source: 'https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png'
-                            //                 layer.enabled: true
-                            //                 layer.effect: OpacityMask {
-                            //                     maskSource: mask
-                            //                 }
-
-                            //                 Rectangle {
-                            //                     id: mask
-                            //                     anchors.fill: parent
-                            //                     radius: 250
-                            //                     visible: false
-                            //                 }
-                            //             }
-                            //         }
-
-                            //         Text{
-                            //             id: nameLabel
-                            //             Layout.topMargin: 13
-                            //             Layout.fillWidth: true
-                            //             text: 'Desconectado'
-                            //             color: 'white'
-                            //             elide: Text.ElideRight
-
-                            //             font.pointSize: 9
-                            //             font.bold: true
-                            //             // font.family: "Roboto Condensed"
-                            //         }
-
-                            //         TextButton{
-                            //             Layout.alignment: Qt.AlignRight
-                            //             Layout.rightMargin: 5
-                            //             Layout.rowSpan: 2
-
-                            //             texto: isGoogleConnected ? 'SAIR':'ENTRAR'
-                            //             primaryColor: 'transparent'
-                            //             hoverColor: 'transparent'
-                            //             clickColor: 'transparent'
-                            //             textColor: isGoogleConnected ? '#ba342b':'#48cf4d'
-                            //             textSize: 11
-
-                            //             onClicked: {
-                            //                 if(isGoogleConnected){
-                            //                     gdrive.logout()
-                            //                     // Setting default values
-                            //                     isGoogleConnected = false
-                            //                     nameLabel.text = 'Desconectado'
-                            //                     emailLabel.text = ''
-                            //                     avatar.source = 'https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png'
-
-                            //                 } else {
-                            //                     gdrive.login()
-                            //                 }
-                            //             }
-
-                            //         }
-
-                            //         Text{
-                            //             id: emailLabel
-                            //             Layout.bottomMargin: 13
-                            //             Layout.fillWidth: true
-                            //             text: ''
-                            //             color: 'white'
-                            //             elide: Text.ElideRight
-
-                            //             font.pointSize: 8
-                            //         }
-                            //     }
-                            // }
-
-                            Repeater{
-                                model: leftMenuBtns
-
-                                Component{
-                                    id: button
-                                    LeftMenuButton {
-                                        text            : rowModel.text
-                                        btnIconSource   : rowModel.icon
-                                        isActiveMenu    : rowModel.active
-                                        visible         : rowModel.visible
-                                        enabled         : rowModel.enabled
-                                        onClicked       : switchPage(rowModel.page, rowModel.canvas)
-                                    }
-                                }
-
-                                Component{
-                                    id: divider
-                                    Rectangle {
-                                        color: "#00000000"
-                                    }
-                                }
-                                
-                                delegate: Loader{
-                                    Layout.fillWidth: true
-                                    Layout.fillHeight: model.divider ? true:false
-
-                                    sourceComponent: model.divider ? leftMenuBtns.divider:button
-
-                                    property var rowModel: model
-                                }
-                                
-                            }
+                            
                         }
                     }
 
                     PropertyAnimation{
                         id: animationMenu
-                        target: leftMenu
                         property: "width"
+                        target: leftMenu
                         to: if(leftMenu.width == 70) return 300;
                             else return 70
                         duration: 300
-                        easing.type: Easing.OutQuint
+                        easing.type: Easing.OutCubic
                     }
                 }
 
@@ -391,7 +374,7 @@ Window {
                     width: 100
                     height: {
                         if(rowBtns.visible) rowBtns.height
-                        else topBarDescription.height
+                        else 0
                     }
                     Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
                     Layout.fillWidth: true
@@ -417,17 +400,18 @@ Window {
                             transformOrigin: Item.Center
                             spacing: 0
 
-                            Item {
+                            DragHandler{
+                                onActiveChanged: if(active){
+                                                    mainWindow.showNormal()
+                                                    mainWindow.startSystemMove() 
+                                                    }
+                            }
+
+                            Rectangle  {
                                 id: topBarHandler
-                                // color: "transparent"
+                                color: "transparent"
                                 Layout.fillHeight: true
                                 Layout.fillWidth: true
-                                DragHandler{
-                                    onActiveChanged: if(active){
-                                                        mainWindow.startSystemMove() 
-                                                        mainWindow.showNormal()
-                                                     }
-                                }
                                 MouseArea{
                                     visible: true
                                     anchors.fill: parent
@@ -475,8 +459,8 @@ Window {
                                 Layout.preferredWidth: 40
                                 Layout.fillHeight: true
                                 Layout.fillWidth: false
-                                iconUrl: '../../images/svg_images/minimize_icon.svg'
-                                iconWidth: 15
+                                iconUrl: '../../images/svg_images/minimize_white_24dp.svg'
+                                iconWidth: 20
                                 r: 0
 
                                 primaryColor: 'transparent'
@@ -493,11 +477,11 @@ Window {
                                 Layout.fillHeight: true
                                 Layout.fillWidth: false
 
-                                property string restoreIcon: '../../images/svg_images/restore_icon.svg'
-                                property string maximizeIcon: '../../images/svg_images/maximize_icon.svg'
+                                property string restoreIcon: '../../images/svg_images/expand_more_white_24dp.svg'
+                                property string maximizeIcon: '../../images/svg_images/expand_less_white_24dp.svg'
 
                                 iconUrl: mainWindow.visibility == 4 ? restoreIcon:maximizeIcon
-                                iconWidth: 15
+                                iconWidth: 20
                                 r: 0
 
                                 primaryColor: 'transparent'
@@ -513,8 +497,8 @@ Window {
                                 Layout.preferredWidth: 40
                                 Layout.fillHeight: true
                                 Layout.fillWidth: false
-                                iconUrl: '../../images/svg_images/close_icon.svg'
-                                iconWidth: 15
+                                iconUrl: '../../images/svg_images/close_white_24dp.svg'
+                                iconWidth: 20
                                 r: 0
 
                                 primaryColor: 'transparent'
@@ -526,15 +510,6 @@ Window {
                             }
                         }
                     }
-
-                    // Rectangle {
-                    //     id: topBarDescription
-                    //     Layout.preferredHeight: 25
-                    //     Layout.fillWidth: true
-                    //     color: Colors.color2
-                    // }
-
-
                 }
 
                 Rectangle {
@@ -734,8 +709,7 @@ Window {
                                                     isActiveMenu: false
 
                                                     onClicked: {
-                                                        if (zoomBtn.checked) {
-                                                            zoomBtn.checked = false;
+                                                        if (zoomBtn.isActiveMenu) {
                                                             zoomBtn.isActiveMenu = false;
                                                         }
                                                         canvas.pan();
@@ -755,9 +729,7 @@ Window {
                                                     isActiveMenu: false
 
                                                     onClicked: {
-                                                        if (panBtn.checked) {
-                                                            // toggle pan off
-                                                            panBtn.checked = false;
+                                                        if (panBtn.isActiveMenu) {
                                                             panBtn.isActiveMenu = false;
                                                         }
                                                         zoomBtn.isActiveMenu = true;
@@ -865,10 +837,6 @@ Window {
                                                         iconUrl: '../../images/icons/settings_white_24dp.svg'
                                                         iconWidth: 17
                                                         enabled: !bgTransparent.checked
-                                                        // visible: {
-                                                        //     if(mainWindow.os != 'Windows') false
-                                                        //     else true
-                                                        // }
 
                                                         onClicked: {
                                                             canvasSettingsPopup.open()
@@ -1066,10 +1034,12 @@ Window {
             if(type === 'error'){
                 messageSnackbar.timer = 8000
             } else if(type === 'warn'){
-                messageSnackbar.timer = 4000
+                messageSnackbar.timer = 6000
             }
             messageSnackbar.open()
         }
+
+        
     }
 
     Connections{
@@ -1091,6 +1061,7 @@ Window {
         updater.checkUpdate()
         labelVersion.text = updater.getVersion()
         os = updater.getOS()
+        // popupSuccess.open()
         // gdrive.tryLogin()
     }
 }

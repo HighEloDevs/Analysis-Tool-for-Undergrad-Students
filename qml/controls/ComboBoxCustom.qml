@@ -1,5 +1,6 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
+import QtGraphicalEffects 1.15
 
 ComboBox {
     id: root
@@ -21,6 +22,15 @@ ComboBox {
         anchors.right: parent.right
         anchors.rightMargin: 5
         anchors.verticalCenter: parent.verticalCenter
+
+        ColorOverlay{
+            width: indicatorImg.width
+            height: indicatorImg.height
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.horizontalCenter: parent.horizontalCenter
+            source: indicatorImg
+            color: root.down ? root.highlightColor:root.color
+        }
 
         states: [
             State{
@@ -51,9 +61,10 @@ ComboBox {
     }
 
     contentItem: Text {
+        anchors.fill: parent
         leftPadding: 5
         text: root.displayText
-        color: root.textColor
+        color: root.down ? root.highlightColor:root.textColor
         verticalAlignment: Text.AlignVCenter
         elide: Text.ElideRight
         font.pixelSize: 13

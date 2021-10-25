@@ -234,6 +234,7 @@ Item {
                                             onAccepted: {
                                                 multiPlot.loadData(fileUrl, row)
                                                 root.checkData()
+                                                globalManager.setLastFolder(chooseProject.fileUrl)
                                             }
                                             onRejected: {
                                                 dataShaped.splice(row, 1)
@@ -242,10 +243,16 @@ Item {
                                             }
                                         }
 
-                                        onClicked: chooseProject.open()
+                                        onClicked: {
+                                            chooseProject.folder = globalManager.getLastFolder()
+                                            chooseProject.open()
+                                        }
 
                                         Component.onCompleted: {
-                                            if(fromBtn) chooseProject.open()
+                                            if(fromBtn) {
+                                                chooseProject.folder = globalManager.getLastFolder()
+                                                chooseProject.open()
+                                            }
                                         }
                                     }
                                     Text{
@@ -354,8 +361,8 @@ Item {
                                     anchors.fill: parent
                                     anchors.rightMargin: 10
                                     anchors.leftMargin: 10
-                                    anchors.topMargin: 8
-                                    anchors.bottomMargin: 8
+                                    anchors.topMargin: 0
+                                    anchors.bottomMargin: -2
                                     currentIndex: curve
 
                                     onActivated: {
