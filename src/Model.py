@@ -807,8 +807,8 @@ class Model(QObject):
             df.index   = self._par_var
         return df
 
-    @pyqtSlot(str, str)
-    def copyParamsClipboard(self, sep, decimal):
+    @pyqtSlot(str, str, bool)
+    def copyParamsClipboard(self, sep, decimal, header):
         '''Copy parameters to the clipboard.'''
         sepDecimal = {
             "Ponto": ".",
@@ -822,7 +822,13 @@ class Model(QObject):
             ";": ";"
         }
         try:
-            pd.DataFrame(self._dict_param, index = ["Valor", "Incerteza"]).transpose().to_clipboard(sep=sepColumns[sep], decimal=sepDecimal[decimal])
+            if header:  
+                pd.DataFrame(self._dict_param, index = ["Valor", "Incerteza"]).transpose().to_clipboard(sep=sepColumns[sep], decimal=sepDecimal[decimal])
+            else: 
+                df = pd.DataFrame.from_dict(self._dict_param, orient="index")
+                df.columns = [""]*len(df.columns)
+                df.to_clipboard(sep=sepColumns[sep], decimal=sepDecimal[decimal])
+
         except:
             self._msgHandler.raiseError("Não foi possível copiar para a área de transferência.")
 

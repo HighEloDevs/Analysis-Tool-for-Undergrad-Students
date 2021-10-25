@@ -107,7 +107,7 @@ Item {
         }
 
         IconTextButton{
-            Layout.columnSpan: { (mainWindow.os == 'Windows' || mainWindow.os == 'Darwin') ? 6:12 }
+            Layout.columnSpan: 6
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
             texto: 'Parâmetros'
             primaryColor: 'transparent'
@@ -119,7 +119,7 @@ Item {
             height: 20
             textSize: 11
             iconWidth: 18
-            visible: { mainWindow.os == 'Windows' || mainWindow.os == 'Darwin' }
+            // visible: { mainWindow.os == 'Windows' || mainWindow.os == 'Darwin' }
 
             PopupParamsClipboard{
                 id: popupTableParams

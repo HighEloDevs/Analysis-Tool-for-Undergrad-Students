@@ -65,12 +65,18 @@ Popup {
                     font.pointSize: 10
                     color: "#4CAF50"
                 }
-                ComboBoxCustom{
-                    id: sepParams
-                    Layout.fillWidth: true
-                    highlightColor: Colors.mainColor2
-                    model: ["Tabulação", "Espaço", ",", "|", ";"]
-                    label: "Separador"
+                RowLayout{
+                    ComboBoxCustom{
+                        id: sepParams
+                        Layout.fillWidth: true
+                        highlightColor: Colors.mainColor2
+                        model: ["Tabulação", "Espaço", ",", "|", ";"]
+                        label: "Separador"
+                    }
+                    CheckBoxCustom{
+                        id: header
+                        texto: "Header"
+                    }
                 }
                 ComboBoxCustom{
                     id: decimalParams
@@ -86,7 +92,7 @@ Popup {
                     texto: "Copiar"
                     radius: 0
                     onClicked: {
-                        model.copyParamsClipboard(sepParams.currentText, decimalParams.currentText)
+                        model.copyParamsClipboard(sepParams.currentText, decimalParams.currentText, header.checked)
                     }
                 }
             }
