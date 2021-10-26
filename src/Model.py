@@ -700,8 +700,17 @@ class Model(QObject):
         # paramss = Parameters()
         # for i in range(len(self._coef)):
         #     paramss.add(self._coef[i], pi[i])
-        return self._data["y"] - eval("self._model.eval(%s = self._data['x'], params = self._params)"%self._indVar, None,
+        # print("rfs")
+        # print("self._model.eval(%s = self._data['x'], params = self._params)"%self._indVar)
+        # print(self._data["x"])
+        # print(self._params)
+        # print(self._model.eval(x = self._data['x'].to_numpy(), params = self._params))
+        y = eval("self._model.eval(%s = self._data['x'].to_numpy(), params = self._params)"%self._indVar, None,
         {'self': self})
+        # print(y)
+        # return self._data["y"].to_numpy() - eval("self._model.eval(%s = self._data['x'], params = self._params)"%self._indVar, None,
+        # {'self': self})
+        return self._data["y"].to_numpy() - y
 
     def get_predict(self, fig, x_min = None, x_max = None):
         '''Retorna a previsão do modelo.'''
