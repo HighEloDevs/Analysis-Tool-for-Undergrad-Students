@@ -1,10 +1,10 @@
 <template>
-<h1>HOME</h1>
+<h1>WINDOWS</h1>
 </template>
 
 <script>
   export default {
-    name: 'Home',
+    name: 'Windows',
 
     components: {
     },

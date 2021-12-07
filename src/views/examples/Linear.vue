@@ -1,10 +1,10 @@
 <template>
-<h1>HOME</h1>
+<h1>LINEAR</h1>
 </template>
 
 <script>
   export default {
-    name: 'Home',
+    name: 'Linears',
 
     components: {
     },

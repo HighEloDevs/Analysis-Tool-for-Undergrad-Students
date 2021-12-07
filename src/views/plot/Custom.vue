@@ -1,10 +1,10 @@
 <template>
-<h1>HOME</h1>
+<h1>PLOT - CUSTOM</h1>
 </template>
 
 <script>
   export default {
-    name: 'Home',
+    name: 'Custom',
 
     components: {
     },

@@ -48,7 +48,9 @@
         </v-expansion-panels>
 
         <template v-slot:append>
+          <v-divider></v-divider>
           <v-btn 
+            class="font-weight-bold text-subtitle-2 white--text"
             block
             tile
             elevation="0"
@@ -57,6 +59,20 @@
           >
             FAQ
           </v-btn>
+        </template>
+
+        <template v-slot:prepend>
+          <v-btn 
+            class="font-weight-bold text-subtitle-2 white--text"
+            block
+            tile
+            elevation="0"
+            color="primary"
+            to="/"
+          >
+            Início
+          </v-btn>
+          <v-divider></v-divider>
         </template>
     </v-navigation-drawer>
     <v-main>
@@ -110,17 +126,17 @@ export default {
         title: 'Intervalos de Confiança',
         icon: 'mdi-chart-bell-curve',
         pages: [
-          { title: 'Utilização', path: '/calc-carregando' },
+          { title: 'Utilização', path: '/calc-util' },
         ],
       },
       {
         title: 'Exemplos',
         icon: 'mdi-text-box-multiple-outline',
         pages: [
-          { title: 'Função linear', path: '/eg-carregando' },
-          { title: 'Função exponencial', path: '/eg-carregando' },
-          { title: 'Funções especiais', path: '/eg-carregando' },
-          { title: 'Ajuste não convergiu', path: '/eg-carregando' },
+          { title: 'Função linear', path: '/eg-linear' },
+          { title: 'Função exponencial', path: '/eg-exponential' },
+          { title: 'Funções especiais', path: '/eg-special' },
+          { title: 'Ajuste não convergiu', path: '/eg-converge' },
         ],
       },
     ]
