@@ -1,0 +1,41 @@
+<template>
+  <div class="about">
+    <h1>MAGALU</h1>
+    <h1>DOKITRU</h1>
+    <h1>CAMILINHA</h1>
+    <h1>ZWZW</h1>
+    <h1>MAGALU</h1>
+    <h1>MAGALU</h1>
+    <h1>MAGALU</h1>
+    <h1>MAGALU</h1>
+    <h1>MAGALU</h1>
+    <h1>MAGALU</h1>
+    <h1>MAGALU</h1>
+    <h1>MAGALU</h1>
+    <h1>MAGALU</h1>
+    <h1>MAGALU</h1>
+    <h1>MAGALU</h1>
+    <h1>MAGALU</h1>
+    <h1>MAGALU</h1>
+    <h1>MAGALU</h1>
+    <h1>MAGALU</h1>
+    <h1>MAGALU</h1>
+    <h1>MAGALU</h1>
+    <h1>MAGALU</h1>
+    <h1>MAGALU</h1>
+    <h1>MAGALU</h1>
+    <h1>MAGALU</h1>
+    <h1>MAGALU</h1>
+    <h1>MAGALU</h1>
+    <h1>MAGALU</h1>
+    <h1>MAGALU</h1>
+    <h1>MAGALU</h1>
+    <h1>MAGALU</h1>
+    <h1>MAGALU</h1>
+    <h1>MAGALU</h1>
+    <h1>MAGALU</h1>
+    <h1>MAGALU</h1>
+    <h1>MAGALU</h1>
+    <h1>MAGALU</h1>
+  </div>
+</template>
