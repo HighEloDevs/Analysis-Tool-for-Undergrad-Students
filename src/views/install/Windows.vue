@@ -1,5 +1,5 @@
 <template>
-<h1>WINDOWS</h1>
+<h1 class="white--text pt-7">Instalação no Windows 10/11</h1>
 </template>
 
 <script>
