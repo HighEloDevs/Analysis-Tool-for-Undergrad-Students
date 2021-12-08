@@ -1,14 +1,13 @@
 <template>
   <v-app id="inspire">
-    <v-card class="overflow-hidden">
+    <v-card class="overflow-hidden" tile>
     <v-app-bar 
-      app
       dense
       color="primary"
       class="elevation-8"
       absolute
-      clipped-right
-      fixed
+      elevate-on-scroll
+      scroll-target="#content"
     >
       <v-app-bar-nav-icon color="white" @click="drawer = !drawer"></v-app-bar-nav-icon>
       <v-spacer></v-spacer>
@@ -33,6 +32,7 @@
       width="260"
       class="elevation-8"
       v-model= "drawer"
+      temporary
     >
       <v-list dark>
         <v-list-item
@@ -79,12 +79,20 @@
         </v-list-item>
       </v-list>
     </v-navigation-drawer>
+    <v-sheet
+      id="content"
+      class="overflow-y-auto"
+      max-height="100vh"
+      height="100vh"
+    >
+      <router-view></router-view>
+    </v-sheet>
 
-    <v-main>
-      <v-container fluid class="background" px-5>     
+    <!-- <v-main>
+      <v-container fluid class="background overflow-y-auto" id="content">     
         <router-view></router-view>
       </v-container>
-    </v-main>
+    </v-main> -->
     </v-card>
   </v-app>
 </template>
