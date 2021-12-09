@@ -21,7 +21,7 @@
       <v-btn icon color="white" href="https://github.com/HighEloDevs/Analysis-Tool-for-Undergrad-Students" target="blank">
         <v-icon>mdi-github</v-icon>
       </v-btn>
-      <v-btn icon color="white">
+      <v-btn icon color="white" to="/log">
         <v-icon>mdi-newspaper-variant-multiple</v-icon>
       </v-btn>
     </v-app-bar>
@@ -81,18 +81,12 @@
     </v-navigation-drawer>
     <v-sheet
       id="content"
-      class="overflow-y-auto"
+      class="overflow-y-auto pt-12 px-1"
       max-height="100vh"
       height="100vh"
     >
       <router-view></router-view>
     </v-sheet>
-
-    <!-- <v-main>
-      <v-container fluid class="background overflow-y-auto" id="content">     
-        <router-view></router-view>
-      </v-container>
-    </v-main> -->
     </v-card>
   </v-app>
 </template>
@@ -161,9 +155,14 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="scss">
+@import "./sass/variables.scss";
 .background{
   height: 100%;
   width: 100%;
+}
+
+#inspire{
+  font-family: $body-font-family !important;
 }
 </style>
