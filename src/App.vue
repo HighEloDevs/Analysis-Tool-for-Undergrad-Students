@@ -13,7 +13,7 @@
       <v-spacer></v-spacer>
       <v-btn 
         icon
-        @click="$vuetify.theme.dark = !$vuetify.theme.dark"
+        @click="switchMode"
         :color="$vuetify.theme.dark ? 'white' : 'black'"
       >
         <v-icon>mdi-theme-light-dark</v-icon>
@@ -92,7 +92,7 @@
 </template>
 
 <script>
-
+import { mapMutations } from "vuex";
 export default {
   name: 'App',
 
@@ -152,6 +152,21 @@ export default {
       },
     ]
   }),
+
+  methods: {
+    ...mapMutations([
+      'setDarkMode',
+    ]),
+
+    switchMode() {
+      this.$vuetify.theme.dark = !this.$vuetify.theme.dark;
+      this.setDarkMode(this.$vuetify.theme.dark);
+    },
+  },
+
+  mounted() {
+    this.$vuetify.theme.dark = this.$store.state.darkMode;
+  },
 };
 </script>
 
