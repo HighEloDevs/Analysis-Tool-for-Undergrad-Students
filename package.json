@@ -11,6 +11,7 @@
     "core-js": "^3.6.5",
     "octokit": "^1.7.1",
     "showdown": "^1.9.1",
+    "typeit": "^8.0.8",
     "vue": "^2.6.11",
     "vue-router": "^3.2.0",
     "vuetify": "^2.4.0",

@@ -2,12 +2,13 @@
   <v-app id="inspire">
     <v-card class="overflow-hidden" tile>
     <v-app-bar 
+      id="appBar"
       dense
       color="primary"
       class="elevation-8"
+      scroll-target="#content"
       absolute
       elevate-on-scroll
-      scroll-target="#content"
     >
       <v-app-bar-nav-icon color="white" @click="drawer = !drawer"></v-app-bar-nav-icon>
       <v-spacer></v-spacer>
@@ -171,13 +172,12 @@ export default {
 </script>
 
 <style lang="scss">
-@import "./sass/variables.scss";
-.background{
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400;1,500;1,600;1,700;1,800&display=swap');.background{
   height: 100%;
   width: 100%;
 }
 
 #inspire{
-  font-family: $body-font-family !important;
+  font-family: 'Open Sans', sans-serif;
 }
 </style>
