@@ -20,6 +20,11 @@ const routes = [
     component: () => import('../views/Log.vue')
   },
   {
+    path: '/tableofcontents',
+    name: 'TableOfContents',
+    component: () => import('../views/TableOfContents.vue')
+  },
+  {
     path: '/windows',
     name: 'Windows',
     component: () => import('../views/install/Windows.vue')

@@ -1,11 +1,12 @@
 <template>
 <v-container fluid id="main-container" class="text-center d-flex justify-center align-center flex-column">
-    <div id="title" class="font-weight-medium" tile></div>
+    <div id="display" class="font-weight-medium" tile></div>
     <v-slide-x-transition slot="append">
       <v-btn 
         v-show="showBtn"
         outlined 
         class="mt-5"
+        to="/tableofcontents"
       >
         Documentação
         <v-icon>
@@ -27,23 +28,27 @@
     data() {
       return {
         showBtn: false,
+        typeit: null,
       }
     },
 
+    methods: {
+    },
+
     mounted() {
-      new TypeIt('#title', {
+      this.typeit = new TypeIt('#display', {
         speed: 20,
       })
       .type("Analysis Tool for Undergrad Students")
-      .pause(400)
-      .break()
-      .pause(200)
-      .type("Desenvolvido para estudantes")
-      .pause(400)
-      .break()
       .pause(300)
+      .break()
+      .pause(100)
+      .type("Desenvolvido para estudantes")
+      .pause(300)
+      .break()
+      .pause(100)
       .type('<span class="green--text lighten-3">Por estudantes</span>')
-      .pause(500)
+      .pause(300)
       .exec(() => {
         this.showBtn = true;
       })
@@ -55,11 +60,11 @@
 @import url('https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@500&display=swap');
 #main-container {
   height: 100%;
+  font-family: 'Source Code Pro', monospace;
 }
 
-#title{
+#display{
   font-size: 2em;
   text-align: center;
-  font-family: 'Source Code Pro', monospace;
 }
 </style>
