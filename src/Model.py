@@ -330,7 +330,7 @@ class Model(QObject):
             coefs_2 = {c : False for c in self._coef} # Para evitar de substituir atribuição de parâmetros
             for i in range(len(self._coef)):
                 try:
-                    res = re.match("\s?(?:([a-zA-Z])\s?=\s?(.*)|(@?\d*@?))", self._p0[i])
+                    res = re.match("\s?(?:(.*[^\s])\s?=\s?(.*)|(@?\d*@?))", self._p0[i])
                     if res.groups()[2] is None:
                             valor = res.groups()[1].replace("@", "")
                             var   = res.groups()[0]
@@ -397,7 +397,7 @@ class Model(QObject):
             coefs_2 = {c : False for c in self._coef} # Para evitar de substituir atribuição de parâmetros
             for i in range(len(self._coef)):
                 try:
-                    res = re.match("\s?(?:([a-zA-Z])\s?=\s?(.*)|(@?\d*@?))", self._p0[i])
+                    res = re.match("\s?(?:(.*[^\s])\s?=\s?(.*)|(@?\d*@?))", self._p0[i])
                     if res.groups()[2] is None:
                             valor = res.groups()[1].replace("@", "")
                             var   = res.groups()[0]
@@ -481,7 +481,7 @@ class Model(QObject):
             coefs_2 = {c : False for c in self._coef} # Para evitar de substituir atribuição de parâmetros
             for i in range(len(self._coef)):
                 try:
-                    res = re.match("\s?(?:([a-zA-Z])\s?=\s?(.*)|(@?\d*@?))", self._p0[i])
+                    res = re.match("\s?(?:(.*[^\s])\s?=\s?(.*)|(@?\d*@?))", self._p0[i])
                     if res.groups()[2] is None:
                             valor = res.groups()[1].replace("@", "")
                             var   = res.groups()[0]
@@ -498,6 +498,7 @@ class Model(QObject):
                         coefs_2[self._coef[i]] = True
             for nome in coefs.keys():
                 self._params.add(nome, coefs[nome][0], vary = coefs[nome][1])
+        print(self._params)
         try:
             self._result = eval("self._model.fit(data = y, %s = x, weights = 1/sy, params = params, scale_covar=False, max_nfev = 250)"%self._indVar, None,
             {'y': y, 'x': x, 'params': self._params, 'self': self, 'sy': sy})
@@ -523,7 +524,7 @@ class Model(QObject):
             coefs_2 = {c : False for c in self._coef} # Para evitar de substituir atribuição de parâmetros
             for i in range(len(self._coef)):
                 try:
-                    res = re.match("\s?(?:([a-zA-Z])\s?=\s?(.*)|(@?\d*@?))", self._p0[i])
+                    res = re.match("\s?(?:(.*[^\s])\s?=\s?(.*)|(@?\d*@?))", self._p0[i])
                     if res.groups()[2] is None:
                             valor = res.groups()[1].replace("@", "")
                             var   = res.groups()[0]
@@ -787,12 +788,12 @@ class Model(QObject):
             coefs_2 = {c : False for c in self._coef} # Para evitar de substituir atribuição de parâmetros
             for i in range(len(self._coef)):
                 try:
-                    res = re.match("\s?(?:([a-zA-Z])\s?=\s?(.*)|(@?\d*@?))", self._p0[i])
+                    res = re.match("\s?(?:(.*[^\s])\s?=\s?(.*)|(@?\d*@?))", self._p0[i])
                     if res.groups()[2] is None:
                             valor = res.groups()[1].replace("@", "")
                             var   = res.groups()[0]
                             if var in coefs:
-                                coefs[var]   = [float(valor), "@" in res.groups()[1]]
+                                coefs[var]   = [float(valor), not "@" in res.groups()[1]]
                                 coefs_2[var] = True
                     else:
                         if coefs_2[self._coef[i]] == False and self._coef[i] in coefs:
