@@ -32,6 +32,7 @@ from lmfit.models import ExpressionModel
 from lmfit import Parameters
 from copy import deepcopy
 from io import StringIO
+import re
 
 class Model(QObject):
     """
@@ -325,23 +326,47 @@ class Model(QObject):
         if self._p0 is None:
             pass
         else:
+            coefs   = {c : [1, True] for c in self._coef}
+            coefs_2 = {c : False for c in self._coef} # Para evitar de substituir atribuição de parâmetros
             for i in range(len(self._coef)):
                 try:
-                    p_i = self._p0[i].split("=")
-                    if len(p_i) == 2:
-                        if "@" in p_i[1]:
-                            p_i[1] = p_i[1].replace("@", "")
-                            pi[aux[p_i[0].strip()]]    = float(p_i[1].strip())
-                            fixed[aux[p_i[0].strip()]] = 0
-                        else:
-                            if "@" in p_i[0]:
-                                pi[aux[p_i[0].strip()]] = float(p_i[1].replace("@", "").strip())
-                            else:
-                                pi[aux[p_i[0].strip()]] = float(p_i[1].strip())
+                    res = re.match("\s?(?:([a-zA-Z])\s?=\s?(.*)|(@?\d*@?))", self._p0[i])
+                    if res.groups()[2] is None:
+                            valor = res.groups()[1].replace("@", "")
+                            var   = res.groups()[0]
+                            if var in coefs:
+                                coefs[var]   = [float(valor), not "@" in res.groups()[1]]
+                                coefs_2[var] = True
                     else:
-                        pi[i] = float(self._p0[i])
+                        if coefs_2[self._coef[i]] == False and self._coef[i] in coefs:
+                            coefs[self._coef[i]]   = [float(res.groups()[2].replace("@", "")), not "@" in res.groups()[2]]
+                            coefs_2[self._coef[i]] = True
                 except:
-                    pass
+                    if coefs_2[self._coef[i]] == False:
+                        coefs[self._coef[i]]   = [1, True]
+                        coefs_2[self._coef[i]] = True
+            for i, nome in enumerate(self._coef):
+                pi[aux[nome]]    = coefs[nome][0]
+                fixed[aux[nome]] = coefs[nome][1]
+                # self._params.add(nome, coefs[nome][0], vary = coefs[nome][1])
+        # else:
+        #     for i in range(len(self._coef)):
+        #         try:
+        #             p_i = self._p0[i].split("=")
+        #             if len(p_i) == 2:
+        #                 if "@" in p_i[1]:
+        #                     p_i[1] = p_i[1].replace("@", "")
+        #                     pi[aux[p_i[0].strip()]]    = float(p_i[1].strip())
+        #                     fixed[aux[p_i[0].strip()]] = 0
+        #                 else:
+        #                     if "@" in p_i[0]:
+        #                         pi[aux[p_i[0].strip()]] = float(p_i[1].replace("@", "").strip())
+        #                     else:
+        #                         pi[aux[p_i[0].strip()]] = float(p_i[1].strip())
+        #             else:
+        #                 pi[i] = float(self._p0[i])
+        #         except:
+        #             pass
         self._par_var = []
         for i, parametro in enumerate(self._coef):
             if fixed[i] > 0:
@@ -368,23 +393,28 @@ class Model(QObject):
         if self._p0 is None:
             pass
         else:
+            coefs   = {c : [1, True] for c in self._coef}
+            coefs_2 = {c : False for c in self._coef} # Para evitar de substituir atribuição de parâmetros
             for i in range(len(self._coef)):
                 try:
-                    p_i = self._p0[i].split("=")
-                    if len(p_i) == 2:
-                        if "@" in p_i[1]:
-                            p_i[1] = p_i[1].replace("@", "")
-                            pi[aux[p_i[0].strip()]]    = float(p_i[1].strip())
-                            fixed[aux[p_i[0].strip()]] = 0
-                        else:
-                            if "@" in p_i[0]:
-                                pi[aux[p_i[0].strip()]] = float(p_i[1].replace("@", "").strip())
-                            else:
-                                pi[aux[p_i[0].strip()]] = float(p_i[1].strip())
+                    res = re.match("\s?(?:([a-zA-Z])\s?=\s?(.*)|(@?\d*@?))", self._p0[i])
+                    if res.groups()[2] is None:
+                            valor = res.groups()[1].replace("@", "")
+                            var   = res.groups()[0]
+                            if var in coefs:
+                                coefs[var]   = [float(valor), not "@" in res.groups()[1]]
+                                coefs_2[var] = True
                     else:
-                        pi[i] = float(self._p0[i])
+                        if coefs_2[self._coef[i]] == False and self._coef[i] in coefs:
+                            coefs[self._coef[i]]   = [float(res.groups()[2].replace("@", "")), not "@" in res.groups()[2]]
+                            coefs_2[self._coef[i]] = True
                 except:
-                    pass
+                    if coefs_2[self._coef[i]] == False:
+                        coefs[self._coef[i]]   = [1, True]
+                        coefs_2[self._coef[i]] = True
+            for i, nome in enumerate(self._coef):
+                pi[aux[nome]]    = coefs[nome][0]
+                fixed[aux[nome]] = coefs[nome][1]
         self._par_var = []
         for i, parametro in enumerate(self._coef):
             if fixed[i] > 0:
@@ -447,22 +477,27 @@ class Model(QObject):
             for i in range(len(self._coef)):
                 self._params.add(self._coef[i], 1.)
         else:
+            coefs   = {c : [1, True] for c in self._coef}
+            coefs_2 = {c : False for c in self._coef} # Para evitar de substituir atribuição de parâmetros
             for i in range(len(self._coef)):
                 try:
-                    p_i = self._p0[i].split("=")
-                    if len(p_i) == 2:
-                        if "@" in p_i[1]:
-                            p_i[1] = p_i[1].replace("@", "")
-                            self._params.add(p_i[0].strip(), float(p_i[1].strip()), vary = False)
-                        else:
-                            self._params.add(p_i[0].strip(), float(p_i[1].strip()), vary = True)
+                    res = re.match("\s?(?:([a-zA-Z])\s?=\s?(.*)|(@?\d*@?))", self._p0[i])
+                    if res.groups()[2] is None:
+                            valor = res.groups()[1].replace("@", "")
+                            var   = res.groups()[0]
+                            if var in coefs:
+                                coefs[var]   = [float(valor), not "@" in res.groups()[1]]
+                                coefs_2[var] = True
                     else:
-                        if "@" in self._p0[i]:
-                            self._params.add(self._coef[i], float(self._p0[i].replace("@", "")), vary = False)
-                        else:
-                            self._params.add(self._coef[i], float(self._p0[i]), vary = True)
+                        if coefs_2[self._coef[i]] == False and self._coef[i] in coefs:
+                            coefs[self._coef[i]]   = [float(res.groups()[2].replace("@", "")),  not "@" in res.groups()[2]]
+                            coefs_2[self._coef[i]] = True
                 except:
-                    self._params.add(self._coef[i], 1.)
+                    if coefs_2[self._coef[i]] == False:
+                        coefs[self._coef[i]]   = [1, True]
+                        coefs_2[self._coef[i]] = True
+            for nome in coefs.keys():
+                self._params.add(nome, coefs[nome][0], vary = coefs[nome][1])
         try:
             self._result = eval("self._model.fit(data = y, %s = x, weights = 1/sy, params = params, scale_covar=False, max_nfev = 250)"%self._indVar, None,
             {'y': y, 'x': x, 'params': self._params, 'self': self, 'sy': sy})
@@ -484,22 +519,27 @@ class Model(QObject):
             for i in range(len(self._coef)):
                 self._params.add(self._coef[i], 1.)
         else:
+            coefs   = {c : [1, True] for c in self._coef}
+            coefs_2 = {c : False for c in self._coef} # Para evitar de substituir atribuição de parâmetros
             for i in range(len(self._coef)):
                 try:
-                    p_i = self._p0[i].split("=")
-                    if len(p_i) == 2:
-                        if "@" in p_i[1]:
-                            p_i[1] = p_i[1].replace("@", "")
-                            self._params.add(p_i[0].strip(), float(p_i[1].strip()), vary = False)
-                        else:
-                            self._params.add(p_i[0].strip(), float(p_i[1].strip()), vary = True)
+                    res = re.match("\s?(?:([a-zA-Z])\s?=\s?(.*)|(@?\d*@?))", self._p0[i])
+                    if res.groups()[2] is None:
+                            valor = res.groups()[1].replace("@", "")
+                            var   = res.groups()[0]
+                            if var in coefs:
+                                coefs[var]   = [float(valor), not "@" in res.groups()[1]]
+                                coefs_2[var] = True
                     else:
-                        if "@" in self._p0[i]:
-                            self._params.add(self._coef[i], float(self._p0[i].replace("@", "")), vary = False)
-                        else:
-                            self._params.add(self._coef[i], float(self._p0[i]), vary = True)
+                        if coefs_2[self._coef[i]] == False and self._coef[i] in coefs:
+                            coefs[self._coef[i]]   = [float(res.groups()[2].replace("@", "")), not "@" in res.groups()[2]]
+                            coefs_2[self._coef[i]] = True
                 except:
-                    self._params.add(self._coef[i], 1.)
+                    if coefs_2[self._coef[i]] == False:
+                        coefs[self._coef[i]]   = [1, True]
+                        coefs_2[self._coef[i]] = True
+            for nome in coefs.keys():
+                self._params.add(nome, coefs[nome][0], vary = coefs[nome][1])
         try:
             self._result = eval("self._model.fit(data = y, %s = x, params = params, scale_covar=False, max_nfev = 250)"%self._indVar, None,
             {'y': y, 'x': x, 'params': self._params, 'self': self})
@@ -559,7 +599,7 @@ class Model(QObject):
         for i in range(len(self._coef)):
             self._params.add(self._coef[i], self._result.beta[i])
             self._dict.update({self._coef[i]: [self._result.beta[i], np.sqrt(self._result.cov_beta[i, i])]})
-            self._dict_param.update({self._coef[i]: [self._result.beta[i], np.sqrt(self._result.cov_beta[i, i])]})
+            self._dict_param.update({self._coef[i]: self._dict[self._coef[i]]})
 
     def __set_report_lm(self, x):
         '''Constrói a string com os resultados.'''
@@ -632,25 +672,6 @@ class Model(QObject):
         self._report_fit += "\n"
         self._isvalid     = True
 
-    def __set_report_ODR_special(self, x):
-        '''Constrói a string com os resultados, neste caso quando só há incertezas em x. Depreciada.'''
-        self._report_fit  = ""
-        self._report_fit += "\nAjuste: y = %s\n"%self._exp_model
-        self._report_fit += "\nNGL  = %d"%(len(x) - len(self._coef))
-        self._report_fit += "\nChi² = %f\n"%self._result.sum_square
-        self._report_fit += "\nMatriz de covariância:\n\n" + self.matprint(self._result.cov_beta) + "\n"
-        lista             = list(self._params.keys())
-        matriz_corr       = np.zeros((len(self._result.cov_beta), len(self._result.cov_beta)))
-        z                 = range(len(matriz_corr))
-        for i in z:
-            for j in z:
-                matriz_corr[i, j] = self._result.cov_beta[i, j]/(self._dict[lista[i]][1]*self._dict[lista[j]][1])
-        matriz_corr       = matriz_corr.round(3)
-        self._report_fit += "\nMatriz de correlação:\n\n" + self.matprint(matriz_corr, ".3f") + "\n\n"
-        self._report_fit += self.paramsPrint()
-        self._report_fit += "\n"
-        self._isvalid     = True
-
     @property
     def coefficients(self):
         '''Retorna uma lista com os nomes dos coeficientes.'''
@@ -680,7 +701,7 @@ class Model(QObject):
     @property
     def residuo(self):
         '''Retorna os valores de y_i - f(x_i).'''
-        return self._data["y"] - self._model.eval(x = self._data["x"])
+        return self._data["y"] - self._model.eval(x = self._data["x"].to_numpy())
 
     @property
     def residuoDummy(self):
@@ -762,22 +783,59 @@ class Model(QObject):
             for i in range(len(self._coef)):
                 self._params.add(self._coef[i], 1.)
         else:
+            coefs   = {c : [1, True] for c in self._coef}
+            coefs_2 = {c : False for c in self._coef} # Para evitar de substituir atribuição de parâmetros
             for i in range(len(self._coef)):
                 try:
-                    p_i = self._p0[i].split("=")
-                    if len(p_i) == 2:
-                        if "@" in p_i[1]:
-                            p_i[1] = p_i[1].replace("@", "")
-                            self._params.add(p_i[0].strip(), float(p_i[1].strip()), vary = False)
-                        else:
-                            self._params.add(p_i[0].strip(), float(p_i[1].strip()), vary = True)
+                    res = re.match("\s?(?:([a-zA-Z])\s?=\s?(.*)|(@?\d*@?))", self._p0[i])
+                    if res.groups()[2] is None:
+                            valor = res.groups()[1].replace("@", "")
+                            var   = res.groups()[0]
+                            if var in coefs:
+                                coefs[var]   = [float(valor), "@" in res.groups()[1]]
+                                coefs_2[var] = True
                     else:
-                        if "@" in self._p0[i]:
-                            self._params.add(self._coef[i], float(self._p0[i].replace("@", "")), vary = False)
-                        else:
-                            self._params.add(self._coef[i], float(self._p0[i]), vary = True)
+                        if coefs_2[self._coef[i]] == False and self._coef[i] in coefs:
+                            coefs[self._coef[i]]   = [float(res.groups()[2].replace("@", "")), not "@" in res.groups()[2]]
+                            coefs_2[self._coef[i]] = True
                 except:
-                    self._params.add(self._coef[i], 1.)
+                    if coefs_2[self._coef[i]] == False:
+                        coefs[self._coef[i]]   = [1, True]
+                        coefs_2[self._coef[i]] = True
+            for nome in coefs.keys():
+                self._params.add(nome, coefs[nome][0], vary = coefs[nome][1])
+            # coefs   = {c : [1, True] for c in self._coef}
+            # coefs_2 = {c : False for c in self._coef} # Para evitar de substituir atribuição de parâmetros
+            # for i in range(len(self._coef)):
+            #     try:
+            #         p_i = self._p0[i].split("=")
+            #         if len(p_i) == 2:
+            #             if "@" in p_i[1]:
+            #                 p_i[1] = p_i[1].replace("@", "")
+            #                 var = p_i[0].strip()
+            #                 if var in coefs:
+            #                     coefs[var] = [float(p_i[1].strip()), False]
+            #                     coefs_2[var] = True
+            #             else:
+            #                 var = p_i[0].strip()
+            #                 if var in coefs:
+            #                     coefs[var]   = [float(p_i[1].strip()), True]
+            #                     coefs_2[var] = True
+            #         else:
+            #             if "@" in self._p0[i]:
+            #                 if coefs_2[self._coef[i]] == False:
+            #                     coefs[self._coef[i]]   = [float(self._p0[i].replace("@", "")), False]
+            #                     coefs_2[self._coef[i]] = True
+            #             else:
+            #                 if self._coef[i] in coefs and coefs_2[self._coef[i]] == False:
+            #                     coefs[self._coef[i]]   = [float(self._p0[i]), True]
+            #                     coefs_2[self._coef[i]] = True
+            #     except:
+            #         if coefs_2[self._coef[i]] == False:
+            #             coefs[self._coef[i]]   = [1, True]
+            #             coefs_2[self._coef[i]] = True
+            # for nome in coefs.keys():
+            #     self._params.add(nome, coefs[nome][0], vary = coefs[nome][1])
         self._isvalid = True
 
     def matprint(self, mat, fmt="f"):
@@ -800,8 +858,7 @@ class Model(QObject):
         return str(df)
 
     def paramsPrint2(self, inc_considerada):
-        df         = pd.DataFrame(self._dict2)
-        df         = df.transpose()
+        df         = pd.DataFrame(self._dict2).transpose()
         df.columns = ["Valor", "|    Incerteza"]
         df["|    Incerteza"] = df["|    Incerteza"]*inc_considerada
         df.index   = self._par_var
@@ -809,7 +866,6 @@ class Model(QObject):
 
     def paramsPrint3(self):
         df         = pd.DataFrame(self._dict, columns = ["Valor", "Incerteza"]).transpose()
-        # df.columns = ["Valor", "Incerteza"]
         try:
             df.index   = self._coef
         except:

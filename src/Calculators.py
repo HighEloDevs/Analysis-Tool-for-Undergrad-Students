@@ -144,7 +144,7 @@ def interpreter_calculator(f, opt, nc, ngl, mean, std):
             x_area = np.linspace(result[0], result[1], 350)
             y_area = norm.pdf(x_area)
             x_area = x_area*std + mean
-            return s, x_plot, y_plot/std, x_area, y_area/std, "Gaussiana", "z", "Densidade de probabilidade"
+            return s, x_plot, y_plot/std, x_area, y_area/std, "Gaussiana", "Valor", "Densidade de probabilidade"
 
         elif opt == 1:
             result = calc_gauss_lim_inf(nc)
@@ -152,14 +152,14 @@ def interpreter_calculator(f, opt, nc, ngl, mean, std):
             x_area = np.linspace(result, norm.ppf(lim_sup), 350)
             y_area = norm.pdf(x_area)
             x_area = x_area*std + mean
-            return s, x_plot, y_plot/std, x_area, y_area/std, "Gaussiana", "z", "Densidade de probabilidade"
+            return s, x_plot, y_plot/std, x_area, y_area/std, "Gaussiana", "Valor", "Densidade de probabilidade"
 
         result = calc_gauss_lim_sup(nc)
         s     += "Apenas limite superior.\nLimite inferior = -inf \n Limite superior = %f"%(result*std + mean)
         x_area = np.linspace(result, norm.ppf(lim_inf), 350)
         y_area = norm.pdf(x_area)
         x_area = x_area*std + mean
-        return s, x_plot, y_plot/std, x_area, y_area/std, "Gaussiana", "z", "Densidade de probabilidade"
+        return s, x_plot, y_plot/std, x_area, y_area/std, "Gaussiana", "Valor", "Densidade de probabilidade"
 
     # If it's Student:    
     x_plot = np.linspace(t.ppf(lim_inf, df = ngl), t.ppf(lim_sup, df = ngl), 350)
@@ -173,7 +173,7 @@ def interpreter_calculator(f, opt, nc, ngl, mean, std):
         x_area = np.linspace(result[0], result[1], 350)
         y_area = t.pdf(x_area, df = ngl)
         x_area = x_area*std + mean
-        return s, x_plot, y_plot/std, x_area, y_area/std, "Student", "t", "Densidade de probabilidade"
+        return s, x_plot, y_plot/std, x_area, y_area/std, "Student", "Valor", "Densidade de probabilidade"
     
     elif opt == 1:
             result = calc_t_lim_inf(ngl, nc)
@@ -181,14 +181,14 @@ def interpreter_calculator(f, opt, nc, ngl, mean, std):
             x_area = np.linspace(result, t.ppf(lim_sup, df = ngl), 350)
             y_area = t.pdf(x_area, df = ngl)
             x_area = x_area*std + mean
-            return s, x_plot, y_plot/std, x_area, y_area/std, "Student", "t", "Densidade de probabilidade"
+            return s, x_plot, y_plot/std, x_area, y_area/std, "Student", "Valor", "Densidade de probabilidade"
 
     result = calc_t_lim_sup(ngl, nc)
     s     += "Apenas limite superior.\nLimite inferior = -inf \n Limite superior = %f"%(result*std + mean)
     x_area = np.linspace(result, t.ppf(lim_inf, df = ngl), 350)
     y_area = t.pdf(x_area, df = ngl)
     x_area = x_area*std + mean
-    return s, x_plot, y_plot/std, x_area, y_area/std, "Student", "t", "Densidade de probabilidade"
+    return s, x_plot, y_plot/std, x_area, y_area/std, "Student", "Valor", "Densidade de probabilidade"
 
 class CalculatorCanvas(QObject):
     """ A bridge class to interact with the plot in python
