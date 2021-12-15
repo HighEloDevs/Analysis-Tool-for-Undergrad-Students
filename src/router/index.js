@@ -25,79 +25,34 @@ const routes = [
     component: () => import('../views/TableOfContents.vue')
   },
   {
-    path: '/windows',
-    name: 'Windows',
-    component: () => import('../views/install/Windows.vue')
+    path: '/install',
+    name: 'Instalação',
+    component: () => import('../views/tutorials/Install.vue')
   },
   {
-    path: '/linux',
-    name: 'Linux',
-    component: () => import('../views/install/Linux.vue')
+    path: '/plot',
+    name: 'Plot',
+    component: () => import('../views/tutorials/Plot.vue')
   },
   {
-    path: '/macos',
-    name: 'MacOS',
-    component: () => import('../views/install/MacOS.vue')
+    path: '/multiplot',
+    name: 'Multiplot',
+    component: () => import('../views/tutorials/Multiplot.vue')
   },
   {
-    path: '/plot-carregando',
-    name: 'Plot-carregando',
-    component: () => import('../views/plot/Carregando.vue')
+    path: '/histogram',
+    name: 'Histogram',
+    component: () => import('../views/tutorials/Histogram.vue')
   },
   {
-    path: '/plot-ajuste',
-    name: 'Plot-ajuste',
-    component: () => import('../views/plot/Ajuste.vue')
+    path: '/calculator',
+    name: 'Calculator',
+    component: () => import('../views/tutorials/Calculator.vue')
   },
   {
-    path: '/plot-custom',
-    name: 'Plot-custom',
-    component: () => import('../views/plot/Custom.vue')
-  },
-  {
-    path: '/multiplot-carregando',
-    name: 'Multiplot-carregando',
-    component: () => import('../views/multiplot/Carregando.vue')
-  },
-  {
-    path: '/multiplot-custom',
-    name: 'Multiplot-custom',
-    component: () => import('../views/multiplot/Custom.vue')
-  },
-  {
-    path: '/hist-carregando',
-    name: 'Hist-carregando',
-    component: () => import('../views/histogram/Carregando.vue')
-  },
-  {
-    path: '/hist-custom',
-    name: 'Hist-custom',
-    component: () => import('../views/histogram/Custom.vue')
-  },
-  {
-    path: '/calc-util',
-    name: 'Calc-util',
-    component: () => import('../views/calculator/Util.vue')
-  },
-  {
-    path: '/eg-linear',
-    name: 'Eg-linear',
-    component: () => import('../views/examples/Linear.vue')
-  },
-  {
-    path: '/eg-exponential',
-    name: 'Eg-exponential',
-    component: () => import('../views/examples/Exponential.vue')
-  },
-  {
-    path: '/eg-special',
-    name: 'Eg-special',
-    component: () => import('../views/examples/Specials.vue')
-  },
-  {
-    path: '/eg-converge',
-    name: 'Eg-converge',
-    component: () => import('../views/examples/Converge.vue')
+    path: '/examples',
+    name: 'Examples',
+    component: () => import('../views/tutorials/Examples.vue')
   }
 ]
 

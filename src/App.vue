@@ -1,6 +1,6 @@
 <template>
   <v-app id="inspire">
-    <v-card class="overflow-hidden" tile>
+    <v-card class="overflow-hidden d-flex align-center justify-center" tile>
     <v-app-bar 
       id="appBar"
       dense
@@ -82,7 +82,7 @@
     </v-navigation-drawer>
     <v-sheet
       id="content"
-      class="overflow-y-auto pt-12 px-1"
+      class="overflow-y-auto pt-12"
       max-height="100vh"
       height="100vh"
     >
@@ -93,66 +93,20 @@
 </template>
 
 <script>
-import { mapMutations } from "vuex";
+import { mapMutations, mapState } from "vuex";
+
 export default {
   name: 'App',
 
   data: () => ({
     drawer: false,
-    sections: [
-      {
-        title: 'Instalação',
-        icon: 'mdi-download',
-        pages: [
-          { title: 'Windows', path: '/windows' },
-          { title: 'Linux', path: '/linux' },
-          { title: 'MacOS', path: '/macos' },
-        ],
-      },
-      {
-        title: 'Ajuste',
-        icon: 'mdi-chart-bell-curve-cumulative',
-        pages: [
-          { title: 'Carregando dados', path: '/plot-carregando' },
-          { title: 'Ajustando funções', path: '/plot-ajuste' },
-          { title: 'Customização', path: '/plot-custom' },
-        ],
-      },
-      {
-        title: 'Multiplot',
-        icon: 'mdi-chart-multiple',
-        pages: [
-          { title: 'Carregando dados', path: '/multiplot-carregando' },
-          { title: 'Customização', path: '/multiplot-custom' },
-        ],
-      },
-      {
-        title: 'Histogramas',
-        icon: 'mdi-chart-bar',
-        pages: [
-          { title: 'Carregando dados', path: '/hist-carregando' },
-          { title: 'Customização', path: '/hist-custom' },
-        ],
-      },
-      {
-        title: 'Calculadora',
-        icon: 'mdi-chart-bell-curve',
-        pages: [
-          { title: 'Utilização', path: '/calc-util' },
-        ],
-      },
-      {
-        title: 'Exemplos',
-        icon: 'mdi-text-box-multiple-outline',
-        pages: [
-          { title: 'Função linear', path: '/eg-linear' },
-          { title: 'Função exponencial', path: '/eg-exponential' },
-          { title: 'Funções especiais', path: '/eg-special' },
-          { title: 'Ajuste não convergiu', path: '/eg-converge' },
-        ],
-      },
-    ]
   }),
+
+  computed: {
+    ...mapState([
+      'sections'
+    ]),
+  },
 
   methods: {
     ...mapMutations([
@@ -173,10 +127,6 @@ export default {
 
 <style lang="scss">
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400;1,500;1,600;1,700;1,800&display=swap');
-.background{
-  height: 100%;
-  width: 100%;
-}
 
 #inspire{
   font-family: 'Open Sans', sans-serif;

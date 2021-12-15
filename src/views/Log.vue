@@ -73,9 +73,6 @@
   export default {
     name: 'Log',
 
-    components: {
-    },
-
     data: () => ({
       releases: [],
     }),
@@ -86,7 +83,6 @@
           owner: "HighEloDevs",
           repo: "Analysis-Tool-for-Undergrad-Students"
         }).then(res => {
-          console.log(res.data)
           this.releases = res.data;
         });
       },

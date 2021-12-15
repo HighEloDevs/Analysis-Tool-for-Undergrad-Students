@@ -1,5 +1,5 @@
 <template>
-    <v-container id="main-container" fluid class="d-flex align-center fill-height justify-center">
+    <v-container id="main-container" fluid class="d-flex align-center flex-column">
         <div id="display" class="font-weight-medium"></div>
         <v-slide-x-transition slot="append">
             <v-sheet class="d-flex flex-wrap justify-center">
@@ -35,64 +35,19 @@
 
 <script>
 import TypeIt from "typeit";
+import { mapState } from 'vuex'
 export default {
     name: 'TableOfContents',
     data() {
         return {
-            sections: [
-            {
-                title: 'Instalação',
-                icon: 'mdi-download',
-                pages: [
-                    { title: 'Windows', path: '/windows' },
-                    { title: 'Linux', path: '/linux' },
-                    { title: 'MacOS', path: '/macos' },
-                ],
-            },
-            {
-                title: 'Ajuste',
-                icon: 'mdi-chart-bell-curve-cumulative',
-                pages: [
-                    { title: 'Carregando dados', path: '/plot-carregando' },
-                    { title: 'Ajustando funções', path: '/plot-ajuste' },
-                    { title: 'Customização', path: '/plot-custom' },
-                ],
-            },
-            {
-                title: 'Multiplot',
-                icon: 'mdi-chart-multiple',
-                pages: [
-                    { title: 'Carregando dados', path: '/multiplot-carregando' },
-                    { title: 'Customização', path: '/multiplot-custom' },
-                ],
-            },
-            {
-                title: 'Histogramas',
-                icon: 'mdi-chart-bar',
-                pages: [
-                    { title: 'Carregando dados', path: '/hist-carregando' },
-                    { title: 'Customização', path: '/hist-custom' },
-                ],
-            },
-            {
-                title: 'Calculadora',
-                icon: 'mdi-chart-bell-curve',
-                pages: [
-                    { title: 'Utilização', path: '/calc-util' },
-                ],
-            },
-            {
-                title: 'Exemplos',
-                icon: 'mdi-text-box-multiple-outline',
-                pages: [
-                    { title: 'Função linear', path: '/eg-linear' },
-                    { title: 'Função exponencial', path: '/eg-exponential' },
-                    { title: 'Funções especiais', path: '/eg-special' },
-                    { title: 'Ajuste não convergiu', path: '/eg-converge' },
-                ],
-            },
-        ]
+            //
         }
+    },
+
+    computed: {
+        ...mapState([
+        'sections'
+        ]),
     },
 
     mounted() {
