@@ -30,7 +30,7 @@
     <v-navigation-drawer
       app
       color="primary"
-      width="260"
+      width="350"
       class="elevation-8"
       v-model= "drawer"
       temporary
@@ -113,7 +113,7 @@ export default {
       'setDarkMode',
     ]),
 
-    switchMode() {
+    switchMode(){
       this.$vuetify.theme.dark = !this.$vuetify.theme.dark;
       this.setDarkMode(this.$vuetify.theme.dark);
     },

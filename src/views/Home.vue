@@ -39,7 +39,7 @@
       this.typeit = new TypeIt('#display', {
         speed: 20,
       })
-      .type("Analysis Tool for Undergrad Students")
+      .type('<span class="teal--text lighten-3">Analysis Tool for Undergrad Students</span>')
       .pause(300)
       .break()
       .pause(100)
@@ -47,7 +47,7 @@
       .pause(300)
       .break()
       .pause(100)
-      .type('<span class="green--text lighten-3">Por estudantes</span>')
+      .type('<span class="teal--text lighten-3">Por estudantes</span>')
       .pause(300)
       .exec(() => {
         this.showBtn = true;

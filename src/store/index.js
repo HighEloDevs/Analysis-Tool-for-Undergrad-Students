@@ -6,6 +6,9 @@ Vue.use(Vuex)
 
 const vuexLocal = new VuexPersistence({
   storage: window.localStorage,
+  reducer: (state) => ({
+    darkMode: state.darkMode,
+  })
 });
 
 export default new Vuex.Store({
@@ -16,9 +19,9 @@ export default new Vuex.Store({
           title: 'Instalação',
           icon: 'mdi-download',
           pages: [
-              { title: 'Windows', path: '/install' },
-              { title: 'Linux', path: '/install' },
-              { title: 'MacOS', path: '/install' },
+              { title: 'Windows', path: "/install/markdowncheatsheet" },
+              { title: 'Linux', path: '/install/teste2' },
+              { title: 'MacOS', path: '/install/teste3' },
           ],
       },
       {

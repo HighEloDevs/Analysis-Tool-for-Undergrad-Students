@@ -10,7 +10,7 @@
                     :key="section.id"
                     width="20em"  
                 >
-                    <v-card-title class="green--text lighten-3"> {{ section.title }} </v-card-title>
+                    <v-card-title class="teal--text lighten-3"> {{ section.title }} </v-card-title>
                     <v-card-text>
                     <v-list rounded>
                         <v-list-item 

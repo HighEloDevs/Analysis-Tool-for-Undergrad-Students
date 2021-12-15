@@ -25,32 +25,32 @@ const routes = [
     component: () => import('../views/TableOfContents.vue')
   },
   {
-    path: '/install',
+    path: '/install/:section?',
     name: 'Instalação',
     component: () => import('../views/tutorials/Install.vue')
   },
   {
-    path: '/plot',
+    path: '/plot/:section?',
     name: 'Plot',
     component: () => import('../views/tutorials/Plot.vue')
   },
   {
-    path: '/multiplot',
+    path: '/multiplot/:section?',
     name: 'Multiplot',
     component: () => import('../views/tutorials/Multiplot.vue')
   },
   {
-    path: '/histogram',
+    path: '/histogram/:section?',
     name: 'Histogram',
     component: () => import('../views/tutorials/Histogram.vue')
   },
   {
-    path: '/calculator',
+    path: '/calculator/:section?',
     name: 'Calculator',
     component: () => import('../views/tutorials/Calculator.vue')
   },
   {
-    path: '/examples',
+    path: '/examples/:section?',
     name: 'Examples',
     component: () => import('../views/tutorials/Examples.vue')
   }

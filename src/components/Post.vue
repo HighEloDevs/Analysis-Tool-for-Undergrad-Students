@@ -5,7 +5,7 @@
             v-for="(section, index) in sections"
             :key="index"
             :class="section.localName == 'h1' ? 'subtitle-1 mt-2 font-weight-bold teal--text text--darken-3' : 'ml-4 subtitle-2 teal--text font-weight-medium'"
-            @click="scrollTo(`#${section.id}`)"
+            @click="scrollTo(section.id)"
         >
             {{section.innerHTML}}
         </a>
@@ -19,7 +19,7 @@ import showdown from "showdown"
 
 export default {
     name: "Post",
-    props: ['md'],
+    props: ['md', 'section'],
     data() {
         return {
             options: {
@@ -48,11 +48,17 @@ export default {
             return converter.makeHtml(markdown);
         },
         scrollTo(element){
-            this.$vuetify.goTo(element, this.options)
+            if(element != undefined) this.$vuetify.goTo(`#${element}`, this.options)
         },
+    },
+    watch: {
+        $route(){
+            this.scrollTo(this.$route.params.section)
+        }
     },
     mounted() {
         this.sections = document.querySelectorAll("h1, h2")
+        this.scrollTo(this.$route.params.section)
     },
 }
 </script>

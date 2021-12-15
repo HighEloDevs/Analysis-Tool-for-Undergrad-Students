@@ -1,5 +1,5 @@
 <template>
-<Post :md="md"></Post>
+<Post :md="md" :section="$route.params.section"></Post>
 </template>
 
 <script>
@@ -15,7 +15,5 @@ export default {
             md: md,
         }
     },
-    methods: {
-    }
 }
 </script>
