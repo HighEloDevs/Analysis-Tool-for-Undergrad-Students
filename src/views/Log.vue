@@ -6,15 +6,8 @@
       elevation="0"
       class="my-5"
     >
-      <v-card
-        elevation="0"
-        width="12rem"
-      >
-        
-      </v-card>
-
       <v-card class="flex-grow-1 pa-5" outlined elevation="0">
-        <v-list two-line>
+        <v-list two-line rounded>
           <v-list-item 
             link 
             :href="release.html_url"
@@ -34,7 +27,7 @@
           </v-list-item>
         </v-list>
         <span v-html="fromMarkdown(release.body)"></span>
-        <p class="font-weight-bold title my-4">Downloads</p>
+        <p class="font-weight-bold title my-4">Downloads: <span class="teal--text">{{release.assets[0].download_count}}</span></p>
         <v-card-actions>
           <v-btn
             :href="release.assets[0].browser_download_url"
@@ -63,6 +56,7 @@
         </v-card-actions>
       </v-card>
     </v-card>
+    <h4>Total de Downloads: {{this.total_downloads}}</h4>
   </v-container>
 </template>
 
@@ -75,6 +69,7 @@
 
     data: () => ({
       releases: [],
+      total_downloads: null,
     }),
 
     methods: {
@@ -84,6 +79,7 @@
           repo: "Analysis-Tool-for-Undergrad-Students"
         }).then(res => {
           this.releases = res.data;
+          this.getTotalDownloads()
         });
       },
 
@@ -94,7 +90,15 @@
       fromMarkdown(markdown){
         const converter = new showdown.Converter();
         return converter.makeHtml(markdown);
-      }
+      },
+
+      getTotalDownloads(){
+        let total = 0;
+        this.releases.forEach(release => {
+          total += release.assets[0].download_count;
+        });
+        this.total_downloads = total;
+      },
     },
 
     mounted() {

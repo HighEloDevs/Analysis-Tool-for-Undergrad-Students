@@ -1,6 +1,6 @@
 <template>
-<v-container id="content" class="d-flex align-start" fluid>
-    <v-container class="mr-8 pa-2 d-none d-md-flex flex-column sticky-top" fluid>
+<v-container id="content" class="d-flex align-start px-md-16" fluid>
+    <v-container class="ml-10 mr-0 pa-0 d-none d-md-flex flex-column sticky-top" fluid>
         <a
             v-for="(section, index) in sections"
             :key="index"
@@ -10,7 +10,7 @@
             {{section.innerHTML}}
         </a>
     </v-container>
-    <span v-html="fromMarkdown(md)" id="text" class="text-justify"></span>
+    <span v-html="fromMarkdown(md)" id="text-content" class="text-justify pl-4 pr-0"></span>
 </v-container>
 </template>
 
@@ -25,7 +25,7 @@ export default {
             options: {
                 duration:400,
                 container: "#content",
-                offset: 50,
+                offset: -40,
             },
             showdownOptions: {
                 parseImgDimensions: true,
@@ -64,12 +64,12 @@ export default {
 </script>
 
 <style>
-#content{
-    padding: 2%;
+#text-content{
+    padding: 3%;
 }
 .sticky-top {
     position: sticky;
-    top: 0;
     max-width: 15%;
+    top: 0;
 }
 </style>

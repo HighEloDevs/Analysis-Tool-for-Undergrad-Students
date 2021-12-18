@@ -13,7 +13,7 @@ const vuexLocal = new VuexPersistence({
 
 export default new Vuex.Store({
   state: {
-    darkMode: false,
+    darkMode: true,
     sections: [
       {
           title: 'Instalação',

@@ -13,10 +13,8 @@
     "jquery": "^3.6.0",
     "octokit": "^1.7.1",
     "showdown": "^1.9.1",
-    "typeit": "^8.0.8",
     "vue": "^2.6.11",
     "vue-router": "^3.2.0",
-    "vue-showdown": "^2.4.1",
     "vuetify": "^2.4.0",
     "vuex": "^3.4.0",
     "vuex-persist": "^3.1.3"
