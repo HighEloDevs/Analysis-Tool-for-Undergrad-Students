@@ -503,13 +503,13 @@ class Model(QObject):
             self._result = eval("self._model.fit(data = y, %s = x, weights = 1/sy, params = params, scale_covar=False, max_nfev = 250)"%self._indVar, None,
             {'y': y, 'x': x, 'params': self._params, 'self': self, 'sy': sy})
         except ValueError:
-            self._msgHandler.raiseError("A função ajustada gera valores não numéricos, rever ajuste.")
+            self._msgHandler.raiseError("A função ajustada gera valores não numéricos, rever ajuste e/ou parâmetros inciais.")
             return None
         except TypeError:
-            self._msgHandler.raiseError("A função ajustada possui algum termo inválido, rever ajuste.")
+            self._msgHandler.raiseError("A função ajustada possui algum termo inválido, rever ajuste e/ou parâmetros inciais.")
             return None
         if self._result.covar is None:
-            self._msgHandler.raiseError("A função ajustada não convergiu, rever ajuste.")
+            self._msgHandler.raiseError("A função ajustada não convergiu, rever ajuste e/ou parâmetros inciais.")
             self._result = None
             return None
     
@@ -545,13 +545,13 @@ class Model(QObject):
             self._result = eval("self._model.fit(data = y, %s = x, params = params, scale_covar=False, max_nfev = 250)"%self._indVar, None,
             {'y': y, 'x': x, 'params': self._params, 'self': self})
         except ValueError:
-            self._msgHandler.raiseError("A função ajustada gera valores não numéricos, rever ajuste.")
+            self._msgHandler.raiseError("A função ajustada gera valores não numéricos, rever ajuste e/ou parâmetros inciais.")
             return None
         except TypeError:
-            self._msgHandler.raiseError("A função ajustada possui algum termo inválido, rever ajuste.")
+            self._msgHandler.raiseError("A função ajustada possui algum termo inválido, rever ajuste e/ou parâmetros inciais.")
             return None
         if self._result.covar is None:
-            self._msgHandler.raiseError("A função ajustada não convergiu, rever ajuste.")
+            self._msgHandler.raiseError("A função ajustada não convergiu, rever ajuste e/ou parâmetros inciais.")
             self._result = None
             return None
         
