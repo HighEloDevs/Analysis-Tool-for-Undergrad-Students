@@ -1,6 +1,7 @@
 # This file is used to ignore files which are generated
 # ----------------------------------------------------------------------------
-
+node_modules
+atus.egg-info
 *~
 *.autosave
 *.a

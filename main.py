@@ -49,7 +49,7 @@ plt.rcParams["figure.subplot.bottom"] = 0.12
 plt.rcParams["figure.subplot.top"]    = 0.92
 plt.rcParams["figure.subplot.hspace"] = 0.
 
-if __name__ == "__main__":
+def main():
     # Matplotlib stuff
     qmlRegisterType(FigureCanvasQtQuickAgg, "Canvas", 1, 0, "FigureCanvas")
     QCoreApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
@@ -96,3 +96,6 @@ if __name__ == "__main__":
 
     # Starting program
     sys.exit(app.exec_())
+
+    if __name__ == "__main__":
+        main()

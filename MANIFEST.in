@@ -1,0 +1,3 @@
+include *.*
+graft images
+graft qml

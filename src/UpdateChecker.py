@@ -27,6 +27,7 @@ SOFTWARE.
 from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot, QJsonValue
 import requests
 import platform
+import os
 
 class UpdateChecker(QObject):
     showUpdate = pyqtSignal(QJsonValue, arguments='infos')
@@ -35,7 +36,7 @@ class UpdateChecker(QObject):
         super().__init__()
         
         # Actual version
-        with open('./version.txt') as version:
+        with open(os.path.join(os.path.dirname(__file__) + "/../version.txt")) as version:
             self.__VERSION__  = version.read()
             version.close()
         self.isUpdate = True

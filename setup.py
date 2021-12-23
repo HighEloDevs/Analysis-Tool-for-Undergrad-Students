@@ -1,70 +1,43 @@
-from cx_Freeze import setup, Executable
+import setuptools
 
-with open('./version.txt') as version:
-    __VERSION__  = version.read()
+with open("README.md", "r", encoding="utf-8") as fh:
+    long_description = fh.read()
 
-# Files and folders to include
-files = [
-    'icon.ico',
-    'images/',
-    'qml/',
-    'src/',
-    'version.txt'
-]
-
-# Packages to include
-includes = [
-    'os',
-    'platform',
-    'sys',
-    'copy',
-    'requests',
-    'json',
-    'matplotlib_backend_qtquick',
-    'numpy',
-    'operator',
-    'scipy',
-    'pandas',
-    'lmfit',
-]
-
-# TARGET
-target = Executable(
-    script="main.py",
-    base="Win32GUI",
-    icon="icon.ico"
-)
-
-# Dependencies are automatically detected, but it might need fine tuning.
-# Options for building a .exe
-build_exe_options = {
-    'packages': includes,
-    'excludes': ["tkinter",
-                'sympy',
-                ],
-    'include_files': files
-}
-
-# Options for building a .msi installer
-bdist_msi_options = {
-    "data": {
-        "ProgId": [
-            ("Prog.Id", None, None, "Ferramenta para análise de dados", "IconId", None),
-        ],
-        "Icon": [
-            ("IconId", "icon.ico"),
-        ],
+setuptools.setup(
+    name="atus",
+    version="0.2.4.6",
+    author="High Elo Devs",
+    author_email="atusdevs@gmail.com",
+    description="Tool for analysis",
+    long_description=long_description,
+    long_description_content_type="text/markdown",
+    url="https://github.com/HighEloDevs/Analysis-Tool-for-Undergrad-Students",
+    project_urls={
+        "Bug Tracker": "https://github.com/HighEloDevs/Analysis-Tool-for-Undergrad-Students/issues",
     },
-}
-
-# Setting up CxFreeze
-setup(
-    name = 'ATUS',
-    version = __VERSION__,
-    description = 'Ferramenta para análise de dados',
-    author = 'Leonardo Eiji Tamayose & Guilherme Ferrari Fortino',
-    options = {
-        'build_exe': build_exe_options
+    classifiers=[
+        "Programming Language :: Python :: 3",
+        "License :: OSI Approved :: MIT License",
+        "Operating System :: OS Independent",
+    ],
+    packages_dir={'src':'src'},
+    packages=["src", ""],
+    include_package_data=True,
+    python_requires=">=3.7",
+    entry_points={
+        'console_scripts': ['atus = main:main'],
+        'gui_scripts': ['atus = main:main']
     },
-    executables = [target]
-)
+    install_requires=[
+        "setuptools>=42",
+        "wheel",
+        "matplotlib==3.4.2",
+        "pandas",
+        "numpy",
+        "scipy",
+        "lmfit",
+        "matplotlib_backend_qtquick",
+        "pyqt5",
+        "requests",
+    ]
+)   
