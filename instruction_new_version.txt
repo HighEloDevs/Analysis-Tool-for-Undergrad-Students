@@ -1,0 +1,24 @@
+# Intruções para lançar uma nova atualização
+
+Primeiramente, mudar a versão no version.txt e no createInstaller.iss
+
+## Windows
+Criar o executável:
+
+python setup_cxfreeze.py build_exe
+
+Criar o instalador:
+
+- Abrir o createInstaller.iss
+- Rodar
+- O instalador irá aparecer no dist/
+
+## Pypi (Linux / Mac)
+
+Criar os arquivos .whl e .tar:
+
+py -m build
+
+Publicar os arquivos no PyPi usando o Twine:
+
+py -m twine upload dist/atus-<version>.tar.gz dist/atus-<version>-py3-none-any.whl

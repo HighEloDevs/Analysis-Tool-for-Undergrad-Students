@@ -3,9 +3,11 @@ import setuptools
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
+with open('./version.txt') as version:
+    __VERSION__  = version.read()
 setuptools.setup(
     name="atus",
-    version="0.2.4.6",
+    version=__VERSION__,
     author="High Elo Devs",
     author_email="atusdevs@gmail.com",
     description="Tool for analysis",
@@ -20,7 +22,8 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    packages_dir={'src':'src'},
+    # src "vira" src. E.g. 'src.atus':'src' -> src.atus "vira" src
+    packages_dir={'src':'src'}, 
     packages=["src", ""],
     include_package_data=True,
     python_requires=">=3.7",
