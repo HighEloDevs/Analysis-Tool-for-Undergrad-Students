@@ -25,6 +25,7 @@ SOFTWARE.
 
 import os
 import sys
+from PyQt5 import QtCore
 import matplotlib.pyplot as plt
 
 from src.Model import Model
@@ -83,7 +84,7 @@ def main():
     context.setContextProperty("hist", histogram)
     context.setContextProperty("gdrive", gdrive)
     context.setContextProperty("globalManager", globalManager)
-    
+
     engine.load(QUrl.fromLocalFile(os.path.join(os.path.dirname(__file__), "qml/main_windows.qml")))
         
     # Updating canvasPlot with the plot
@@ -97,5 +98,5 @@ def main():
     # Starting program
     sys.exit(app.exec_())
 
-    if __name__ == "__main__":
-        main()
+if __name__ == "__main__":
+    main()

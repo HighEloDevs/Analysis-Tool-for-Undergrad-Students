@@ -1016,11 +1016,14 @@ Window {
     Connections{
         target: updater
         function onShowUpdate(infos){
+
+            updatePopup.infos = infos
             updatePopup.updateLog = infos['body']
             updatePopup.version = infos['tag_name']
             updatePopup.exeLink = infos['assets'][0]['browser_download_url']
             updatePopup.tarLink = infos['tarball_url']
             updatePopup.zipLink = infos['zipball_url']
+            updatePopup.platform = updater.getOS()
             updatePopup.open()
         }
     }

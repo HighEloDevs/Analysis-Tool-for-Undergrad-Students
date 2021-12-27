@@ -16,131 +16,249 @@ Popup {
         topInset: 0
         margins: 5
 
+        property variant infos: {}
         property string updateLog: ''
         property string version: ''
         property string exeLink: ''
         property string tarLink: ''
         property string zipLink: ''
+        property string platform: ''
+        property real total: 0
+
+        Popup{
+            id: permissionPopup
+            anchors.centerIn: Overlay.overlay
+            modal: true
+            focus: true
+            closePolicy: Popup.CloseOnEscape
+            leftInset: 0
+            rightInset: 0
+            bottomInset: 10
+            topInset: 10
+            width: 400
+            height: 100
+
+            background: Rectangle{
+                anchors.fill: parent
+                color: "#1e1e1e"
+                radius: 5
+                opacity: 0.95
+
+                layer.enabled: true
+                layer.effect: DropShadow {
+                    horizontalOffset: 1
+                    verticalOffset: 1
+                    radius: 10
+                    spread: 0.1
+                    samples: 17
+                    color: "#252525"
+                }
+
+
+                ColumnLayout{
+                    anchors.fill: parent
+                    spacing: 10
+                    Rectangle{
+                        Layout.fillWidth: parent
+                        Layout.fillHeight: parent
+                        color: "transparent"
+                        Label{
+                            anchors.centerIn: parent
+                            text: "Tem certeza que deseja atualizar?"
+                            font.weight: Font.ExtraLight
+                            font.pixelSize: 18
+                            color: "#ffffff"
+                        }
+                    }
+
+                    Row{
+                        Layout.bottomMargin: 10
+                        Layout.alignment: Qt.AlignCenter
+                        spacing: 10
+                        TextButton{
+                            primaryColor: "transparent"
+                            width: 120
+                            height: 30
+                            textColor: "#009900"
+                            texto: 'Atualizar'
+
+                            onClicked: {
+                                permissionPopup.close()
+                                updater.updateOnWindows()
+                            }
+                        }
+
+                        TextButton{
+                            primaryColor: "transparent"
+                            width: 120
+                            height: 30
+                            textColor: "#ff5757"
+                            texto: 'Cancelar'
+
+                            onClicked: permissionPopup.close()
+                            // onClicked: updater.updateOnWindows()
+                        }
+                    }
+                }
+            }
+        }
 
         background: Rectangle{
             anchors.fill: parent
-            color: '#fff'
+            color: '#1e1e1e'
             radius: 5
             opacity: 0.95
 
-            IconButton{
-                id: closeUpdateLogBtn
-
-                anchors.right: parent.right
-                anchors.rightMargin: -closeUpdateLogBtn.width/3
-                anchors.top: parent.top
-                anchors.topMargin: -closeUpdateLogBtn.width/3
-
-                width: 30
-                height: 30
-                r: 20
-                z: 1
-
-                primaryColor: Colors.color1
-                hoverColor: Colors.color1
-                clickColor: Colors.color3
-                iconColor: '#fff'
-                iconUrl: '../../images/icons/close-24px.svg'
-                iconWidth: 20
-                borderWidth: 2
-                borderColor: "#fff"
-
-                onClicked: updatePopup.close()
+            layer.enabled: true
+            layer.effect: DropShadow {
+                horizontalOffset: 1
+                verticalOffset: 1
+                radius: 10
+                spread: 0.1
+                samples: 17
+                color: "#252525"
             }
 
             ColumnLayout{
                 anchors.fill: parent
-                anchors.leftMargin: 2
-                anchors.rightMargin: 2
-                anchors.topMargin: 2
-                anchors.bottomMargin: 2
+                anchors.leftMargin: 0
+                anchors.rightMargin: 0
+                anchors.topMargin: 0
+                anchors.bottomMargin: 0
+                spacing: 0
 
                 Rectangle{
                     id: titleBg
                     Layout.fillWidth: true
-                    height: 60
-                    radius: 5
-                    color: Colors.color2
+                    height: 50
+                    color: '#009688'
 
-                    Label{
+                    GridLayout{
                         anchors.left: parent.left
-                        anchors.leftMargin: 15
+                        anchors.leftMargin: 20
                         anchors.verticalCenter: parent.verticalCenter
-                        text: 'Atualização Disponível | v' + updatePopup.version
-                        color: '#fff'
-                        font.pixelSize: 20
+                        rows: 2
+                        columns: 1
+                        rowSpacing: 0
+                        columnSpacing: 20
+
+                        Label{
+                            text: "Atualização"
+                            font.pixelSize: 18
+                            font.bold: true
+                            color: '#ffffff'
+                        }
+                        Label{
+                            text: "Publicado em " + infos["published_at"]
+                            font.pixelSize: 14
+                            font.weight: Font.Light
+                            color: '#fafafa'
+                        }
+                    }
+
+                    IconButton{
+                        id: closeUpdateLogBtn
+
+                        anchors.right: parent.right
+                        anchors.rightMargin: 10
+                        anchors.verticalCenter: parent.verticalCenter
+
+                        width: 30
+                        height: 30
+                        r: 20
+
+                        primaryColor: "transparent"
+                        hoverColor: "transparent"
+                        clickColor: "transparent"
+                        iconColor: '#fff'
+                        iconUrl: '../../images/icons/close-24px.svg'
+                        iconWidth: 24
+
+                        onClicked: updatePopup.close()
                     }
                 }
 
                 ScrollView{
                     Layout.fillWidth: true
                     Layout.fillHeight: true
+                    topPadding: 30
+                    bottomPadding: 30
                     contentWidth: logText.width
                     contentHeight: logText.height
                     clip: true
 
                     Text{
                         id: logText
-                        width: updatePopup.width - 30
+                        width: updatePopup.width - 80
                         anchors.left: parent.left
-                        anchors.leftMargin: 15
-                        color: '#000'
-                        font.pixelSize: 17
-                        wrapMode: Text.WrapAnywhere
+                        anchors.leftMargin: 40
+                        color: '#eee'
+                        font.pixelSize: 14
+                        horizontalAlignment: Text.AlignJustify
+                        lineHeight: 1.2
+                        antialiasing: true
+                        wrapMode: Text.Wrap
                         text: updatePopup.updateLog
+                        textFormat: TextEdit.MarkdownText
                     }
                 }
 
-                RowLayout{
-                    Layout.fillWidth: true
-                    height: 40
+                Rectangle{
+                    height: 50
+                    RowLayout{
+                        anchors.fill: parent
+                        anchors.leftMargin: 50
+                        TextButton{
+                            id: downloadBtn
+                            primaryColor: '#009688'
+                            hoverColor: Colors.c_button_hover
+                            clickColor: Colors.c_button_active
+                            width: 120
+                            height: 40
+                            texto: 'Atualizar'
 
-                    IconTextButton{
-                        id: downloadBtn
-                        Layout.fillWidth: true
-                        primaryColor: Colors.color2
-                        hoverColor: Colors.c_button_hover
-                        clickColor: Colors.c_button_active
-                        r: 5
-                        width: 120
-                        height: 30
-                        texto: 'Download (.exe)'
-                        iconUrl: '../../images/icons/get_app_black_24dp.svg'
+                            onClicked: permissionPopup.open()
+                            // onClicked: updater.updateOnWindows()
+                        }
 
-                        onClicked: Qt.openUrlExternally(updatePopup.exeLink)
-                    }
-                    IconTextButton{
-                        Layout.fillWidth: true
-                        primaryColor: Colors.color2
-                        hoverColor: Colors.c_button_hover
-                        clickColor: Colors.c_button_active
-                        r: 5
-                        width: 120
-                        height: 30
-                        texto: 'Download (.tar)'
-                        iconUrl: '../../images/icons/get_app_black_24dp.svg'
+                        Rectangle{
+                            id: loadingBar
+                            width: 400
+                            color: "transparent"
+                            height: 20
+                            radius: 2
+                            border.width: 1
+                            border.color: "#fff"
 
-                        onClicked: Qt.openUrlExternally(updatePopup.tarLink)
-                    }
-                    IconTextButton{
-                        Layout.fillWidth: true
-                        primaryColor: Colors.color2
-                        hoverColor: Colors.c_button_hover
-                        clickColor: Colors.c_button_active
-                        r: 5
-                        width: 120
-                        height: 30
-                        texto: 'Download (.zip)'
-                        iconUrl: '../../images/icons/get_app_black_24dp.svg'
+                            Rectangle{
+                                id: progress
+                                anchors.top: parent.top
+                                anchors.topMargin: 2
+                                anchors.left: parent.left
+                                anchors.leftMargin: 2
+                                color: '#009688'
+                                radius: 2
+                                height: 16
+                                width: 396 * total
+                            }
+                        }
 
-                        onClicked: Qt.openUrlExternally(updatePopup.zipLink)
+                        Label{
+                            id: loadingLabel
+                            text: (total * 100).toFixed(0) + '%'
+                            font.pixelSize: 12
+                            font.weight: Font.Light
+                            color: '#fff'
+                        }
                     }
                 }
+            }
+        }
+
+        Connections{
+            target: updater
+            function onUpdateProgress(progress) {
+                total = progress
             }
         }
     }
