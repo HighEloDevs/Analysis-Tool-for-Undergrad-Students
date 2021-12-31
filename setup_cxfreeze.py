@@ -14,18 +14,14 @@ files = [
 
 # Packages to include
 includes = [
-    'os',
-    'platform',
-    'sys',
-    'copy',
     'requests',
-    'json',
     'matplotlib_backend_qtquick',
     'numpy',
     'operator',
-    'scipy',
     'pandas',
     'lmfit',
+    'scipy.odr',
+    'scipy.spatial.transform._rotation_groups',
 ]
 
 # TARGET
@@ -38,27 +34,20 @@ target = Executable(
 # Dependencies are automatically detected, but it might need fine tuning.
 # Options for building a .exe
 build_exe_options = {
-    'packages': includes,
-    'excludes': ["tkinter",
-                'sympy',
+    'excludes': [
+                    "tkinter",
+                    "sympy",
+                    "sqlite3", 
+                    "scipy.lib.lapack.flapack",
+                    "numpy.core._dotblas", 
                 ],
-    'include_files': files
-}
-
-# Options for building a .msi installer
-bdist_msi_options = {
-    "data": {
-        "ProgId": [
-            ("Prog.Id", None, None, "Ferramenta para análise de dados", "IconId", None),
-        ],
-        "Icon": [
-            ("IconId", "icon.ico"),
-        ],
-    },
+    'zip_include_packages': ['PyQt5.QtCore', 'PyQt5.QtGui', 'PyQt5.QtQml'],
+    'includes': includes,
+    'include_files': files,
 }
 
 # Setting up CxFreeze
-setup(
+setup(  
     name = 'ATUS',
     version = __VERSION__,
     description = 'Ferramenta para análise de dados',

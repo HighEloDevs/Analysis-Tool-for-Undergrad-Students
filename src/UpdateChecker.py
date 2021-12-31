@@ -38,45 +38,34 @@ class UpdateChecker(QObject):
 
     class Updater(QObject):
         updateProgress = pyqtSignal(float, arguments='infos')
-        i = 0
+
         @pyqtSlot()
         def updateOnWindows(self):
             # Where to save the file
             savePath = os.path.join(os.environ["HOMEPATH"], 'Downloads')
 
             # Getting download URL
-            response = requests.get(self.gitHubApiUrl)
+            response = requests.get('https://api.github.com/repos/HighEloDevs/Analysis-Tool-for-Undergrad-Students/releases/latest')
             infos = response.json()
             exeUrl = infos['assets'][0]['browser_download_url']
-            # print(self.thread().start())
-            # for i in range(0, 101, 1):
-            #     self.updateProgress.emit(i/100)
-            #     # print(i/100)
-            #     time.sleep(0.01)
             
-
             with open(os.path.join(savePath, 'atus.exe'), "wb") as f:
                 dl = 0
                 exe = requests.get(exeUrl, allow_redirects=True, stream=True)
                 total_length = exe.headers.get('content-length')
                 total_length = int(total_length)
-                for i in exe.iter_content(chunk_size=4096):
+                for i in exe.iter_content(chunk_size=1024 * 1024):
                     dl += len(i)
                     f.write(i)
                     done = float(dl / total_length)
                     time.sleep(0.01)
                     self.updateProgress.emit(done)
 
-            # Saving .exe to path
-            os.system(f'cd {savePath}')
-
             # Running .exe
             # This runs in silent mode
-            os.system('atus.exe /verysilent')
             os.chdir(savePath)
-            # print(os.getcwd() + "\n")
-            # os.system(r'.\atus.exe')
-            # os.system(r'del /f atus.exe')
+            os.system('atus.exe /verysilent')
+            os.remove("atus.exe")
 
     def __init__(self) -> None:
         super().__init__()
@@ -85,9 +74,12 @@ class UpdateChecker(QObject):
         self.gitHubApiUrl = 'https://api.github.com/repos/HighEloDevs/Analysis-Tool-for-Undergrad-Students/releases/latest'
 
         # Actual version
-        with open(os.path.join(os.path.dirname(__file__) + "/../version.txt")) as version:
-            self.__VERSION__  = version.read()
-            version.close()
+        try:
+            with open(os.path.join(os.path.dirname(__file__) + "\\..\\version.txt")) as version:
+                self.__VERSION__  = version.read()
+        except:
+            with open("./version.txt") as version:
+                self.__VERSION__  = version.read()
         self.isUpdate = True
         # Updater must work in a different thread, so it can update de download progress bar
         self.updaterThread = QThread()
@@ -96,7 +88,6 @@ class UpdateChecker(QObject):
         self.updater.moveToThread(self.updaterThread)
         self.updater.updateProgress.connect(self.updateProgress)
         self.updateOnWindows.connect(self.updater.updateOnWindows)
-        print(self.thread())
         
     @pyqtSlot()
     def checkUpdate(self):        
@@ -117,5 +108,5 @@ class UpdateChecker(QObject):
 
     @pyqtSlot(result=str)
     def getOS(self):
-        return platform.system()
-        # return 'Darwin'
+        # return platform.system()
+        return 'Darwin'

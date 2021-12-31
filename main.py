@@ -25,9 +25,7 @@ SOFTWARE.
 
 import os
 import sys
-from PyQt5 import QtCore
 import matplotlib.pyplot as plt
-
 from src.Model import Model
 from src.Plot import SinglePlot 
 from src.MultiPlot import Multiplot

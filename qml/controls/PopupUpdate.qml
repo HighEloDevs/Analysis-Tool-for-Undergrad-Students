@@ -205,7 +205,23 @@ Popup {
 
                 Rectangle{
                     height: 50
+                    Layout.fillWidth: true
+                    Rectangle{
+                        visible: platform !== "Windows"
+                        anchors.fill: parent
+                        color: '#1e1e1e'
+                        TextEdit{
+                            anchors.centerIn: parent
+                            text: "pip install atus --update"
+                            font.pixelSize: 18
+                            font.weight: Font.ExtraLight
+                            color: '#ffffff'
+                            readOnly: true
+                            selectByMouse: true
+                        }
+                    }
                     RowLayout{
+                        visible: platform == "Windows"
                         anchors.fill: parent
                         anchors.leftMargin: 50
                         TextButton{
@@ -218,7 +234,6 @@ Popup {
                             texto: 'Atualizar'
 
                             onClicked: permissionPopup.open()
-                            // onClicked: updater.updateOnWindows()
                         }
 
                         Rectangle{
