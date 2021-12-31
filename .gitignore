@@ -2,7 +2,8 @@
 node_modules
 /dist
 
-
+env
+instaladores
 # local env files
 .env.local
 .env.*.local
