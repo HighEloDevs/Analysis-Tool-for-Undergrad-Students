@@ -1,16 +1,16 @@
 <template>
-<v-container id="content" class="d-flex align-start px-md-16" fluid>
-    <v-container class="ml-10 mr-0 pa-0 d-none d-md-flex flex-column sticky-top" fluid>
+<v-container id="content-md" class="d-flex align-start my-3" fluid>
+    <v-sheet class="d-none d-md-flex flex-column sticky-top mr-7 text-no-wrap">
         <a
             v-for="(section, index) in sections"
             :key="index"
-            :class="section.localName == 'h1' ? 'subtitle-1 mt-2 font-weight-bold teal--text text--darken-3' : 'ml-4 subtitle-2 teal--text font-weight-medium'"
+            :class="section.localName == 'h1' ? 'subtitle-1 mt-2 font-weight-bold teal--text' : 'ml-3 subtitle-2 font-weight-medium'"
             @click="scrollTo(section.id)"
         >
             {{section.innerHTML}}
         </a>
-    </v-container>
-    <span v-html="fromMarkdown(md)" id="text-content" class="text-justify pl-4 pr-0"></span>
+    </v-sheet>
+    <span v-html="fromMarkdown(md)" id="text-content" class="text-justify"></span>
 </v-container>
 </template>
 
@@ -38,7 +38,8 @@ export default {
                 simpleLineBreaks: true,
             },
             btn: null,
-            sections: []
+            sections: [],
+            
         }
     },
     methods: {
@@ -63,13 +64,21 @@ export default {
 }
 </script>
 
-<style>
-#text-content{
-    padding: 3%;
+<style lang="scss">
+#content-md{
+    @media screen and (min-width: 960px) {
+        padding: 0 2%;
+    }
+    @media screen and (min-width: 1200px) {
+        padding: 0 10%;
+    }
+    @media screen and (min-width: 1500px) {
+        padding: 0 25%;
+    }
 }
+
 .sticky-top {
     position: sticky;
-    max-width: 15%;
     top: 0;
 }
 </style>

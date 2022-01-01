@@ -14,6 +14,7 @@ const vuexLocal = new VuexPersistence({
 export default new Vuex.Store({
   state: {
     darkMode: true,
+    drawer: false,
     sections: [
       {
           title: 'Instalação',
@@ -71,6 +72,9 @@ export default new Vuex.Store({
   mutations: {
     setDarkMode(state, darkMode) {
       state.darkMode = darkMode;
+    },
+    changeDrawer(state) {
+      state.drawer = !state.drawer;
     }
   },
   actions: {

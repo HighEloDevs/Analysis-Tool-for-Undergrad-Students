@@ -1,15 +1,7 @@
-# Markdown Cheat Sheet
+
+# Markdown 
 1.  Some code:
 
-```python
-import numpy as np
-print(np)
-for i in range(43):
-  print(i)
-```
-
-> Aqui o "mundo" é criado, o mundo é lógico!
->> dsdd
 
 # Teste 2
 

@@ -25,7 +25,7 @@
       <v-btn 
         outlined 
         class="mt-5"
-        @click='scrollTo("third-section")'
+        @click='changeDrawer'
       >
         Documentação
       </v-btn>
@@ -56,7 +56,7 @@
       <v-card-title class="white--text"> Proposta </v-card-title>
       <v-card-text class="teal--text text--lighten-5 body-2"> 
         <p class="text-justify">
-          O Analysis Tool for Undergrad Students (ATUS) foi desenvolvido por estudantes do Instituto de Física da USP
+          O <strong>A</strong>nalysis <strong>T</strong>ool for <strong>U</strong>ndergrad <strong>S</strong>tudents (ATUS) foi desenvolvido por estudantes do Instituto de Física da USP
           com o objetivo de ser uma ferramenta <strong> gratuita </strong> para análise dados.
         </p>
       </v-card-text>
@@ -127,7 +127,7 @@
 
   <!-- Third Section | Table of Contents -->
   <section id="third-section" class="d-flex justify-center align-center">
-    <v-sheet class="d-flex flex-wrap justify-center">
+    <!-- <v-sheet class="d-flex flex-wrap justify-center">
       <v-card 
           outlined 
           class="ma-4"
@@ -152,13 +152,13 @@
           </v-list>
         </v-card-text>
       </v-card>
-    </v-sheet>
+    </v-sheet> -->
   </section>
 </v-container>
 </template>
 
 <script>
-  import { mapState } from 'vuex'
+  import { mapState, mapMutations } from 'vuex'
 
   export default {
     name: 'Home',
@@ -185,6 +185,10 @@
     },
 
     methods: {
+      ...mapMutations([
+        'changeDrawer',
+      ]),
+
       scrollTo(element){
         this.$vuetify.goTo(`#${element}`, this.options)
       },
@@ -212,7 +216,7 @@
 }
 
 #third-section{
-  min-height: 100vh;
+  min-height: 25vh;
 }
 
 .skewed {

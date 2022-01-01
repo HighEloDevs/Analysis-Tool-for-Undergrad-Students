@@ -35,7 +35,7 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 @media(min-width: 960px){
     #text-content{
         margin: 0 20%;

@@ -11,7 +11,7 @@
       absolute
       elevate-on-scroll
     >
-      <v-app-bar-nav-icon color="white" @click="drawer = !drawer"></v-app-bar-nav-icon>
+      <v-app-bar-nav-icon color="white" @click="changeDrawer"></v-app-bar-nav-icon>
       <v-spacer></v-spacer>
       <v-btn 
         icon
@@ -35,7 +35,7 @@
       color="primary"
       width="350"
       class="elevation-8"
-      v-model= "drawer"
+      v-model="drawer"
       temporary
     >
       <v-list dark>
@@ -48,7 +48,7 @@
               mdi-home
             </v-icon>
           </v-list-item-icon>
-          <v-list-item-title> Início </v-list-item-title>
+          <v-list-item-title class="font-weight-bold"> Início </v-list-item-title>
         </v-list-item>
         <v-list-group
           v-for="section in sections"
@@ -57,7 +57,7 @@
           color="white"
         >
           <template v-slot:activator>
-            <v-list-item-title>{{section.title}}</v-list-item-title>
+            <v-list-item-title class="font-weight-bold">{{section.title}}</v-list-item-title>
           </template>
           <v-list-item
               v-for="page in section.pages"
@@ -67,7 +67,7 @@
               flat
               dark
             >
-              <v-list-item-title v-text="page.title"></v-list-item-title>
+              <v-list-item-title v-text="page.title" class="grey--text font-weight-bold text--lighten-3">></v-list-item-title>
             </v-list-item>
         </v-list-group>
         <v-list-item
@@ -79,7 +79,7 @@
               mdi-frequently-asked-questions 
             </v-icon>
           </v-list-item-icon>
-          <v-list-item-title> FAQ </v-list-item-title>
+          <v-list-item-title class="font-weight-bold"> FAQ </v-list-item-title>
         </v-list-item>
       </v-list>
     </v-navigation-drawer>
@@ -105,19 +105,30 @@ export default {
   name: 'App',
 
   data: () => ({
-    drawer: false,
     scrollTop: 0,
   }),
 
   computed: {
     ...mapState([
-      'sections'
+      'sections',
     ]),
+    drawer: {
+      get() {
+        return this.$store.state.drawer;
+      },
+      set(val) {
+        if(this.$store.state.drawer !== val)
+          this.$store.commit('changeDrawer', val);
+        else
+          return val
+      }
+    }
   },
 
   methods: {
     ...mapMutations([
       'setDarkMode',
+      'changeDrawer',
     ]),
 
     switchMode(){
