@@ -1,15 +1,20 @@
 <template>
 <v-container id="content" class="d-flex align-start px-md-16 " fluid>
-    <div v-html="fromMarkdown(md)" id="text-content" class="text-justify"></div>
+    <!-- <div v-html="fromMarkdown(md)" id="text-content" class="text-justify"></div> -->
+    <Post :md="md" :section="$route.params.section"></Post>
 </v-container>
 </template>
 
 <script>
 import showdown from "showdown"
 import md from "!raw-loader!../md/About.md"
+import Post from "@/components/Post.vue"
 
 export default {
-    name: "Post",
+    name: "About",
+    components: {
+        Post
+    },
     data() {
       return {
         md: md,
