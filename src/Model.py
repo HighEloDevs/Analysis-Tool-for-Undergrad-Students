@@ -109,7 +109,7 @@ class Model(QObject):
         clipboardText = clipboard.mimeData().text()
         # try:
             # Creating a dataframe from the string
-        df = pd.read_csv(StringIO(clipboardText), sep = '\t', header = None, dtype = str).replace(np.nan, "0")
+        df = pd.read_csv(StringIO(clipboardText), sep = '\t', header = None, dtype = str).dropna(how='all').replace(np.nan, "0")
         # Replacing all commas for dots
         for i in df.columns:
             df[i] = [x.replace(',', '.') for x in df[i]]
@@ -129,13 +129,13 @@ class Model(QObject):
             data_path = QUrl(data_path).toLocalFile()
             if data_path[-3:] == "csv":
                 try:
-                    df = pd.read_csv(data_path, sep=',', header=None, dtype = str).replace(np.nan, "0")
+                    df = pd.read_csv(data_path, sep=',', header=None, dtype = str).dropna(how='all').replace(np.nan, "0")
                 except pd.errors.ParserError:
-                    self._msgHandler.raiseError("Separação de colunas de arquivos csv são com vírgula (","). Rever dados de entrada.")
+                    self._msgHandler.raiseError("Separação de colunas de arquivos csv são com vírgula (','). Rever dados de entrada.")
                     return None
             else:
                 try:
-                    df = pd.read_csv(data_path, sep='\t', header=None, dtype = str).replace(np.nan, "0")
+                    df = pd.read_csv(data_path, sep='\t', header=None, dtype = str).dropna(how='all').replace(np.nan, "0")
                 except pd.errors.ParserError:
                     self._msgHandler.raiseError("Separação de colunas de arquivos txt e tsv são com tab. Rever dados de entrada.")
                     return None
