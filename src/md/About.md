@@ -30,7 +30,7 @@ Não. No Windows o arquivo .exe do ATUS é barrado em um primeiro momento pois n
 
 ## VCRUNTIME140dll
 
-[imagem]
+![image](https://user-images.githubusercontent.com/56280982/148629650-78e823fc-2812-467c-800a-de52cce913b4.png)
 
 Basta instalar os Pacotes Redistribuíveis do Visual C++ para Visual Studio 2015 clicando [aqui](https://www.microsoft.com/pt-br/download/details.aspx?id=48145).
 
