@@ -1,10 +1,10 @@
 <template>
-<v-container id="content-md" class="d-flex align-start my-3" fluid>
-    <v-sheet class="d-none d-md-flex flex-column sticky-top mr-7 text-no-wrap">
+<v-container id="content-md" class="d-flex align-start my-3">
+    <v-sheet class="d-none d-md-flex flex-column sticky-top mr-7" min-width="200px">
         <a
             v-for="(section, index) in sections"
             :key="index"
-            :class="section.localName == 'h1' ? 'subtitle-1 mt-2 font-weight-bold teal--text' : 'ml-3 subtitle-2 font-weight-medium'"
+            :class="section.localName == 'h1' ? 'subtitle-1 mt-2 font-weight-bold teal--text' : 'ml-4 my-1 subtitle-2 font-weight-medium grey--text text--darken-1'"
             @click="scrollTo(section.id)"
         >
             {{section.innerHTML}}
@@ -44,7 +44,7 @@ export default {
     },
     methods: {
         fromMarkdown(markdown){
-            showdown.setFlavor('vanilla');
+            showdown.setFlavor('github');
             const converter = new showdown.Converter(this.showdownOptions);
             return converter.makeHtml(markdown);
         },
@@ -58,7 +58,7 @@ export default {
         }
     },
     mounted() {
-        this.sections = document.querySelectorAll("h1, h2")
+        this.sections = document.querySelectorAll("h1, h2, h3")
         this.scrollTo(this.$route.params.section)
     },
 }
@@ -80,5 +80,10 @@ export default {
 .sticky-top {
     position: sticky;
     top: 0;
+}
+
+a{
+    text-decoration: None;
+    font-weight: 600;
 }
 </style>
