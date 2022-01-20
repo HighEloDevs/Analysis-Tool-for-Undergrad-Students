@@ -17,6 +17,7 @@ Popup {
     bottomInset: 0
     topInset: 0
     margins: 5
+    height: 500
 
     onAboutToShow:{
         let canvasSize = canvas.get_canvas_size()
@@ -29,8 +30,8 @@ Popup {
         color: Colors.color2
         opacity: 0.95
         border.color: "#fff"
-        border.width: 2
-        radius: 5
+        border.width: 1
+        radius: 3
 
         IconButton{
             anchors.right: parent.right
@@ -47,7 +48,7 @@ Popup {
             iconColor: '#fff'
             iconUrl: '../../images/icons/close-24px.svg'
             iconWidth: 20
-            borderWidth: 2
+            borderWidth: 1
             borderColor: "#fff"
             onClicked: root.close()
         }
@@ -63,104 +64,221 @@ Popup {
             text: "Configurações da figura"
             font.bold: true
             font.pointSize: 15
-            color: "#e5e5e5"
+            color: "#ffffff"
         }
-
-        GridLayout {
+        
+        ScrollView{
             Layout.alignment: Qt.AlignHCenter
             Layout.fillHeight: true
-            Layout.leftMargin: 10
-            Layout.rightMargin: 10
-            columns: 12
-            rows: 10
+            clip: true
+            contentChildren: [content]
 
-            Text{
-                Layout.columnSpan: 12
-                Layout.alignment: Qt.AlignHCenter
-                text: "Dimensões do gráfico"
-                font.bold: true
-                font.pointSize: 11
-                color: "#a4a4a4"
-            }
-            
-            TextInputCustom{
-                id: figWidth
-                Layout.columnSpan: 6
-                Layout.fillWidth: true
-                focusColor: Colors.mainColor2
-                textHolder: ""
-                title: "Largura (px)"
-                textColor: "#fff"
-                defaultColor: "#fff"
-                validator: RegExpValidator{regExp: /^[1-9]+([0-9]+)?$/}
-            }
-            TextInputCustom{
-                id: figHeight
-                Layout.columnSpan: 6
-                Layout.fillWidth: true
-                focusColor: Colors.mainColor2
-                textHolder: ""
-                title: "Altura (px)"
-                textColor: "#fff"
-                defaultColor: "#fff"
-                validator: RegExpValidator{regExp: /^[1-9]+([0-9]+)?$/}
-            }
+            GridLayout {
+                id: content
+                anchors.centerIn: parent
+                width: root.width - 60
+                columns: 12
+                rows: 10
 
-            Text{
-                Layout.columnSpan: 12
-                Layout.alignment: Qt.AlignHCenter
-                text: "Distância normalizada do gráfico às bordas"
-                font.bold: true
-                font.pointSize: 11
-                color: "#a4a4a4"
-            }
-            TextInputCustom{
-                id: paddingTop
-                Layout.columnSpan: 6
-                Layout.fillWidth: true
-                focusColor: Colors.mainColor2
-                textHolder: ""
-                text: "0.92"
-                title: "Topo"
-                textColor: "#fff"
-                defaultColor: "#fff"
-                validator: RegExpValidator{regExp: /^[1-9]+([0-9]+)?$/}
-            }
-            TextInputCustom{
-                id: paddingBottom
-                Layout.columnSpan: 6
-                Layout.fillWidth: true
-                focusColor: Colors.mainColor2
-                textHolder: ""
-                text: "0.12"
-                title: "Baixo"
-                textColor: "#fff"
-                defaultColor: "#fff"
-                validator: RegExpValidator{regExp: /^[1-9]+([0-9]+)?$/}
-            }
-            TextInputCustom{
-                id: paddingLeft
-                Layout.columnSpan: 6
-                Layout.fillWidth: true
-                focusColor: Colors.mainColor2
-                textHolder: ""
-                text: "0.10"
-                title: "Esquerda"
-                textColor: "#fff"
-                defaultColor: "#fff"
-                validator: RegExpValidator{regExp: /^[1-9]+([0-9]+)?$/}
-            }
-            TextInputCustom{
-                id: paddingRight
-                Layout.columnSpan: 6
-                Layout.fillWidth: true
-                focusColor: Colors.mainColor2
-                textHolder: ""
-                text: "0.95"
-                title: "Direita"
-                textColor: "#fff"
-                defaultColor: "#fff"
-                validator: RegExpValidator{regExp: /^[1-9]+([0-9]+)?$/}
+                Text{
+                    Layout.columnSpan: 12
+                    Layout.alignment: Qt.AlignHCenter
+                    text: "Dimensões do gráfico"
+                    font.bold: true
+                    font.pointSize: 11
+                    color: "#4CAF50"
+                }
+                
+                TextInputCustom{
+                    id: figWidth
+                    Layout.columnSpan: 6
+                    Layout.fillWidth: true
+                    focusColor: Colors.mainColor2
+                    textHolder: ""
+                    title: "Largura (px)"
+                    textColor: "#fff"
+                    defaultColor: "#fff"
+                    validator: RegExpValidator{regExp: /^[1-9]+([0-9]+)?$/}
+                }
+                TextInputCustom{
+                    id: figHeight
+                    Layout.columnSpan: 6
+                    Layout.fillWidth: true
+                    focusColor: Colors.mainColor2
+                    textHolder: ""
+                    title: "Altura (px)"
+                    textColor: "#fff"
+                    defaultColor: "#fff"
+                    validator: RegExpValidator{regExp: /^[1-9]+([0-9]+)?$/}
+                }
+
+                Text{
+                    Layout.columnSpan: 12
+                    Layout.alignment: Qt.AlignHCenter
+                    text: "Distância normalizada do gráfico às bordas"
+                    font.bold: true
+                    font.pointSize: 11
+                    color: "#4CAF50"
+                }
+                TextInputCustom{
+                    id: paddingTop
+                    Layout.columnSpan: 6
+                    Layout.fillWidth: true
+                    focusColor: Colors.mainColor2
+                    textHolder: ""
+                    text: "0.92"
+                    title: "Topo"
+                    textColor: "#fff"
+                    defaultColor: "#fff"
+                    validator: RegExpValidator{regExp: /^[1-9]+([0-9]+)?$/}
+                }
+                TextInputCustom{
+                    id: paddingBottom
+                    Layout.columnSpan: 6
+                    Layout.fillWidth: true
+                    focusColor: Colors.mainColor2
+                    textHolder: ""
+                    text: "0.12"
+                    title: "Baixo"
+                    textColor: "#fff"
+                    defaultColor: "#fff"
+                    validator: RegExpValidator{regExp: /^[1-9]+([0-9]+)?$/}
+                }
+                TextInputCustom{
+                    id: paddingLeft
+                    Layout.columnSpan: 6
+                    Layout.fillWidth: true
+                    focusColor: Colors.mainColor2
+                    textHolder: ""
+                    text: "0.10"
+                    title: "Esquerda"
+                    textColor: "#fff"
+                    defaultColor: "#fff"
+                    validator: RegExpValidator{regExp: /^[1-9]+([0-9]+)?$/}
+                }
+                TextInputCustom{
+                    id: paddingRight
+                    Layout.columnSpan: 6
+                    Layout.fillWidth: true
+                    focusColor: Colors.mainColor2
+                    textHolder: ""
+                    text: "0.95"
+                    title: "Direita"
+                    textColor: "#fff"
+                    defaultColor: "#fff"
+                    validator: RegExpValidator{regExp: /^[1-9]+([0-9]+)?$/}
+                }
+
+                Text{
+                    Layout.columnSpan: 12
+                    Layout.alignment: Qt.AlignHCenter
+                    text: "Tamanho das fontes"
+                    font.bold: true
+                    font.pointSize: 11
+                    color: "#4CAF50"
+                }
+                TextInputCustom{
+                    id: titleSize
+                    Layout.columnSpan: 12
+                    Layout.fillWidth: true
+                    focusColor: Colors.mainColor2
+                    textHolder: ""
+                    text: "10"
+                    title: "Título (px)"
+                    textColor: "#fff"
+                    defaultColor: "#fff"
+                    validator: RegExpValidator{regExp: /^[1-9]+([0-9]+)?$/}
+                }
+                TextInputCustom{
+                    id: xsize
+                    Layout.columnSpan: 6
+                    Layout.fillWidth: true
+                    focusColor: Colors.mainColor2
+                    textHolder: ""
+                    text: "10"
+                    title: "Eixo x (px)"
+                    textColor: "#fff"
+                    defaultColor: "#fff"
+                    validator: RegExpValidator{regExp: /^[1-9]+([0-9]+)?$/}
+                }
+                TextInputCustom{
+                    id: ysize
+                    Layout.columnSpan: 6
+                    Layout.fillWidth: true
+                    focusColor: Colors.mainColor2
+                    textHolder: ""
+                    text: "10"
+                    title: "Eixo y (px)"
+                    textColor: "#fff"
+                    defaultColor: "#fff"
+                    validator: RegExpValidator{regExp: /^[1-9]+([0-9]+)?$/}
+                }
+                TextInputCustom{
+                    id: residualsSize
+                    Layout.columnSpan: 6
+                    Layout.fillWidth: true
+                    focusColor: Colors.mainColor2
+                    textHolder: ""
+                    text: "10"
+                    title: "Resíduos (px)"
+                    textColor: "#fff"
+                    defaultColor: "#fff"
+                    validator: RegExpValidator{regExp: /^[1-9]+([0-9]+)?$/}
+                }
+                TextInputCustom{
+                    id: captionSize
+                    Layout.columnSpan: 6
+                    Layout.fillWidth: true
+                    focusColor: Colors.mainColor2
+                    textHolder: ""
+                    text: "10"
+                    title: "Legenda (px)"
+                    textColor: "#fff"
+                    defaultColor: "#fff"
+                    validator: RegExpValidator{regExp: /^[1-9]+([0-9]+)?$/}
+                }
+
+                Text{
+                    Layout.columnSpan: 12
+                    Layout.alignment: Qt.AlignHCenter
+                    text: "Posição da legenda"
+                    font.bold: true
+                    font.pointSize: 11
+                    color: "#4CAF50"
+                }
+                ComboBoxCustom{
+                    id: legendPos
+                    Layout.columnSpan: 12
+                    Layout.fillWidth: true
+                    label: "Posição"
+                    textColor: "#fff"
+                    color: "#fff"
+                    highlightColor: Colors.mainColor2
+                    model: ["Automático", "Direita-Superior", "Direita-Inferior", "Esquerda-Superior", "Esquerda-Inferior",
+                            "Centro-Superior", "Centro-Inferior"]
+                }
+
+                Text{
+                    Layout.columnSpan: 12
+                    Layout.alignment: Qt.AlignHCenter
+                    text: "Resolução da imagem"
+                    font.bold: true
+                    font.pointSize: 11
+                    color: "#4CAF50"
+                }
+                TextInputCustom{
+                    id: dpi
+                    Layout.columnSpan: 12
+                    Layout.fillWidth: true
+                    focusColor: Colors.mainColor2
+                    textHolder: ""
+                    text: "500"
+                    title: "DPI da figura (px/in²) (100-1000)"
+                    textColor: "#fff"
+                    defaultColor: "#fff"
+                    validator: RegExpValidator{regExp: /^[1-9]|[1-9][0-9]|[1-9][0-9][0-9]|1000$/}
+                }
+
             }
         }
 
@@ -191,6 +309,9 @@ Popup {
                 onClicked: {
                     canvas.set_canvas_size(Number(figWidth.text), Number(figHeight.text))
                     canvas.setPaddings(paddingTop.text, paddingBottom.text, paddingLeft.text, paddingRight.text)
+                    canvas.set_font_sizes(titleSize.text, xsize.text, ysize.text, residualsSize.text, captionSize.text)
+                    canvas.set_legend_position(legendPos.currentText)
+                    canvas.set_dpi(dpi.text)
                 }
             }
         }

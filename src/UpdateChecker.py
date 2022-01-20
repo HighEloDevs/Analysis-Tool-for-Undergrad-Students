@@ -108,5 +108,5 @@ class UpdateChecker(QObject):
 
     @pyqtSlot(result=str)
     def getOS(self):
-        # return platform.system()
-        return 'Darwin'
+        return platform.system()
+        # return 'Darwin'

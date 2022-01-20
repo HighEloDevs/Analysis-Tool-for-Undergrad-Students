@@ -521,6 +521,18 @@ class MPLCanvas(QObject):
         '''Resizes the figure to fit the canvas'''
         self.canvas.geometryChanged(self.canvas.boundingRect(), self.canvas.boundingRect())
 
+    @pyqtSlot(int, int, int, int, int)
+    def set_font_sizes(self, title_size, x_size, y_size, residual_size, caption_size):
+        print(title_size, x_size, y_size, residual_size, caption_size)
+    
+    @pyqtSlot(str)
+    def set_legend_position(self, position):
+        print(position)
+
+    @pyqtSlot(int)
+    def set_dpi(self, dpi):
+        print(dpi)
+
     def on_motion(self, event):
         """Update the coordinates on the display."""
         if event.inaxes == self.axes1 or event.inaxes == self.axes2:
