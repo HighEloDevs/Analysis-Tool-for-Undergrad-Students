@@ -1,4 +1,4 @@
-![Logo](https://user-images.githubusercontent.com/48266854/121274136-3a196f00-c8a0-11eb-9625-3b637054867f.png)
+<p align="center"><a href="atus.xyz target="_blank" rel="noopener noreferrer"><img width="527" src="https://user-images.githubusercontent.com/48266854/150651933-85cb7a8a-894b-4990-8dc0-dfe3fccefd2a.png" alt="Vue logo"></a></p>
 
 <p align="center">
     <a href="https://doi.org/10.5281/zenodo.4723864" alt="Zenodo">
@@ -15,14 +15,16 @@
   O <strong>A</strong>nalysis <strong>T</strong>ool for <strong>U</strong>ndergrad <strong>S</strong>tudents é uma ferramenta desenvolvida por estudantes da <strong>Universidade de São Paulo</strong>, com o objetivo de facilitar a análise de dados feita por estudantes de física experimental.
 </p>
 
+<h2 align="center">Documentação</h2>
 
-## Documentação
 Instruções para instalação e tutoriais de uso do ATUS podem ser encontradas na nossa [página](https://highelodevs.github.io/Analysis-Tool-for-Undergrad-Students/).
-
-## Feedback
+    
+<h2 align="center">Feedback</h2>
+    
 Para qualquer crítica construtiva, sugestões, reportes de bugs etc, por favor, nos envie um e-mail - atusdevs@gmail.com
 
-## Autores
+<h2 align="center">Autores</h2>
+
 - [@GuiiFerrari](https://github.com/GuiiFerrari)
 - [@LeoEiji](https://github.com/leoeiji)
 - [@imscl_](https://www.instagram.com/imscl_/)
