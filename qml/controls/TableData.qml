@@ -52,7 +52,7 @@ Item{
         dataSet.clear()
     }
 
-    function checkData(){
+    function check_data(){
         root.hasData = dataShaped.length != 0 ? true : false
     }
 
@@ -431,9 +431,9 @@ Item{
                         }
                         Component.onCompleted: {
                             dataShaped.push([x_v, y_v, sy, sx, checkBox.checkState - 1])
-                            root.checkData()
+                            root.check_data()
                         }
-                        Component.onDestruction: root.checkData()
+                        Component.onDestruction: root.check_data()
                     }
                 }
             }

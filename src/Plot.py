@@ -34,9 +34,9 @@ class SinglePlot(QObject):
     '''Class that controls the single-plot page'''
 
     # Signal to write infos
-    writeCalculator       = pyqtSignal(str, arguments='expr')
-    fillPlotPageSignal    = pyqtSignal(QJsonValue, arguments='props')
-    plot                  = pyqtSignal()
+    write_calculator       = pyqtSignal(str, arguments='expr')
+    fill_plot_page_signal = pyqtSignal(QJsonValue, arguments='props')
+    plot_signal           = pyqtSignal()
 
     def __init__(self, canvas, model, messageHandler):
         super().__init__()
@@ -88,7 +88,7 @@ class SinglePlot(QObject):
         }
 
     @pyqtSlot(QJsonValue)
-    def getPlotData(self, plotData):
+    def get_plot_data(self, plotData):
         self.model.reset()
         plotData    = plotData.toVariant()
         canvasProps = plotData['canvasProps']
@@ -130,9 +130,334 @@ class SinglePlot(QObject):
             return None
 
         # Setting style of the plot
-        self.canvas.plot(self.model, canvasProps, fitProps, dataProps)
+        self.plot(self.model, canvasProps, fitProps, dataProps)
+    
+    def plot(self, model, canvas_props, fit_props, data_props):
+        self.canvas.set_tight_layout()
+        sigma_x = not not fit_props["wsx"]
+        sigma_y = not not fit_props["wsy"]
+        grid = not not canvas_props["grid"]
+        log_x = not not canvas_props["log_x"]
+        log_y = not not canvas_props["log_y"]
+        legend = not not canvas_props["legend"]
+        residuals = not not canvas_props["residuals"]
+        xmin = canvas_props["xmin"]
+        xmax = canvas_props["xmax"]
+        xdiv = canvas_props["xdiv"]
+        ymin = canvas_props["ymin"]
+        ymax = canvas_props["ymax"]
+        ydiv = canvas_props["ydiv"]
+        resmin = canvas_props["resmin"]
+        resmax = canvas_props["resmax"]
+        partial_titles = canvas_props["title"].split(";")
+        symbol_color = data_props["marker_color"]
+        symbol_size = data_props["marker_size"]
+        symbol = data_props["marker"]
+        curve_color = data_props["curve_color"]
+        curve_thickness = data_props["curve_thickness"]
+        curve_style = data_props["curve_style"]
+        px, py, y_r = None, None, None
+        self.canvas.grid = grid
+        axis_titles = []
+        if len(partial_titles) == 1:
+            axis_titles = [
+                canvas_props["title"].strip(),
+                canvas_props["xaxis"].strip(),
+                canvas_props["yaxis"].strip(),
+                "",
+            ]
+        else:
+            axis_titles = [
+                partial_titles[0].strip(),
+                partial_titles[1].strip(),
+                canvas_props["xaxis"].strip(),
+                canvas_props["yaxis"].strip(),
+            ]
+        if model._has_data:
 
-    def fillPlotPage(self, props=None):
+            # Fitting expression to data, if there's any expression
+            if fit_props["adjust"]:
+                if model._exp_model != "":
+                    model.fit(wsx=not sigma_x, wsy=not sigma_y)
+                else:
+                    model._isvalid = False
+            else:
+                if model._exp_model != "":
+                    model.createDummyModel()
+                else:
+                    model._isvalid = False
+
+            kargs_errorbar = { "ecolor" : symbol_color,
+                               "capsize" : 0,
+                               "elinewidth" : 1,
+                               "ms" : symbol_size,
+                               "marker" : symbol,
+                               "color" : symbol_color,
+                               "ls" : "none"}
+
+            # Plotting if the model is valid
+            if model._isvalid:
+                # Clearing the current plot
+                self.canvas.clear_axis()
+
+                # Getting data
+                x, y, sy, sx = model.data
+                y_r = None
+                if fit_props["adjust"]:
+                    y_r = model.residuo
+                else:
+                    y_r = model.residuoDummy
+                if residuals:
+                    self.canvas.switch_axes(hide_axes2=False)
+                    if sigma_x and sigma_y:  # Caso considerar as duas incertezas
+                        ssy = model.predictInc(not sigma_x)
+                        self.canvas.axes1.errorbar(x, y, yerr=sy, xerr=sx, **kargs_errorbar)
+                        self.canvas.axes2.errorbar(
+                            x,
+                            y_r,
+                            yerr=ssy,
+                            **kargs_errorbar
+                        )
+                    elif (sigma_x is False
+                          and sigma_y is False):  # Caso desconsiderar as duas
+                        self.canvas.axes1.errorbar(
+                            x,
+                            y,
+                            **kargs_errorbar
+                        )
+                        self.canvas.axes2.errorbar(
+                            x,
+                            y_r,
+                            **kargs_errorbar
+                        )
+                    elif sigma_x is False and sigma_y is True:  # Caso considerar só sy
+                        ssy = model.predictInc(not sigma_x)
+                        self.canvas.axes1.errorbar(
+                            x,
+                            y,
+                            yerr=sy,
+                            **kargs_errorbar
+                        )
+                        self.canvas.axes2.errorbar(
+                            x,
+                            y_r,
+                            yerr=ssy,
+                            **kargs_errorbar
+                        )
+                    else:  # Caso considerar só sx
+                        ssy = model.predictInc(not sigma_x)
+                        self.canvas.axes1.errorbar(
+                            x,
+                            y,
+                            xerr=sx,
+                            **kargs_errorbar
+                        )
+                        self.canvas.axes2.errorbar(
+                            x,
+                            y_r,
+                            yerr=ssy,
+                            **kargs_errorbar
+                        )
+                    self.canvas.set_axes_props_with_axes_2(
+                        xmin,
+                        xmax,
+                        xdiv,
+                        ymin,
+                        ymax,
+                        ydiv,
+                        resmin,
+                        resmax,
+                        grid,
+                        log_x,
+                        log_y,
+                    )
+                    left, right = self.axes1.get_xlim()
+                    px, py = 0.0, 0.0
+                    if log_x:
+                        px, py = model.get_predict_log(self.axes1.figure, left,
+                                                       right)
+                    else:
+                        px, py = model.get_predict(self.axes1.figure, left,
+                                                   right)
+
+                    # Making Plots
+                    (line_func, ) = self.canvas.axes1.plot(
+                        px,
+                        py,
+                        lw=curve_thickness,
+                        color=curve_color,
+                        ls=curve_style,
+                        label=f"${model._exp_model}$",
+                    )
+
+                    # Setting titles
+                    self.canvas.axes1.set_title(axis_titles[0])
+                    self.canvas.axes2.set(xlabel=axis_titles[1])
+                    self.canvas.axes1.set(ylabel=axis_titles[2])
+                    self.canvas.axes2.set(ylabel=axis_titles[3])
+                    if legend:
+                        self.canvas.axes1.legend(frameon=False)
+
+                    def update(evt):
+                        left, right = self.canvas.axes1.get_xlim()
+                        ppx, ppy = model.get_predict(self.axes1.figure, left,
+                                                     right)
+                        line_func.set_data(ppx, ppy)
+                        self.canvas.axes1.figure.canvas.draw_idle()
+
+                    if log_x:
+
+                        def update(evt):
+                            left, right = self.canvas.axes1.get_xlim()
+                            ppx, ppy = model.get_predict_log(
+                                self.canvas.axes1.figure, left, right)
+                            line_func.set_data(ppx, ppy)
+                            self.canvas.axes1.figure.canvas.draw_idle()
+
+                    self.canvas.axes1.remove_callback(self.canvas.oid)
+                    self.canvas.axes1.figure.canvas.mpl_disconnect(self.canvas.cid)
+                    self.canvas.oid = self.canvas.axes1.callbacks.connect(
+                        "xlim_changed", update)
+                    self.canvas.cid = self.canvas.axes1.figure.canvas.mpl_connect(
+                        "resize_event", update)
+                else:
+                    self.canvas.clear_axis()
+                    self.canvas.switch_axes(hide_axes2=True)
+
+                    # Making Plots
+                    if sigma_x and sigma_y:  # Caso considerar as duas incertezas
+                        self.canvas.axes1.errorbar(
+                            x,
+                            y,
+                            yerr=sy,
+                            xerr=sx,
+                            **kargs_errorbar
+                        )
+                    elif (sigma_x is False
+                          and sigma_y is False):  # Caso desconsiderar as duas
+                        self.canvas.axes1.errorbar(
+                            x,
+                            y,
+                            **kargs_errorbar
+                        )
+                    elif sigma_x is False and sigma_y is True:  # Caso considerar só sy
+                        self.canvas.axes1.errorbar(
+                            x,
+                            y,
+                            yerr=sy,
+                            **kargs_errorbar
+                        )
+                    else:  # Caso considerar só sx
+                        self.canvas.axes1.errorbar(
+                            x,
+                            y,
+                            xerr=sx,
+                            **kargs_errorbar
+                        )
+
+                    self.canvas.set_axes_props_without_axes_2(xmin, xmax, xdiv, ymin,
+                                                       ymax, ydiv, grid, log_x,
+                                                       log_y)
+                    left, right = self.canvas.axes1.get_xlim()
+                    px, py = 0.0, 0.0
+                    if log_x:
+                        px, py = model.get_predict_log(self.canvas.axes1.figure, left,
+                                                       right)
+                    else:
+                        px, py = model.get_predict(self.canvas.axes1.figure, left,
+                                                   right)
+
+                    (line_func, ) = self.canvas.axes1.plot(
+                        px,
+                        py,
+                        lw=curve_thickness,
+                        color=curve_color,
+                        ls=curve_style,
+                        label=f"${model._exp_model}$",
+                        picker=True,
+                    )
+                    if legend:
+                        self.canvas.axes1.legend(fancybox=True)
+
+                    # Setting titles
+                    self.canvas.axes1.set_title(str(axis_titles[0]))
+                    self.canvas.axes1.set(xlabel=str(axis_titles[1]))
+                    self.canvas.axes1.set(ylabel=str(axis_titles[2]))
+
+                    # One piece
+                    def update(evt):
+                        left, right = self.canvas.axes1.get_xlim()
+                        ppx, ppy = model.get_predict(self.canvas.axes1.figure, left,
+                                                     right)
+                        line_func.set_data(ppx, ppy)
+                        self.canvas.axes1.figure.canvas.draw_idle()
+
+                    if log_x:
+
+                        def update(evt):
+                            left, right = self.canvas.axes1.get_xlim()
+                            ppx, ppy = model.get_predict_log(
+                                self.canvas.axes1.figure, left, right)
+                            line_func.set_data(ppx, ppy)
+                            self.canvas.axes1.figure.canvas.draw_idle()
+
+                    self.canvas.axes1.remove_callback(self.canvas.oid)
+                    self.canvas.axes1.figure.canvas.mpl_disconnect(self.canvas.cid)
+                    self.canvas.oid = self.canvas.axes1.callbacks.connect(
+                        "xlim_changed", update)
+                    self.canvas.cid = self.canvas.figure.canvas.mpl_connect(
+                        "resize_event", update)
+
+            else:
+                self.canvas.clear_axis()
+                self.canvas.switch_axes(hide_axes2=True)
+
+                x, y, sy, sx = model.data
+
+                # Making Plots
+                if sigma_x and sigma_y:  # Caso considerar as duas incertezas
+                    self.canvas.axes1.errorbar(
+                        x,
+                        y,
+                        yerr=sy,
+                        xerr=sx,
+                        **kargs_errorbar
+                    )
+                elif (sigma_x is False
+                      and sigma_y is False):  # Caso desconsiderar as duas
+                    self.canvas.axes1.errorbar(
+                        x,
+                        y,
+                        **kargs_errorbar
+                    )
+                elif sigma_x is False and sigma_y is True:  # Caso considerar só sy
+                    self.canvas.axes1.errorbar(
+                        x,
+                        y,
+                        yerr=sy,
+                        **kargs_errorbar
+                    )
+                else:  # Caso considerar só sx
+                    self.canvas.axes1.errorbar(
+                        x,
+                        y,
+                        xerr=sx,
+                        **kargs_errorbar
+                    )
+
+                # Setting titles
+                self.canvas.axes1.set_title(str(axis_titles[0]))
+                self.canvas.axes1.set(xlabel=str(axis_titles[1]))
+                self.canvas.axes1.set(ylabel=str(axis_titles[2]))
+                self.canvas.set_axes_props_without_axes_2(xmin, xmax, xdiv, ymin,
+                                                   ymax, ydiv, grid, log_x,
+                                                   log_y)
+
+        # Reseting parameters
+        model.isvalid = False
+        self.canvas.canvas.draw_idle()
+
+    def fill_plot_page(self, props=None):
         # If no properties passed, emit the default values
         if props is None:
             self.fillPlotPageSignal.emit(QJsonValue.fromVariant(self.props))
@@ -148,7 +473,7 @@ class SinglePlot(QObject):
         self.canvas.switch_axes(True)
 
         # Fill singlePlot page with default values
-        self.fillPlotPage()
+        self.fill_plot_page()
 
         # Reseting path
         self.path = ''
@@ -179,15 +504,15 @@ class SinglePlot(QObject):
         else:
             try:
                 self.msg.raiseWarn("O carregamento de arquivos antigos está limitado à uma versão anterior. Adaptação feita automaticamente.")
-                props = self.loadOldJson(props)
+                props = self.load_old_json(props)
             except:
                 self.msg.raiseError("O arquivo carregado é incompatível com o ATUS.")
                 return 0
             self.model.load_data(df=props['data'])
 
-        self.fillPlotPage(props)
+        self.fill_plot_page(props)
 
-    def loadOldJson(self, props):
+    def load_old_json(self, props):
         props_tmp = self.props.copy()
 
         # Shaping old json into the new one
@@ -237,7 +562,7 @@ class SinglePlot(QObject):
 
     @pyqtSlot(QJsonValue, result=int)
     def save(self, props):
-        # If there's no path for saving, saveAs()
+        # If there's no path for saving, save_as()
         if self.path == '':
             return 1
 
@@ -259,7 +584,7 @@ class SinglePlot(QObject):
         return 0
     
     @pyqtSlot(str, QJsonValue)
-    def saveAs(self, path, props):
+    def save_as(self, path, props):
         # Getting path
         self.path = QUrl(path).toLocalFile()
 
@@ -320,4 +645,4 @@ class SinglePlot(QObject):
         
         s, x, y, x_area, y_area, title, xlabel, ylabel = interpreter_calculator(functionDict[function], methodDict[opt1], nc, ngl, mean, std)
         plot(self.canvas, x, y, x_area, y_area, title, xlabel, ylabel)
-        self.writeCalculator.emit(s)
+        self.write_calculator.emit(s)

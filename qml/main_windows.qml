@@ -1031,7 +1031,7 @@ Window {
     Connections{
         target: messageHandler
 
-        function onShowMessage(message, type){
+        function onShow_message(message, type){
             messageSnackbar.message = message
             messageSnackbar.type    = type
             if(type === 'error'){

@@ -79,7 +79,7 @@ Item {
         dataShaped[options['row']]['curve'] = curveStyles[options['curve']]
         dataShaped[options['row']]['func'] = true
         dataShaped[options['row']]['marker'] = true
-        root.checkData()
+        root.check_data()
     }
 
     function fillRow(options){
@@ -103,14 +103,14 @@ Item {
         dataShaped[options['row']]['curve'] = curveStyles[options['curve']]
     }
 
-    function checkData(){
+    function check_data(){
         root.hasData = dataShaped.length != 0 ? true : false
     }
 
     function removeRow(row){
         dataShaped.splice(row, 1)
         dataSet.remove(row)  
-        root.checkData()
+        root.check_data()
     }
 
     function clear(){
@@ -233,13 +233,13 @@ Item {
                                             nameFilters: ["Arquivos JSON (*.json)"]
                                             onAccepted: {
                                                 multiPlot.loadData(fileUrl, row)
-                                                root.checkData()
+                                                root.check_data()
                                                 globalManager.setLastFolder(chooseProject.fileUrl)
                                             }
                                             onRejected: {
                                                 dataShaped.splice(row, 1)
                                                 dataSet.remove(row)
-                                                root.checkData()
+                                                root.check_data()
                                             }
                                         }
 
@@ -388,7 +388,7 @@ Item {
                                     onClicked: {
                                         dataShaped.splice(row, 1)
                                         dataSet.remove(row)  
-                                        root.checkData()
+                                        root.check_data()
                                     }
                                 }
                             }

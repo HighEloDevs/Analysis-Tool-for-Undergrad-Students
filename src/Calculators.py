@@ -195,34 +195,18 @@ class CalculatorCanvas(QObject):
     """
     def __init__(self, parent=None):
         super().__init__(parent)
-
-        # The figure, canvas, toolbar and axes
-        self.figure  = None
-        # self.canvas  = None
-        # self.toolbar = None
-        # self.axes    = None
-        # self.ax1     = None
-        # self.ax2     = None
-
-    # def update_with_canvas(self, canvas):
-    #     """ initialize with the canvas for the figure
-    #     """
-    #     self.canvas = canvas
-    #     self.figure = self.canvas.figure
-    #     self.axes = self.figure.add_subplot(111)
-    #     self.axes.grid(True)
-    #     self.canvas.draw_idle()
+        # self.figure  = None
         
 
 def plot(displayBridge, x, y, x_area, y_area, title, xlabel, ylabel):
     displayBridge.set_tight_layout()
     displayBridge.clear_axis()
-    displayBridge.switch_axes(hideAxes2 = True)
+    displayBridge.switch_axes(hide_axes2 = True)
     displayBridge.grid = True
     displayBridge.axes1.grid(True)
     displayBridge.axes1.fill_between(x_area, y_area, color = 'blue', alpha = 0.3)
     displayBridge.axes1.plot(x, y, lw = 1, c = 'red')
     displayBridge.axes1.set_title("P.D.F. " + title)
     displayBridge.axes1.set(xlabel = xlabel, ylabel = ylabel)
-    displayBridge.setAxesPropsWithoutAxes2(None, None, None, None, None, None, None, False, False)
+    displayBridge.set_axes_props_without_axes_2(None, None, None, None, None, None, None, False, False)
     displayBridge.canvas.draw_idle()

@@ -125,8 +125,8 @@ Item {
 
                             onClicked: {
                                 // Returns 1 if can't save in a existing path
-                                let saveAs = multiPlot.save(multiPlotData)
-                                if (saveAs){
+                                let save_as = multiPlot.save(multiPlotData)
+                                if (save_as){
                                     projectSaver.open()
                                 }
                             }
@@ -151,7 +151,7 @@ Item {
                                 nameFilters: ["Arquivo JSON (*.json)"]
                                 onAccepted: {
                                     globalManager.setLastFolder(projectSaver.fileUrl)
-                                    multiPlot.saveAs(fileUrl, multiPlotData)
+                                    multiPlot.save_as(fileUrl, multiPlotData)
                                 }
                             }
 

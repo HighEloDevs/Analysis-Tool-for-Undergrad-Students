@@ -171,7 +171,7 @@ Item{
                                             onAccepted:{
                                                 globalManager.setLastFolder(fileUrl)
                                                 // Response from backend
-                                                var res = hist.checkData(fileUrl)
+                                                var res = hist.check_data(fileUrl)
                                                 if (res["isValid"]){
                                                     var url = fileUrl.toString()
                                                     var fileName = url.split("/")[url.split("/").length - 1]

@@ -32,21 +32,21 @@ class MessageHandler(QObject):
     '''
 
     # Signals to the frontend
-    # showMessage() shows a snackbar with the message and respective color to the type
+    # show_message() shows a snackbar with the message and respective color to the type
     # Types -> warn, error or success
-    showMessage = pyqtSignal(str, str, arguments=['message', 'type'])
+    show_message = pyqtSignal(str, str, arguments=['message', 'type'])
 
     def __init__(self) -> None:
         super().__init__()
 
     @pyqtSlot(str)
     def raiseWarn(self, message=''):
-        self.showMessage.emit(message, 'warn')
+        self.show_message.emit(message, 'warn')
 
     @pyqtSlot(str)
     def raiseError(self, message=''):
-        self.showMessage.emit(message, 'error')
+        self.show_message.emit(message, 'error')
 
     @pyqtSlot(str)
     def raiseSuccess(self, message=''):
-        self.showMessage.emit(message, 'success')
+        self.show_message.emit(message, 'success')

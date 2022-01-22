@@ -220,7 +220,7 @@ Item {
     Connections{
         target: singlePlot
 
-        function onWriteCalculator(expr){
+        function onWrite_calculator(expr){
             infos.text = expr
         }
     }

@@ -192,8 +192,8 @@ Item {
                             clickColor: Colors.c_button_active
                             hoverColor: Colors.c_button_hover
                             onClicked: {
-                                let saveAs = singlePlot.save(plotData)
-                                if (saveAs){
+                                let save_as = singlePlot.save(plotData)
+                                if (save_as){
                                     projectSaver.open()
                                 }
                             }
@@ -215,7 +215,7 @@ Item {
                                 nameFilters: ["Arquivo JSON (*.json)"]
                                 onAccepted: {
                                     globalManager.setLastFolder(projectSaver.fileUrl)
-                                    singlePlot.saveAs(fileUrl, plotData)
+                                    singlePlot.save_as(fileUrl, plotData)
                                 }
                             }
                             onClicked: {
@@ -320,19 +320,19 @@ Item {
         target: middleTabs.btnSinglePlot
         function onClicked() {
             pageFunc.clearTableParams()
-            singlePlot.getPlotData(plotData)
+            singlePlot.get_plot_data(plotData)
         }
     }
 
     Connections{
         target: singlePlot
 
-        function onPlot(){
+        function onPlot_signal(){
             pageFunc.clearTableParams()
-            singlePlot.getPlotData(plotData)
+            singlePlot.get_plot_data(plotData)
         }
 
-        function onFillPlotPageSignal(props){
+        function onFill_plot_page_signal(props){
             let markers = {
                 'o':'Círculo',
                 '^':'Triângulo',

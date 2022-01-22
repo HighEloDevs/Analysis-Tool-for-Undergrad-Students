@@ -144,7 +144,7 @@ class Multiplot(QObject):
 
     @pyqtSlot(QJsonValue, result=int)
     def save(self, props):
-        # If there's no path for saving, saveAs()
+        # If there's no path for saving, save_as()
         if self.path == '':
             return 1
 
@@ -165,7 +165,7 @@ class Multiplot(QObject):
         return 0
     
     @pyqtSlot(str, QJsonValue)
-    def saveAs(self, path, props):
+    def save_as(self, path, props):
         # Getting path
         self.path = QUrl(path).toLocalFile()
 
@@ -261,13 +261,13 @@ class Multiplot(QObject):
     def plot(self):
         self.displayBridge.set_tight_layout()
         self.displayBridge.clear_axis()
-        self.displayBridge.switch_axes(hideAxes2 = True)
+        self.displayBridge.switch_axes(hide_axes2 = True)
         self.displayBridge.grid = self.grid
 
         for i in range(len(self.Multi_Model.models)):
             if self.Multi_Model.arquivos[i]['marker'] == True:
                 self.Plot_sx_sy(self.Multi_Model.dfs[i], self.Multi_Model.arquivos[i])
-        self.displayBridge.setAxesPropsWithoutAxes2(self.xmin, self.xmax, self.xdiv,
+        self.displayBridge.set_axes_props_without_axes_2(self.xmin, self.xmax, self.xdiv,
          self.ymin, self.ymax, self.ydiv, self.grid, self.logx, self.logy)
         left, right = self.displayBridge.axes1.get_xlim()
         self.displayBridge.axes1.set_xlim(left = left, right = right)

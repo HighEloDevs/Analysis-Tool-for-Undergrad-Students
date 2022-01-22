@@ -134,7 +134,7 @@ Rectangle {
                         onAccepted: {
                             globalManager.setLastFolder(projectSaver.fileUrl)
                             plotData["data"] = dataTable.getDataShaped()
-                            hist.saveAs(fileUrl, plotData)
+                            hist.save_as(fileUrl, plotData)
                         }
                     }
 

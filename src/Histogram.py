@@ -46,10 +46,11 @@ class Histogram(QObject):
 
     @pyqtSlot(QJsonValue)
     def plot(self, data):
+        """TODO: Docstring for histogram plot."""
         data = QJsonValue.toVariant(data)
         self.canvas.set_tight_layout()
         self.canvas.clear_axis()
-        self.canvas.switch_axes(hideAxes2 = True)
+        self.canvas.switch_axes(hide_axes2 = True)
 
         xdiv = data["props"]["xdiv"]
         xmin = data["props"]["xmin"]
@@ -73,7 +74,7 @@ class Histogram(QObject):
                     has_legend = self.plot_dens(arquivo, data, has_legend)
         self.canvas.axes1.set_title(data["props"]["title"])
         self.canvas.axes1.set(xlabel = data["props"]["xaxis"], ylabel = data["props"]["yaxis"])
-        self.canvas.setAxesPropsWithoutAxes2(xmin, xmax, xdiv, ymin, ymax, ydiv,
+        self.canvas.set_axes_props_without_axes_2(xmin, xmax, xdiv, ymin, ymax, ydiv,
          data["props"]["grid"], data["props"]["logx"], data["props"]["logy"])
         if has_legend:
             self.canvas.axes1.legend()
@@ -232,7 +233,7 @@ class Histogram(QObject):
 
     @pyqtSlot(QJsonValue, result=bool)
     def save(self, data):
-        # If there's no path for saving, saveAs()
+        # If there's no path for saving, save_as()
         if self.path == '':
             return False
 
@@ -253,7 +254,7 @@ class Histogram(QObject):
         return True
 
     @pyqtSlot(str, QJsonValue)
-    def saveAs(self, path, data):
+    def save_as(self, path, data):
         # Getting path
         self.path = QUrl(path).toLocalFile()
         self.save(data)
@@ -283,7 +284,7 @@ class Histogram(QObject):
         self.fillPage.emit(QJsonValue.fromVariant(props))
 
     @pyqtSlot(str, result=QJsonValue)
-    def checkData(self, filePath):
+    def check_data(self, filePath):
         '''
         Check if data is valid
         Returns: True + Data if valid data, False otherwise
