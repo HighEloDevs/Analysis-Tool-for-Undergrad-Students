@@ -17,14 +17,20 @@
 
 <h2 align="center">Documentação</h2>
 
-Instruções para instalação e tutoriais de uso do ATUS podem ser encontradas na nossa [página](https://highelodevs.github.io/Analysis-Tool-for-Undergrad-Students/).
-    
+<p align="center">
+    Instruções para instalação e tutoriais de uso do ATUS podem ser encontradas na nossa <a href="atusweb.xyz">página</a>
+   
 <h2 align="center">Feedback</h2>
-    
-Para qualquer crítica construtiva, sugestões, reportes de bugs etc, por favor, nos envie um e-mail - atusdevs@gmail.com
+   
+<p align="center">
+    Para qualquer crítica construtiva, sugestões, reportes de bugs etc, por favor, nos envie um e-mail - atusdevs@gmail.com
+</p>
 
 <h2 align="center">Autores</h2>
-
-- [@GuiiFerrari](https://github.com/GuiiFerrari)
-- [@LeoEiji](https://github.com/leoeiji)
-- [@imscl_](https://www.instagram.com/imscl_/)
+<p align="center">
+    <a href="https://github.com/GuiiFerrari">@GuiiFerrari</a>
+    <br/>
+    <a href="https://github.com/leoeiji">@LeoEiji</a>
+    <br/>
+    <a href="https://www.instagram.com/imscl_/">@imscl_</a>
+</p>
