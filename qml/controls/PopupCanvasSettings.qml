@@ -294,7 +294,7 @@ Popup {
 
                 onClicked: {
                     canvas.resize_canvas()
-                    let defaultValues  = canvas.getPaddings().split(";")
+                    let defaultValues  = canvas.get_paddings().split(";")
                     paddingTop.text    = defaultValues[0]
                     paddingBottom.text = defaultValues[1]
                     paddingLeft.text   = defaultValues[2]
@@ -308,7 +308,7 @@ Popup {
                 texto: "Aplicar"
                 onClicked: {
                     canvas.set_canvas_size(Number(figWidth.text), Number(figHeight.text))
-                    canvas.setPaddings(paddingTop.text, paddingBottom.text, paddingLeft.text, paddingRight.text)
+                    canvas.set_paddings(paddingTop.text, paddingBottom.text, paddingLeft.text, paddingRight.text)
                     canvas.set_font_sizes(titleSize.text, xsize.text, ysize.text, residualsSize.text, captionSize.text)
                     canvas.set_legend_position(legendPos.currentText)
                     canvas.set_dpi(dpi.text)

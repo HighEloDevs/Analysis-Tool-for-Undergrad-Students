@@ -48,8 +48,8 @@ class Histogram(QObject):
     def plot(self, data):
         data = QJsonValue.toVariant(data)
         self.canvas.set_tight_layout()
-        self.canvas.clearAxis()
-        self.canvas.switchAxes(hideAxes2 = True)
+        self.canvas.clear_axis()
+        self.canvas.switch_axes(hideAxes2 = True)
 
         xdiv = data["props"]["xdiv"]
         xmin = data["props"]["xmin"]
@@ -81,15 +81,15 @@ class Histogram(QObject):
 
     def plot_freq_abs(self, arquivo, data, has_legend):
         df    = pd.DataFrame.from_dict(json.loads(arquivo["data"]))
-        alpha = self.makeFloat(arquivo["kargs"].pop("alpha"), 1.0)
+        alpha = self.make_float(arquivo["kargs"].pop("alpha"), 1.0)
         label = arquivo["kargs"].pop("label")
-        left  = self.makeFloat(arquivo["kargs"].pop("rangexmin", ""), df["x"].min())
-        right = self.makeFloat(arquivo["kargs"].pop("rangexmax", ""), df["x"].max())
+        left  = self.make_float(arquivo["kargs"].pop("rangexmin", ""), df["x"].min())
+        right = self.make_float(arquivo["kargs"].pop("rangexmax", ""), df["x"].max())
         if left >= right:
             self.messageHandler.raiseError("Intervalo de bins inválido. Rever intervalo de bins.")
             return -1
         bins  = np.linspace(left, right,
-            self.makeInt(arquivo["kargs"].pop("nbins", 10), 10) + 1)
+            self.make_int(arquivo["kargs"].pop("nbins", 10), 10) + 1)
         counts = None
         if arquivo["legend"] == "":
             counts, bins, _ = self.canvas.axes1.hist(x = df["x"], bins = bins,
@@ -129,15 +129,15 @@ class Histogram(QObject):
 
     def plot_freq_rel(self, arquivo, data, has_legend):
         df    = pd.DataFrame.from_dict(json.loads(arquivo["data"]))
-        alpha = self.makeFloat(arquivo["kargs"].pop("alpha"), 1.0)
+        alpha = self.make_float(arquivo["kargs"].pop("alpha"), 1.0)
         label = arquivo["kargs"].pop("label")
-        left  = self.makeFloat(arquivo["kargs"].pop("rangexmin", ""), df["x"].min())
-        right = self.makeFloat(arquivo["kargs"].pop("rangexmax", ""), df["x"].max())
+        left  = self.make_float(arquivo["kargs"].pop("rangexmin", ""), df["x"].min())
+        right = self.make_float(arquivo["kargs"].pop("rangexmax", ""), df["x"].max())
         if left >= right:
             self.messageHandler.raiseError("Intervalo de bins inválido. Rever intervalo de bins.")
             return -1
         bins  = np.linspace(left, right,
-            self.makeInt(arquivo["kargs"].pop("nbins", 10), 10) + 1)
+            self.make_int(arquivo["kargs"].pop("nbins", 10), 10) + 1)
         counts = None
         if arquivo["legend"] == "":
             counts, bins, _ = self.canvas.axes1.hist(x = df["x"], bins = bins, weights = np.ones_like(df["x"])/len(df["x"]),
@@ -177,15 +177,15 @@ class Histogram(QObject):
 
     def plot_dens(self, arquivo, data, has_legend):
         df    = pd.DataFrame.from_dict(json.loads(arquivo["data"]))
-        alpha = self.makeFloat(arquivo["kargs"].pop("alpha"), 1.0)
+        alpha = self.make_float(arquivo["kargs"].pop("alpha"), 1.0)
         label = arquivo["kargs"].pop("label")
-        left  = self.makeFloat(arquivo["kargs"].pop("rangexmin", ""), df["x"].min())
-        right = self.makeFloat(arquivo["kargs"].pop("rangexmax", ""), df["x"].max())
+        left  = self.make_float(arquivo["kargs"].pop("rangexmin", ""), df["x"].min())
+        right = self.make_float(arquivo["kargs"].pop("rangexmax", ""), df["x"].max())
         if left >= right:
             self.messageHandler.raiseError("Intervalo de bins inválido. Rever intervalo de bins.")
             return -1
         bins  = np.linspace(left, right,
-            self.makeInt(arquivo["kargs"].pop("nbins", 10), 10) + 1)
+            self.make_int(arquivo["kargs"].pop("nbins", 10), 10) + 1)
         counts = None
         if arquivo["legend"] == "":
             counts, bins, _ = self.canvas.axes1.hist(x = df["x"], bins = bins,
@@ -227,8 +227,8 @@ class Histogram(QObject):
     def new(self):
         self.path = ""
         self.fillPage.emit(None)
-        self.canvas.clearAxis()
-        self.canvas.switchAxes(True)
+        self.canvas.clear_axis()
+        self.canvas.switch_axes(True)
 
     @pyqtSlot(QJsonValue, result=bool)
     def save(self, data):
@@ -333,13 +333,13 @@ class Histogram(QObject):
         package["isValid"] = True
         return package
 
-    def makeFloat(self, var, value):
+    def make_float(self, var, value):
         try:
             return float(var)
         except:
             return value
 
-    def makeInt(self, var, value):
+    def make_int(self, var, value):
         try:
             return int(var)
         except:

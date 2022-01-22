@@ -85,8 +85,8 @@ class Multiplot(QObject):
         self.path = ''
 
         # Reseting frontend
-        self.displayBridge.clearAxis()
-        self.displayBridge.switchAxes(True)
+        self.displayBridge.clear_axis()
+        self.displayBridge.switch_axes(True)
         self.fillPage(self.defaultProps)
 
     @pyqtSlot(str)
@@ -256,12 +256,12 @@ class Multiplot(QObject):
         self.title         = graph_options['title']
         self.xaxis         = graph_options['xaxis']
         self.yaxis         = graph_options['yaxis']
-        self.Plot()
+        self.plot()
 
-    def Plot(self):
+    def plot(self):
         self.displayBridge.set_tight_layout()
-        self.displayBridge.clearAxis()
-        self.displayBridge.switchAxes(hideAxes2 = True)
+        self.displayBridge.clear_axis()
+        self.displayBridge.switch_axes(hideAxes2 = True)
         self.displayBridge.grid = self.grid
 
         for i in range(len(self.Multi_Model.models)):

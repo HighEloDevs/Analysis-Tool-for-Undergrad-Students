@@ -24,7 +24,7 @@ SOFTWARE.
 """
 
 from PyQt5.QtCore import QObject, QJsonValue, QUrl, pyqtSignal, pyqtSlot
-from src.Calculators import interpreter_calculator, Plot
+from src.Calculators import interpreter_calculator, plot
 import numpy as np
 import pandas as pd
 import json
@@ -95,9 +95,9 @@ class SinglePlot(QObject):
         dataProps   = plotData['dataProps']
         fitProps    = plotData['fitProps']
         # for i in ["xmin", "xmax", "ymin", "ymax", "resmin", "resmax"]:
-        #     canvasProps[i] = self.makeFloat(canvasProps[i])
+        #     canvasProps[i] = self.make_float(canvasProps[i])
         # for i in ["xdiv", "ydiv"]:
-        #     canvasProps[i] = self.makeInt(canvasProps[i])
+        #     canvasProps[i] = self.make_int(canvasProps[i])
 
         # Loading data from the table
         self.model.loadDataTable(plotData['data'])
@@ -122,15 +122,15 @@ class SinglePlot(QObject):
             p0 = p0.replace('/', ',')
             self.model.set_p0(p0)
         
-        self.model.xmin = self.makeFloat(fitProps['xmin'], value = -np.inf)
-        self.model.xmax = self.makeFloat(fitProps['xmax'], value = np.inf)
+        self.model.xmin = self.make_float(fitProps['xmin'], value = -np.inf)
+        self.model.xmax = self.make_float(fitProps['xmax'], value = np.inf)
 
         if self.model.xmin >= self.model.xmax:
             self.msg.raiseError("Intervalo de ajuste inválido. Rever intervalo de ajuste.")
             return None
 
         # Setting style of the plot
-        self.canvas.Plot(self.model, canvasProps, fitProps, dataProps)
+        self.canvas.plot(self.model, canvasProps, fitProps, dataProps)
 
     def fillPlotPage(self, props=None):
         # If no properties passed, emit the default values
@@ -144,8 +144,8 @@ class SinglePlot(QObject):
         # Reseting canvas and model
         self.model.reset()
         # self.canvas.reset()
-        self.canvas.clearAxis()
-        self.canvas.switchAxes(True)
+        self.canvas.clear_axis()
+        self.canvas.switch_axes(True)
 
         # Fill singlePlot page with default values
         self.fillPlotPage()
@@ -223,13 +223,13 @@ class SinglePlot(QObject):
 
         return props_tmp
 
-    def makeFloat(self, var, value = 0.):
+    def make_float(self, var, value = 0.):
         try:
             return float(var)
         except:
             return value
             
-    def makeInt(self, var, value = 0):
+    def make_int(self, var, value = 0):
         try:
             return int(var)
         except:
@@ -319,5 +319,5 @@ class SinglePlot(QObject):
             pass
         
         s, x, y, x_area, y_area, title, xlabel, ylabel = interpreter_calculator(functionDict[function], methodDict[opt1], nc, ngl, mean, std)
-        Plot(self.canvas, x, y, x_area, y_area, title, xlabel, ylabel)
+        plot(self.canvas, x, y, x_area, y_area, title, xlabel, ylabel)
         self.writeCalculator.emit(s)

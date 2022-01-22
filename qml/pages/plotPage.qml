@@ -81,19 +81,19 @@ Item {
     Shortcut {
         sequences: ["Ctrl+1"]
         onActivated: {
-            canvas.SHORTGrid()
+            canvas.shortcut_grid()
         }
     }
     Shortcut {
         sequences: ["Ctrl+2"]
         onActivated: {
-            canvas.SHORTAxis1()
+            canvas.shortcut_axis_1()
         }
     }
     Shortcut {
         sequences: ["Ctrl+3"]
         onActivated: {
-            canvas.SHORTAxis2()
+            canvas.shortcut_axis_2()
         }
     }
 

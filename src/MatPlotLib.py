@@ -32,8 +32,8 @@ from PyQt5.QtCore import QObject, QUrl, pyqtProperty, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QGuiApplication, QPixmap
 
 
-class MPLCanvas(QObject):
-    """A bridge class to interact with the plot in python."""
+class Canvas(QObject):
+    """TODO"""
 
     # Some signals for the frontend
     coordinates_changed = pyqtSignal(str)
@@ -62,7 +62,7 @@ class MPLCanvas(QObject):
         # This is used to display the coordinates of the mouse in the window
         self._coordinates = ""
 
-    def updateWithCanvas(self, canvas):
+    def update_with_canvas(self, canvas):
         """Initialize with the canvas for the figure."""
         self.canvas = canvas
         self.figure = self.canvas.figure
@@ -92,33 +92,33 @@ class MPLCanvas(QObject):
         # Connect for displaying the coordinates
         self.figure.canvas.mpl_connect("motion_notify_event", self.on_motion)
 
-    def Plot(self, model, canvas_props, fit_props, data_props):
+    def plot(self, model, canvas_props, fit_props, data_props):
         self.set_tight_layout()
-        sigma_x         = not not fit_props["wsx"]
-        sigma_y         = not not fit_props["wsy"]
-        grid            = not not canvas_props["grid"]
-        log_x           = not not canvas_props["log_x"]
-        log_y           = not not canvas_props["log_y"]
-        legend          = not not canvas_props["legend"]
-        residuals       = not not canvas_props["residuals"]
-        xmin            = canvas_props["xmin"]
-        xmax            = canvas_props["xmax"]
-        xdiv            = canvas_props["xdiv"]
-        ymin            = canvas_props["ymin"]
-        ymax            = canvas_props["ymax"]
-        ydiv            = canvas_props["ydiv"]
-        resmin          = canvas_props["resmin"]
-        resmax          = canvas_props["resmax"]
-        partial_titles  = canvas_props["title"].split(";")
-        symbol_color    = data_props["marker_color"]
-        symbol_size     = data_props["marker_size"]
-        symbol          = data_props["marker"]
-        curve_color     = data_props["curve_color"]
+        sigma_x = not not fit_props["wsx"]
+        sigma_y = not not fit_props["wsy"]
+        grid = not not canvas_props["grid"]
+        log_x = not not canvas_props["log_x"]
+        log_y = not not canvas_props["log_y"]
+        legend = not not canvas_props["legend"]
+        residuals = not not canvas_props["residuals"]
+        xmin = canvas_props["xmin"]
+        xmax = canvas_props["xmax"]
+        xdiv = canvas_props["xdiv"]
+        ymin = canvas_props["ymin"]
+        ymax = canvas_props["ymax"]
+        ydiv = canvas_props["ydiv"]
+        resmin = canvas_props["resmin"]
+        resmax = canvas_props["resmax"]
+        partial_titles = canvas_props["title"].split(";")
+        symbol_color = data_props["marker_color"]
+        symbol_size = data_props["marker_size"]
+        symbol = data_props["marker"]
+        curve_color = data_props["curve_color"]
         curve_thickness = data_props["curve_thickness"]
-        curve_style     = data_props["curve_style"]
-        px, py, y_r     = None, None, None
-        self.grid       = grid
-        axis_titles     = []
+        curve_style = data_props["curve_style"]
+        px, py, y_r = None, None, None
+        self.grid = grid
+        axis_titles = []
         if len(partial_titles) == 1:
             axis_titles = [
                 canvas_props["title"].strip(),
@@ -133,7 +133,6 @@ class MPLCanvas(QObject):
                 canvas_props["xaxis"].strip(),
                 canvas_props["yaxis"].strip(),
             ]
-
         if model._has_data:
 
             # Fitting expression to data, if there's any expression
@@ -151,7 +150,7 @@ class MPLCanvas(QObject):
             # Plotting if the model is valid
             if model._isvalid:
                 # Clearing the current plot
-                self.clearAxis()
+                self.clear_axis()
 
                 # Getting data
                 x, y, sy, sx = model.data
@@ -161,22 +160,10 @@ class MPLCanvas(QObject):
                 else:
                     y_r = model.residuoDummy
                 if residuals:
-                    self.switchAxes(hideAxes2=False)
+                    self.switch_axes(hideAxes2=False)
                     if sigma_x and sigma_y:  # Caso considerar as duas incertezas
                         ssy = model.predictInc(not sigma_x)
-                        self.axes1.errorbar(
-                            x,
-                            y,
-                            yerr=sy,
-                            xerr=sx,
-                            ecolor=symbol_color,
-                            capsize=0,
-                            elinewidth=1,
-                            ms=symbol_size,
-                            marker=symbol,
-                            color=symbol_color,
-                            ls="none",
-                        )
+                        self.axes1.errorbar(x, y, yerr=sy, xerr=sx, ecolor=symbol_color, capsize=0, elinewidth=1, ms=symbol_size, marker=symbol, color=symbol_color, ls="none")
                         self.axes2.errorbar(
                             x,
                             y_r,
@@ -328,8 +315,8 @@ class MPLCanvas(QObject):
                     self.cid = self.axes1.figure.canvas.mpl_connect(
                         "resize_event", update)
                 else:
-                    self.clearAxis()
-                    self.switchAxes(hideAxes2=True)
+                    self.clear_axis()
+                    self.switch_axes(hideAxes2=True)
 
                     # Making Plots
                     if sigma_x and sigma_y:  # Caso considerar as duas incertezas
@@ -440,8 +427,8 @@ class MPLCanvas(QObject):
                         "resize_event", update)
 
             else:
-                self.clearAxis()
-                self.switchAxes(hideAxes2=True)
+                self.clear_axis()
+                self.switch_axes(hideAxes2=True)
 
                 x, y, sy, sx = model.data
 
@@ -512,7 +499,7 @@ class MPLCanvas(QObject):
         model.isvalid = False
         self.canvas.draw_idle()
 
-    def clearAxis(self):
+    def clear_axis(self):
         """Clear the current plot in the axis."""
         self.axes1.cla()
         self.axes2.cla()
@@ -520,7 +507,7 @@ class MPLCanvas(QObject):
         self.axes2.relim()
         self.canvas.draw_idle()
 
-    def switchAxes(self, hideAxes2: bool = True):
+    def switch_axes(self, hideAxes2: bool = True):
         """Função que oculta ou não o eixo secundário."""
         if hideAxes2:
             self.axes2.set_visible(False)
@@ -541,12 +528,12 @@ class MPLCanvas(QObject):
         bottom, top = self.axes1.get_ylim()
         divs_x = len(self.axes1.get_xticks()) - 1
         divs_y = len(self.axes1.get_yticks()) - 1
-        xmin = self.makeFloat(xmin, left)
-        xmax = self.makeFloat(xmax, right)
-        xdiv = self.makeInt(xdiv, divs_x)
-        ymin = self.makeFloat(ymin, bottom)
-        ymax = self.makeFloat(ymax, top)
-        ydiv = self.makeInt(ydiv, divs_y)
+        xmin = self.make_float(xmin, left)
+        xmax = self.make_float(xmax, right)
+        xdiv = self.make_int(xdiv, divs_x)
+        ymin = self.make_float(ymin, bottom)
+        ymax = self.make_float(ymax, top)
+        ydiv = self.make_int(ydiv, divs_y)
 
         if grid:
             self.axes1.grid(True, which="major")
@@ -579,14 +566,14 @@ class MPLCanvas(QObject):
         divs_x = len(self.axes1.get_xticks()) - 1
         divs_y = len(self.axes1.get_yticks()) - 1
 
-        xmin = self.makeFloat(xmin, left)
-        xmax = self.makeFloat(xmax, right)
-        xdiv = self.makeInt(xdiv, divs_x)
-        ymin = self.makeFloat(ymin, bottom)
-        ymax = self.makeFloat(ymax, top)
-        ydiv = self.makeInt(ydiv, divs_y)
-        self.axes2.set_ylim(bottom=self.makeFloat(resmin, botres),
-                            top=self.makeFloat(resmax, topres))
+        xmin = self.make_float(xmin, left)
+        xmax = self.make_float(xmax, right)
+        xdiv = self.make_int(xdiv, divs_x)
+        ymin = self.make_float(ymin, bottom)
+        ymax = self.make_float(ymax, top)
+        ydiv = self.make_int(ydiv, divs_y)
+        self.axes2.set_ylim(bottom=self.make_float(resmin, botres),
+                            top=self.make_float(resmax, topres))
         if xdiv != divs_x:
             self.axes1.set_xticks(np.linspace(xmin, xmax, xdiv + 1))
             self.axes2.set_xticks(np.linspace(xmin, xmax, xdiv + 1))
@@ -625,38 +612,33 @@ class MPLCanvas(QObject):
                                     right=self.right,
                                     top=self.top)
 
-    def makeFloat(self, var, valor):
+    def make_float(self, var, valor):
         try:
             return float(var)
         except:
             return valor
 
-    def makeInt(self, var, valor):
+    def make_int(self, var, valor):
         try:
             return int(var)
         except:
             return valor
 
-    def getCoordinates(self):
+    def get_coordinates(self):
         """Retorna as coordenadas no gráfico."""
         return self._coordinates
 
-    def setCoordinates(self, coordinates):
+    def set_coordinates(self, coordinates):
         """Seta as coordenadas do gráfico."""
         self._coordinates = coordinates
         self.coordinates_changed.emit(self._coordinates)
 
-    coordinates = pyqtProperty(str,
-                               getCoordinates,
-                               setCoordinates,
-                               notify=coordinates_changed)
-
     @pyqtSlot(str, str, str, str)
-    def setPaddings(self, top, bottom, left, right):
-        self.top = self.makeFloat(top, valor=0.92)
-        self.bottom = self.makeFloat(bottom, valor=0.12)
-        self.left = self.makeFloat(left, valor=0.10)
-        self.right = self.makeFloat(right, valor=0.95)
+    def set_paddings(self, top, bottom, left, right):
+        self.top = self.make_float(top, valor=0.92)
+        self.bottom = self.make_float(bottom, valor=0.12)
+        self.left = self.make_float(left, valor=0.10)
+        self.right = self.make_float(right, valor=0.95)
         if self.figmode:
             self.figure.subplots_adjust(left=self.left,
                                         bottom=self.bottom,
@@ -667,15 +649,15 @@ class MPLCanvas(QObject):
                                         bottom=self.bottom,
                                         right=self.right,
                                         top=self.top)
-            self.switchAxes()
+            self.switch_axes()
         self.canvas.draw_idle()
 
     @pyqtSlot(result=str)
-    def getPaddings(self):
+    def get_paddings(self):
         return "0.92;0.12;0.10;0.95"
 
     @pyqtSlot(str, bool)
-    def savePlot(self, save_path, transparent):
+    def save_plot(self, save_path, transparent):
         """Gets the path from input and save the actual plot."""
         path = QUrl(save_path).toLocalFile()
 
@@ -691,7 +673,7 @@ class MPLCanvas(QObject):
             self.message_handler.raiseSuccess("Imagem salva com sucesso!")
 
     @pyqtSlot()
-    def copyToClipboard(self):
+    def copy_to_clipboard(self):
         """Copy imagine to the clipboard."""
         # Getting clipboard
         clipboard = QGuiApplication.clipboard()
@@ -734,14 +716,14 @@ class MPLCanvas(QObject):
         self.toolbar.forward(*args)
 
     @pyqtSlot()
-    def SHORTGrid(self):
+    def shortcut_grid(self):
         self.axes1.grid(not self.grid)
         self.axes2.grid(not self.grid)
         self.grid = not self.grid
         self.canvas.draw_idle()
 
     @pyqtSlot()
-    def SHORTAxis1(self):
+    def shortcut_axis_1(self):
         if self.axes1.axison:
             self.axes1.axis("off")
         else:
@@ -749,7 +731,7 @@ class MPLCanvas(QObject):
         self.canvas.draw_idle()
 
     @pyqtSlot()
-    def SHORTAxis2(self):
+    def shortcut_axis_2(self):
         if self.axes2.axison:
             self.axes2.axis("off")
         else:
@@ -797,3 +779,8 @@ class MPLCanvas(QObject):
         """Update the coordinates on the display."""
         if event.inaxes in (self.axes1, self.axes2):
             self.coordinates = f"({event.xdata:.2f}, {event.ydata:.2f})"
+
+    coordinates = pyqtProperty(str,
+                               get_coordinates,
+                               set_coordinates,
+                               notify=coordinates_changed)

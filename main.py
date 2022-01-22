@@ -29,7 +29,7 @@ import matplotlib.pyplot as plt
 from src.Model import Model
 from src.Plot import SinglePlot 
 from src.MultiPlot import Multiplot
-from src.MatPlotLib import MPLCanvas
+from src.MatPlotLib import Canvas
 from src.UpdateChecker import UpdateChecker
 from src.MessageHandler import MessageHandler
 from src.GoogleDriveAPI import GDrive
@@ -62,7 +62,7 @@ def main():
     engine = QQmlApplicationEngine()
 
     messageHandler  = MessageHandler()
-    canvas          = MPLCanvas(messageHandler)
+    canvas          = Canvas(messageHandler)
     model           = Model(messageHandler) 
     singlePlot      = SinglePlot(canvas, model, messageHandler)
     multiPlot       = Multiplot(canvas, messageHandler)
@@ -87,7 +87,7 @@ def main():
         
     # Updating canvasPlot with the plot
     win = engine.rootObjects()[0]
-    canvas.updateWithCanvas(win.findChild(QObject, "canvasPlot"))
+    canvas.update_with_canvas(win.findChild(QObject, "canvasPlot"))
 
     # Stopping program if PyQt fails loading the file
     if not engine.rootObjects():

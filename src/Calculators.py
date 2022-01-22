@@ -204,7 +204,7 @@ class CalculatorCanvas(QObject):
         # self.ax1     = None
         # self.ax2     = None
 
-    # def updateWithCanvas(self, canvas):
+    # def update_with_canvas(self, canvas):
     #     """ initialize with the canvas for the figure
     #     """
     #     self.canvas = canvas
@@ -214,10 +214,10 @@ class CalculatorCanvas(QObject):
     #     self.canvas.draw_idle()
         
 
-def Plot(displayBridge, x, y, x_area, y_area, title, xlabel, ylabel):
+def plot(displayBridge, x, y, x_area, y_area, title, xlabel, ylabel):
     displayBridge.set_tight_layout()
-    displayBridge.clearAxis()
-    displayBridge.switchAxes(hideAxes2 = True)
+    displayBridge.clear_axis()
+    displayBridge.switch_axes(hideAxes2 = True)
     displayBridge.grid = True
     displayBridge.axes1.grid(True)
     displayBridge.axes1.fill_between(x_area, y_area, color = 'blue', alpha = 0.3)
