@@ -254,8 +254,9 @@ Popup {
                     textColor: "#fff"
                     color: "#fff"
                     highlightColor: Colors.mainColor2
-                    model: ["Automático", "Direita-Superior", "Direita-Inferior", "Esquerda-Superior", "Esquerda-Inferior",
-                            "Centro-Superior", "Centro-Inferior"]
+                    model: ["Automático", "Direita-Superior", "Direita-Inferior", "Direita-Centro",
+                            "Esquerda-Superior", "Esquerda-Inferior", "Esquerda-Centro",
+                            "Centro-Superior", "Centro-Inferior", "Centro-Centro"]
                 }
 
                 Text{

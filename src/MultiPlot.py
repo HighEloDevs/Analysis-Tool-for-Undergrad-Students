@@ -107,19 +107,19 @@ class Multiplot(QObject):
             try:
                 props = json.load(file)
             except:
-                self.msg.raiseError("O arquivo carregado é incompatível.")
+                self.msg.raise_error("O arquivo carregado é incompatível.")
 
         if "key" in props:
             # Loading data from the table
             key = props["key"].split('-')
             if key[0] != "2":
-                self.msg.raiseWarn("O carregamento de arquivos antigos está limitado à uma versão anterior.")
+                self.msg.raise_warn("O carregamento de arquivos antigos está limitado à uma versão anterior.")
                 return 0
             if key[-1] != 'multiplot':
-                self.msg.raiseError("O arquivo carregado é incompatível ou está desatualizado.")
+                self.msg.raise_error("O arquivo carregado é incompatível ou está desatualizado.")
                 return 0
         else:
-            self.msg.raiseError("O arquivo carregado é incompatível ou está desatualizado.")
+            self.msg.raise_error("O arquivo carregado é incompatível ou está desatualizado.")
             return 0
 
         for row, rowData in enumerate(props['rowsData'], start=0):
@@ -217,7 +217,7 @@ class Multiplot(QObject):
                 'curve': curveStyles[data["dataProps"]['curve_style']]
             }))
         except:
-            self.msg.raiseError("Erro ao carregar arquivo. Verificar arquivo de entrada.")
+            self.msg.raise_error("Erro ao carregar arquivo. Verificar arquivo de entrada.")
             self.removeRow.emit(row)
 
     @pyqtSlot(QJsonValue)
@@ -276,18 +276,29 @@ class Multiplot(QObject):
         for i in range(len(self.Multi_Model.models)):
             if self.Multi_Model.arquivos[i]['func'] == True and self.Multi_Model.models[i] != 0.:
                 self.Func_plot(self.Multi_Model.arquivos[i], self.Multi_Model.models[i], self.Multi_Model.parameters[i], self.Multi_Model.indVars[i], left, right, lines)
-        self.displayBridge.axes1.set_title(self.title)
-        self.displayBridge.axes1.set(xlabel = self.xaxis, ylabel = self.yaxis)
+        self.displayBridge.axes1.set_title(self.title,
+                                        fontsize=self.displayBridge.font_sizes["titulo"])
+        self.displayBridge.axes1.set_xlabel(xlabel=self.xaxis,
+                                fontsize=self.displayBridge.font_sizes["eixo_x"])
+        self.displayBridge.axes1.set_ylabel(ylabel=self.yaxis,
+                                fontsize=self.displayBridge.font_sizes["eixo_y"])
         handles, labels = self.displayBridge.axes1.get_legend_handles_labels()
 
         if len(handles) > 1:
             labels.reverse()
             handles.reverse()
             by_label = dict(zip(labels, handles))
-            self.displayBridge.axes1.legend(by_label.values(), by_label.keys())
+            self.displayBridge.axes1.legend(by_label.values(), by_label.keys(),
+            frameon=False,
+            fontsize = self.displayBridge.font_sizes["legenda"],
+            loc = self.displayBridge.legend_loc)
+            
         elif len(handles) == 1:
             by_label = dict(zip(labels, handles))
-            self.displayBridge.axes1.legend(by_label.values(), by_label.keys())
+            self.displayBridge.axes1.legend(by_label.values(), by_label.keys(),
+            frameon=False,
+            fontsize = self.displayBridge.font_sizes["legenda"],
+            loc = self.displayBridge.legend_loc)
         self.displayBridge.canvas.draw_idle()
         
 

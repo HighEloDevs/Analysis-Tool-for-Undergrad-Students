@@ -91,7 +91,7 @@ def main():
 
     # Stopping program if PyQt fails loading the file
     if not engine.rootObjects():
-        sys.exit(-1)    
+        sys.exit(-1)
 
     # Starting program
     sys.exit(app.exec_())

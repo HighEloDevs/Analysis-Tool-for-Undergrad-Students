@@ -206,7 +206,11 @@ def plot(displayBridge, x, y, x_area, y_area, title, xlabel, ylabel):
     displayBridge.axes1.grid(True)
     displayBridge.axes1.fill_between(x_area, y_area, color = 'blue', alpha = 0.3)
     displayBridge.axes1.plot(x, y, lw = 1, c = 'red')
-    displayBridge.axes1.set_title("P.D.F. " + title)
-    displayBridge.axes1.set(xlabel = xlabel, ylabel = ylabel)
+    displayBridge.axes1.set_title("P.D.F. " + title,
+     fontsize= displayBridge.font_sizes["titulo"])
+    displayBridge.axes1.set_xlabel(xlabel = xlabel,
+     fontsize=displayBridge.font_sizes["eixo_x"])
+    displayBridge.axes1.set_ylabel(ylabel = ylabel,
+     fontsize=displayBridge.font_sizes["eixo_y"])
     displayBridge.set_axes_props_without_axes_2(None, None, None, None, None, None, None, False, False)
     displayBridge.canvas.draw_idle()

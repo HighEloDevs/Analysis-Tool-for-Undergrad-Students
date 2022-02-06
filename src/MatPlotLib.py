@@ -58,6 +58,27 @@ class Canvas(QObject):
         self.left = 0.10
         self.right = 0.95
         self.figmode = 0
+        self.legend_loc_dict = {
+            "Automático" : 0,
+            "Direita-Superior" : 1,
+            "Esquerda-Superior" : 2,
+            "Esquerda-Inferior" : 3,
+            "Direita-Inferior" : 4,
+            "Esquerda-Centro" : 6,
+            "Direita-Centro" : 7,
+            "Centro-Inferior" : 8,
+            "Centro-Superior" : 9,
+            "Centro-Centro" : 10
+        }
+        self.legend_loc = "best"
+        self.dpi = 500
+        self.font_sizes = {
+            "titulo" : 12,
+            "residuos" : 12,
+            "legenda" : 12,
+            "eixo_x" : 12,
+            "eixo_y" : 12,
+        }
 
         # This is used to display the coordinates of the mouse in the window
         self._coordinates = ""
@@ -98,6 +119,8 @@ class Canvas(QObject):
         self.axes2.cla()
         self.axes1.relim()
         self.axes2.relim()
+        self.axes1.remove_callback(self.oid)
+        self.axes1.figure.canvas.mpl_disconnect(self.cid)
         self.canvas.draw_idle()
 
     def switch_axes(self, hide_axes2: bool = True):
@@ -258,12 +281,12 @@ class Canvas(QObject):
         _, extension = os.path.splitext(path)  # Recebe filename e extension
 
         if transparent and extension != "png":
-            self.message_handler.raiseWarn(
+            self.message_handler.raise_warn(
                 "O fundo transparente funciona apenas na extensão .png")
-            self.canvas.figure.savefig(path, dpi=400, transparent=transparent)
+            self.canvas.figure.savefig(path, dpi = self.dpi, transparent = transparent)
         else:
-            self.canvas.figure.savefig(path, dpi=400, transparent=transparent)
-            self.message_handler.raiseSuccess("Imagem salva com sucesso!")
+            self.canvas.figure.savefig(path, dpi = self.dpi, transparent = transparent)
+            self.message_handler.raise_success("Imagem salva com sucesso!")
 
     @pyqtSlot()
     def copy_to_clipboard(self):
@@ -280,11 +303,11 @@ class Canvas(QObject):
             # Loading image as pixmap and saving to clipboard
             if pixmap.load(path):
                 clipboard.setImage(pixmap.toImage())
-                self.message_handler.raiseSuccess(
+                self.message_handler.raise_success(
                     "Copiado com sucesso para a área de transferência!")
             os.remove(path)
         except:
-            self.message_handler.raiseError(
+            self.message_handler.raise_error(
                 "Erro copiar para a área de transferência, contatar os desenvolvedores."
             )
 
@@ -358,15 +381,33 @@ class Canvas(QObject):
     @pyqtSlot(int, int, int, int, int)
     def set_font_sizes(self, title_size, x_size, y_size, residual_size,
                        caption_size):
-        print(title_size, x_size, y_size, residual_size, caption_size)
+        self.font_sizes["titulo"] = title_size
+        self.font_sizes["eixo_x"] = x_size
+        self.font_sizes["eixo_y"] = y_size
+        self.font_sizes["residuos"] = residual_size
+        self.font_sizes["legenda"] = caption_size
+        if self.figmode:
+            self.axes1.set_title(self.axes1.get_title(), fontsize=self.font_sizes["titulo"])
+            self.axes1.set_ylabel(self.axes1.get_ylabel(), fontsize=self.font_sizes["eixo_y"])
+            self.axes2.set_xlabel(self.axes2.get_xlabel(), fontsize=self.font_sizes["eixo_x"])
+            self.axes2.set_ylabel(self.axes2.get_ylabel(), fontsize=self.font_sizes["residuos"])
+        else:
+            self.axes1.set_title(self.axes1.get_title(), fontsize=self.font_sizes["titulo"])
+            self.axes1.set_xlabel(self.axes1.get_xlabel(), fontsize=self.font_sizes["eixo_x"])
+            self.axes1.set_ylabel(self.axes1.get_ylabel(), fontsize=self.font_sizes["eixo_y"])
+        self.canvas.draw_idle()
 
     @pyqtSlot(str)
     def set_legend_position(self, position):
-        print(position)
+        self.legend_loc = self.legend_loc_dict[position]
+        h, l = self.axes1.get_legend_handles_labels()
+        if len(h) > 0:
+            self.axes1.legend(h, l, loc=self.legend_loc,
+                 fontsize=self.font_sizes["legenda"])
 
     @pyqtSlot(int)
     def set_dpi(self, dpi):
-        print(dpi)
+        self.dpi = dpi
 
     def on_motion(self, event):
         """Update the coordinates on the display."""

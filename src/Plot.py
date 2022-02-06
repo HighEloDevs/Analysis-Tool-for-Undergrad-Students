@@ -126,7 +126,7 @@ class SinglePlot(QObject):
         self.model.xmax = self.make_float(fitProps['xmax'], value = np.inf)
 
         if self.model.xmin >= self.model.xmax:
-            self.msg.raiseError("Intervalo de ajuste inválido. Rever intervalo de ajuste.")
+            self.msg.raise_error("Intervalo de ajuste inválido. Rever intervalo de ajuste.")
             return None
 
         # Setting style of the plot
@@ -169,9 +169,9 @@ class SinglePlot(QObject):
         else:
             axis_titles = [
                 partial_titles[0].strip(),
-                partial_titles[1].strip(),
                 canvas_props["xaxis"].strip(),
                 canvas_props["yaxis"].strip(),
+                partial_titles[1].strip(),
             ]
         if model._has_data:
 
@@ -271,13 +271,13 @@ class SinglePlot(QObject):
                         log_x,
                         log_y,
                     )
-                    left, right = self.axes1.get_xlim()
+                    left, right = self.canvas.axes1.get_xlim()
                     px, py = 0.0, 0.0
                     if log_x:
-                        px, py = model.get_predict_log(self.axes1.figure, left,
+                        px, py = model.get_predict_log(self.canvas.axes1.figure, left,
                                                        right)
                     else:
-                        px, py = model.get_predict(self.axes1.figure, left,
+                        px, py = model.get_predict(self.canvas.axes1.figure, left,
                                                    right)
 
                     # Making Plots
@@ -291,16 +291,22 @@ class SinglePlot(QObject):
                     )
 
                     # Setting titles
-                    self.canvas.axes1.set_title(axis_titles[0])
-                    self.canvas.axes2.set(xlabel=axis_titles[1])
-                    self.canvas.axes1.set(ylabel=axis_titles[2])
-                    self.canvas.axes2.set(ylabel=axis_titles[3])
+                    self.canvas.axes1.set_title(axis_titles[0],
+                                             fontsize=self.canvas.font_sizes["titulo"])
+                    self.canvas.axes2.set_xlabel(xlabel=axis_titles[1],
+                                             fontsize=self.canvas.font_sizes["eixo_x"])
+                    self.canvas.axes1.set_ylabel(ylabel=axis_titles[2],
+                                             fontsize=self.canvas.font_sizes["eixo_y"])
+                    self.canvas.axes2.set_ylabel(ylabel=axis_titles[3],
+                                             fontsize=self.canvas.font_sizes["residuos"])
                     if legend:
-                        self.canvas.axes1.legend(frameon=False)
+                        self.canvas.axes1.legend(frameon=False,
+                                            fontsize = self.canvas.font_sizes["legenda"],
+                                            loc = self.canvas.legend_loc)
 
                     def update(evt):
                         left, right = self.canvas.axes1.get_xlim()
-                        ppx, ppy = model.get_predict(self.axes1.figure, left,
+                        ppx, ppy = model.get_predict(self.canvas.axes1.figure, left,
                                                      right)
                         line_func.set_data(ppx, ppy)
                         self.canvas.axes1.figure.canvas.draw_idle()
@@ -377,12 +383,17 @@ class SinglePlot(QObject):
                         picker=True,
                     )
                     if legend:
-                        self.canvas.axes1.legend(fancybox=True)
+                        self.canvas.axes1.legend(frameon=False,
+                                            fontsize = self.canvas.font_sizes["legenda"],
+                                            loc = self.canvas.legend_loc)
 
                     # Setting titles
-                    self.canvas.axes1.set_title(str(axis_titles[0]))
-                    self.canvas.axes1.set(xlabel=str(axis_titles[1]))
-                    self.canvas.axes1.set(ylabel=str(axis_titles[2]))
+                    self.canvas.axes1.set_title(str(axis_titles[0]), 
+                                            fontsize=self.canvas.font_sizes["titulo"])
+                    self.canvas.axes1.set_xlabel(xlabel=str(axis_titles[1]),
+                                            fontsize=self.canvas.font_sizes["eixo_x"])
+                    self.canvas.axes1.set_ylabel(ylabel=str(axis_titles[2]),
+                                            fontsize=self.canvas.font_sizes["eixo_y"])
 
                     # One piece
                     def update(evt):
@@ -446,9 +457,12 @@ class SinglePlot(QObject):
                     )
 
                 # Setting titles
-                self.canvas.axes1.set_title(str(axis_titles[0]))
-                self.canvas.axes1.set(xlabel=str(axis_titles[1]))
-                self.canvas.axes1.set(ylabel=str(axis_titles[2]))
+                self.canvas.axes1.set_title(str(axis_titles[0]), 
+                                            fontsize=self.canvas.font_sizes["titulo"])
+                self.canvas.axes1.set_xlabel(xlabel=str(axis_titles[1]),
+                                            fontsize=self.canvas.font_sizes["eixo_x"])
+                self.canvas.axes1.set_ylabel(ylabel=str(axis_titles[2]),
+                                            fontsize=self.canvas.font_sizes["eixo_y"])
                 self.canvas.set_axes_props_without_axes_2(xmin, xmax, xdiv, ymin,
                                                    ymax, ydiv, grid, log_x,
                                                    log_y)
@@ -460,9 +474,9 @@ class SinglePlot(QObject):
     def fill_plot_page(self, props=None):
         # If no properties passed, emit the default values
         if props is None:
-            self.fillPlotPageSignal.emit(QJsonValue.fromVariant(self.props))
+            self.fill_plot_page_signal.emit(QJsonValue.fromVariant(self.props))
         else:
-            self.fillPlotPageSignal.emit(QJsonValue.fromVariant(props))
+            self.fill_plot_page_signal.emit(QJsonValue.fromVariant(props))
         
     @pyqtSlot()
     def new(self):
@@ -492,21 +506,21 @@ class SinglePlot(QObject):
 
         if "key" in props:
             if props["key"] != "2-b":
-                self.msg.raiseWarn("O carregamento de arquivos antigos está limitado à uma versão anterior. Adaptação feita automaticamente.")
+                self.msg.raise_warn("O carregamento de arquivos antigos está limitado à uma versão anterior. Adaptação feita automaticamente.")
             if props["key"].split('-')[-1] == 'multiplot':
-                self.msg.raiseError("O projeto carregado pertence ao multiplot, esse arquivo é incompatível.")
+                self.msg.raise_error("O projeto carregado pertence ao multiplot, esse arquivo é incompatível.")
                 return 0
             elif props["key"].split('-')[-1] == 'hist':
-                self.msg.raiseError("O projeto carregado pertence ao histograma, esse arquivo é incompatível.")
+                self.msg.raise_error("O projeto carregado pertence ao histograma, esse arquivo é incompatível.")
                 return 0
             # Loading data from the project
             self.model.load_data(df_array=props['data'])
         else:
             try:
-                self.msg.raiseWarn("O carregamento de arquivos antigos está limitado à uma versão anterior. Adaptação feita automaticamente.")
+                self.msg.raise_warn("O carregamento de arquivos antigos está limitado à uma versão anterior. Adaptação feita automaticamente.")
                 props = self.load_old_json(props)
             except:
-                self.msg.raiseError("O arquivo carregado é incompatível com o ATUS.")
+                self.msg.raise_error("O arquivo carregado é incompatível com o ATUS.")
                 return 0
             self.model.load_data(df=props['data'])
 
@@ -620,7 +634,7 @@ class SinglePlot(QObject):
             nc = nc.replace(',', '.')
             nc = float(nc)
             if nc == 0 or nc >= 1:
-                self.msg.raiseError("Nível de confiança deve ser sempre maior que zero e menor que 1. Rever nível de confiança.")
+                self.msg.raise_error("Nível de confiança deve ser sempre maior que zero e menor que 1. Rever nível de confiança.")
                 return None
         except:
             pass
@@ -638,7 +652,7 @@ class SinglePlot(QObject):
             std = std.replace(',', '.')
             std = float(std)
             if std <= 0:
-                self.msg.raiseError("Desvio padrão deve ser sempre maior que zero. Rever desvio padrão.")
+                self.msg.raise_error("Desvio padrão deve ser sempre maior que zero. Rever desvio padrão.")
                 return None
         except:
             pass

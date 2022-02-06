@@ -62,4 +62,4 @@ class MultiModel(QObject):
             else:
                 self.models.append(0)
                 self.parameters.append(0)
-                self.indVars.append("") 
+                self.indVars.append("")

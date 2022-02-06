@@ -306,7 +306,7 @@ Item {
         function onUploadData(data, fileName){
             label_fileName.text = fileName
             let dataLength = data['x'].length
-            if (dataLength > 150) messageHandler.raiseWarn(`Seus ${dataLength} dados são poderesos demais, apenas as 150 primeiras linhas serão mostradas na tabela.`)
+            if (dataLength > 150) messageHandler.raise_warn(`Seus ${dataLength} dados são poderesos demais, apenas as 150 primeiras linhas serão mostradas na tabela.`)
             for (let i = 0; i < dataLength; i++){
                 if (i < 150)
                     table.addRow(data['x'][i], data['y'][i], (data['sy'] === undefined ? '0':data['sy'][i]), (data['sx'] === undefined ? '0':data['sx'][i]), true)

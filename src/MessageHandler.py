@@ -40,13 +40,13 @@ class MessageHandler(QObject):
         super().__init__()
 
     @pyqtSlot(str)
-    def raiseWarn(self, message=''):
+    def raise_warn(self, message=''):
         self.show_message.emit(message, 'warn')
 
     @pyqtSlot(str)
-    def raiseError(self, message=''):
+    def raise_error(self, message=''):
         self.show_message.emit(message, 'error')
 
     @pyqtSlot(str)
-    def raiseSuccess(self, message=''):
+    def raise_success(self, message=''):
         self.show_message.emit(message, 'success')

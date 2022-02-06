@@ -86,12 +86,12 @@ class Model(QObject):
         uniqueSi = df["sy"].unique().astype(float)
         if 0. in uniqueSi:
             if len(uniqueSi) > 1:
-                self._msgHandler.raiseWarn("Um valor nulo foi encontrado nas incertezas em y, removendo coluna de sy.")
+                self._msgHandler.raise_warn("Um valor nulo foi encontrado nas incertezas em y, removendo coluna de sy.")
             self._has_sy = False
         uniqueSi = df["sx"].unique().astype(float)
         if 0. in uniqueSi:
             if len(uniqueSi) > 1:
-                self._msgHandler.raiseWarn("Um valor nulo foi encontrado nas incertezas em x, removendo coluna de sx.")
+                self._msgHandler.raise_warn("Um valor nulo foi encontrado nas incertezas em x, removendo coluna de sx.")
             self._has_sx = False
 
         self._data_json = deepcopy(df)
@@ -131,13 +131,13 @@ class Model(QObject):
                 try:
                     df = pd.read_csv(data_path, sep=',', header=None, dtype = str).dropna(how='all').replace(np.nan, "0")
                 except pd.errors.ParserError:
-                    self._msgHandler.raiseError("Separação de colunas de arquivos csv são com vírgula (','). Rever dados de entrada.")
+                    self._msgHandler.raise_error("Separação de colunas de arquivos csv são com vírgula (','). Rever dados de entrada.")
                     return None
             else:
                 try:
                     df = pd.read_csv(data_path, sep='\t', header=None, dtype = str).dropna(how='all').replace(np.nan, "0")
                 except pd.errors.ParserError:
-                    self._msgHandler.raiseError("Separação de colunas de arquivos txt e tsv são com tab. Rever dados de entrada.")
+                    self._msgHandler.raise_error("Separação de colunas de arquivos txt e tsv são com tab. Rever dados de entrada.")
                     return None
             # Getting file name
             fileName = data_path.split('/')[-1]
@@ -147,12 +147,12 @@ class Model(QObject):
             uniqueSi = df["sy"].unique().astype(float)
             if 0. in uniqueSi:
                 if len(uniqueSi) > 1:
-                    self._msgHandler.raiseWarn("Um valor nulo foi encontrado nas incertezas em y, removendo coluna de sy.")
+                    self._msgHandler.raise_warn("Um valor nulo foi encontrado nas incertezas em y, removendo coluna de sy.")
                 self._has_sy = False
             uniqueSi = df["sx"].unique().astype(float)
             if 0. in uniqueSi:
                 if len(uniqueSi) > 1:
-                    self._msgHandler.raiseWarn("Um valor nulo foi encontrado nas incertezas em x, removendo coluna de sx.")
+                    self._msgHandler.raise_warn("Um valor nulo foi encontrado nas incertezas em x, removendo coluna de sx.")
                 self._has_sx = False
             
         # Saving the dataframe in the class
@@ -166,7 +166,7 @@ class Model(QObject):
             try:
                 df[i] = df[i].astype(float)
             except ValueError:
-                self._msgHandler.raiseError("A entrada de dados só permite entrada de números. Rever arquivo de entrada.")
+                self._msgHandler.raise_error("A entrada de dados só permite entrada de números. Rever arquivo de entrada.")
                 return None
 
         self._has_sx = True
@@ -198,15 +198,15 @@ class Model(QObject):
                 uniqueSi = self._data_json["sy"].unique().astype(float)
                 if 0. in uniqueSi:
                     if len(uniqueSi) > 1:
-                        self._msgHandler.raiseWarn("Um valor nulo foi encontrado nas incertezas em y, removendo coluna de sy.")
+                        self._msgHandler.raise_warn("Um valor nulo foi encontrado nas incertezas em y, removendo coluna de sy.")
                     self._has_sy = False
                 uniqueSi = self._data_json["sx"].unique().astype(float)
                 if 0. in uniqueSi:
                     if len(uniqueSi) > 1:
-                        self._msgHandler.raiseWarn("Um valor nulo foi encontrado nas incertezas em x, removendo coluna de sx.")
+                        self._msgHandler.raise_warn("Um valor nulo foi encontrado nas incertezas em x, removendo coluna de sx.")
                     self._has_sx = False
             except ValueError:
-                self._msgHandler.raiseError("Há mais do que 4 colunas. Rever entrada de dados.")
+                self._msgHandler.raise_error("Há mais do que 4 colunas. Rever entrada de dados.")
                 return None
 
         self._data     = deepcopy(df)
@@ -231,10 +231,10 @@ class Model(QObject):
         try:
             self._model = ExpressionModel(self._exp_model + " + 0*%s"%self._indVar, independent_vars=[self._indVar])
         except ValueError:
-            self._msgHandler.raiseError("Expressão de ajuste escrita de forma errada. Rever função de ajuste.")
+            self._msgHandler.raise_error("Expressão de ajuste escrita de forma errada. Rever função de ajuste.")
             return None
         except SyntaxError:
-            self._msgHandler.raiseError("Expressão de ajuste escrita de forma errada. Rever função de ajuste.")
+            self._msgHandler.raise_error("Expressão de ajuste escrita de forma errada. Rever função de ajuste.")
             return None
         # Getting coefficients
         self._coef = [i for i in self._model.param_names]
@@ -382,7 +382,7 @@ class Model(QObject):
             myodr = ODR(data, model, beta0 = pi, maxit = 200, ifixb = fixed)
             self._result = myodr.run()
         except TypeError:
-            self._msgHandler.raiseError("Expressão de ajuste escrita de forma errada. Rever função de ajuste.")
+            self._msgHandler.raise_error("Expressão de ajuste escrita de forma errada. Rever função de ajuste.")
             return None
 
     def __fit_ODR_special(self, x_orig, y, sx):
@@ -431,7 +431,7 @@ class Model(QObject):
         #     myodr = ODR(data, model, beta0 = pi, maxit = 40)
         #     self._result = myodr.run()
         # except TypeError:
-        #     self._msgHandler.raiseError("Expressão de ajuste escrita de forma errada. Rever função de ajuste.")
+        #     self._msgHandler.raise_error("Expressão de ajuste escrita de forma errada. Rever função de ajuste.")
         #     self._result = None
         #     return None
         # self._params = Parameters()
@@ -455,7 +455,7 @@ class Model(QObject):
             self._result = myodr.run()
         except TypeError as e:
             print(e)
-            self._msgHandler.raiseError("Expressão de ajuste escrita de forma errada. Rever função de ajuste.")
+            self._msgHandler.raise_error("Expressão de ajuste escrita de forma errada. Rever função de ajuste.")
             self._result = None
             return None
         sy = np.zeros(len(self._data["x"]), dtype = float)
@@ -503,13 +503,13 @@ class Model(QObject):
             self._result = eval("self._model.fit(data = y, %s = x, weights = 1/sy, params = params, scale_covar=False, max_nfev = 250)"%self._indVar, None,
             {'y': y, 'x': x, 'params': self._params, 'self': self, 'sy': sy})
         except ValueError:
-            self._msgHandler.raiseError("A função ajustada gera valores não numéricos, rever ajuste e/ou parâmetros inciais.")
+            self._msgHandler.raise_error("A função ajustada gera valores não numéricos, rever ajuste e/ou parâmetros inciais.")
             return None
         except TypeError:
-            self._msgHandler.raiseError("A função ajustada possui algum termo inválido, rever ajuste e/ou parâmetros inciais.")
+            self._msgHandler.raise_error("A função ajustada possui algum termo inválido, rever ajuste e/ou parâmetros inciais.")
             return None
         if self._result.covar is None:
-            self._msgHandler.raiseError("A função ajustada não convergiu, rever ajuste e/ou parâmetros inciais.")
+            self._msgHandler.raise_error("A função ajustada não convergiu, rever ajuste e/ou parâmetros inciais.")
             self._result = None
             return None
     
@@ -545,13 +545,13 @@ class Model(QObject):
             self._result = eval("self._model.fit(data = y, %s = x, params = params, scale_covar=False, max_nfev = 250)"%self._indVar, None,
             {'y': y, 'x': x, 'params': self._params, 'self': self})
         except ValueError:
-            self._msgHandler.raiseError("A função ajustada gera valores não numéricos, rever ajuste e/ou parâmetros inciais.")
+            self._msgHandler.raise_error("A função ajustada gera valores não numéricos, rever ajuste e/ou parâmetros inciais.")
             return None
         except TypeError:
-            self._msgHandler.raiseError("A função ajustada possui algum termo inválido, rever ajuste e/ou parâmetros inciais.")
+            self._msgHandler.raise_error("A função ajustada possui algum termo inválido, rever ajuste e/ou parâmetros inciais.")
             return None
         if self._result.covar is None:
-            self._msgHandler.raiseError("A função ajustada não convergiu, rever ajuste e/ou parâmetros inciais.")
+            self._msgHandler.raise_error("A função ajustada não convergiu, rever ajuste e/ou parâmetros inciais.")
             self._result = None
             return None
         
@@ -647,7 +647,7 @@ class Model(QObject):
             self._report_fit += "\n"
             self._isvalid     = True
         except TypeError:
-            self._msgHandler.raiseError("A função ajustada provavelmente não possui parâmetros para serem ajustados. Rever ajuste.")
+            self._msgHandler.raise_error("A função ajustada provavelmente não possui parâmetros para serem ajustados. Rever ajuste.")
             return None
 
     def __set_report_ODR(self, x):
@@ -774,10 +774,10 @@ class Model(QObject):
         try:
             self._model = ExpressionModel(self._exp_model + " + 0*%s"%self._indVar, independent_vars=[self._indVar])
         except ValueError:
-            self._msgHandler.raiseError("Expressão de ajuste escrita de forma errada. Rever função de ajuste.")
+            self._msgHandler.raise_error("Expressão de ajuste escrita de forma errada. Rever função de ajuste.")
             return None
         except SyntaxError:
-            self._msgHandler.raiseError("Expressão de ajuste escrita de forma errada. Rever função de ajuste.")
+            self._msgHandler.raise_error("Expressão de ajuste escrita de forma errada. Rever função de ajuste.")
             return None
         self._coef = [i for i in self._model.param_names]
         if self._p0 is None:
@@ -896,7 +896,7 @@ class Model(QObject):
                 df.to_clipboard(sep=sepColumns[sep], decimal=sepDecimal[decimal])
 
         except:
-            self._msgHandler.raiseError("Não foi possível copiar para a área de transferência.")
+            self._msgHandler.raise_error("Não foi possível copiar para a área de transferência.")
 
 
     @pyqtSlot(str, str)
@@ -916,7 +916,7 @@ class Model(QObject):
         try:
             pd.DataFrame(self._mat_cov).to_clipboard(sep=sepColumns[sep], decimal=sepDecimal[decimal], index=False, header=False)
         except:
-            self._msgHandler.raiseError("Não foi possível copiar para a área de transferência.")
+            self._msgHandler.raise_error("Não foi possível copiar para a área de transferência.")
 
     @pyqtSlot(str, str)
     def copyCorrelationClipboard(self, sep, decimal):
@@ -935,7 +935,7 @@ class Model(QObject):
         try:
             pd.DataFrame(self._mat_corr).to_clipboard(sep=sepColumns[sep], decimal=sepDecimal[decimal], index=False, header=False)
         except:
-            self._msgHandler.raiseError("Não foi possível copiar para a área de transferência.")
+            self._msgHandler.raise_error("Não foi possível copiar para a área de transferência.")
 
     def reset(self):
         self._data       = None

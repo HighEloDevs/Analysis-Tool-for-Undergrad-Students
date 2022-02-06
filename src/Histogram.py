@@ -72,8 +72,12 @@ class Histogram(QObject):
                     has_legend = self.plot_freq_rel(arquivo, data, has_legend)
                 else:
                     has_legend = self.plot_dens(arquivo, data, has_legend)
-        self.canvas.axes1.set_title(data["props"]["title"])
-        self.canvas.axes1.set(xlabel = data["props"]["xaxis"], ylabel = data["props"]["yaxis"])
+        self.canvas.axes1.set_title(data["props"]["title"], 
+                                fontsize=self.canvas.font_sizes["titulo"])
+        self.canvas.axes1.set_xlabel(xlabel = data["props"]["xaxis"],
+                                fontsize=self.canvas.font_sizes["eixo_x"])
+        self.canvas.axes1.set_ylabel(ylabel = data["props"]["yaxis"],
+                                fontsize=self.canvas.font_sizes["eixo_y"])
         self.canvas.set_axes_props_without_axes_2(xmin, xmax, xdiv, ymin, ymax, ydiv,
          data["props"]["grid"], data["props"]["logx"], data["props"]["logy"])
         if has_legend:
@@ -87,7 +91,7 @@ class Histogram(QObject):
         left  = self.make_float(arquivo["kargs"].pop("rangexmin", ""), df["x"].min())
         right = self.make_float(arquivo["kargs"].pop("rangexmax", ""), df["x"].max())
         if left >= right:
-            self.messageHandler.raiseError("Intervalo de bins inválido. Rever intervalo de bins.")
+            self.messageHandler.raise_error("Intervalo de bins inválido. Rever intervalo de bins.")
             return -1
         bins  = np.linspace(left, right,
             self.make_int(arquivo["kargs"].pop("nbins", 10), 10) + 1)
@@ -135,7 +139,7 @@ class Histogram(QObject):
         left  = self.make_float(arquivo["kargs"].pop("rangexmin", ""), df["x"].min())
         right = self.make_float(arquivo["kargs"].pop("rangexmax", ""), df["x"].max())
         if left >= right:
-            self.messageHandler.raiseError("Intervalo de bins inválido. Rever intervalo de bins.")
+            self.messageHandler.raise_error("Intervalo de bins inválido. Rever intervalo de bins.")
             return -1
         bins  = np.linspace(left, right,
             self.make_int(arquivo["kargs"].pop("nbins", 10), 10) + 1)
@@ -183,7 +187,7 @@ class Histogram(QObject):
         left  = self.make_float(arquivo["kargs"].pop("rangexmin", ""), df["x"].min())
         right = self.make_float(arquivo["kargs"].pop("rangexmax", ""), df["x"].max())
         if left >= right:
-            self.messageHandler.raiseError("Intervalo de bins inválido. Rever intervalo de bins.")
+            self.messageHandler.raise_error("Intervalo de bins inválido. Rever intervalo de bins.")
             return -1
         bins  = np.linspace(left, right,
             self.make_int(arquivo["kargs"].pop("nbins", 10), 10) + 1)
@@ -273,12 +277,12 @@ class Histogram(QObject):
 
         if "key" in props:
             if props["key"].split('-')[-1] != 'hist':
-                self.messageHandler.raiseError("Este projeto pertence à outra aba do ATUS.")
+                self.messageHandler.raise_error("Este projeto pertence à outra aba do ATUS.")
                 return 0
             if props["key"][0] == "2":
-                self.messageHandler.raiseWarn("Arquivo da versão anterior. Procure salvar o arquivo nesta versão para evitar problemas.")
+                self.messageHandler.raise_warn("Arquivo da versão anterior. Procure salvar o arquivo nesta versão para evitar problemas.")
         else:
-            self.messageHandler.raiseError("O arquivo carregado é incompatível com o ATUS.")
+            self.messageHandler.raise_error("O arquivo carregado é incompatível com o ATUS.")
             return 0
 
         self.fillPage.emit(QJsonValue.fromVariant(props))
@@ -299,24 +303,24 @@ class Histogram(QObject):
             try:
                 df = pd.read_csv(filePath, sep=',', header=None, dtype = str).replace(np.nan, "0")
             except pd.errors.ParserError:
-                self.messageHandler.raiseError("Separação de colunas de arquivos csv são com vírgula (","). Rever dados de entrada.")
+                self.messageHandler.raise_error("Separação de colunas de arquivos csv são com vírgula (","). Rever dados de entrada.")
                 # Separação de colunas de arquivos csv são com vírgula (","). Rever dados de entrada.
                 return QJsonValue.fromVariant(package)
         elif filePath[-3:] == "tsv" or filePath[-3:] == "txt":
             try:
                 df = pd.read_csv(filePath, sep='\t', header=None, dtype = str).replace(np.nan, "0")
             except pd.errors.ParserError:
-                self.messageHandler.raiseError("Separação de colunas de arquivos txt e tsv são com tab. Rever dados de entrada.")
+                self.messageHandler.raise_error("Separação de colunas de arquivos txt e tsv são com tab. Rever dados de entrada.")
                 # Separação de colunas de arquivos txt e tsv são com tab. Rever dados de entrada.
                 return QJsonValue.fromVariant(package)
         else:
-            self.messageHandler.raiseError("Apenas arquivos .txt, .csv, .tsv são suportados.")
+            self.messageHandler.raise_error("Apenas arquivos .txt, .csv, .tsv são suportados.")
             return QJsonValue.fromVariant(package)
 
         if len(df.columns) == 1:
             df.columns = ["x"]
         else:
-            self.messageHandler.raiseError("A tabela de histogramas deve conter no máximo 1 coluna.")
+            self.messageHandler.raise_error("A tabela de histogramas deve conter no máximo 1 coluna.")
             return QJsonValue.fromVariant(package)
         
         for i in df.columns:
@@ -326,7 +330,7 @@ class Histogram(QObject):
             try:
                 df[i] = df[i].astype(float)
             except:
-                self.messageHandler.raiseError("A entrada de dados só permite entrada de números. Rever arquivo de entrada.")
+                self.messageHandler.raise_error("A entrada de dados só permite entrada de números. Rever arquivo de entrada.")
                 # Há células não numéricas. A entrada de dados só permite entrada de números. Rever arquivo de entrada.
                 return QJsonValue.fromVariant(package)
 
