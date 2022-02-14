@@ -255,6 +255,9 @@ class Canvas(QObject):
         self.bottom = self.make_float(bottom, valor=0.12)
         self.left = self.make_float(left, valor=0.10)
         self.right = self.make_float(right, valor=0.95)
+        if self.bottom >= self.top or self.left >= self.right:
+            self.message_handler.raise_error("Paddings invalidos.")
+            return None
         if self.figmode:
             self.figure.subplots_adjust(left=self.left,
                                         bottom=self.bottom,
