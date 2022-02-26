@@ -118,7 +118,7 @@ class SinglePlot(QObject):
         # Getting initial parameters
         if fitProps['p0'].strip() != '':
             p0 = fitProps['p0']
-            p0 = p0.replace(';', ',')
+            # p0 = p0.replace(';', ',')
             p0 = p0.replace('/', ',')
             self.model.set_p0(p0)
         

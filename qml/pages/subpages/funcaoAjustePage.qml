@@ -49,10 +49,10 @@ Item {
             Layout.columnSpan: 12
             focusColor: Colors.mainColor2
             title: 'Parâmetros Iniciais'
-            textHolder: 'Ex.: 0, 32, 4.3, 23.4'
+            textHolder: 'Ex.: 0, a = 32, a = @4.3, a = 23.4 [-10; 50]'
             defaultColor: '#fff'
             textColor: '#fff'
-            validator: RegExpValidator{regExp: /^[0-9.a-zA-Z_@= ,-]+$/}
+            validator: RegExpValidator{regExp: /^[\[\];0-9.a-zA-Z_@= ,-]+$/}
         }
 
         TextInputCustom{

@@ -215,7 +215,7 @@ class Model(QObject):
 
     def set_p0(self, p0):
         ''' Coloca os chutes iniciais. '''
-        self._p0 = p0.split(",")
+        self._p0 = p0.replace(" ", "").split(",")
         
     def set_expression(self, exp = "", varInd = "x"):
         """ Set new expression to model. """
@@ -243,7 +243,7 @@ class Model(QObject):
         indices = np.arange(len(self._data.index))
         if self.xmin != self.xmax:
             indices = np.where((self.xmin <= self._data["x"]) & (self.xmax >= self._data["x"]))[0]
-        x, y, sy, sx = x.iloc[indices], y.iloc[indices], sy.iloc[indices], sx.iloc[indices]
+        x, y, sy, sx = x.iloc[indices].to_numpy(), y.iloc[indices].to_numpy(), sy.iloc[indices].to_numpy(), sx.iloc[indices].to_numpy()
         data = None
         if self._has_sy and self._has_sx: # Caso com as duas incs
             if wsx == True and wsy == True:
@@ -318,63 +318,90 @@ class Model(QObject):
             self.fillParamsTable.emit(keys[i], params[keys[i]][0], params[keys[i]][1])
         self.writeInfos.emit(self._report_fit)
 
-    def __fit_ODR(self, data):
-        '''Fit com ODR.'''
+    def __make_parameters_lm(self):
+        '''Constrói os parâmetros para ajuste com o lmfit.'''
+        self._params = Parameters()
+        if self._p0 is None:
+            for i in range(len(self._coef)):
+                self._params.add(self._coef[i], 1.)
+        else:
+            coefs   = {c : [1, True, -np.inf, np.inf] for c in self._coef}
+            coefs_2 = {c : False for c in self._coef} # Para evitar de substituir atribuição de parâmetros
+            for i in range(len(self._coef)):
+                try:
+                    res = re.match(r"((?P<parameter>.+?)=)?(?P<value>[\d\-\.\@]+)(\[((?P<lim_inf>.+?)?;(?P<lim_sup>.+?))\])?", self._p0[i]).groupdict()
+                    if res["parameter"] is not None:
+                            valor = res["value"].replace("@", "")
+                            var   = res["parameter"]
+                            if var in coefs:
+                                lim_inf = -np.inf if res["lim_inf"] is None else float(res["lim_inf"])
+                                lim_sup = np.inf if res["lim_sup"] is None else float(res["lim_sup"])
+                                coefs[var]   = [float(valor), not "@" in res["value"], lim_inf, lim_sup]
+                                coefs_2[var] = True
+                    else:
+                        if coefs_2[self._coef[i]] == False and self._coef[i] in coefs:
+                            lim_inf = -np.inf if res["lim_inf"] is None else float(res["lim_inf"])
+                            lim_sup = np.inf if res["lim_sup"] is None else float(res["lim_sup"])
+                            coefs[self._coef[i]]   = [float(res["value"].replace("@", "")),  not "@" in res["value"], lim_inf, lim_sup]
+                            coefs_2[self._coef[i]] = True
+                except:
+                    if coefs_2[self._coef[i]] == False:
+                        coefs[self._coef[i]]   = [1, True, -np.inf, np.inf]
+                        coefs_2[self._coef[i]] = True
+            for nome in coefs.keys():
+                self._params.add(nome, coefs[nome][0], vary = coefs[nome][1], min = coefs[nome][2], max = coefs[nome][3])
+
+    def __make_parameters_odr(self):
+        '''Constrói os parâmetros para ajuste com o ODR.'''
         pi    = [1.]*len(self._coef)
         fixed = [1]*len(self._coef)
+        arr_lim_inf = [-np.inf]*len(self._coef)
+        arr_lim_sup = [np.inf]*len(self._coef)
         aux   = {c : i for i, c in enumerate(self._coef)}
         if self._p0 is None:
             pass
         else:
-            coefs   = {c : [1, True] for c in self._coef}
+            coefs   = {c : [1, True, -np.inf, np.inf] for c in self._coef}
             coefs_2 = {c : False for c in self._coef} # Para evitar de substituir atribuição de parâmetros
             for i in range(len(self._coef)):
                 try:
-                    res = re.match("\s?(?:(.*[^\s])\s?=\s?(.*)|(@?\d*@?))", self._p0[i])
-                    if res.groups()[2] is None:
-                            valor = res.groups()[1].replace("@", "")
-                            var   = res.groups()[0]
+                    res = re.match(r"((?P<parameter>.+?)=)?(?P<value>[\d\-\.\@]+)(\[((?P<lim_inf>.+?)?;(?P<lim_sup>.+?))\])?", self._p0[i]).groupdict()
+                    if res["parameter"] is not None:
+                            valor = res["value"].replace("@", "")
+                            var   = res["parameter"]
+                            lim_inf = -np.inf if res["lim_inf"] is None else float(res["lim_inf"])
+                            lim_sup = np.inf if res["lim_sup"] is None else float(res["lim_sup"])
                             if var in coefs:
-                                coefs[var]   = [float(valor), not "@" in res.groups()[1]]
+                                coefs[var]   = [float(valor), not "@" in res["value"], lim_inf, lim_sup]
                                 coefs_2[var] = True
                     else:
                         if coefs_2[self._coef[i]] == False and self._coef[i] in coefs:
-                            coefs[self._coef[i]]   = [float(res.groups()[2].replace("@", "")), not "@" in res.groups()[2]]
+                            lim_inf = -np.inf if res["lim_inf"] is None else float(res["lim_inf"])
+                            lim_sup = np.inf if res["lim_sup"] is None else float(res["lim_sup"])
+                            coefs[self._coef[i]]   = [float(res["value"].replace("@", "")), not "@" in res["value"], lim_inf, lim_sup]
                             coefs_2[self._coef[i]] = True
                 except:
                     if coefs_2[self._coef[i]] == False:
-                        coefs[self._coef[i]]   = [1, True]
+                        coefs[self._coef[i]]   = [1, True, -np.inf, np.inf]
                         coefs_2[self._coef[i]] = True
             for i, nome in enumerate(self._coef):
                 pi[aux[nome]]    = coefs[nome][0]
                 fixed[aux[nome]] = coefs[nome][1]
-                # self._params.add(nome, coefs[nome][0], vary = coefs[nome][1])
-        # else:
-        #     for i in range(len(self._coef)):
-        #         try:
-        #             p_i = self._p0[i].split("=")
-        #             if len(p_i) == 2:
-        #                 if "@" in p_i[1]:
-        #                     p_i[1] = p_i[1].replace("@", "")
-        #                     pi[aux[p_i[0].strip()]]    = float(p_i[1].strip())
-        #                     fixed[aux[p_i[0].strip()]] = 0
-        #                 else:
-        #                     if "@" in p_i[0]:
-        #                         pi[aux[p_i[0].strip()]] = float(p_i[1].replace("@", "").strip())
-        #                     else:
-        #                         pi[aux[p_i[0].strip()]] = float(p_i[1].strip())
-        #             else:
-        #                 pi[i] = float(self._p0[i])
-        #         except:
-        #             pass
+                arr_lim_inf[aux[nome]] = coefs[nome][2]
+                arr_lim_sup[aux[nome]] = coefs[nome][3]
         self._par_var = []
         for i, parametro in enumerate(self._coef):
             if fixed[i] > 0:
                 self._par_var.append(parametro)
+        return pi, fixed, arr_lim_inf, arr_lim_sup
+
+    def __fit_ODR(self, data):
+        '''Fit com ODR.'''
+        pi, fixed, lim_inf, lim_sup = self.__make_parameters_odr()
         def f(a, x):
             param = Parameters()
             for i in range(len(a)):
-                param.add(self._model.param_names[i], value=a[i])
+                param.add(self._model.param_names[i], value=a[i], vary = fixed[i], min = lim_inf[i], max = lim_sup[i])
             return eval("self._model.eval(%s=x, params=param)"%self._indVar,
              {'x': x, 'param': param, 'self': self})
         model = SciPyModel(f)
@@ -387,42 +414,11 @@ class Model(QObject):
 
     def __fit_ODR_special(self, x_orig, y, sx):
         '''Fit com ODR quando só há incertezas em x.'''
-        pi    = [1.]*len(self._coef)
-        fixed = [1]*len(self._coef)
-        aux   = {c : i for i, c in enumerate(self._coef)}
-        if self._p0 is None:
-            pass
-        else:
-            coefs   = {c : [1, True] for c in self._coef}
-            coefs_2 = {c : False for c in self._coef} # Para evitar de substituir atribuição de parâmetros
-            for i in range(len(self._coef)):
-                try:
-                    res = re.match("\s?(?:(.*[^\s])\s?=\s?(.*)|(@?\d*@?))", self._p0[i])
-                    if res.groups()[2] is None:
-                            valor = res.groups()[1].replace("@", "")
-                            var   = res.groups()[0]
-                            if var in coefs:
-                                coefs[var]   = [float(valor), not "@" in res.groups()[1]]
-                                coefs_2[var] = True
-                    else:
-                        if coefs_2[self._coef[i]] == False and self._coef[i] in coefs:
-                            coefs[self._coef[i]]   = [float(res.groups()[2].replace("@", "")), not "@" in res.groups()[2]]
-                            coefs_2[self._coef[i]] = True
-                except:
-                    if coefs_2[self._coef[i]] == False:
-                        coefs[self._coef[i]]   = [1, True]
-                        coefs_2[self._coef[i]] = True
-            for i, nome in enumerate(self._coef):
-                pi[aux[nome]]    = coefs[nome][0]
-                fixed[aux[nome]] = coefs[nome][1]
-        self._par_var = []
-        for i, parametro in enumerate(self._coef):
-            if fixed[i] > 0:
-                self._par_var.append(parametro)
+        pi, fixed, lim_inf, lim_sup = self.__make_parameters_odr()
         def f(a, x):
             param = Parameters()
             for i in range(len(a)):
-                param.add(self._model.param_names[i], value=a[i])
+                param.add(self._model.param_names[i], value=a[i], vary = fixed[i], min = lim_inf[i], max = lim_sup[i])
             return eval("self._model.eval(%s=x, params=param)"%self._indVar,
              {'x': x, 'param': param, 'self': self})
         # data  = RealData(x, y, sx = sx)
@@ -472,33 +468,7 @@ class Model(QObject):
 
     def __fit_lm(self, x, y, sy):
         '''Fit com MMQ.'''
-        self._params = Parameters()
-        if self._p0 is None:
-            for i in range(len(self._coef)):
-                self._params.add(self._coef[i], 1.)
-        else:
-            coefs   = {c : [1, True] for c in self._coef}
-            coefs_2 = {c : False for c in self._coef} # Para evitar de substituir atribuição de parâmetros
-            for i in range(len(self._coef)):
-                try:
-                    res = re.match("\s?(?:(.*[^\s])\s?=\s?(.*)|(@?\d*@?))", self._p0[i])
-                    if res.groups()[2] is None:
-                            valor = res.groups()[1].replace("@", "")
-                            var   = res.groups()[0]
-                            if var in coefs:
-                                coefs[var]   = [float(valor), not "@" in res.groups()[1]]
-                                coefs_2[var] = True
-                    else:
-                        if coefs_2[self._coef[i]] == False and self._coef[i] in coefs:
-                            coefs[self._coef[i]]   = [float(res.groups()[2].replace("@", "")),  not "@" in res.groups()[2]]
-                            coefs_2[self._coef[i]] = True
-                except:
-                    if coefs_2[self._coef[i]] == False:
-                        coefs[self._coef[i]]   = [1, True]
-                        coefs_2[self._coef[i]] = True
-            for nome in coefs.keys():
-                self._params.add(nome, coefs[nome][0], vary = coefs[nome][1])
-        print(self._params)
+        self.__make_parameters_lm()
         try:
             self._result = eval("self._model.fit(data = y, %s = x, weights = 1/sy, params = params, scale_covar=False, max_nfev = 250)"%self._indVar, None,
             {'y': y, 'x': x, 'params': self._params, 'self': self, 'sy': sy})
@@ -515,35 +485,10 @@ class Model(QObject):
     
     def __fit_lm_wy(self, x, y):
         '''Fit com MMQ quando não há incertezas.'''
-        self._params = Parameters()
-        if self._p0 is None:
-            for i in range(len(self._coef)):
-                self._params.add(self._coef[i], 1.)
-        else:
-            coefs   = {c : [1, True] for c in self._coef}
-            coefs_2 = {c : False for c in self._coef} # Para evitar de substituir atribuição de parâmetros
-            for i in range(len(self._coef)):
-                try:
-                    res = re.match("\s?(?:(.*[^\s])\s?=\s?(.*)|(@?\d*@?))", self._p0[i])
-                    if res.groups()[2] is None:
-                            valor = res.groups()[1].replace("@", "")
-                            var   = res.groups()[0]
-                            if var in coefs:
-                                coefs[var]   = [float(valor), not "@" in res.groups()[1]]
-                                coefs_2[var] = True
-                    else:
-                        if coefs_2[self._coef[i]] == False and self._coef[i] in coefs:
-                            coefs[self._coef[i]]   = [float(res.groups()[2].replace("@", "")), not "@" in res.groups()[2]]
-                            coefs_2[self._coef[i]] = True
-                except:
-                    if coefs_2[self._coef[i]] == False:
-                        coefs[self._coef[i]]   = [1, True]
-                        coefs_2[self._coef[i]] = True
-            for nome in coefs.keys():
-                self._params.add(nome, coefs[nome][0], vary = coefs[nome][1])
+        self.__make_parameters_lm()
         try:
-            self._result = eval("self._model.fit(data = y, %s = x, params = params, scale_covar=False, max_nfev = 250)"%self._indVar, None,
-            {'y': y, 'x': x, 'params': self._params, 'self': self})
+            self._result = eval("self._model.fit(data = y, %s = x, params = self._params, scale_covar=False, max_nfev = 250)"%self._indVar, None,
+            {'y': y, 'x': x, 'self': self})
         except ValueError:
             self._msgHandler.raise_error("A função ajustada gera valores não numéricos, rever ajuste e/ou parâmetros inciais.")
             return None
@@ -780,31 +725,32 @@ class Model(QObject):
             self._msgHandler.raise_error("Expressão de ajuste escrita de forma errada. Rever função de ajuste.")
             return None
         self._coef = [i for i in self._model.param_names]
-        if self._p0 is None:
-            for i in range(len(self._coef)):
-                self._params.add(self._coef[i], 1.)
-        else:
-            coefs   = {c : [1, True] for c in self._coef}
-            coefs_2 = {c : False for c in self._coef} # Para evitar de substituir atribuição de parâmetros
-            for i in range(len(self._coef)):
-                try:
-                    res = re.match("\s?(?:(.*[^\s])\s?=\s?(.*)|(@?\d*@?))", self._p0[i])
-                    if res.groups()[2] is None:
-                            valor = res.groups()[1].replace("@", "")
-                            var   = res.groups()[0]
-                            if var in coefs:
-                                coefs[var]   = [float(valor), not "@" in res.groups()[1]]
-                                coefs_2[var] = True
-                    else:
-                        if coefs_2[self._coef[i]] == False and self._coef[i] in coefs:
-                            coefs[self._coef[i]]   = [float(res.groups()[2].replace("@", "")), not "@" in res.groups()[2]]
-                            coefs_2[self._coef[i]] = True
-                except:
-                    if coefs_2[self._coef[i]] == False:
-                        coefs[self._coef[i]]   = [1, True]
-                        coefs_2[self._coef[i]] = True
-            for nome in coefs.keys():
-                self._params.add(nome, coefs[nome][0], vary = coefs[nome][1])
+        self.__make_parameters_lm()
+        # if self._p0 is None:
+        #     for i in range(len(self._coef)):
+        #         self._params.add(self._coef[i], 1.)
+        # else:
+        #     coefs   = {c : [1, True] for c in self._coef}
+        #     coefs_2 = {c : False for c in self._coef} # Para evitar de substituir atribuição de parâmetros
+        #     for i in range(len(self._coef)):
+        #         try:
+        #             res = re.match("\s?(?:(.*[^\s])\s?=\s?(.*)|(@?\d*@?))", self._p0[i])
+        #             if res.groups()[2] is None:
+        #                     valor = res.groups()[1].replace("@", "")
+        #                     var   = res.groups()[0]
+        #                     if var in coefs:
+        #                         coefs[var]   = [float(valor), not "@" in res.groups()[1]]
+        #                         coefs_2[var] = True
+        #             else:
+        #                 if coefs_2[self._coef[i]] == False and self._coef[i] in coefs:
+        #                     coefs[self._coef[i]]   = [float(res.groups()[2].replace("@", "")), not "@" in res.groups()[2]]
+        #                     coefs_2[self._coef[i]] = True
+        #         except:
+        #             if coefs_2[self._coef[i]] == False:
+        #                 coefs[self._coef[i]]   = [1, True]
+        #                 coefs_2[self._coef[i]] = True
+        #     for nome in coefs.keys():
+        #         self._params.add(nome, coefs[nome][0], vary = coefs[nome][1])
             # coefs   = {c : [1, True] for c in self._coef}
             # coefs_2 = {c : False for c in self._coef} # Para evitar de substituir atribuição de parâmetros
             # for i in range(len(self._coef)):
