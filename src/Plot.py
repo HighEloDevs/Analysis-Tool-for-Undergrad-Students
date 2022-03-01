@@ -206,7 +206,7 @@ class SinglePlot(QObject):
                 if fit_props["adjust"]:
                     y_r = model.residuo
                 else:
-                    y_r = model.residuoDummy
+                    y_r = model.residuo_dummy
                 if residuals:
                     self.canvas.switch_axes(hide_axes2=False)
                     if sigma_x and sigma_y:  # Caso considerar as duas incertezas

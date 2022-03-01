@@ -34,51 +34,62 @@ from copy import deepcopy
 from io import StringIO
 import re
 
+
 class Model(QObject):
     """
     Class used for fit.
     """
     # Signals
-    fillDataTable   = pyqtSignal(str, str, str, str, str, str, arguments=["x", "y", "sy", "sx", "filename"])
-    fillParamsTable = pyqtSignal(str, float, float, arguments=["param", "value", "uncertainty"])
-    writeInfos      = pyqtSignal(str, arguments="expr")
-    uploadData      = pyqtSignal(QVariant, str, arguments=["data", "fileName"])
+    fillDataTable = pyqtSignal(str,
+                               str,
+                               str,
+                               str,
+                               str,
+                               str,
+                               arguments=["x", "y", "sy", "sx", "filename"])
+    fillParamsTable = pyqtSignal(str,
+                                 float,
+                                 float,
+                                 arguments=["param", "value", "uncertainty"])
+    writeInfos = pyqtSignal(str, arguments="expr")
+    uploadData = pyqtSignal(QVariant, str, arguments=["data", "fileName"])
 
     def __init__(self, messageHandler):
         super().__init__()
         pd.set_option("display.expand_frame_repr", False)
         self._msg_handler = messageHandler
-        self._data       = None
-        self._data_json  = None
-        self._exp_model  = ""
-        self._indVar     = "x"
-        self._model      = None
+        self._data = None
+        self._data_json = None
+        self._exp_model = ""
+        self._indVar = "x"
+        self._model = None
         self._report_fit = ""
-        self._mat_corr   = ""
-        self._mat_cov    = ""
+        self._mat_corr = ""
+        self._mat_cov = ""
         self._dict_param = {}
-        self._result     = None
-        self._coef       = []
-        self._par_var    = []
-        self._params     = Parameters()
-        self._dict       = {}
-        self._dict2      = {}
-        self._p0         = None
-        self.xmin_adj    = 0.
-        self.xmax_adj    = 0.
-        self._mode       = 0
-        self._has_data   = False
-        self._isvalid    = False
-        self._has_sx     = True
-        self._has_sy     = True
+        self._result = None
+        self._coef = []
+        self._par_var = []
+        self._params = Parameters()
+        self._dict = {}
+        self._dict2 = {}
+        self._p0 = None
+        self.xmin_adj = 0.
+        self.xmax_adj = 0.
+        self._mode = 0
+        self._has_data = False
+        self._isvalid = False
+        self._has_sx = True
+        self._has_sy = True
 
     def __str__(self):
         return self._report_fit
 
     @pyqtSlot(QJsonValue)
-    def loadDataTable(self, data = None):
+    def loadDataTable(self, data=None):
         """ Getting data from table. """
-        df = pd.DataFrame.from_records(data, columns = ["x", "y", "sy", "sx", "bool"])
+        df = pd.DataFrame.from_records(data,
+                                       columns=["x", "y", "sy", "sx", "bool"])
 
         # Removing not chosen rows
         df = df[df["bool"] == 1]
@@ -86,19 +97,23 @@ class Model(QObject):
         uniqueSi = df["sy"].unique().astype(float)
         if 0. in uniqueSi:
             if len(uniqueSi) > 1:
-                self._msg_handler.raise_warn("Um valor nulo foi encontrado nas incertezas em y, removendo coluna de sy.")
+                self._msg_handler.raise_warn(
+                    "Um valor nulo foi encontrado nas incertezas em y, removendo coluna de sy."
+                )
             self._has_sy = False
         uniqueSi = df["sx"].unique().astype(float)
         if 0. in uniqueSi:
             if len(uniqueSi) > 1:
-                self._msg_handler.raise_warn("Um valor nulo foi encontrado nas incertezas em x, removendo coluna de sx.")
+                self._msg_handler.raise_warn(
+                    "Um valor nulo foi encontrado nas incertezas em x, removendo coluna de sx."
+                )
             self._has_sx = False
 
         self._data_json = deepcopy(df)
 
         # Turn everything into number (str -> number)
         df = df.astype(float)
-        self._data     = deepcopy(df)
+        self._data = deepcopy(df)
         self._has_data = True
 
     @pyqtSlot()
@@ -108,8 +123,11 @@ class Model(QObject):
         clipboard = QGuiApplication.clipboard()
         clipboardText = clipboard.mimeData().text()
         # try:
-            # Creating a dataframe from the string
-        df = pd.read_csv(StringIO(clipboardText), sep = "\t", header = None, dtype = str).dropna(how="all").replace(np.nan, "0")
+        # Creating a dataframe from the string
+        df = pd.read_csv(StringIO(clipboardText),
+                         sep="\t",
+                         header=None,
+                         dtype=str).dropna(how="all").replace(np.nan, "0")
         # Replacing all commas for dots
         for i in df.columns:
             df[i] = [x.replace(",", ".") for x in df[i]]
@@ -129,30 +147,47 @@ class Model(QObject):
             data_path = QUrl(data_path).toLocalFile()
             if data_path[-3:] == "csv":
                 try:
-                    df = pd.read_csv(data_path, sep=",", header=None, dtype = str).dropna(how="all").replace(np.nan, "0")
+                    df = pd.read_csv(data_path,
+                                     sep=",",
+                                     header=None,
+                                     dtype=str).dropna(how="all").replace(
+                                         np.nan, "0")
                 except pd.errors.ParserError:
-                    self._msg_handler.raise_error("Separação de colunas de arquivos csv são com vírgula (','). Rever dados de entrada.")
+                    self._msg_handler.raise_error(
+                        "Separação de colunas de arquivos csv são com vírgula (','). Rever dados de entrada."
+                    )
                     return None
             else:
                 try:
-                    df = pd.read_csv(data_path, sep="\t", header=None, dtype = str).dropna(how="all").replace(np.nan, "0")
+                    df = pd.read_csv(data_path,
+                                     sep="\t",
+                                     header=None,
+                                     dtype=str).dropna(how="all").replace(
+                                         np.nan, "0")
                 except pd.errors.ParserError:
-                    self._msg_handler.raise_error("Separação de colunas de arquivos txt e tsv são com tab. Rever dados de entrada.")
+                    self._msg_handler.raise_error(
+                        "Separação de colunas de arquivos txt e tsv são com tab. Rever dados de entrada."
+                    )
                     return None
             # Getting file name
             fileName = data_path.split("/")[-1]
         elif df is None:
-            df = pd.DataFrame.from_records(df_array, columns = ["x", "y", "sy", "sx", "bool"])
+            df = pd.DataFrame.from_records(
+                df_array, columns=["x", "y", "sy", "sx", "bool"])
             del df["bool"]
             uniqueSi = df["sy"].unique().astype(float)
             if 0. in uniqueSi:
                 if len(uniqueSi) > 1:
-                    self._msg_handler.raise_warn("Um valor nulo foi encontrado nas incertezas em y, removendo coluna de sy.")
+                    self._msg_handler.raise_warn(
+                        "Um valor nulo foi encontrado nas incertezas em y, removendo coluna de sy."
+                    )
                 self._has_sy = False
             uniqueSi = df["sx"].unique().astype(float)
             if 0. in uniqueSi:
                 if len(uniqueSi) > 1:
-                    self._msg_handler.raise_warn("Um valor nulo foi encontrado nas incertezas em x, removendo coluna de sx.")
+                    self._msg_handler.raise_warn(
+                        "Um valor nulo foi encontrado nas incertezas em x, removendo coluna de sx."
+                    )
                 self._has_sx = False
 
         # Saving the dataframe in the class
@@ -161,55 +196,64 @@ class Model(QObject):
         # Applying some filters over the df
         for i in df.columns:
             # Replacing comma for dots
-            df[i]              = [x.replace(",", ".") for x in df[i]]
-            self._data_json[i] = [x.replace(",", ".") for x in self._data_json[i]]
+            df[i] = [x.replace(",", ".") for x in df[i]]
+            self._data_json[i] = [
+                x.replace(",", ".") for x in self._data_json[i]
+            ]
             try:
                 df[i] = df[i].astype(float)
             except ValueError:
-                self._msg_handler.raise_error("A entrada de dados só permite entrada de números. Rever arquivo de entrada.")
+                self._msg_handler.raise_error(
+                    "A entrada de dados só permite entrada de números. Rever arquivo de entrada."
+                )
                 return None
 
         self._has_sx = True
         self._has_sy = True
-        self._mode   = len(df.columns) - 2
+        self._mode = len(df.columns) - 2
 
         # Naming columns
         if self._mode == -1:
-            self._has_sy            = not self._has_sy
-            self._has_sx            = not self._has_sx
-            df["x"]                 = np.arange(len(df), dtype = float)
-            self._data_json         = deepcopy(df.astype(str))
+            self._has_sy = not self._has_sy
+            self._has_sx = not self._has_sx
+            df["x"] = np.arange(len(df), dtype=float)
+            self._data_json = deepcopy(df.astype(str))
             self._data_json.columns = ["y", "x"]
-            df["sy"]                = 0.
-            df["sx"]                = 0.
+            df["sy"] = 0.
+            df["sx"] = 0.
         elif self._mode == 0:
-            self._has_sy            = not self._has_sy
-            self._has_sx            = not self._has_sx
+            self._has_sy = not self._has_sy
+            self._has_sx = not self._has_sx
             self._data_json.columns = ["x", "y"]
-            df["sy"]                = 0.
-            df["sx"]                = 0.
+            df["sy"] = 0.
+            df["sx"] = 0.
         elif self._mode == 1:
-            self._has_sx            = not self._has_sx
+            self._has_sx = not self._has_sx
             self._data_json.columns = ["x", "y", "sy"]
-            df["sx"]                = 0.
+            df["sx"] = 0.
         else:
             try:
                 self._data_json.columns = ["x", "y", "sy", "sx"]
                 uniqueSi = self._data_json["sy"].unique().astype(float)
                 if 0. in uniqueSi:
                     if len(uniqueSi) > 1:
-                        self._msg_handler.raise_warn("Um valor nulo foi encontrado nas incertezas em y, removendo coluna de sy.")
+                        self._msg_handler.raise_warn(
+                            "Um valor nulo foi encontrado nas incertezas em y, removendo coluna de sy."
+                        )
                     self._has_sy = False
                 uniqueSi = self._data_json["sx"].unique().astype(float)
                 if 0. in uniqueSi:
                     if len(uniqueSi) > 1:
-                        self._msg_handler.raise_warn("Um valor nulo foi encontrado nas incertezas em x, removendo coluna de sx.")
+                        self._msg_handler.raise_warn(
+                            "Um valor nulo foi encontrado nas incertezas em x, removendo coluna de sx."
+                        )
                     self._has_sx = False
             except ValueError:
-                self._msg_handler.raise_error("Há mais do que 4 colunas. Rever entrada de dados.")
+                self._msg_handler.raise_error(
+                    "Há mais do que 4 colunas. Rever entrada de dados.")
                 return None
 
-        self._data     = deepcopy(df)
+        self._data = deepcopy(df)
         self._has_data = True
         self.uploadData.emit(self._data_json.to_dict(orient="list"), fileName)
 
@@ -217,10 +261,10 @@ class Model(QObject):
         ''' Coloca os chutes iniciais. '''
         self._p0 = p0.replace(" ", "").split(",")
 
-    def set_expression(self, exp = "", varInd = "x"):
+    def set_expression(self, exp="", varInd="x"):
         """ Set new expression to model. """
         self._exp_model = exp
-        self._indVar    = varInd
+        self._indVar = varInd
 
     def fit(self, **kargs):
         ''' Interpretador de qual ajuste deve ser feito. '''
@@ -229,12 +273,18 @@ class Model(QObject):
 
         # Getting Model
         try:
-            self._model = ExpressionModel(self._exp_model + " + 0*%s"%self._indVar, independent_vars=[self._indVar])
+            self._model = ExpressionModel(self._exp_model +
+                                          " + 0*%s" % self._indVar,
+                                          independent_vars=[self._indVar])
         except ValueError:
-            self._msg_handler.raise_error("Expressão de ajuste escrita de forma errada. Rever função de ajuste.")
+            self._msg_handler.raise_error(
+                "Expressão de ajuste escrita de forma errada. Rever função de ajuste."
+            )
             return None
         except SyntaxError:
-            self._msg_handler.raise_error("Expressão de ajuste escrita de forma errada. Rever função de ajuste.")
+            self._msg_handler.raise_error(
+                "Expressão de ajuste escrita de forma errada. Rever função de ajuste."
+            )
             return None
         # Getting coefficients
         self._coef = [i for i in self._model.param_names]
@@ -242,10 +292,12 @@ class Model(QObject):
         x, y, sy, sx = self.data
         indices = np.arange(len(self._data.index))
         if self.xmin != self.xmax:
-            indices = np.where((self.xmin <= self._data["x"]) & (self.xmax >= self._data["x"]))[0]
-        x, y, sy, sx = x.iloc[indices].to_numpy(), y.iloc[indices].to_numpy(), sy.iloc[indices].to_numpy(), sx.iloc[indices].to_numpy()
+            indices = np.where((self.xmin <= self._data["x"])
+                               & (self.xmax >= self._data["x"]))[0]
+        x, y, sy, sx = x.iloc[indices].to_numpy(), y.iloc[indices].to_numpy(
+        ), sy.iloc[indices].to_numpy(), sx.iloc[indices].to_numpy()
         data = None
-        if self._has_sy and self._has_sx: # Caso com as duas incs
+        if self._has_sy and self._has_sx:  # Caso com as duas incs
             if wsx == True and wsy == True:
                 self.__fit_lm_wy(x, y)
                 if (self._result is None) == False:
@@ -268,7 +320,7 @@ class Model(QObject):
                 else:
                     return None
             else:
-                data = RealData(x, y, sx = sx, sy = sy)
+                data = RealData(x, y, sx=sx, sy=sy)
                 self.__fit_ODR(data)
                 if (self._result is None) == False:
                     self.__set_param_values_ODR(x)
@@ -305,7 +357,7 @@ class Model(QObject):
                     self.__set_report_ODR(x)
                 else:
                     return None
-        else: # Caso sem incertezas
+        else:  # Caso sem incertezas
             self.__fit_lm_wy(x, y)
             if (self._result is None) == False:
                 self.__set_param_values_lm_special(x)
@@ -313,9 +365,10 @@ class Model(QObject):
             else:
                 return None
         params = self.get_params()
-        keys   = list(params.keys())
+        keys = list(params.keys())
         for i in range(len(keys)):
-            self.fillParamsTable.emit(keys[i], params[keys[i]][0], params[keys[i]][1])
+            self.fillParamsTable.emit(keys[i], params[keys[i]][0],
+                                      params[keys[i]][1])
         self.writeInfos.emit(self._report_fit)
 
     def __make_parameters_lm(self):
@@ -325,67 +378,101 @@ class Model(QObject):
             for i in range(len(self._coef)):
                 self._params.add(self._coef[i], 1.)
         else:
-            coefs   = {c : [1, True, -np.inf, np.inf] for c in self._coef}
-            coefs_2 = {c : False for c in self._coef} # Para evitar de substituir atribuição de parâmetros
+            coefs = {c: [1, True, -np.inf, np.inf] for c in self._coef}
+            coefs_2 = {c: False
+                       for c in self._coef
+                       }  # Para evitar de substituir atribuição de parâmetros
             for i in range(len(self._coef)):
                 try:
-                    res = re.match(r"((?P<parameter>.+?)=)?(?P<value>[\d\-\.\@]+)(\[((?P<lim_inf>.+?)?;(?P<lim_sup>.+?))\])?", self._p0[i]).groupdict()
+                    res = re.match(
+                        r"((?P<parameter>.+?)=)?(?P<value>[\d\-\.\@]+)(\[((?P<lim_inf>.+?)?;(?P<lim_sup>.+?))\])?",
+                        self._p0[i]).groupdict()
                     if res["parameter"] is not None:
                         valor = res["value"].replace("@", "")
-                        var   = res["parameter"]
+                        var = res["parameter"]
                         if var in coefs:
-                            lim_inf = -np.inf if res["lim_inf"] is None else float(res["lim_inf"])
-                            lim_sup = np.inf if res["lim_sup"] is None else float(res["lim_sup"])
-                            coefs[var]   = [float(valor), not "@" in res["value"], lim_inf, lim_sup]
+                            lim_inf = -np.inf if res[
+                                "lim_inf"] is None else float(res["lim_inf"])
+                            lim_sup = np.inf if res[
+                                "lim_sup"] is None else float(res["lim_sup"])
+                            coefs[var] = [
+                                float(valor), not "@" in res["value"], lim_inf,
+                                lim_sup
+                            ]
                             coefs_2[var] = True
                     else:
-                        if coefs_2[self._coef[i]] == False and self._coef[i] in coefs:
-                            lim_inf = -np.inf if res["lim_inf"] is None else float(res["lim_inf"])
-                            lim_sup = np.inf if res["lim_sup"] is None else float(res["lim_sup"])
-                            coefs[self._coef[i]]   = [float(res["value"].replace("@", "")),  not "@" in res["value"], lim_inf, lim_sup]
+                        if coefs_2[self._coef[i]] == False and self._coef[
+                                i] in coefs:
+                            lim_inf = -np.inf if res[
+                                "lim_inf"] is None else float(res["lim_inf"])
+                            lim_sup = np.inf if res[
+                                "lim_sup"] is None else float(res["lim_sup"])
+                            coefs[self._coef[i]] = [
+                                float(res["value"].replace("@", "")),
+                                not "@" in res["value"], lim_inf, lim_sup
+                            ]
                             coefs_2[self._coef[i]] = True
                 except:
                     if coefs_2[self._coef[i]] == False:
-                        coefs[self._coef[i]]   = [1, True, -np.inf, np.inf]
+                        coefs[self._coef[i]] = [1, True, -np.inf, np.inf]
                         coefs_2[self._coef[i]] = True
             for nome in coefs.keys():
-                self._params.add(nome, coefs[nome][0], vary = coefs[nome][1], min = coefs[nome][2], max = coefs[nome][3])
+                self._params.add(nome,
+                                 coefs[nome][0],
+                                 vary=coefs[nome][1],
+                                 min=coefs[nome][2],
+                                 max=coefs[nome][3])
 
     def __make_parameters_odr(self):
         '''Constrói os parâmetros para ajuste com o ODR.'''
-        pi    = [1.]*len(self._coef)
-        fixed = [1]*len(self._coef)
-        arr_lim_inf = [-np.inf]*len(self._coef)
-        arr_lim_sup = [np.inf]*len(self._coef)
-        aux   = {c : i for i, c in enumerate(self._coef)}
+        pi = [1.] * len(self._coef)
+        fixed = [1] * len(self._coef)
+        arr_lim_inf = [-np.inf] * len(self._coef)
+        arr_lim_sup = [np.inf] * len(self._coef)
+        aux = {c: i for i, c in enumerate(self._coef)}
         if self._p0 is None:
             pass
         else:
-            coefs   = {c : [1, True, -np.inf, np.inf] for c in self._coef}
-            coefs_2 = {c : False for c in self._coef} # Para evitar de substituir atribuição de parâmetros
+            coefs = {c: [1, True, -np.inf, np.inf] for c in self._coef}
+            coefs_2 = {c: False
+                       for c in self._coef
+                       }  # Para evitar de substituir atribuição de parâmetros
             for i in range(len(self._coef)):
                 try:
-                    res = re.match(r"((?P<parameter>.+?)=)?(?P<value>[\d\-\.\@]+)(\[((?P<lim_inf>.+?)?;(?P<lim_sup>.+?))\])?", self._p0[i]).groupdict()
+                    res = re.match(
+                        r"((?P<parameter>.+?)=)?(?P<value>[\d\-\.\@]+)(\[((?P<lim_inf>.+?)?;(?P<lim_sup>.+?))\])?",
+                        self._p0[i]).groupdict()
                     if res["parameter"] is not None:
                         valor = res["value"].replace("@", "")
-                        var   = res["parameter"]
-                        lim_inf = -np.inf if res["lim_inf"] is None else float(res["lim_inf"])
-                        lim_sup = np.inf if res["lim_sup"] is None else float(res["lim_sup"])
+                        var = res["parameter"]
+                        lim_inf = -np.inf if res["lim_inf"] is None else float(
+                            res["lim_inf"])
+                        lim_sup = np.inf if res["lim_sup"] is None else float(
+                            res["lim_sup"])
                         if var in coefs:
-                            coefs[var]   = [float(valor), not "@" in res["value"], lim_inf, lim_sup]
+                            coefs[var] = [
+                                float(valor), not "@" in res["value"], lim_inf,
+                                lim_sup
+                            ]
                             coefs_2[var] = True
                     else:
-                        if coefs_2[self._coef[i]] == False and self._coef[i] in coefs:
-                            lim_inf = -np.inf if res["lim_inf"] is None else float(res["lim_inf"])
-                            lim_sup = np.inf if res["lim_sup"] is None else float(res["lim_sup"])
-                            coefs[self._coef[i]]   = [float(res["value"].replace("@", "")), not "@" in res["value"], lim_inf, lim_sup]
+                        if coefs_2[self._coef[i]] == False and self._coef[
+                                i] in coefs:
+                            lim_inf = -np.inf if res[
+                                "lim_inf"] is None else float(res["lim_inf"])
+                            lim_sup = np.inf if res[
+                                "lim_sup"] is None else float(res["lim_sup"])
+                            coefs[self._coef[i]] = [
+                                float(res["value"].replace("@", "")),
+                                not "@" in res["value"], lim_inf, lim_sup
+                            ]
                             coefs_2[self._coef[i]] = True
                 except:
                     if coefs_2[self._coef[i]] == False:
-                        coefs[self._coef[i]]   = [1, True, -np.inf, np.inf]
+                        coefs[self._coef[i]] = [1, True, -np.inf, np.inf]
                         coefs_2[self._coef[i]] = True
             for i, nome in enumerate(self._coef):
-                pi[aux[nome]]    = coefs[nome][0]
+                pi[aux[nome]] = coefs[nome][0]
                 fixed[aux[nome]] = coefs[nome][1]
                 arr_lim_inf[aux[nome]] = coefs[nome][2]
                 arr_lim_sup[aux[nome]] = coefs[nome][3]
@@ -398,29 +485,51 @@ class Model(QObject):
     def __fit_ODR(self, data):
         '''Fit com ODR.'''
         pi, fixed, lim_inf, lim_sup = self.__make_parameters_odr()
+
         def f(a, x):
             param = Parameters()
             for i in range(len(a)):
-                param.add(self._model.param_names[i], value=a[i], vary = fixed[i], min = lim_inf[i], max = lim_sup[i])
-            return eval("self._model.eval(%s=x, params=param)"%self._indVar,
-             {"x": x, "param": param, "self": self})
+                param.add(self._model.param_names[i],
+                          value=a[i],
+                          vary=fixed[i],
+                          min=lim_inf[i],
+                          max=lim_sup[i])
+            return eval("self._model.eval(%s=x, params=param)" % self._indVar,
+                        {
+                            "x": x,
+                            "param": param,
+                            "self": self
+                        })
+
         model = SciPyModel(f)
         try:
-            myodr = ODR(data, model, beta0 = pi, maxit = 200, ifixb = fixed)
+            myodr = ODR(data, model, beta0=pi, maxit=200, ifixb=fixed)
             self._result = myodr.run()
         except TypeError:
-            self._msg_handler.raise_error("Expressão de ajuste escrita de forma errada. Rever função de ajuste.")
+            self._msg_handler.raise_error(
+                "Expressão de ajuste escrita de forma errada. Rever função de ajuste."
+            )
             return None
 
     def __fit_ODR_special(self, x_orig, y, sx):
         '''Fit com ODR quando só há incertezas em x.'''
         pi, fixed, lim_inf, lim_sup = self.__make_parameters_odr()
+
         def f(a, x):
             param = Parameters()
             for i in range(len(a)):
-                param.add(self._model.param_names[i], value=a[i], vary = fixed[i], min = lim_inf[i], max = lim_sup[i])
-            return eval("self._model.eval(%s=x, params=param)"%self._indVar,
-             {"x": x, "param": param, "self": self})
+                param.add(self._model.param_names[i],
+                          value=a[i],
+                          vary=fixed[i],
+                          min=lim_inf[i],
+                          max=lim_sup[i])
+            return eval("self._model.eval(%s=x, params=param)" % self._indVar,
+                        {
+                            "x": x,
+                            "param": param,
+                            "self": self
+                        })
+
         # data  = RealData(x, y, sx = sx)
         # model = SciPyModel(f)
         # try:
@@ -442,44 +551,72 @@ class Model(QObject):
         # {"x_var": x_var, "self": self})
         #     sy[i] = np.abs(y_var - y_prd).mean()
         # sy = sy.astype(float)/1000
-        x  = np.copy(x_orig)
-        sy = np.array([1e-50]*len(x), dtype = float)
-        data  = RealData(x, y, sx = sx, sy = sy)
+        x = np.copy(x_orig)
+        sy = np.array([1e-50] * len(x), dtype=float)
+        data = RealData(x, y, sx=sx, sy=sy)
         model = SciPyModel(f)
         try:
-            myodr = ODR(data, model, beta0 = pi, maxit = 100, ifixb = fixed)
+            myodr = ODR(data, model, beta0=pi, maxit=100, ifixb=fixed)
             self._result = myodr.run()
         except TypeError as e:
             print(e)
-            self._msg_handler.raise_error("Expressão de ajuste escrita de forma errada. Rever função de ajuste.")
+            self._msg_handler.raise_error(
+                "Expressão de ajuste escrita de forma errada. Rever função de ajuste."
+            )
             self._result = None
             return None
-        sy = np.zeros(len(self._data["x"]), dtype = float)
+        sy = np.zeros(len(self._data["x"]), dtype=float)
         for i, x in enumerate(self._data["x"]):
-            x_var = np.array([x + self._data["sx"].iloc[i], x - self._data["sx"].iloc[i]])
-            y_prd = eval("self._model.eval(%s = x, params = self._params)"%self._indVar, None,
-        {"x": x, "self": self})
-            y_var = eval("self._model.eval(%s = x_var, params = self._params)"%self._indVar, None,
-        {"x_var": x_var, "self": self})
+            x_var = np.array(
+                [x + self._data["sx"].iloc[i], x - self._data["sx"].iloc[i]])
+            y_prd = eval(
+                "self._model.eval(%s = x, params = self._params)" %
+                self._indVar, None, {
+                    "x": x,
+                    "self": self
+                })
+            y_var = eval(
+                "self._model.eval(%s = x_var, params = self._params)" %
+                self._indVar, None, {
+                    "x_var": x_var,
+                    "self": self
+                })
             sy[i] = np.abs(y_var - y_prd).mean()
         x_var = self._data["x"]
-        self._result.sum_square = np.sum(((eval("self._model.eval(%s = x_var, params = self._params)"%self._indVar, None,
-        {"x_var": x_var, "self": self}) - self._data["y"].to_numpy())/sy)**2)
+        self._result.sum_square = np.sum(((eval(
+            "self._model.eval(%s = x_var, params = self._params)" %
+            self._indVar, None, {
+                "x_var": x_var,
+                "self": self
+            }) - self._data["y"].to_numpy()) / sy)**2)
 
     def __fit_lm(self, x, y, sy):
         '''Fit com MMQ.'''
         self.__make_parameters_lm()
         try:
-            self._result = eval("self._model.fit(data = y, %s = x, weights = 1/sy, params = params, scale_covar=False, max_nfev = 250)"%self._indVar, None,
-            {"y": y, "x": x, "params": self._params, "self": self, "sy": sy})
+            self._result = eval(
+                "self._model.fit(data = y, %s = x, weights = 1/sy, params = params, scale_covar=False, max_nfev = 250)"
+                % self._indVar, None, {
+                    "y": y,
+                    "x": x,
+                    "params": self._params,
+                    "self": self,
+                    "sy": sy
+                })
         except ValueError:
-            self._msg_handler.raise_error("A função ajustada gera valores não numéricos, rever ajuste e/ou parâmetros inciais.")
+            self._msg_handler.raise_error(
+                "A função ajustada gera valores não numéricos, rever ajuste e/ou parâmetros inciais."
+            )
             return None
         except TypeError:
-            self._msg_handler.raise_error("A função ajustada possui algum termo inválido, rever ajuste e/ou parâmetros inciais.")
+            self._msg_handler.raise_error(
+                "A função ajustada possui algum termo inválido, rever ajuste e/ou parâmetros inciais."
+            )
             return None
         if self._result.covar is None:
-            self._msg_handler.raise_error("A função ajustada não convergiu, rever ajuste e/ou parâmetros inciais.")
+            self._msg_handler.raise_error(
+                "A função ajustada não convergiu, rever ajuste e/ou parâmetros inciais."
+            )
             self._result = None
             return None
 
@@ -487,16 +624,27 @@ class Model(QObject):
         '''Fit com MMQ quando não há incertezas.'''
         self.__make_parameters_lm()
         try:
-            self._result = eval("self._model.fit(data = y, %s = x, params = self._params, scale_covar=False, max_nfev = 250)"%self._indVar, None,
-            {"y": y, "x": x, "self": self})
+            self._result = eval(
+                "self._model.fit(data = y, %s = x, params = self._params, scale_covar=False, max_nfev = 250)"
+                % self._indVar, None, {
+                    "y": y,
+                    "x": x,
+                    "self": self
+                })
         except ValueError:
-            self._msg_handler.raise_error("A função ajustada gera valores não numéricos, rever ajuste e/ou parâmetros inciais.")
+            self._msg_handler.raise_error(
+                "A função ajustada gera valores não numéricos, rever ajuste e/ou parâmetros inciais."
+            )
             return None
         except TypeError:
-            self._msg_handler.raise_error("A função ajustada possui algum termo inválido, rever ajuste e/ou parâmetros inciais.")
+            self._msg_handler.raise_error(
+                "A função ajustada possui algum termo inválido, rever ajuste e/ou parâmetros inciais."
+            )
             return None
         if self._result.covar is None:
-            self._msg_handler.raise_error("A função ajustada não convergiu, rever ajuste e/ou parâmetros inciais.")
+            self._msg_handler.raise_error(
+                "A função ajustada não convergiu, rever ajuste e/ou parâmetros inciais."
+            )
             self._result = None
             return None
 
@@ -516,8 +664,18 @@ class Model(QObject):
         for i, param_name in enumerate(self._par_var):
             self._params.add(param_name, self._result.values[param_name])
             # self._dict.update({self._coef[i]: [self._result.values[self._coef[i]], np.sqrt(self._result.covar[i, i])*inc_cons]})
-            self._dict.update({param_name: [self._result.values[param_name], np.sqrt(self._result.covar[i, i])]})
-            self._dict_param.update({param_name: [self._result.values[param_name], np.sqrt(self._result.covar[i, i])]})
+            self._dict.update({
+                param_name: [
+                    self._result.values[param_name],
+                    np.sqrt(self._result.covar[i, i])
+                ]
+            })
+            self._dict_param.update({
+                param_name: [
+                    self._result.values[param_name],
+                    np.sqrt(self._result.covar[i, i])
+                ]
+            })
 
     def __set_param_values_lm_special(self, x):
         '''Constrói o dicionário e o Parameters dos valores do ajuste, quando não há incertezas.'''
@@ -525,17 +683,32 @@ class Model(QObject):
         self._dict2.clear()
         self._dict_param.clear()
         self._params = Parameters()
-        ngl          = len(x) - self._result.nvarys
-        inc_cons     = np.sqrt(self._result.chisqr/ngl)
+        ngl = len(x) - self._result.nvarys
+        inc_cons = np.sqrt(self._result.chisqr / ngl)
         self._par_var = []
         for i in list(self._result.params.keys()):
             if self._result.params[i].vary:
                 self._par_var.append(i)
         for i, param_name in enumerate(self._par_var):
             self._params.add(param_name, self._result.values[param_name])
-            self._dict.update({param_name: [self._result.values[param_name], np.sqrt(self._result.covar[i, i])*inc_cons]})
-            self._dict2.update({param_name: [self._result.values[param_name], np.sqrt(self._result.covar[i, i])]})
-            self._dict_param.update({param_name: [self._result.values[param_name], np.sqrt(self._result.covar[i, i])*inc_cons]})
+            self._dict.update({
+                param_name: [
+                    self._result.values[param_name],
+                    np.sqrt(self._result.covar[i, i]) * inc_cons
+                ]
+            })
+            self._dict2.update({
+                param_name: [
+                    self._result.values[param_name],
+                    np.sqrt(self._result.covar[i, i])
+                ]
+            })
+            self._dict_param.update({
+                param_name: [
+                    self._result.values[param_name],
+                    np.sqrt(self._result.covar[i, i]) * inc_cons
+                ]
+            })
 
     def __set_param_values_ODR(self, x):
         '''Constrói o dicionário e o Parameters dos valores do ajuste.'''
@@ -544,79 +717,99 @@ class Model(QObject):
         self._params = Parameters()
         for i in range(len(self._coef)):
             self._params.add(self._coef[i], self._result.beta[i])
-            self._dict.update({self._coef[i]: [self._result.beta[i], np.sqrt(self._result.cov_beta[i, i])]})
+            self._dict.update({
+                self._coef[i]:
+                [self._result.beta[i],
+                 np.sqrt(self._result.cov_beta[i, i])]
+            })
             self._dict_param.update({self._coef[i]: self._dict[self._coef[i]]})
 
     def __set_report_lm(self, x):
         '''Constrói a string com os resultados.'''
-        self._report_fit  = ""
-        self._report_fit += "\nAjuste: y = %s\n"%self._exp_model
-        self._report_fit += "\nNGL  = %d"%(len(x) - self._result.nvarys)
-        self._report_fit += "\nChi² = %f\n"%self._result.chisqr
-        self._mat_cov     = self._result.covar
-        self._report_fit += "\nMatriz de covariância:\n\n" + self.matprint(self._result.covar) + "\n"
-        lista             = list(self._params.keys())
-        matriz_corr       = np.zeros((len(self._result.covar), len(self._result.covar)))
-        z                 = range(len(matriz_corr))
+        self._report_fit = ""
+        self._report_fit += "\nAjuste: y = %s\n" % self._exp_model
+        self._report_fit += "\nNGL  = %d" % (len(x) - self._result.nvarys)
+        self._report_fit += "\nChi² = %f\n" % self._result.chisqr
+        self._mat_cov = self._result.covar
+        self._report_fit += "\nMatriz de covariância:\n\n" + self.matprint(
+            self._result.covar) + "\n"
+        lista = list(self._params.keys())
+        matriz_corr = np.zeros(
+            (len(self._result.covar), len(self._result.covar)))
+        z = range(len(matriz_corr))
         for i in z:
             for j in z:
-                matriz_corr[i, j] = self._result.covar[i, j]/(self._dict[lista[i]][1]*self._dict[lista[j]][1])
-        self._mat_corr    = matriz_corr.round(3)
-        self._report_fit += "\nMatriz de correlação:\n\n" + self.matprint(self._mat_corr, ".3f") + "\n\n"
-        self._report_fit += self.paramsPrint()
+                matriz_corr[i, j] = self._result.covar[i, j] / (
+                    self._dict[lista[i]][1] * self._dict[lista[j]][1])
+        self._mat_corr = matriz_corr.round(3)
+        self._report_fit += "\nMatriz de correlação:\n\n" + self.matprint(
+            self._mat_corr, ".3f") + "\n\n"
+        self._report_fit += self.params_print()
         self._report_fit += "\n"
-        self._isvalid     = True
+        self._isvalid = True
 
     def __set_report_lm_special(self, x):
         '''Constrói a string com os resultados, neste caso quando não há incertezas.'''
-        ngl               = len(x) - self._result.nvarys
-        inc_considerada   = np.sqrt(self._result.chisqr/ngl)
+        ngl = len(x) - self._result.nvarys
+        inc_considerada = np.sqrt(self._result.chisqr / ngl)
         inc_considerada_q = inc_considerada**2
-        self._report_fit  = ""
-        self._report_fit += "\nAjuste: y = %s\n"%self._exp_model
-        self._report_fit += "\nNGL  = %d"%(ngl)
-        self._report_fit += "\nSomatória dos resíduos absolutos ao quadrado = %f\n"%self._result.chisqr
-        self._report_fit += "Incerteza considerada = %f\n"%inc_considerada
+        self._report_fit = ""
+        self._report_fit += "\nAjuste: y = %s\n" % self._exp_model
+        self._report_fit += "\nNGL  = %d" % (ngl)
+        self._report_fit += "\nSomatória dos resíduos absolutos ao quadrado = %f\n" % self._result.chisqr
+        self._report_fit += "Incerteza considerada = %f\n" % inc_considerada
         try:
-            self._mat_cov     = self._result.covar*inc_considerada_q
-            self._report_fit += "\nMatriz de covariância:\n\n" + self.matprint(self._mat_cov) + "\n"
-            lista             = list(self._params.keys())
-            matriz_corr       = np.zeros((len(self._result.covar), len(self._result.covar)))
-            z                 = range(len(matriz_corr))
+            self._mat_cov = self._result.covar * inc_considerada_q
+            self._report_fit += "\nMatriz de covariância:\n\n" + self.matprint(
+                self._mat_cov) + "\n"
+            lista = list(self._params.keys())
+            matriz_corr = np.zeros(
+                (len(self._result.covar), len(self._result.covar)))
+            z = range(len(matriz_corr))
             for i in z:
                 for j in z:
-                    matriz_corr[i, j] = self._result.covar[i, j]/(self._dict2[lista[i]][1]*self._dict2[lista[j]][1])
-            self._mat_corr    = matriz_corr.round(3)
-            self._report_fit += "\nMatriz de correlação:\n\n" + self.matprint(self._mat_corr, ".3f") + "\n\n"
-            self._report_fit += self.paramsPrint2(inc_considerada)
+                    matriz_corr[i, j] = self._result.covar[i, j] / (
+                        self._dict2[lista[i]][1] * self._dict2[lista[j]][1])
+            self._mat_corr = matriz_corr.round(3)
+            self._report_fit += "\nMatriz de correlação:\n\n" + self.matprint(
+                self._mat_corr, ".3f") + "\n\n"
+            self._report_fit += self.params_print2(inc_considerada)
             self._report_fit += "\n"
-            self._isvalid     = True
+            self._isvalid = True
         except TypeError:
-            self._msg_handler.raise_error("A função ajustada provavelmente não possui parâmetros para serem ajustados. Rever ajuste.")
+            self._msg_handler.raise_error(
+                "A função ajustada provavelmente não possui parâmetros para serem ajustados. Rever ajuste."
+            )
             return None
 
     def __set_report_ODR(self, x):
         '''Constrói a string com os resultados.'''
-        self._report_fit  = ""
-        self._report_fit += "\nAjuste: y = %s\n"%self._exp_model
-        self._report_fit += "\nNGL  = %d"%(len(x) - len(self._par_var))
-        self._report_fit += "\nChi² = %f\n"%self._result.sum_square
-        self._mat_cov     = self._result.cov_beta
-        self._report_fit += "\nMatriz de covariância:\n\n" + self.matprint(self._result.cov_beta) + "\n"
-        lista             = list(self._params.keys())
-        matriz_corr       = np.zeros((len(self._result.cov_beta), len(self._result.cov_beta)), dtype = float)
-        z                 = range(len(matriz_corr))
+        self._report_fit = ""
+        self._report_fit += "\nAjuste: y = %s\n" % self._exp_model
+        self._report_fit += "\nNGL  = %d" % (len(x) - len(self._par_var))
+        self._report_fit += "\nChi² = %f\n" % self._result.sum_square
+        self._mat_cov = self._result.cov_beta
+        self._report_fit += "\nMatriz de covariância:\n\n" + self.matprint(
+            self._result.cov_beta) + "\n"
+        lista = list(self._params.keys())
+        matriz_corr = np.zeros(
+            (len(self._result.cov_beta), len(self._result.cov_beta)),
+            dtype=float)
+        z = range(len(matriz_corr))
         for i in z:
             for j in z:
-                if self._dict[lista[i]][1] == 0 or self._dict[lista[j]][1] == 0:
+                if self._dict[lista[i]][1] == 0 or self._dict[
+                        lista[j]][1] == 0:
                     matriz_corr[i, j] = np.nan
                 else:
-                    matriz_corr[i, j] = self._result.cov_beta[i, j]/(self._dict[lista[i]][1]*self._dict[lista[j]][1])
-        self._mat_corr    = matriz_corr.round(3)
-        self._report_fit += "\nMatriz de correlação:\n\n" + self.matprint(self._mat_corr, ".3f") + "\n\n"
-        self._report_fit += self.paramsPrint()
+                    matriz_corr[i, j] = self._result.cov_beta[i, j] / (
+                        self._dict[lista[i]][1] * self._dict[lista[j]][1])
+        self._mat_corr = matriz_corr.round(3)
+        self._report_fit += "\nMatriz de correlação:\n\n" + self.matprint(
+            self._mat_corr, ".3f") + "\n\n"
+        self._report_fit += self.params_print()
         self._report_fit += "\n"
-        self._isvalid     = True
+        self._isvalid = True
 
     @property
     def coefficients(self):
@@ -642,15 +835,16 @@ class Model(QObject):
     @property
     def data(self, *args):
         '''Retorna x, y, sx e sy.'''
-        return self._data["x"], self._data["y"], self._data["sy"], self._data["sx"]
+        return self._data["x"], self._data["y"], self._data["sy"], self._data[
+            "sx"]
 
     @property
     def residuo(self):
         '''Retorna os valores de y_i - f(x_i).'''
-        return self._data["y"] - self._model.eval(x = self._data["x"].to_numpy())
+        return self._data["y"] - self._model.eval(x=self._data["x"].to_numpy())
 
     @property
-    def residuoDummy(self):
+    def residuo_dummy(self):
         '''Retorna os valores de y_i - f(x_i).'''
         # self._coef = [i for i in self._model.param_names]
         # If there's no p0, everything is set to 1.0
@@ -672,57 +866,94 @@ class Model(QObject):
         # print(self._data["x"])
         # print(self._params)
         # print(self._model.eval(x = self._data['x'].to_numpy(), params = self._params))
-        y = eval("self._model.eval(%s = self._data['x'].to_numpy(), params = self._params)"%self._indVar, None,
-        {"self": self})
+        y = eval(
+            "self._model.eval(%s = self._data['x'].to_numpy(), params = self._params)"
+            % self._indVar, None, {"self": self})
         # print(y)
         # return self._data["y"].to_numpy() - eval("self._model.eval(%s = self._data['x'], params = self._params)"%self._indVar, None,
         # {"self": self})
         return self._data["y"].to_numpy() - y
 
-    def get_predict(self, fig, x_min = None, x_max = None):
+    def get_predict(self, fig, x_min=None, x_max=None):
         '''Retorna a previsão do modelo.'''
-        x_plot = np.linspace(x_min, x_max, int(fig.get_size_inches()[0]*fig.dpi*1.75))
-        return x_plot, eval("self._model.eval(%s = x_plot, params = self._params)"%self._indVar, None,
-        {"x_plot": x_plot, "self": self})
+        x_plot = np.linspace(x_min, x_max,
+                             int(fig.get_size_inches()[0] * fig.dpi * 1.75))
+        return x_plot, eval(
+            "self._model.eval(%s = x_plot, params = self._params)" %
+            self._indVar, None, {
+                "x_plot": x_plot,
+                "self": self
+            })
 
-    def get_predict_log(self, fig, x_min = None, x_max = None):
+    def get_predict_log(self, fig, x_min=None, x_max=None):
         '''Retorna a previsão do modelo.'''
-        x_plot = np.logspace(np.log10(x_min), np.log10(x_max), int(fig.get_size_inches()[0]*fig.dpi*2.1))
-        return x_plot, eval("self._model.eval(%s = x_plot, params = self._params)"%self._indVar, None,
-        {"x_plot": x_plot, "self": self})
+        x_plot = np.logspace(np.log10(x_min), np.log10(x_max),
+                             int(fig.get_size_inches()[0] * fig.dpi * 2.1))
+        return x_plot, eval(
+            "self._model.eval(%s = x_plot, params = self._params)" %
+            self._indVar, None, {
+                "x_plot": x_plot,
+                "self": self
+            })
 
     def predictInc(self, wsx):
         if self._has_sx and (wsx == False) and self._has_sy:
-            sy = np.zeros(len(self._data["x"]), dtype = float)
+            sy = np.zeros(len(self._data["x"]), dtype=float)
             for i, x in enumerate(self._data["x"]):
-                x_var = np.array([x + self._data["sx"].iloc[i], x - self._data["sx"].iloc[i]])
-                y_prd = eval("self._model.eval(%s = x, params = self._params)"%self._indVar, None,
-            {"x": x, "self": self})
-                y_var = eval("self._model.eval(%s = x_var, params = self._params)"%self._indVar, None,
-            {"x_var": x_var, "self": self})
+                x_var = np.array([
+                    x + self._data["sx"].iloc[i], x - self._data["sx"].iloc[i]
+                ])
+                y_prd = eval(
+                    "self._model.eval(%s = x, params = self._params)" %
+                    self._indVar, None, {
+                        "x": x,
+                        "self": self
+                    })
+                y_var = eval(
+                    "self._model.eval(%s = x_var, params = self._params)" %
+                    self._indVar, None, {
+                        "x_var": x_var,
+                        "self": self
+                    })
                 sy[i] = np.abs(y_var - y_prd).mean()
                 sy[i] = np.sqrt(self._data["sy"].iloc[i]**2 + sy[i]**2)
             return sy
         elif self._has_sx and (wsx == False) and self._has_sy == False:
-            sy = np.zeros(len(self._data["x"]), dtype = float)
+            sy = np.zeros(len(self._data["x"]), dtype=float)
             for i, x in enumerate(self._data["x"]):
-                x_var = np.array([x + self._data["sx"].iloc[i], x - self._data["sx"].iloc[i]])
-                y_prd = eval("self._model.eval(%s = x, params = self._params)"%self._indVar, None,
-            {"x": x, "self": self})
-                y_var = eval("self._model.eval(%s = x_var, params = self._params)"%self._indVar, None,
-            {"x_var": x_var, "self": self})
+                x_var = np.array([
+                    x + self._data["sx"].iloc[i], x - self._data["sx"].iloc[i]
+                ])
+                y_prd = eval(
+                    "self._model.eval(%s = x, params = self._params)" %
+                    self._indVar, None, {
+                        "x": x,
+                        "self": self
+                    })
+                y_var = eval(
+                    "self._model.eval(%s = x_var, params = self._params)" %
+                    self._indVar, None, {
+                        "x_var": x_var,
+                        "self": self
+                    })
                 sy[i] = np.abs(y_var - y_prd).mean()
             return sy
         return self._data["sy"]
 
     def createDummyModel(self):
         try:
-            self._model = ExpressionModel(self._exp_model + " + 0*%s"%self._indVar, independent_vars=[self._indVar])
+            self._model = ExpressionModel(self._exp_model +
+                                          " + 0*%s" % self._indVar,
+                                          independent_vars=[self._indVar])
         except ValueError:
-            self._msg_handler.raise_error("Expressão de ajuste escrita de forma errada. Rever função de ajuste.")
+            self._msg_handler.raise_error(
+                "Expressão de ajuste escrita de forma errada. Rever função de ajuste."
+            )
             return None
         except SyntaxError:
-            self._msg_handler.raise_error("Expressão de ajuste escrita de forma errada. Rever função de ajuste.")
+            self._msg_handler.raise_error(
+                "Expressão de ajuste escrita de forma errada. Rever função de ajuste."
+            )
             return None
         self._coef = [i for i in self._model.param_names]
         self.__make_parameters_lm()
@@ -751,72 +982,77 @@ class Model(QObject):
         #                 coefs_2[self._coef[i]] = True
         #     for nome in coefs.keys():
         #         self._params.add(nome, coefs[nome][0], vary = coefs[nome][1])
-            # coefs   = {c : [1, True] for c in self._coef}
-            # coefs_2 = {c : False for c in self._coef} # Para evitar de substituir atribuição de parâmetros
-            # for i in range(len(self._coef)):
-            #     try:
-            #         p_i = self._p0[i].split("=")
-            #         if len(p_i) == 2:
-            #             if "@" in p_i[1]:
-            #                 p_i[1] = p_i[1].replace("@", "")
-            #                 var = p_i[0].strip()
-            #                 if var in coefs:
-            #                     coefs[var] = [float(p_i[1].strip()), False]
-            #                     coefs_2[var] = True
-            #             else:
-            #                 var = p_i[0].strip()
-            #                 if var in coefs:
-            #                     coefs[var]   = [float(p_i[1].strip()), True]
-            #                     coefs_2[var] = True
-            #         else:
-            #             if "@" in self._p0[i]:
-            #                 if coefs_2[self._coef[i]] == False:
-            #                     coefs[self._coef[i]]   = [float(self._p0[i].replace("@", "")), False]
-            #                     coefs_2[self._coef[i]] = True
-            #             else:
-            #                 if self._coef[i] in coefs and coefs_2[self._coef[i]] == False:
-            #                     coefs[self._coef[i]]   = [float(self._p0[i]), True]
-            #                     coefs_2[self._coef[i]] = True
-            #     except:
-            #         if coefs_2[self._coef[i]] == False:
-            #             coefs[self._coef[i]]   = [1, True]
-            #             coefs_2[self._coef[i]] = True
-            # for nome in coefs.keys():
-            #     self._params.add(nome, coefs[nome][0], vary = coefs[nome][1])
+        # coefs   = {c : [1, True] for c in self._coef}
+        # coefs_2 = {c : False for c in self._coef} # Para evitar de substituir atribuição de parâmetros
+        # for i in range(len(self._coef)):
+        #     try:
+        #         p_i = self._p0[i].split("=")
+        #         if len(p_i) == 2:
+        #             if "@" in p_i[1]:
+        #                 p_i[1] = p_i[1].replace("@", "")
+        #                 var = p_i[0].strip()
+        #                 if var in coefs:
+        #                     coefs[var] = [float(p_i[1].strip()), False]
+        #                     coefs_2[var] = True
+        #             else:
+        #                 var = p_i[0].strip()
+        #                 if var in coefs:
+        #                     coefs[var]   = [float(p_i[1].strip()), True]
+        #                     coefs_2[var] = True
+        #         else:
+        #             if "@" in self._p0[i]:
+        #                 if coefs_2[self._coef[i]] == False:
+        #                     coefs[self._coef[i]]   = [float(self._p0[i].replace("@", "")), False]
+        #                     coefs_2[self._coef[i]] = True
+        #             else:
+        #                 if self._coef[i] in coefs and coefs_2[self._coef[i]] == False:
+        #                     coefs[self._coef[i]]   = [float(self._p0[i]), True]
+        #                     coefs_2[self._coef[i]] = True
+        #     except:
+        #         if coefs_2[self._coef[i]] == False:
+        #             coefs[self._coef[i]]   = [1, True]
+        #             coefs_2[self._coef[i]] = True
+        # for nome in coefs.keys():
+        #     self._params.add(nome, coefs[nome][0], vary = coefs[nome][1])
         self._isvalid = True
 
     def matprint(self, mat, fmt="f"):
-        col_maxes = [max([len(("{:"+fmt+"}").format(x)) for x in col]) for col in mat.T]
-        matrix    = ""
+        col_maxes = [
+            max([len(("{:" + fmt + "}").format(x)) for x in col])
+            for col in mat.T
+        ]
+        matrix = ""
         for x in mat:
             for i, y in enumerate(x):
-                matrix += ("{:"+str(col_maxes[i])+fmt+"}").format(y) + "  "
+                matrix += ("{:" + str(col_maxes[i]) + fmt +
+                           "}").format(y) + "  "
             matrix += "\n"
         return matrix
 
-    def paramsPrint(self):
-        df         = pd.DataFrame(self._dict)
-        df         = df.transpose()
+    def params_print(self):
+        df = pd.DataFrame(self._dict)
+        df = df.transpose()
         df.columns = ["Valor", "|    Incerteza"]
         try:
-            df.index   = self._coef
+            df.index = self._coef
         except:
-            df.index   = self._par_var
+            df.index = self._par_var
         return str(df)
 
-    def paramsPrint2(self, inc_considerada):
-        df         = pd.DataFrame(self._dict2).transpose()
+    def params_print2(self, inc_considerada):
+        df = pd.DataFrame(self._dict2).transpose()
         df.columns = ["Valor", "|    Incerteza"]
-        df["|    Incerteza"] = df["|    Incerteza"]*inc_considerada
-        df.index   = self._par_var
+        df["|    Incerteza"] = df["|    Incerteza"] * inc_considerada
+        df.index = self._par_var
         return str(df)
 
-    def paramsPrint3(self):
-        df         = pd.DataFrame(self._dict, columns = ["Valor", "Incerteza"]).transpose()
+    def params_print3(self):
+        df = pd.DataFrame(self._dict, columns=["Valor",
+                                               "Incerteza"]).transpose()
         try:
-            df.index   = self._coef
+            df.index = self._coef
         except:
-            df.index   = self._par_var
+            df.index = self._par_var
         return df
 
     @pyqtSlot(str, str, bool)
@@ -835,15 +1071,20 @@ class Model(QObject):
         }
         try:
             if header:
-                pd.DataFrame(self._dict_param, index = ["Valor", "Incerteza"]).transpose().to_clipboard(sep=sep_columns[sep], decimal=sep_decimal[decimal])
+                pd.DataFrame(self._dict_param,
+                             index=["Valor",
+                                    "Incerteza"]).transpose().to_clipboard(
+                                        sep=sep_columns[sep],
+                                        decimal=sep_decimal[decimal])
             else:
                 df = pd.DataFrame.from_dict(self._dict_param, orient="index")
-                df.columns = [""]*len(df.columns)
-                df.to_clipboard(sep=sep_columns[sep], decimal=sep_decimal[decimal])
+                df.columns = [""] * len(df.columns)
+                df.to_clipboard(sep=sep_columns[sep],
+                                decimal=sep_decimal[decimal])
 
         except:
-            self._msg_handler.raise_error("Não foi possível copiar para a área de transferência.")
-
+            self._msg_handler.raise_error(
+                "Não foi possível copiar para a área de transferência.")
 
     @pyqtSlot(str, str)
     def copyCovarianceClipboard(self, sep, decimal):
@@ -860,9 +1101,14 @@ class Model(QObject):
             ";": ";"
         }
         try:
-            pd.DataFrame(self._mat_cov).to_clipboard(sep=sep_columns[sep], decimal=sep_decimal[decimal], index=False, header=False)
+            pd.DataFrame(self._mat_cov).to_clipboard(
+                sep=sep_columns[sep],
+                decimal=sep_decimal[decimal],
+                index=False,
+                header=False)
         except:
-            self._msg_handler.raise_error("Não foi possível copiar para a área de transferência.")
+            self._msg_handler.raise_error(
+                "Não foi possível copiar para a área de transferência.")
 
     @pyqtSlot(str, str)
     def copyCorrelationClipboard(self, sep, decimal):
@@ -879,26 +1125,31 @@ class Model(QObject):
             ";": ";"
         }
         try:
-            pd.DataFrame(self._mat_corr).to_clipboard(sep=sep_columns[sep], decimal=sep_decimal[decimal], index=False, header=False)
+            pd.DataFrame(self._mat_corr).to_clipboard(
+                sep=sep_columns[sep],
+                decimal=sep_decimal[decimal],
+                index=False,
+                header=False)
         except:
-            self._msg_handler.raise_error("Não foi possível copiar para a área de transferência.")
+            self._msg_handler.raise_error(
+                "Não foi possível copiar para a área de transferência.")
 
     def reset(self):
-        self._data       = None
-        self._data_json  = None
-        self._exp_model  = ""
-        self._model      = None
+        self._data = None
+        self._data_json = None
+        self._exp_model = ""
+        self._model = None
         self._report_fit = ""
-        self._result     = None
-        self._coef       = []
-        self._params     = Parameters()
-        self._dict       = {}
-        self._dict2      = {}
-        self._p0         = None
-        self.xmin_adj    = 0.
-        self.xmax_adj    = 0.
-        self._mode       = 0
-        self._has_data   = False
-        self._isvalid    = False
-        self._has_sx     = True
-        self._has_sy     = True
+        self._result = None
+        self._coef = []
+        self._params = Parameters()
+        self._dict = {}
+        self._dict2 = {}
+        self._p0 = None
+        self.xmin_adj = 0.
+        self.xmax_adj = 0.
+        self._mode = 0
+        self._has_data = False
+        self._isvalid = False
+        self._has_sx = True
+        self._has_sy = True
