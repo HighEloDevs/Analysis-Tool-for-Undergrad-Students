@@ -79,7 +79,8 @@ class Canvas(QObject):
             "eixo_x" : 12,
             "eixo_y" : 12,
         }
-
+        self.user_alpha_outliers = 0.25
+        self.user_color_outliers = None
         # This is used to display the coordinates of the mouse in the window
         self._coordinates = ""
 
@@ -221,6 +222,11 @@ class Canvas(QObject):
         if log_x:
             self.axes1.set_xscale("log")
         plt.setp(self.axes1.get_xticklabels(), visible=False)
+
+    def plot_error_bar(self, x, y, kargs_errorbar, alpha, sy= None, sx = None, y_r = None, ssy = None):
+        self.axes1.errorbar(x, y, yerr=sy, xerr=sx, alpha = alpha, **kargs_errorbar)
+        if y_r is not None:
+            self.axes2.errorbar(x, y_r, yerr=ssy, alpha = alpha, **kargs_errorbar)
 
     def set_tight_layout(self):
         self.figure.subplots_adjust(left=self.left,
