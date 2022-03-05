@@ -409,8 +409,8 @@ class Canvas(QObject):
     @pyqtSlot(str)
     def set_legend_position(self, position):
         self.legend_loc = self.legend_loc_dict[position]
-        h, l = self.axes1.get_legend_handles_labels()
-        if len(h) > 0:
+        if self.axes1.get_legend():
+            h, l = self.axes1.get_legend_handles_labels()
             self.axes1.legend(h, l, loc=self.legend_loc,
                  fontsize=self.font_sizes["legenda"])
 
