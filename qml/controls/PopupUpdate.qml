@@ -178,6 +178,7 @@ Popup {
                     }
                 }
 
+                // Update content
                 ScrollView{
                     Layout.fillWidth: true
                     Layout.fillHeight: true
@@ -206,14 +207,15 @@ Popup {
                 Rectangle{
                     height: 50
                     Layout.fillWidth: true
+                    color: '#1e1e1e'
                     Rectangle{
-                        visible: platform !== "Windows"
+                        visible: platform != "Windows"
                         anchors.fill: parent
-                        color: '#1e1e1e'
+                        color: "transparent"
                         TextEdit{
                             anchors.centerIn: parent
-                            text: "pip install atus --update"
-                            font.pixelSize: 18
+                            text: "pip install atus --upgrade"
+                            font.pixelSize: 16
                             font.weight: Font.ExtraLight
                             color: '#ffffff'
                             readOnly: true

@@ -500,6 +500,22 @@ Item{
             }
         }
         IconButton{
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.right: parent.right
+            anchors.rightMargin: 30
+            width: 18
+            height: 18
+            iconWidth: 16
+            primaryColor: 'transparent'
+            hoverColor: 'transparent'
+            clickColor: 'transparent'
+            iconUrl: '../../images/icons/content_copy_black_24dp.svg'
+
+            onClicked: {
+                singlePlot.export_data_clipboard(dataShaped)
+            }
+        }
+        IconButton{
             id: lockBtn
             anchors.verticalCenter: parent.verticalCenter
             anchors.right: parent.right

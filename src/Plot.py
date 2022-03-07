@@ -94,10 +94,6 @@ class SinglePlot(QObject):
         canvasProps = plotData['canvasProps']
         dataProps   = plotData['dataProps']
         fitProps    = plotData['fitProps']
-        # for i in ["xmin", "xmax", "ymin", "ymax", "resmin", "resmax"]:
-        #     canvasProps[i] = self.make_float(canvasProps[i])
-        # for i in ["xdiv", "ydiv"]:
-        #     canvasProps[i] = self.make_int(canvasProps[i])
 
         # Loading data from the table
         self.model.loadDataTable(plotData['data'])
@@ -660,3 +656,13 @@ class SinglePlot(QObject):
         s, x, y, x_area, y_area, title, xlabel, ylabel = interpreter_calculator(functionDict[function], methodDict[opt1], nc, ngl, mean, std)
         plot(self.canvas, x, y, x_area, y_area, title, xlabel, ylabel)
         self.write_calculator.emit(s)
+
+    @pyqtSlot(QJsonValue)
+    def export_data_clipboard(self, data):
+        df = pd.DataFrame.from_records(data.toVariant())
+        df.columns = ['x', 'y', 'sy', 'sx', 'bool']
+        del df['bool']
+        df.to_clipboard(index=False)
+
+        self.msg.raise_success("Dados copiados para área de transferência.")
+         
