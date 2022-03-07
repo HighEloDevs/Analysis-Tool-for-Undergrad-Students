@@ -183,7 +183,7 @@ Popup {
                     Layout.fillWidth: true
                     focusColor: Colors.mainColor2
                     textHolder: ""
-                    text: "10"
+                    text: "12"
                     title: "Título (px)"
                     textColor: "#fff"
                     defaultColor: "#fff"
@@ -195,7 +195,7 @@ Popup {
                     Layout.fillWidth: true
                     focusColor: Colors.mainColor2
                     textHolder: ""
-                    text: "10"
+                    text: "12"
                     title: "Eixo x (px)"
                     textColor: "#fff"
                     defaultColor: "#fff"
@@ -207,7 +207,7 @@ Popup {
                     Layout.fillWidth: true
                     focusColor: Colors.mainColor2
                     textHolder: ""
-                    text: "10"
+                    text: "12"
                     title: "Eixo y (px)"
                     textColor: "#fff"
                     defaultColor: "#fff"
@@ -219,7 +219,7 @@ Popup {
                     Layout.fillWidth: true
                     focusColor: Colors.mainColor2
                     textHolder: ""
-                    text: "10"
+                    text: "12"
                     title: "Resíduos (px)"
                     textColor: "#fff"
                     defaultColor: "#fff"
@@ -231,7 +231,7 @@ Popup {
                     Layout.fillWidth: true
                     focusColor: Colors.mainColor2
                     textHolder: ""
-                    text: "10"
+                    text: "12"
                     title: "Legenda (px)"
                     textColor: "#fff"
                     defaultColor: "#fff"
@@ -300,6 +300,13 @@ Popup {
                     paddingBottom.text = defaultValues[1]
                     paddingLeft.text   = defaultValues[2]
                     paddingRight.text  = defaultValues[3]
+                    titleSize.text = "12"
+                    xsize.text = "12"
+                    ysize.text = "12"
+                    residualsSize.text = "12"
+                    captionSize.text = "12"
+                    dpi.text = "500"
+                    legendPos.currentIndex = legendPos.find("Automático")
                 }
             }
             TextButton{

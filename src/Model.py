@@ -81,6 +81,7 @@ class Model(QObject):
         self._isvalid = False
         self._has_sx = True
         self._has_sy = True
+        self._indices = []
 
     def __str__(self):
         return self._report_fit
@@ -290,12 +291,12 @@ class Model(QObject):
         self._coef = [i for i in self._model.param_names]
         # Data
         x, y, sy, sx = self.data
-        indices = np.arange(len(self._data.index))
+        self._indices = np.arange(len(self._data.index))
         if self.xmin != self.xmax:
-            indices = np.where((self.xmin <= self._data["x"])
+            self._indices = np.where((self.xmin <= self._data["x"])
                                & (self.xmax >= self._data["x"]))[0]
-        x, y, sy, sx = x.iloc[indices].to_numpy(), y.iloc[indices].to_numpy(
-        ), sy.iloc[indices].to_numpy(), sx.iloc[indices].to_numpy()
+        x, y, sy, sx = x.iloc[self._indices].to_numpy(), y.iloc[self._indices].to_numpy(
+        ), sy.iloc[self._indices].to_numpy(), sx.iloc[self._indices].to_numpy()
         data = None
         if self._has_sy and self._has_sx:  # Caso com as duas incs
             if wsx == True and wsy == True:
@@ -586,7 +587,7 @@ class Model(QObject):
         self._result.sum_square = np.sum(((eval(
             "self._model.eval(%s = x_var, params = self._params)" %
             self._indVar, None, {
-                "x_var": x_var,
+                "x_var": x_var.to_numpy(),
                 "self": self
             }) - self._data["y"].to_numpy()) / sy)**2)
 
@@ -884,6 +885,16 @@ class Model(QObject):
                 "x_plot": x_plot,
                 "self": self
             })
+
+    @property
+    def inliers(self):
+        '''Retorna os pontos usados no ajuste.'''
+        return self._indices
+
+    @property
+    def outliers(self):
+        '''Retorna os pontos não usados no ajuste.'''
+        return np.array(list(set(np.arange(len(self._data))) - set(self._indices)))
 
     def get_predict_log(self, fig, x_min=None, x_max=None):
         '''Retorna a previsão do modelo.'''

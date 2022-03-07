@@ -25,6 +25,7 @@ SOFTWARE.
 
 from PyQt5.QtCore import QObject, QJsonValue, QUrl, pyqtSignal, pyqtSlot
 from src.Calculators import interpreter_calculator, plot
+from matplotlib import colors
 import numpy as np
 import pandas as pd
 import json
@@ -127,6 +128,18 @@ class SinglePlot(QObject):
 
         # Setting style of the plot
         self.plot(self.model, canvasProps, fitProps, dataProps)
+
+    def plot_in_out(self, x_i, y_i, x_o, y_o, kargs_errorbar, y_ri = None, y_ro = None, sy_i = None, sy_o = None, sx_i = None, sx_o = None, ssy_i = None, ssy_o = None):
+        '''Macro para o plot dos ditos inliers e outliers de um ajuste.'''
+        self.canvas.plot_error_bar(x_i, y_i, kargs_errorbar,
+            alpha = 1, sy = sy_i, sx = sx_i, y_r = y_ri, ssy = ssy_i)
+        if self.canvas.user_color_outliers is not None:
+            kargs_errorbar["ecolor"] = self.canvas.user_color_outliers
+            kargs_errorbar["c"] = self.canvas.user_color_outliers
+        self.canvas.plot_error_bar(x_o, y_o, kargs_errorbar,
+            alpha = self.canvas.user_alpha_outliers, sy = sy_o,
+            y_r = y_ro, sx = sx_o, ssy = ssy_o)
+
     
     def plot(self, model, canvas_props, fit_props, data_props):
         self.canvas.set_tight_layout()
@@ -188,7 +201,7 @@ class SinglePlot(QObject):
                                "elinewidth" : 1,
                                "ms" : symbol_size,
                                "marker" : symbol,
-                               "color" : symbol_color,
+                               "c" : symbol_color,
                                "ls" : "none"}
 
             # Plotting if the model is valid
@@ -198,62 +211,49 @@ class SinglePlot(QObject):
 
                 # Getting data
                 x, y, sy, sx = model.data
+                inliers, outliers = model.inliers, model.outliers
+                x_i, y_i, sy_i, sx_i = x[inliers], y[inliers], sy[inliers], sx[inliers]
+                x_o, y_o, sy_o, sx_o = x[outliers], y[outliers], sy[outliers], sx[outliers]
+                # alphas = np.array([list(colors.to_rgba(symbol_color))]*len(x))
+                # alphas[model.indices.astype(int), 3] = self.canvas.user_alpha_outliers
+                # kargs_errorbar["c"] = alphas
+                # kargs_errorbar["ecolor"] = alphas
+                # out = np.array([set(np.arange(len(x))) - set(indices)], dtype = int)
                 y_r = None
                 if fit_props["adjust"]:
                     y_r = model.residuo
+                    y_ri = y_r[inliers]
+                    y_ro = y_r[outliers]
                 else:
                     y_r = model.residuo_dummy
                 if residuals:
                     self.canvas.switch_axes(hide_axes2=False)
                     if sigma_x and sigma_y:  # Caso considerar as duas incertezas
                         ssy = model.predictInc(not sigma_x)
-                        self.canvas.axes1.errorbar(x, y, yerr=sy, xerr=sx, **kargs_errorbar)
-                        self.canvas.axes2.errorbar(
-                            x,
-                            y_r,
-                            yerr=ssy,
-                            **kargs_errorbar
-                        )
+                        ssy_i = ssy[inliers]
+                        ssy_o = ssy[outliers]
+                        self.plot_in_out(x_i, y_i, x_o, y_o,
+                         kargs_errorbar, y_ri = y_ri, y_ro = y_ro, sy_i = sy_i,
+                         sy_o = sy_o, sx_i = sx_i, sx_o = sx_o,
+                         ssy_i = ssy_i, ssy_o = ssy_o)
                     elif (sigma_x is False
                           and sigma_y is False):  # Caso desconsiderar as duas
-                        self.canvas.axes1.errorbar(
-                            x,
-                            y,
-                            **kargs_errorbar
-                        )
-                        self.canvas.axes2.errorbar(
-                            x,
-                            y_r,
-                            **kargs_errorbar
-                        )
+                        self.plot_in_out(x_i, y_i, x_o, y_o, kargs_errorbar,
+                        y_ri = y_ri, y_ro = y_ro)
                     elif sigma_x is False and sigma_y is True:  # Caso considerar só sy
                         ssy = model.predictInc(not sigma_x)
-                        self.canvas.axes1.errorbar(
-                            x,
-                            y,
-                            yerr=sy,
-                            **kargs_errorbar
-                        )
-                        self.canvas.axes2.errorbar(
-                            x,
-                            y_r,
-                            yerr=ssy,
-                            **kargs_errorbar
-                        )
+                        ssy_i = ssy[inliers]
+                        ssy_o = ssy[outliers]
+                        self.plot_in_out(x_i, y_i, x_o, y_o,
+                         kargs_errorbar, y_ri = y_ri, y_ro = y_ro, sy_i = sy_i,
+                         sy_o = sy_o, ssy_i = ssy_i, ssy_o = ssy_o)
                     else:  # Caso considerar só sx
                         ssy = model.predictInc(not sigma_x)
-                        self.canvas.axes1.errorbar(
-                            x,
-                            y,
-                            xerr=sx,
-                            **kargs_errorbar
-                        )
-                        self.canvas.axes2.errorbar(
-                            x,
-                            y_r,
-                            yerr=ssy,
-                            **kargs_errorbar
-                        )
+                        ssy_i = ssy[inliers]
+                        ssy_o = ssy[outliers]
+                        self.plot_in_out(x_i, y_i, x_o, y_o,
+                         kargs_errorbar, y_ri = y_ri, y_ro = y_ro,
+                         ssy_i = ssy_i, ssy_o = ssy_o)
                     self.canvas.set_axes_props_with_axes_2(
                         xmin,
                         xmax,
@@ -328,34 +328,18 @@ class SinglePlot(QObject):
 
                     # Making Plots
                     if sigma_x and sigma_y:  # Caso considerar as duas incertezas
-                        self.canvas.axes1.errorbar(
-                            x,
-                            y,
-                            yerr=sy,
-                            xerr=sx,
-                            **kargs_errorbar
-                        )
+                        self.plot_in_out(x_i, y_i, x_o, y_o,
+                         kargs_errorbar, sy_i = sy_i, sy_o = sy_o)
                     elif (sigma_x is False
                           and sigma_y is False):  # Caso desconsiderar as duas
-                        self.canvas.axes1.errorbar(
-                            x,
-                            y,
-                            **kargs_errorbar
-                        )
+                        self.plot_in_out(x_i, y_i, x_o, y_o,
+                         kargs_errorbar)
                     elif sigma_x is False and sigma_y is True:  # Caso considerar só sy
-                        self.canvas.axes1.errorbar(
-                            x,
-                            y,
-                            yerr=sy,
-                            **kargs_errorbar
-                        )
+                        self.plot_in_out(x_i, y_i, x_o, y_o,
+                         kargs_errorbar, sy_i = sy_i, sy_o = sy_o)
                     else:  # Caso considerar só sx
-                        self.canvas.axes1.errorbar(
-                            x,
-                            y,
-                            xerr=sx,
-                            **kargs_errorbar
-                        )
+                        self.plot_in_out(x_i, y_i, x_o, y_o,
+                         kargs_errorbar, sx_i = sx_i, sx_o = sx_o)
 
                     self.canvas.set_axes_props_without_axes_2(xmin, xmax, xdiv, ymin,
                                                        ymax, ydiv, grid, log_x,
@@ -423,34 +407,18 @@ class SinglePlot(QObject):
 
                 # Making Plots
                 if sigma_x and sigma_y:  # Caso considerar as duas incertezas
-                    self.canvas.axes1.errorbar(
-                        x,
-                        y,
-                        yerr=sy,
-                        xerr=sx,
-                        **kargs_errorbar
-                    )
+                    self.canvas.plot_error_bar(x, y, kargs_errorbar,
+                        alpha = 1, sx = sx, sy = sy)
                 elif (sigma_x is False
                       and sigma_y is False):  # Caso desconsiderar as duas
-                    self.canvas.axes1.errorbar(
-                        x,
-                        y,
-                        **kargs_errorbar
-                    )
+                    self.canvas.plot_error_bar(x, y, kargs_errorbar,
+                        alpha = 1)
                 elif sigma_x is False and sigma_y is True:  # Caso considerar só sy
-                    self.canvas.axes1.errorbar(
-                        x,
-                        y,
-                        yerr=sy,
-                        **kargs_errorbar
-                    )
+                    self.canvas.plot_error_bar(x, y, kargs_errorbar,
+                        alpha = 1, sy = sy)
                 else:  # Caso considerar só sx
-                    self.canvas.axes1.errorbar(
-                        x,
-                        y,
-                        xerr=sx,
-                        **kargs_errorbar
-                    )
+                    self.canvas.plot_error_bar(x, y, kargs_errorbar,
+                        alpha = 1, sx = sx)
 
                 # Setting titles
                 self.canvas.axes1.set_title(str(axis_titles[0]), 
