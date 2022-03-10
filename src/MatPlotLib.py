@@ -418,6 +418,10 @@ class Canvas(QObject):
     def set_dpi(self, dpi):
         self.dpi = dpi
 
+    @pyqtSlot(float)
+    def set_opacity_outliers(self, value:int):
+        self.user_alpha_outliers = value
+
     def on_motion(self, event):
         """Update the coordinates on the display."""
         if event.inaxes in (self.axes1, self.axes2):

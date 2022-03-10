@@ -628,9 +628,13 @@ class SinglePlot(QObject):
     @pyqtSlot(QJsonValue)
     def export_data_clipboard(self, data):
         df = pd.DataFrame.from_records(data.toVariant())
+
+        if df.empty:
+            self.msg.raise_warn("Nenhum dado para exportar.")
+            return
+
         df.columns = ['x', 'y', 'sy', 'sx', 'bool']
         del df['bool']
         df.to_clipboard(index=False)
 
         self.msg.raise_success("Dados copiados para área de transferência.")
-         

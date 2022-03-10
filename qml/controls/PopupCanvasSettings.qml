@@ -280,6 +280,37 @@ Popup {
                     validator: RegExpValidator{regExp: /^[1-9]|[1-9][0-9]|[1-9][0-9][0-9]|1000$/}
                 }
 
+                Text{
+                    Layout.columnSpan: 12
+                    Layout.alignment: Qt.AlignHCenter
+                    text: "Opacidade dos pontos desconsiderados"
+                    wrapMode: Text.WordWrap
+                    font.bold: true
+                    font.pointSize: 11
+                    color: "#4CAF50"
+                }
+                Text{
+                    Layout.columnSpan: 12
+                    Layout.alignment: Qt.AlignHCenter
+                    text: "(não é aplicado automaticamente)"
+                    wrapMode: Text.WordWrap
+                    font.bold: true
+                    font.pointSize: 11
+                    color: "#4CAF50"
+                }
+                SliderCustom{
+                    id: opacity
+                    Layout.columnSpan: 12
+                    Layout.fillWidth: true
+                    Layout.alignment: Qt.AlignHCenter
+                    value: 0.25
+                    from: 0
+                    to: 1
+                    mainColor: Colors.mainColor2
+                    secondaryColor: Colors.c_button_hover
+                    handlerBorderColor: Colors.mainColor2
+                }
+
             }
         }
 
@@ -306,6 +337,8 @@ Popup {
                     residualsSize.text = "12"
                     captionSize.text = "12"
                     dpi.text = "500"
+                    opacity.value = 0.25
+                    
                     legendPos.currentIndex = legendPos.find("Automático")
                 }
             }
@@ -320,6 +353,7 @@ Popup {
                     canvas.set_font_sizes(titleSize.text, xsize.text, ysize.text, residualsSize.text, captionSize.text)
                     canvas.set_legend_position(legendPos.currentText)
                     canvas.set_dpi(dpi.text)
+                    canvas.set_opacity_outliers(opacity.value)
                 }
             }
         }

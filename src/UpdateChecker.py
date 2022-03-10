@@ -99,8 +99,8 @@ class UpdateChecker(QObject):
             infos["published_at"] = datetime.datetime.strptime(infos["published_at"], '%Y-%m-%dT%XZ').strftime('%d/%m/%Y')
             
             version = infos['tag_name']
-            if version != self.__VERSION__:
-                self.showUpdate.emit(QJsonValue.fromVariant(infos))
+            # if version != self.__VERSION__:
+            #     self.showUpdate.emit(QJsonValue.fromVariant(infos))
 
     @pyqtSlot(result=str)
     def getVersion(self):
