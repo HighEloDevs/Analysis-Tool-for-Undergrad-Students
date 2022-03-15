@@ -685,7 +685,7 @@ class Model(QObject):
         self._dict_param.clear()
         self._params = Parameters()
         ngl = len(x) - self._result.nvarys
-        inc_cons = np.sqrt(self._result.chisqr / ngl)
+        inc_cons = np.sqrt(self._result.chisqr / ngl) if ngl > 0 else 1
         self._par_var = []
         for i in list(self._result.params.keys()):
             if self._result.params[i].vary:
@@ -752,7 +752,7 @@ class Model(QObject):
     def __set_report_lm_special(self, x):
         '''Constrói a string com os resultados, neste caso quando não há incertezas.'''
         ngl = len(x) - self._result.nvarys
-        inc_considerada = np.sqrt(self._result.chisqr / ngl)
+        inc_considerada = np.sqrt(self._result.chisqr / ngl) if ngl > 0 else 0
         inc_considerada_q = inc_considerada**2
         self._report_fit = ""
         self._report_fit += "\nAjuste: y = %s\n" % self._exp_model
