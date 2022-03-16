@@ -1,3 +1,2 @@
-include *.*
-graft images
-graft qml
+graft atus/images
+graft atus/qml

@@ -26,6 +26,12 @@ SOFTWARE.
 import os
 import sys
 import matplotlib.pyplot as plt
+from PyQt5.QtCore import QCoreApplication, QUrl, QObject, Qt
+from PyQt5.QtQml import qmlRegisterType, QQmlApplicationEngine
+from PyQt5.QtGui import QIcon, QGuiApplication
+from matplotlib_backend_qtquick.backend_qtquickagg import FigureCanvasQtQuickAgg
+
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from src.Model import Model
 from src.Plot import SinglePlot 
 from src.MultiPlot import Multiplot
@@ -35,10 +41,6 @@ from src.MessageHandler import MessageHandler
 from src.GoogleDriveAPI import GDrive
 from src.Histogram import Histogram
 from src.GlobalManager import GlobalManager
-from PyQt5.QtCore import QCoreApplication, QUrl, QObject, Qt
-from PyQt5.QtQml import qmlRegisterType, QQmlApplicationEngine
-from PyQt5.QtGui import QIcon, QGuiApplication
-from matplotlib_backend_qtquick.backend_qtquickagg import FigureCanvasQtQuickAgg
 
 plt.rcParams["ytick.minor.visible"]   = False
 plt.rcParams["xtick.minor.visible"]   = False
@@ -97,4 +99,5 @@ def main():
     sys.exit(app.exec_())
 
 if __name__ == "__main__":
+    print("Initializing ATUS...")
     main()
