@@ -74,8 +74,9 @@ class UpdateChecker(QObject):
         self.gitHubApiUrl = 'https://api.github.com/repos/HighEloDevs/Analysis-Tool-for-Undergrad-Students/releases/latest'
 
         # Actual version
+
         try:
-            with open(os.path.join(os.path.dirname(__file__) + "\\..\\version.txt")) as version:
+            with open(os.path.join(os.path.dirname(__file__), "..", "version.txt")) as version:
                 self.__VERSION__  = version.read()
         except:
             with open("./version.txt") as version:
