@@ -21,17 +21,19 @@ Window {
 
     // Shortcuts for debug
     Shortcut {
-        sequences: ["CTRL+SHIFT+I"]
+        sequences: ["CTRL+SHIFT+X"]
         onActivated: {
-            gdrive.listFiles()
+            canvasWindow.show()
+            canvasWindow.children = [bg_canvas]
         }
     }
-    Shortcut {
-        sequences: ["CTRL+SHIFT+O"]
-        onActivated: {
-            gdrive.uploadFile()
-        }
-    }
+
+    // Shortcut {
+    //     sequences: ["CTRL+SHIFT+O"]
+    //     onActivated: {
+    //         gdrive.uploadFile()
+    //     }
+    // }
 
     // Removing Title Bar
     flags: {
@@ -164,7 +166,6 @@ Window {
         id: bg
         anchors.fill: parent
         color: Colors.bgColor
-        border.color: Colors.bgBorderColor
 
         Rectangle {
             id: appContainer
@@ -384,7 +385,7 @@ Window {
                     Rectangle {
                         id: rowBtnsBg
                         width: 200
-                        height: 35
+                        height: 30
                         color: Colors.color1
                         Layout.fillHeight: true
                         Layout.fillWidth: true
@@ -394,7 +395,6 @@ Window {
                         RowLayout {
                             id: rowBtns
                             anchors.fill: parent
-                            Layout.preferredHeight: 35
                             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                             layoutDirection: Qt.LeftToRight
                             transformOrigin: Item.Center
@@ -419,7 +419,7 @@ Window {
                                 }
                             }
 
-                            IconTextButton {
+                            TextButton {
                                 id: siteBtn
                                 width: 150
                                 Layout.fillHeight: true
@@ -427,8 +427,9 @@ Window {
 
                                 flat: false
                                 texto: "Documentação"
-                                iconUrl: qsTr("../../images/icons/ios_share_white_24dp.svg")
+                                // iconUrl: qsTr("../../images/icons/ios_share_white_24dp.svg")
                                 textSize: 12
+                                radius: 0
 
                                 primaryColor: 'transparent'
                                 clickColor: Colors.c_button_active
@@ -445,10 +446,11 @@ Window {
                                 iconUrl: '../../images/icons/github-36px.svg'
                                 iconWidth: 22
                                 r: 0
+                                ripple: true
 
                                 primaryColor: 'transparent'
                                 clickColor: Colors.c_button_active
-                                hoverColor: Colors.c_button_hover
+                                hoverColor: 'transparent'
                                 iconColor: '#fff'
 
                                 onClicked: Qt.openUrlExternally("https://github.com/leoeiji/Analysis-Tool-for-Undergrad-Students---ATUS")
@@ -462,10 +464,11 @@ Window {
                                 iconUrl: '../../images/svg_images/minimize_white_24dp.svg'
                                 iconWidth: 20
                                 r: 0
+                                ripple: true
 
                                 primaryColor: 'transparent'
                                 clickColor: Colors.c_button_active
-                                hoverColor: Colors.c_button_hover
+                                hoverColor: 'transparent'
                                 iconColor: '#fff'
 
                                 onClicked: mainWindow.showMinimized()
@@ -476,6 +479,7 @@ Window {
                                 Layout.preferredWidth: 40
                                 Layout.fillHeight: true
                                 Layout.fillWidth: false
+                                ripple: true
 
                                 property string restoreIcon: '../../images/svg_images/expand_more_white_24dp.svg'
                                 property string maximizeIcon: '../../images/svg_images/expand_less_white_24dp.svg'
@@ -486,7 +490,7 @@ Window {
 
                                 primaryColor: 'transparent'
                                 clickColor: Colors.c_button_active
-                                hoverColor: Colors.c_button_hover
+                                hoverColor: 'transparent'
                                 iconColor: '#fff'
 
                                 onClicked: maximizeRestoreWindow()
@@ -764,17 +768,21 @@ Window {
                                                 }
                                             }
 
-                                            Rectangle {
-                                                id: bg_canvas
+                                            Item{
+                                                id: canvasPlaceholder
                                                 Layout.fillHeight: true
                                                 Layout.fillWidth: true
+                                                Rectangle {
+                                                    id: bg_canvas
+                                                    anchors.fill: parent
 
-                                                FigureCanvas {
-                                                        id: mplView
-                                                        objectName : "canvasPlot"
-                                                        dpi_ratio: Screen.devicePixelRatio
-                                                        anchors.fill: parent
-                                                        focus: true
+                                                    FigureCanvas {
+                                                            id: mplView
+                                                            objectName : "canvasPlot"
+                                                            dpi_ratio: Screen.devicePixelRatio
+                                                            anchors.fill: parent
+                                                            focus: true
+                                                    }
                                                 }
                                             }
 
@@ -929,6 +937,14 @@ Window {
             }
 
 
+        }
+    }
+
+    CanvasWindow{
+        id: canvasWindow
+
+        onClosing: {
+            canvasPlaceholder.children = canvasWindow.children
         }
     }
 

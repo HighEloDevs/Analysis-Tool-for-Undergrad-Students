@@ -25,32 +25,34 @@ SOFTWARE.
 
 import os
 import sys
+
 import matplotlib.pyplot as plt
-from PyQt5.QtCore import QCoreApplication, QUrl, QObject, Qt
-from PyQt5.QtQml import qmlRegisterType, QQmlApplicationEngine
-from PyQt5.QtGui import QIcon, QGuiApplication
 from matplotlib_backend_qtquick.backend_qtquickagg import FigureCanvasQtQuickAgg
+from PyQt5.QtCore import QCoreApplication, QObject, Qt, QUrl
+from PyQt5.QtGui import QGuiApplication, QIcon
+from PyQt5.QtQml import QQmlApplicationEngine, qmlRegisterType
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-from src.Model import Model
-from src.Plot import SinglePlot 
-from src.MultiPlot import Multiplot
-from src.MatPlotLib import Canvas
-from src.UpdateChecker import UpdateChecker
-from src.MessageHandler import MessageHandler
+from src.GlobalManager import GlobalManager
 from src.GoogleDriveAPI import GDrive
 from src.Histogram import Histogram
-from src.GlobalManager import GlobalManager
+from src.MatPlotLib import Canvas
+from src.MessageHandler import MessageHandler
+from src.Model import Model
+from src.MultiPlot import Multiplot
+from src.Plot import SinglePlot
+from src.UpdateChecker import UpdateChecker
 
-plt.rcParams["ytick.minor.visible"]   = False
-plt.rcParams["xtick.minor.visible"]   = False
-plt.rcParams["figure.subplot.left"]   = 0.1
-plt.rcParams["figure.subplot.right"]  = 0.95
+plt.rcParams["ytick.minor.visible"] = False
+plt.rcParams["xtick.minor.visible"] = False
+plt.rcParams["figure.subplot.left"] = 0.1
+plt.rcParams["figure.subplot.right"] = 0.95
 plt.rcParams["figure.subplot.bottom"] = 0.12
-plt.rcParams["figure.subplot.top"]    = 0.92
-plt.rcParams["figure.subplot.hspace"] = 0.
+plt.rcParams["figure.subplot.top"] = 0.92
+plt.rcParams["figure.subplot.hspace"] = 0.0
 
-def main(pip:bool = True):
+
+def main(pip: bool = True):
     if pip:
         print("Initializing Analysis Tool for Undergrad Students...")
 
@@ -61,20 +63,28 @@ def main(pip:bool = True):
     # Setting up app
     app = QGuiApplication(sys.argv)
     app.setOrganizationName("High Elo Devs")
-    app.setOrganizationDomain("https://github.com/leoeiji/Analysis-Tool-for-Undergrad-Students---ATUS")
+    app.setOrganizationDomain(
+        "https://github.com/leoeiji/Analysis-Tool-for-Undergrad-Students---ATUS"
+    )
     app.setApplicationName("Analysis Tool for Undergrad Students")
-    app.setWindowIcon(QIcon(os.path.join(os.path.dirname(__file__), "images/main_icon/ATUS_icon.png")))
+    app.setWindowIcon(
+        QIcon(
+            os.path.join(
+                os.path.dirname(__file__), "images/main_icon/ATUS_icon.png"
+            )
+        )
+    )
     engine = QQmlApplicationEngine()
 
-    messageHandler  = MessageHandler()
-    canvas          = Canvas(messageHandler)
-    model           = Model(messageHandler) 
-    singlePlot      = SinglePlot(canvas, model, messageHandler)
-    multiPlot       = Multiplot(canvas, messageHandler)
-    updater         = UpdateChecker(pip)
-    histogram       = Histogram(canvas, messageHandler)
-    gdrive          = GDrive(messageHandler)
-    globalManager   = GlobalManager()
+    messageHandler = MessageHandler()
+    canvas = Canvas(messageHandler)
+    model = Model(messageHandler)
+    singlePlot = SinglePlot(canvas, model, messageHandler)
+    multiPlot = Multiplot(canvas, messageHandler)
+    updater = UpdateChecker(pip)
+    histogram = Histogram(canvas, messageHandler)
+    gdrive = GDrive(messageHandler)
+    globalManager = GlobalManager()
 
     # Creating 'link' between front-end and back-end
     context = engine.rootContext()
@@ -88,8 +98,12 @@ def main(pip:bool = True):
     context.setContextProperty("gdrive", gdrive)
     context.setContextProperty("globalManager", globalManager)
 
-    engine.load(QUrl.fromLocalFile(os.path.join(os.path.dirname(__file__), "qml/main_windows.qml")))
-        
+    engine.load(
+        QUrl.fromLocalFile(
+            os.path.join(os.path.dirname(__file__), "qml/main_window.qml")
+        )
+    )
+
     # Updating canvasPlot with the plot
     win = engine.rootObjects()[0]
     canvas.update_with_canvas(win.findChild(QObject, "canvasPlot"))
@@ -100,6 +114,7 @@ def main(pip:bool = True):
 
     # Starting program
     sys.exit(app.exec_())
+
 
 if __name__ == "__main__":
     main(False)

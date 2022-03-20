@@ -2,6 +2,10 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtGraphicalEffects 1.15
 import "../colors.js" as Colors
+import QtQuick.Controls 2.12
+import QtQuick.Controls.impl 2.12
+import QtQuick.Controls.Material 2.12
+import QtQuick.Controls.Material.impl 2.12
 
 Button{
     id: btnLeftMenu
@@ -20,9 +24,9 @@ Button{
 
         // MOUSE OVER AND CLICK CHANGE COLOR
         property var dynamicColor: if(btnLeftMenu.down){
-                                       btnLeftMenu.down ? Colors.c_button_active : Colors.c_button_sideBar
+                                       btnLeftMenu.down ? "transparent" : Colors.c_button_sideBar
                                    } else {
-                                       btnLeftMenu.hovered ? Colors.c_button_hover : Colors.c_button_sideBar
+                                       btnLeftMenu.hovered ? "transparent" : Colors.c_button_sideBar
                                    }
 
     }
@@ -33,6 +37,25 @@ Button{
     background: Rectangle{
         id: bgBtn
         color: internal.dynamicColor
+
+        Ripple {
+            id: ripple
+            anchors.fill: parent
+            clipRadius: 0
+            pressed: btnLeftMenu.pressed
+            active: btnLeftMenu.down || btnLeftMenu.visualFocus || btnLeftMenu.hovered
+            color: "#20FFFFFF"
+            layer.enabled: true
+            visible: ripple
+            layer.effect: OpacityMask {
+                maskSource: Rectangle
+                {
+                    width: ripple.width
+                    height: ripple.height
+                    radius: 0
+                }
+            }
+        }
 
         Rectangle{
             anchors{

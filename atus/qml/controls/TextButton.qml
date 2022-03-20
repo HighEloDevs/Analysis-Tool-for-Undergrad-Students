@@ -43,7 +43,7 @@ Button{
         Ripple {
             id: ripple
             anchors.fill: parent
-            clipRadius: 4
+            clipRadius: root.radius
             pressed: root.pressed
             active: root.down || root.visualFocus || root.hovered
             color: "#20FFFFFF"
@@ -53,7 +53,7 @@ Button{
                 {
                     width: ripple.width
                     height: ripple.height
-                    radius: 4
+                    radius: root.radius
                 }
             }
         }
