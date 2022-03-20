@@ -10,9 +10,21 @@ Após baixar o instalador, essa mensagem pode aparecer:
 
 ![images\p1.png](..\images\p1.png)
 
+</div>
+
+Basta seguir os seguintes passos: 
+
+<div align = "center">
+
 ![images\p2.png](..\images\p2.png)
 
 ![images\p3.png](..\images\p3.png)
+
+</div>
+
+Agora basta seguir a sequência de instalação:
+
+<div align = "center">
 
 ![images\p4.png](..\images\p4.png)
 
@@ -23,7 +35,6 @@ Após baixar o instalador, essa mensagem pode aparecer:
 ![images\p7.png](..\images\p7.png)
 
 ![images\p8.png](..\images\p8.png)
-
 
 </div>
 
