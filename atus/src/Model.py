@@ -842,7 +842,7 @@ class Model(QObject):
     @property
     def residuo(self):
         '''Retorna os valores de y_i - f(x_i).'''
-        return self._data["y"] - self._model.eval(x=self._data["x"].to_numpy())
+        return self._data["y"].to_numpy() - self._model.eval(x=self._data["x"].to_numpy())
 
     @property
     def residuo_dummy(self):
