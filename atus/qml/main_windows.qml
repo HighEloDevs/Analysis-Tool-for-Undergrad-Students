@@ -1024,6 +1024,7 @@ Window {
             updatePopup.tarLink = infos['tarball_url']
             updatePopup.zipLink = infos['zipball_url']
             updatePopup.platform = updater.getOS()
+            updatePopup.fromPip = updater.getPip()
             updatePopup.open()
         }
     }

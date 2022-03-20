@@ -31,7 +31,7 @@ setup(
     include_package_data=True,
     python_requires=">=3.7",
     entry_points={
-        'console_scripts': ['atus = atus:main'],
+        'console_scripts': ['atus = atus:main.main'],
     },
     install_requires=[
         "setuptools>=42",

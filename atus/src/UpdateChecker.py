@@ -67,21 +67,22 @@ class UpdateChecker(QObject):
             os.system('atus.exe /verysilent')
             os.remove("atus.exe")
 
-    def __init__(self) -> None:
+    def __init__(self, pip) -> None:
         super().__init__()
         
         # URL to last release
         self.gitHubApiUrl = 'https://api.github.com/repos/HighEloDevs/Analysis-Tool-for-Undergrad-Students/releases/latest'
 
-        # Actual version
-
+        # Current version
         try:
             with open(os.path.join(os.path.dirname(__file__), "..", "version.txt")) as version:
                 self.__VERSION__  = version.read()
         except:
             with open("./version.txt") as version:
                 self.__VERSION__  = version.read()
+
         self.isUpdate = True
+        self.pip = pip
         # Updater must work in a different thread, so it can update de download progress bar
         self.updaterThread = QThread()
         self.updaterThread.start(5)
@@ -100,8 +101,8 @@ class UpdateChecker(QObject):
             infos["published_at"] = datetime.datetime.strptime(infos["published_at"], '%Y-%m-%dT%XZ').strftime('%d/%m/%Y')
             
             version = infos['tag_name']
-            # if version != self.__VERSION__:
-            #     self.showUpdate.emit(QJsonValue.fromVariant(infos))
+            if version != self.__VERSION__:
+                self.showUpdate.emit(QJsonValue.fromVariant(infos))
 
     @pyqtSlot(result=str)
     def getVersion(self):
@@ -111,3 +112,7 @@ class UpdateChecker(QObject):
     def getOS(self):
         return platform.system()
         # return 'Darwin'
+
+    @pyqtSlot(result=bool)
+    def getPip(self):
+        return self.pip

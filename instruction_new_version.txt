@@ -5,7 +5,7 @@ Primeiramente, mudar a versão no version.txt e no createInstaller.iss
 ## Windows
 Criar o executável:
 
-python setup_cxfreeze.py build_exe
+pyinstaller .\setup.spec --upx-dir upx --noconfirm -F --clean
 
 Criar o instalador:
 

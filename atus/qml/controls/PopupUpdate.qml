@@ -23,6 +23,7 @@ Popup {
         property string tarLink: ''
         property string zipLink: ''
         property string platform: ''
+        property bool fromPip: false
         property real total: 0
 
         Popup{
@@ -96,7 +97,6 @@ Popup {
                             texto: 'Cancelar'
 
                             onClicked: permissionPopup.close()
-                            // onClicked: updater.updateOnWindows()
                         }
                     }
                 }
@@ -209,7 +209,7 @@ Popup {
                     Layout.fillWidth: true
                     color: '#1e1e1e'
                     Rectangle{
-                        visible: platform != "Windows"
+                        visible: platform != "Windows" || fromPip
                         anchors.fill: parent
                         color: "transparent"
                         TextEdit{
@@ -223,9 +223,10 @@ Popup {
                         }
                     }
                     RowLayout{
-                        visible: platform == "Windows"
+                        visible: platform == "Windows" && !fromPip
                         anchors.fill: parent
                         anchors.leftMargin: 50
+                        anchors.rightMargin: 50
                         TextButton{
                             id: downloadBtn
                             primaryColor: '#009688'

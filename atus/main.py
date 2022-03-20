@@ -50,7 +50,10 @@ plt.rcParams["figure.subplot.bottom"] = 0.12
 plt.rcParams["figure.subplot.top"]    = 0.92
 plt.rcParams["figure.subplot.hspace"] = 0.
 
-def main():
+def main(pip:bool = True):
+    if pip:
+        print("Initializing Analysis Tool for Undergrad Students...")
+
     # Matplotlib stuff
     qmlRegisterType(FigureCanvasQtQuickAgg, "Canvas", 1, 0, "FigureCanvas")
     QCoreApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
@@ -68,7 +71,7 @@ def main():
     model           = Model(messageHandler) 
     singlePlot      = SinglePlot(canvas, model, messageHandler)
     multiPlot       = Multiplot(canvas, messageHandler)
-    updater         = UpdateChecker()
+    updater         = UpdateChecker(pip)
     histogram       = Histogram(canvas, messageHandler)
     gdrive          = GDrive(messageHandler)
     globalManager   = GlobalManager()
@@ -99,5 +102,4 @@ def main():
     sys.exit(app.exec_())
 
 if __name__ == "__main__":
-    print("Initializing ATUS...")
-    main()
+    main(False)
