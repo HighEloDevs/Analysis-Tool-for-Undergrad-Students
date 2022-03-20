@@ -212,18 +212,21 @@ class SinglePlot(QObject):
                 # Getting data
                 x, y, sy, sx = model.data
                 inliers, outliers = model.inliers, model.outliers
-                x_i, y_i, sy_i, sx_i = x[inliers], y[inliers], sy[inliers], sx[inliers]
-                x_o, y_o, sy_o, sx_o = x[outliers], y[outliers], sy[outliers], sx[outliers]
+                x_i, y_i, sy_i, sx_i = x.iloc[inliers], y.iloc[inliers], sy.iloc[inliers], sx.iloc[inliers]
+                x_o, y_o, sy_o, sx_o = np.array([]), np.array([]), np.array([]), np.array([])
+                if outliers:
+                    x_o, y_o, sy_o, sx_o = x.iloc[outliers], y.iloc[outliers], sy.iloc[outliers], sx.iloc[outliers]
                 # alphas = np.array([list(colors.to_rgba(symbol_color))]*len(x))
                 # alphas[model.indices.astype(int), 3] = self.canvas.user_alpha_outliers
                 # kargs_errorbar["c"] = alphas
                 # kargs_errorbar["ecolor"] = alphas
-                # out = np.array([set(np.arange(len(x))) - set(indices)], dtype = int)
                 y_r = None
                 if fit_props["adjust"]:
                     y_r = model.residuo
                     y_ri = y_r[inliers]
-                    y_ro = y_r[outliers]
+                    y_ro = np.array([])
+                    if outliers:
+                        y_ro = y_r[outliers]
                 else:
                     y_r = model.residuo_dummy
                 if residuals:
@@ -231,7 +234,9 @@ class SinglePlot(QObject):
                     if sigma_x and sigma_y:  # Caso considerar as duas incertezas
                         ssy = model.predictInc(not sigma_x)
                         ssy_i = ssy[inliers]
-                        ssy_o = ssy[outliers]
+                        ssy_o = np.array([])
+                        if outliers:
+                            ssy_o = ssy[outliers]
                         self.plot_in_out(x_i, y_i, x_o, y_o,
                          kargs_errorbar, y_ri = y_ri, y_ro = y_ro, sy_i = sy_i,
                          sy_o = sy_o, sx_i = sx_i, sx_o = sx_o,
@@ -243,14 +248,18 @@ class SinglePlot(QObject):
                     elif sigma_x is False and sigma_y is True:  # Caso considerar só sy
                         ssy = model.predictInc(not sigma_x)
                         ssy_i = ssy[inliers]
-                        ssy_o = ssy[outliers]
+                        ssy_o = np.array([])
+                        if outliers:
+                            ssy_o = ssy[outliers]
                         self.plot_in_out(x_i, y_i, x_o, y_o,
                          kargs_errorbar, y_ri = y_ri, y_ro = y_ro, sy_i = sy_i,
                          sy_o = sy_o, ssy_i = ssy_i, ssy_o = ssy_o)
                     else:  # Caso considerar só sx
                         ssy = model.predictInc(not sigma_x)
                         ssy_i = ssy[inliers]
-                        ssy_o = ssy[outliers]
+                        ssy_o = np.array([])
+                        if outliers:
+                            ssy_o = ssy[outliers]
                         self.plot_in_out(x_i, y_i, x_o, y_o,
                          kargs_errorbar, y_ri = y_ri, y_ro = y_ro,
                          ssy_i = ssy_i, ssy_o = ssy_o)
