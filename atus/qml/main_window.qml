@@ -23,17 +23,19 @@ Window {
     Shortcut {
         sequences: ["CTRL+SHIFT+X"]
         onActivated: {
+            rightPanelVisible = false
             canvasWindow.show()
-            canvasWindow.children = [bg_canvas]
+            canvasWindow.children = [mplView]
         }
     }
 
-    // Shortcut {
-    //     sequences: ["CTRL+SHIFT+O"]
-    //     onActivated: {
-    //         gdrive.uploadFile()
-    //     }
-    // }
+    // Shorcut for debug
+    Shortcut {
+        sequences: ["CTRL+SHIFT+D"]
+        onActivated: {
+            console.log(canvasWindow.active)
+        }
+    }
 
     // Removing Title Bar
     flags: {
@@ -48,6 +50,7 @@ Window {
     property string os: ''
     property    int activeBtn: 0
     property   bool isGoogleConnected: false
+    property   bool rightPanelVisible: true
 
     // Buttons on leftMenu
     property variant leftMenuBtns: ListModel{
@@ -634,6 +637,7 @@ Window {
                                         Layout.fillWidth: true
                                         radius: 5
                                         color: Colors.color3
+                                        visible: rightPanelVisible
 
                                         layer.enabled: true
                                         layer.effect: DropShadow {
@@ -647,11 +651,7 @@ Window {
 
                                         ColumnLayout {
                                             id: rightPanel_layout
-                                            x: 0
-                                            y: -692
                                             anchors.fill: parent
-                                            Layout.fillWidth: true
-                                            Layout.fillHeight: true
                                             spacing: 0
 
                                             Rectangle {
@@ -876,8 +876,6 @@ Window {
                                             }
                                         }
                                     }
-
-
                                 }
                             }
                         }
@@ -931,12 +929,7 @@ Window {
                         }
                     }
                 }
-
-
-
             }
-
-
         }
     }
 
@@ -944,6 +937,7 @@ Window {
         id: canvasWindow
 
         onClosing: {
+            rightPanelVisible = true
             canvasPlaceholder.children = canvasWindow.children
         }
     }
