@@ -214,7 +214,7 @@ class SinglePlot(QObject):
                 inliers, outliers = model.inliers, model.outliers
                 x_i, y_i, sy_i, sx_i = x.iloc[inliers], y.iloc[inliers], sy.iloc[inliers], sx.iloc[inliers]
                 x_o, y_o, sy_o, sx_o = np.array([]), np.array([]), np.array([]), np.array([])
-                if outliers:
+                if len(outliers) > 0:
                     x_o, y_o, sy_o, sx_o = x.iloc[outliers], y.iloc[outliers], sy.iloc[outliers], sx.iloc[outliers]
                 # alphas = np.array([list(colors.to_rgba(symbol_color))]*len(x))
                 # alphas[model.indices.astype(int), 3] = self.canvas.user_alpha_outliers
@@ -225,7 +225,7 @@ class SinglePlot(QObject):
                     y_r = model.residuo
                     y_ri = y_r[inliers]
                     y_ro = np.array([])
-                    if outliers:
+                    if len(outliers) > 0:
                         y_ro = y_r[outliers]
                 else:
                     y_r = model.residuo_dummy
@@ -235,7 +235,7 @@ class SinglePlot(QObject):
                         ssy = model.predictInc(not sigma_x)
                         ssy_i = ssy[inliers]
                         ssy_o = np.array([])
-                        if outliers:
+                        if len(outliers) > 0:
                             ssy_o = ssy[outliers]
                         self.plot_in_out(x_i, y_i, x_o, y_o,
                          kargs_errorbar, y_ri = y_ri, y_ro = y_ro, sy_i = sy_i,
@@ -258,7 +258,7 @@ class SinglePlot(QObject):
                         ssy = model.predictInc(not sigma_x)
                         ssy_i = ssy[inliers]
                         ssy_o = np.array([])
-                        if outliers:
+                        if len(outliers) > 0:
                             ssy_o = ssy[outliers]
                         self.plot_in_out(x_i, y_i, x_o, y_o,
                          kargs_errorbar, y_ri = y_ri, y_ro = y_ro,
