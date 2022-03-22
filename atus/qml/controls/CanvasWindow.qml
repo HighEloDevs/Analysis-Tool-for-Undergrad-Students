@@ -235,7 +235,7 @@ ApplicationWindow {
                             iconWidth: 17
                             enabled: !bgTransparent.checked
                             visible: {
-                                if(mainWindow.os != 'Windows') false
+                                if(root.os != 'Windows') false
                                 else true
                             }
 
@@ -249,6 +249,6 @@ ApplicationWindow {
         }
 
     Component.onCompleted: {
-        root.os = updater.getOS()
+        // root.os = updater.getOS()
     }
 }

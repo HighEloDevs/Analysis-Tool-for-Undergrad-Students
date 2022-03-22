@@ -33,7 +33,7 @@ Window {
     Shortcut {
         sequences: ["CTRL+SHIFT+D"]
         onActivated: {
-            console.log(canvasWindow.active)
+            console.log("debug :D")
         }
     }
 
@@ -933,15 +933,6 @@ Window {
         }
     }
 
-    CanvasWindow{
-        id: canvasWindow
-
-        onClosing: {
-            rightPanelVisible = true
-            canvasPlaceholder.children = canvasWindow.children
-        }
-    }
-
     MouseArea {
         id: resizeLeft
         width: 10
@@ -1075,7 +1066,11 @@ Window {
         updater.checkUpdate()
         labelVersion.text = updater.getVersion()
         os = updater.getOS()
-        // popupSuccess.open()
+        var a = ()=>{
+            rightPanelVisible = true
+            canvasPlaceholder.children = canvasWindow.children
+        }
+        canvasWindow.closing.connect(a)
         // gdrive.tryLogin()
     }
 }

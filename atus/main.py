@@ -98,6 +98,17 @@ def main(pip: bool = True):
     context.setContextProperty("gdrive", gdrive)
     context.setContextProperty("globalManager", globalManager)
 
+    # Loading canvas window
+    engine.load(
+        QUrl.fromLocalFile(
+            os.path.join(
+                os.path.dirname(__file__), "qml/controls/CanvasWindow.qml"
+            )
+        )
+    )
+    context.setContextProperty("canvasWindow", engine.rootObjects()[0])
+
+    # Loading main window
     engine.load(
         QUrl.fromLocalFile(
             os.path.join(os.path.dirname(__file__), "qml/main_window.qml")
@@ -105,8 +116,9 @@ def main(pip: bool = True):
     )
 
     # Updating canvasPlot with the plot
-    win = engine.rootObjects()[0]
-    canvas.update_with_canvas(win.findChild(QObject, "canvasPlot"))
+    canvas.update_with_canvas(
+        engine.rootObjects()[1].findChild(QObject, "canvasPlot")
+    )
 
     # Stopping program if PyQt fails loading the file
     if not engine.rootObjects():

@@ -112,7 +112,7 @@ Item {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 Layout.minimumWidth: 150
-                Layout.maximumWidth: 400
+                Layout.maximumWidth: bg_layout.width*0.5
                 spacing: 10
 
                 Rectangle{
@@ -288,6 +288,7 @@ Item {
             Tabs{
                 id: middleTabs
                 Layout.minimumWidth: 200
+                Layout.maximumWidth: bg_layout.width*0.5
                 Layout.fillHeight: true
                 Layout.fillWidth: true
                 isPlotable: table.hasData
