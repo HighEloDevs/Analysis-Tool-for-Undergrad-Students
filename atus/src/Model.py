@@ -909,7 +909,6 @@ class Model(QObject):
 
     def predictInc(self, wsx, wsy: bool = False):
         if wsx == False and wsy == False and self._has_sx and self._has_sy:
-            print("Model 1")
             sy = np.zeros(len(self._data["x"]), dtype=float)
             for i, x in enumerate(self._data["x"]):
                 x_var = np.array([
@@ -931,7 +930,6 @@ class Model(QObject):
                 sy[i] = np.sqrt(self._data["sy"].iloc[i]**2 + sy[i]**2)
             return sy
         elif wsx == False and wsy == False and self._has_sy == False and self._has_sx:
-            print("Model 2")
             sy = np.zeros(len(self._data["x"]), dtype=float)
             for i, x in enumerate(self._data["x"]):
                 x_var = np.array([
@@ -951,10 +949,8 @@ class Model(QObject):
                     })
                 sy[i] = np.abs(y_var - y_prd).mean()
         elif wsx == False and wsy == False and self._has_sy == False and self._has_sx == False:
-            print("Model 3")
             return np.zeros(len(self._data["x"]), dtype=float)
         elif wsx == False and wsy and self._has_sy and self._has_sx == False:
-            print("Model 4")
             return np.zeros(len(self._data["x"]), dtype=float)
         return self._data["sy"]
 

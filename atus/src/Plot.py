@@ -231,10 +231,7 @@ class SinglePlot(QObject):
                     y_r = model.residuo_dummy
                 if residuals:
                     self.canvas.switch_axes(hide_axes2=False)
-                    print(sigma_x)
-                    print(sigma_y)
                     if sigma_x and sigma_y:  # Caso considerar as duas incertezas
-                        print("Entrou if 1")
                         ssy = model.predictInc(not sigma_x)
                         ssy_i = ssy[inliers]
                         ssy_o = np.array([])
@@ -246,11 +243,9 @@ class SinglePlot(QObject):
                          ssy_i = ssy_i, ssy_o = ssy_o)
                     elif (sigma_x is False
                           and sigma_y is False):  # Caso desconsiderar as duas
-                        print("Entrou if 2")
                         self.plot_in_out(x_i, y_i, x_o, y_o, kargs_errorbar,
                         y_ri = y_ri, y_ro = y_ro)
                     elif sigma_x is False and sigma_y is True:  # Caso considerar só sy
-                        print("Entrou if 3")
                         ssy = model.predictInc(not sigma_x)
                         ssy_i = ssy[inliers]
                         ssy_o = np.array([])
@@ -260,7 +255,6 @@ class SinglePlot(QObject):
                          kargs_errorbar, y_ri = y_ri, y_ro = y_ro, sy_i = sy_i,
                          sy_o = sy_o, ssy_i = ssy_i, ssy_o = ssy_o)
                     else:  # Caso considerar só sx
-                        print("Entrou else")
                         ssy = model.predictInc(not sigma_x, not sigma_y)
                         ssy_i = ssy[inliers]
                         ssy_o = np.array([])
