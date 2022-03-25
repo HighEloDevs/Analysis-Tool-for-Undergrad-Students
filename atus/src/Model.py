@@ -1028,6 +1028,7 @@ class Model(QObject):
         #             coefs_2[self._coef[i]] = True
         # for nome in coefs.keys():
         #     self._params.add(nome, coefs[nome][0], vary = coefs[nome][1])
+        self._indices = np.arange(len(self._data))
         self._isvalid = True
 
     def matprint(self, mat, fmt="f"):
@@ -1167,3 +1168,4 @@ class Model(QObject):
         self._isvalid = False
         self._has_sx = True
         self._has_sy = True
+        self._indices = []
