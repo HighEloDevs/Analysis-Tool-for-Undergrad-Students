@@ -1,22 +1,24 @@
 # -*- mode: python ; coding: utf-8 -*-
 
-with open("atus/version.txt", encoding="utf-8") as f:
+import os
+
+dir = os.path.abspath("./")
+
+with open(os.path.join(dir, "atus", "version.txt"), encoding="utf-8") as f:
    __VERSION__ = f.read()
 
 block_cipher = None
 
 
-a = Analysis(['atus\\main.py'],
+a = Analysis([os.path.join(dir, "atus", "main.py")],
              pathex=[
-               r'C:\Users\leoei\Documents\Analysis-Tool-for-Undergrad-Students\venv',
-               r'C:\Users\leoei\Documents\Analysis-Tool-for-Undergrad-Students\venv\Lib\site-packages',
                'atus'],
              binaries=[],
              datas=[
-                ('atus\\images', 'images'),
-                ('atus\\qml', 'qml'),
-                ('atus\\icon.ico', '.'),
-                ('atus\\version.txt', '.')
+                (os.path.join(dir, "atus", "images"), 'images'),
+                (os.path.join(dir, "atus", "qml"), 'qml'),
+                (os.path.join(dir, "atus", "icon.ico"), '.'),
+                (os.path.join(dir, "atus", "version.txt"), '.')
              ],
              hiddenimports=[],
              hookspath=[],
@@ -45,7 +47,7 @@ exe = EXE(pyz,
           target_arch=None,
           codesign_identity=None,
           entitlements_file=None,
-          icon='atus\\icon.ico')
+          icon='os.path.join(dir, "atus", "icon.ico")')
 
 coll = COLLECT(exe,
                a.binaries,

@@ -27,7 +27,6 @@ Item {
             textFormat: Text.RichText
         }
     }
-
 }
 
 

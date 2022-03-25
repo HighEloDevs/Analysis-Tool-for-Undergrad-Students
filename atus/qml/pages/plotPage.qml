@@ -111,14 +111,14 @@ Item {
                 id: leftPanel
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                Layout.minimumWidth: 150
+                Layout.minimumWidth: 170
                 Layout.maximumWidth: bg_layout.width*0.5
                 spacing: 10
 
                 Rectangle{
                     Layout.fillWidth: true
                     radius: 5
-                    height: 130
+                    height: 180
                     color: Colors.color3
                     clip: true
                     layer.enabled: true
@@ -133,7 +133,7 @@ Item {
                     GridLayout{
                         anchors.fill: parent
                         anchors.margins: 5
-                        rowSpacing: 0
+                        rowSpacing: 10
                         columns: 4
                         rows: 3
 
@@ -223,15 +223,15 @@ Item {
                                 projectSaver.open()
                             }
                         }
-                        TextInputCustom{
+                        TextField {
                             id: nomeProjeto
                             Layout.fillWidth: true
                             Layout.columnSpan: 4
-                            focusColor: Colors.mainColor2
-                            title: 'Identificação do projeto'
-                            textHolder: 'Ex.: Ajuste X vs T'
-                            defaultColor: '#fff'
-                            textColor: '#fff'
+                            height: 40
+
+                            activeColor: Colors.mainColor2
+                            title: "Identificação do projeto"
+                            helperText: 'Como quer identificar seu projeto?'
                         }
                         TextButton{
                             id: btnUpload

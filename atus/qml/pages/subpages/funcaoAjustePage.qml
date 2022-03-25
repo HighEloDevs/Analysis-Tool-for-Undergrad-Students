@@ -26,58 +26,63 @@ Item {
         anchors.fill: parent
         anchors.rightMargin: 10
         anchors.leftMargin: 10
-        columnSpacing: 0
-        rowSpacing: 2
+        columnSpacing: 5
+        rowSpacing: 5
         rows: 6
         columns: 12
 
-        TextInputCustom{
+
+        TextField {
             id: expression
             Layout.fillWidth: true
             Layout.columnSpan: 12
-            focusColor: Colors.mainColor2
+            activeColor: Colors.mainColor2
             title: 'Expressão | y(x) ='
-            textHolder: 'Função a ser ajustada. Ex.: a*x + b'
-            defaultColor: '#fff'
-            textColor: '#fff'
+            helperText: 'Função a ser ajustada. Ex.: a*x + b'
             validator: RegExpValidator{regExp: /^[0-9a-zA-Z.()>=<\-*^;_+/ ]+$/}
         }
 
-        TextInputCustom{
+        TextField {
             id: p0
             Layout.fillWidth: true
             Layout.columnSpan: 12
-            focusColor: Colors.mainColor2
+            activeColor: Colors.mainColor2
             title: 'Parâmetros Iniciais'
-            textHolder: 'Ex.: 0, a = 32, a = @4.3, a = 23.4 [-10; 50]'
-            defaultColor: '#fff'
-            textColor: '#fff'
+            helperText: 'Ex.: 0, a = 32'
             validator: RegExpValidator{regExp: /^[\[\];0-9.a-zA-Z_@= ,-]+$/}
         }
 
-        TextInputCustom{
+        TextField {
             id: x_min
             Layout.fillWidth: true
             Layout.columnSpan: 6
-            focusColor: Colors.mainColor2
-            title: 'Ajuste - X mín.'
-            textHolder: 'Ex.: 0, 32, 4.3, 23.4'
-            defaultColor: '#fff'
-            textColor: '#fff'
+            activeColor: Colors.mainColor2
+            title: 'Ajuste | x mín.'
+            helperText: 'Ex.: 0, 32, 4.3, 23.4'
             validator: RegExpValidator{regExp: /^[\-]?[0-9]+([\.]?[0-9]+)?$/}
         }
 
-        TextInputCustom{
+        TextField {
             id: x_max
             Layout.fillWidth: true
             Layout.columnSpan: 6
-            focusColor: Colors.mainColor2
-            title: 'Ajuste - X máx.'
-            textHolder: 'Ex.: 0, 32, 4.3, 23.4'
-            defaultColor: '#fff'
-            textColor: '#fff'
+            activeColor: Colors.mainColor2
+            title: 'Ajuste | x máx'
+            helperText: 'Ex.: 0, 32, 4.3, 23.4'
             validator: RegExpValidator{regExp: /^[\-]?[0-9]+([\.]?[0-9]+)?$/}
         }
+
+        // TextInputCustom{
+        //     id: x_max
+        //     Layout.fillWidth: true
+        //     Layout.columnSpan: 6
+        //     focusColor: Colors.mainColor2
+        //     title: 'Ajuste - X máx.'
+        //     textHolder: 'Ex.: 0, 32, 4.3, 23.4'
+        //     defaultColor: '#fff'
+        //     textColor: '#fff'
+        //     validator: RegExpValidator{regExp: /^[\-]?[0-9]+([\.]?[0-9]+)?$/}
+        // }
 
         CheckBoxCustom{
             id: switch_sigmax
