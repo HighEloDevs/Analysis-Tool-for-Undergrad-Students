@@ -249,13 +249,13 @@ class SinglePlot(QObject):
                         ssy = model.predictInc(not sigma_x)
                         ssy_i = ssy[inliers]
                         ssy_o = np.array([])
-                        if outliers:
+                        if len(outliers) > 0:
                             ssy_o = ssy[outliers]
                         self.plot_in_out(x_i, y_i, x_o, y_o,
                          kargs_errorbar, y_ri = y_ri, y_ro = y_ro, sy_i = sy_i,
                          sy_o = sy_o, ssy_i = ssy_i, ssy_o = ssy_o)
                     else:  # Caso considerar só sx
-                        ssy = model.predictInc(not sigma_x)
+                        ssy = model.predictInc(not sigma_x, not sigma_y)
                         ssy_i = ssy[inliers]
                         ssy_o = np.array([])
                         if len(outliers) > 0:

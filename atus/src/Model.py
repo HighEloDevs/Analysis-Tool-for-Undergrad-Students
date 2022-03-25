@@ -907,8 +907,8 @@ class Model(QObject):
                 "self": self
             })
 
-    def predictInc(self, wsx):
-        if self._has_sx and (wsx == False) and self._has_sy:
+    def predictInc(self, wsx, wsy: bool = False):
+        if wsx == False and wsy == False and self._has_sx and self._has_sy:
             sy = np.zeros(len(self._data["x"]), dtype=float)
             for i, x in enumerate(self._data["x"]):
                 x_var = np.array([
@@ -929,7 +929,7 @@ class Model(QObject):
                 sy[i] = np.abs(y_var - y_prd).mean()
                 sy[i] = np.sqrt(self._data["sy"].iloc[i]**2 + sy[i]**2)
             return sy
-        elif self._has_sx and (wsx == False) and self._has_sy == False:
+        elif wsx == False and wsy == False and self._has_sy == False and self._has_sx:
             sy = np.zeros(len(self._data["x"]), dtype=float)
             for i, x in enumerate(self._data["x"]):
                 x_var = np.array([
@@ -948,7 +948,10 @@ class Model(QObject):
                         "self": self
                     })
                 sy[i] = np.abs(y_var - y_prd).mean()
-            return sy
+        elif wsx == False and wsy == False and self._has_sy == False and self._has_sx == False:
+            return np.zeros(len(self._data["x"]), dtype=float)
+        elif wsx == False and wsy and self._has_sy and self._has_sx == False:
+            return np.zeros(len(self._data["x"]), dtype=float)
         return self._data["sy"]
 
     def createDummyModel(self):
@@ -1025,6 +1028,7 @@ class Model(QObject):
         #             coefs_2[self._coef[i]] = True
         # for nome in coefs.keys():
         #     self._params.add(nome, coefs[nome][0], vary = coefs[nome][1])
+        self._indices = np.arange(len(self._data))
         self._isvalid = True
 
     def matprint(self, mat, fmt="f"):
@@ -1164,3 +1168,4 @@ class Model(QObject):
         self._isvalid = False
         self._has_sx = True
         self._has_sy = True
+        self._indices = []
