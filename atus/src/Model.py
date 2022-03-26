@@ -730,7 +730,9 @@ class Model(QObject):
         self._report_fit = ""
         self._report_fit += "\nAjuste: y = %s\n" % self._exp_model
         self._report_fit += "\nNGL  = %d" % (len(x) - self._result.nvarys)
-        self._report_fit += "\nChi² = %f\n" % self._result.chisqr
+        self._report_fit += "\nChi² = %f\n\n" % self._result.chisqr
+        self._report_fit += self.params_print()
+        self._report_fit += "\n"
         self._mat_cov = self._result.covar
         self._report_fit += "\nMatriz de covariância:\n\n" + self.matprint(
             self._result.covar) + "\n"
@@ -745,8 +747,6 @@ class Model(QObject):
         self._mat_corr = matriz_corr.round(3)
         self._report_fit += "\nMatriz de correlação:\n\n" + self.matprint(
             self._mat_corr, ".3f") + "\n\n"
-        self._report_fit += self.params_print()
-        self._report_fit += "\n"
         self._isvalid = True
 
     def __set_report_lm_special(self, x):
@@ -758,9 +758,11 @@ class Model(QObject):
         self._report_fit += "\nAjuste: y = %s\n" % self._exp_model
         self._report_fit += "\nNGL  = %d" % (ngl)
         self._report_fit += "\nSomatória dos resíduos absolutos ao quadrado = %f\n" % self._result.chisqr
-        self._report_fit += "Incerteza considerada = %f\n" % inc_considerada
+        self._report_fit += "Incerteza considerada = %f\n\n" % inc_considerada
         try:
             self._mat_cov = self._result.covar * inc_considerada_q
+            self._report_fit += self.params_print2(inc_considerada)
+            self._report_fit += "\n"
             self._report_fit += "\nMatriz de covariância:\n\n" + self.matprint(
                 self._mat_cov) + "\n"
             lista = list(self._params.keys())
@@ -774,8 +776,6 @@ class Model(QObject):
             self._mat_corr = matriz_corr.round(3)
             self._report_fit += "\nMatriz de correlação:\n\n" + self.matprint(
                 self._mat_corr, ".3f") + "\n\n"
-            self._report_fit += self.params_print2(inc_considerada)
-            self._report_fit += "\n"
             self._isvalid = True
         except TypeError:
             self._msg_handler.raise_error(
@@ -788,7 +788,9 @@ class Model(QObject):
         self._report_fit = ""
         self._report_fit += "\nAjuste: y = %s\n" % self._exp_model
         self._report_fit += "\nNGL  = %d" % (len(x) - len(self._par_var))
-        self._report_fit += "\nChi² = %f\n" % self._result.sum_square
+        self._report_fit += "\nChi² = %f\n\n" % self._result.sum_square
+        self._report_fit += self.params_print()
+        self._report_fit += "\n"
         self._mat_cov = self._result.cov_beta
         self._report_fit += "\nMatriz de covariância:\n\n" + self.matprint(
             self._result.cov_beta) + "\n"
@@ -808,8 +810,6 @@ class Model(QObject):
         self._mat_corr = matriz_corr.round(3)
         self._report_fit += "\nMatriz de correlação:\n\n" + self.matprint(
             self._mat_corr, ".3f") + "\n\n"
-        self._report_fit += self.params_print()
-        self._report_fit += "\n"
         self._isvalid = True
 
     @property
