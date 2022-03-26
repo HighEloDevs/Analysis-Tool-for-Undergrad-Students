@@ -13,7 +13,7 @@ import "colors.js" as Colors
 Window {
     id: mainWindow
 
-    minimumWidth: 1150
+    minimumWidth: 1200
     minimumHeight: 600
     visibility: Window.AutomaticVisibility
     visible: true

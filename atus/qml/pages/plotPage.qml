@@ -111,14 +111,14 @@ Item {
                 id: leftPanel
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                Layout.minimumWidth: 170
+                Layout.minimumWidth: 0.35*bg_layout.width
                 Layout.maximumWidth: bg_layout.width*0.5
                 spacing: 10
 
                 Rectangle{
                     Layout.fillWidth: true
                     radius: 5
-                    height: 180
+                    height: 150
                     color: Colors.color3
                     clip: true
                     layer.enabled: true
@@ -287,7 +287,7 @@ Item {
 
             Tabs{
                 id: middleTabs
-                Layout.minimumWidth: 200
+                Layout.minimumWidth: 0.65*bg_layout.width
                 Layout.maximumWidth: bg_layout.width*0.5
                 Layout.fillHeight: true
                 Layout.fillWidth: true

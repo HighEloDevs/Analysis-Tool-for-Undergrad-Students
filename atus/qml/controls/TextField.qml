@@ -21,10 +21,10 @@ T.TextField {
     property bool _titleUp: (text.length > 0) || (root.activeFocus)
 
     // Settings
-    implicitHeight: helperText == "" ? 50:60
+    implicitHeight: 64
     implicitWidth: 200
     topPadding: _background.height/2 - root.font.pointSize + (title.length == 0 ? 0:_title.font.pointSize*0.8)
-    leftPadding: 10 + (prefixText == "" ? 0:prefixText.length*_prefix.font.pointSize + _prefix.leftPadding)
+    leftPadding: 0 + (prefixText == "" ? 16:_prefix.width+5)
     rightPadding: 10 + (suffixText == "" ? 0:root.suffixText.length*_suffix.font.pointSize + _suffix.rightPadding) + (resetButton ? _resetButton.width+4:0)
 
     font.pixelSize: 13
@@ -40,7 +40,7 @@ T.TextField {
     background: Item {
         id: _background
         anchors.top: root.top
-        height: root.helperText == "" ? root.height:45
+        height: 48
         opacity: root.activeFocus ? 0.3:0.1
         layer.enabled: true
 
@@ -123,6 +123,7 @@ T.TextField {
     // Prefix
     Text {
         id: _prefix
+        width: text*length*font.pointSize
         visible: root.prefixText.length > 0
         topPadding: _background.height/2 - root.font.pointSize
         leftPadding: 4
@@ -158,8 +159,10 @@ T.TextField {
         id: _helperText
         anchors.top: _background.bottom
         anchors.left: root.left
+        anchors.bottom: root.bottom
         anchors.topMargin: 3
         anchors.leftMargin: 10
+        anchors.bottomMargin: 0
 
         text: root.helperText
 

@@ -4,7 +4,7 @@ import Qt.labs.qmlmodels 1.0
 import QtQuick.Layouts 1.11
 import QtGraphicalEffects 1.15
 import "../../colors.js" as Colors
-import "../../controls"
+import "../../controls" as C
 
 Item {
     property alias expr: expression
@@ -32,17 +32,41 @@ Item {
         columns: 12
 
 
-        TextField {
+        C.TextField {
             id: expression
             Layout.fillWidth: true
             Layout.columnSpan: 12
             activeColor: Colors.mainColor2
-            title: 'Expressão | y(x) ='
-            helperText: 'Função a ser ajustada. Ex.: a*x + b'
+            helperText: 'Função a ser ajustada'
+            prefixText: 'f(x) ='
             validator: RegExpValidator{regExp: /^[0-9a-zA-Z.()>=<\-*^;_+/ ]+$/}
+
+            onTextEdited: {
+                let svg = pylatex.py2svg(expression.text)
+                if (svg !== "") expressionImage.source = "data:image/svg+xml;utf8," + svg
+            }
+
+            Popup {
+                id: expressionDisplay
+                visible: expression.activeFocus && expression.text
+                width: expressionImage.width
+                height: 48
+
+                x: expression.width + 10
+
+                background: Rectangle {
+                    color: Colors.color2
+                    radius: 3
+                }
+
+                Image {
+                    id: expressionImage
+                    anchors.centerIn: parent
+                }
+            }
         }
 
-        TextField {
+        C.TextField {
             id: p0
             Layout.fillWidth: true
             Layout.columnSpan: 12
@@ -52,7 +76,7 @@ Item {
             validator: RegExpValidator{regExp: /^[\[\];0-9.a-zA-Z_@= ,-]+$/}
         }
 
-        TextField {
+        C.TextField {
             id: x_min
             Layout.fillWidth: true
             Layout.columnSpan: 6
@@ -62,29 +86,17 @@ Item {
             validator: RegExpValidator{regExp: /^[\-]?[0-9]+([\.]?[0-9]+)?$/}
         }
 
-        TextField {
+        C.TextField {
             id: x_max
             Layout.fillWidth: true
             Layout.columnSpan: 6
             activeColor: Colors.mainColor2
-            title: 'Ajuste | x máx'
+            title: 'Ajuste | x máx.'
             helperText: 'Ex.: 0, 32, 4.3, 23.4'
             validator: RegExpValidator{regExp: /^[\-]?[0-9]+([\.]?[0-9]+)?$/}
         }
 
-        // TextInputCustom{
-        //     id: x_max
-        //     Layout.fillWidth: true
-        //     Layout.columnSpan: 6
-        //     focusColor: Colors.mainColor2
-        //     title: 'Ajuste - X máx.'
-        //     textHolder: 'Ex.: 0, 32, 4.3, 23.4'
-        //     defaultColor: '#fff'
-        //     textColor: '#fff'
-        //     validator: RegExpValidator{regExp: /^[\-]?[0-9]+([\.]?[0-9]+)?$/}
-        // }
-
-        CheckBoxCustom{
+        C.CheckBoxCustom{
             id: switch_sigmax
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
             Layout.columnSpan: 6
@@ -93,7 +105,7 @@ Item {
             texto: "Usar σx"
         }
 
-        CheckBoxCustom{
+        C.CheckBoxCustom{
             id: switch_sigmay
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
             Layout.columnSpan: 6
@@ -102,7 +114,7 @@ Item {
             texto: "Usar σy"
         }
         
-        CheckBoxCustom{
+        C.CheckBoxCustom{
             id: switch_adjust
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
             Layout.columnSpan: 6
@@ -111,7 +123,7 @@ Item {
             texto: "Ajustar função"
         }
 
-        IconTextButton{
+        C.IconTextButton{
             Layout.columnSpan: 6
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
             texto: 'Parâmetros'
@@ -126,7 +138,7 @@ Item {
             iconWidth: 18
             // visible: { mainWindow.os == 'Windows' || mainWindow.os == 'Darwin' }
 
-            PopupParamsClipboard{
+            C.PopupParamsClipboard{
                 id: popupTableParams
             }
 
@@ -135,7 +147,7 @@ Item {
             }
         }
 
-        Table{
+        C.Table{
             id: tableParams
             Layout.columnSpan: 12
             Layout.preferredHeight: 50

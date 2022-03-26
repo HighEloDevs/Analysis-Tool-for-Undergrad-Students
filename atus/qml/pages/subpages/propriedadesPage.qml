@@ -4,7 +4,7 @@ import QtQuick.Layouts 1.11
 import QtQuick.Dialogs 1.3
 import QtGraphicalEffects 1.15
 import "../../colors.js" as Colors
-import "../../controls"
+import "../../controls" as C
 
 Item {
     id: root
@@ -32,6 +32,13 @@ Item {
     property alias resMin:         resMin 
     property alias resMax:         resMax 
 
+    Shortcut{
+        sequence: "Ctrl+S"
+        onActivated: {
+            dialog_eixox.open()
+        }
+    }
+
     Rectangle {
         id: bg
         color: "transparent"
@@ -53,128 +60,203 @@ Item {
                 anchors.rightMargin: 15
                 anchors.leftMargin: 15
                 width: root.width
-                columnSpacing: 0
+                columnSpacing: 5
                 rowSpacing: 5
                 rows: 10
                 columns: 6
 
-                TextInputCustom{
+                C.TextField {
                     id: titulo
                     Layout.fillWidth: true
                     Layout.columnSpan: 6
-                    focusColor: Colors.mainColor2
-                    title: 'Título do Gráfico ; Título dos resíduos'
-                    textHolder: ''
-                    defaultColor: '#fff'
-                    textColor: '#fff'
+                    activeColor: Colors.mainColor2
+                    title: 'Título do Gráfico'
                 }
 
-                TextInputCustom{
+                C.Button {
+                    width: height
+                    color: "#FFFFFF"
+                    iconColor: "#FFF"
+                    iconUrl: '../../images/icons/settings_white_24dp.svg'
+                    onlyText: true
+                    bottomPadding: 16
+                    
+                    onClicked: dialog_eixox.open()
+                }
+
+                C.TextField {
                     id: eixox
                     Layout.fillWidth: true
                     Layout.columnSpan: 5
-                    focusColor: Colors.mainColor2
+                    activeColor: Colors.mainColor2
                     title: 'Eixo X'
-                    textHolder: 'Título do Eixo X'
-                    defaultColor: '#fff'
-                    textColor: '#fff'
+                    helperText: 'Título do Eixo X'
+                    resetButton: true
                 }
 
-                CheckBoxCustom{
-                    id: log_eixox
-                    w: 20
-                    texto: 'Log X'
-                    checked: false
+                C.Dialog {
+                    id: dialog_eixox
+                    title: 'Configurações do eixo x'
+                    titleColor: "#FFF"
+                    color: Colors.color1
+                    width: 300
+                    height: 350
+
+                    actions: C.Button {
+                        label: "FECHAR"
+                        visible: !root.actions
+                        onlyText: true
+                        radius: 5
+                        width: 90
+                        textColor: "#FF5252"
+                        color: "#505050"
+
+                        onClicked: {
+                            dialog_eixox.close()
+                        }
+                    }
+                    
+                    ColumnLayout {
+                        anchors.fill: parent
+                        spacing: 5
+
+                        C.TextField {
+                            id: xmin
+                            Layout.fillWidth: true
+                            activeColor: Colors.mainColor2
+                            title: 'X Mínimo'
+                            helperText: 'Menor valor de X no gráfico'
+                            validator: RegExpValidator{regExp: /^[\-]?[0-9]+([\.]?[0-9]+)?$/}
+                        }
+                        C.TextField {
+                            id: xmax
+                            Layout.fillWidth: true
+                            activeColor: Colors.mainColor2
+                            title: 'X Máximo'
+                            helperText: 'Maior valor de X no gráfico'
+                            validator: RegExpValidator{regExp: /^[\-]?[0-9]+([\.]?[0-9]+)?$/}
+                        }
+                        C.TextField {
+                            id: xdiv
+                            Layout.fillWidth: true
+                            activeColor: Colors.mainColor2
+                            title: 'Intervalos'
+                            helperText: 'Número de intervalos no eixo'
+                            validator: RegExpValidator{regExp: /^[0-9]+$/}
+                        }
+                        C.CheckBoxCustom {
+                            id: log_eixox
+                            Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+                            w: 20
+                            texto: 'Escala log'
+                            checked: false
+                        }
+                    }
                 }
 
-                TextInputCustom{
-                    id: xmin
-                    Layout.columnSpan: 2
-                    Layout.fillWidth: true
-                    focusColor: Colors.mainColor2
-                    title: 'X Mínimo'
-                    textHolder: 'Menor valor de X no gráfico'
-                    defaultColor: '#fff'
-                    textColor: '#fff'
-                    validator: RegExpValidator{regExp: /^[\-]?[0-9]+([\.]?[0-9]+)?$/}
-                }
-                TextInputCustom{
-                    id: xmax
-                    Layout.columnSpan: 2
-                    Layout.fillWidth: true
-                    focusColor: Colors.mainColor2
-                    title: 'X Máximo'
-                    textHolder: 'Maior valor de X no gráfico'
-                    defaultColor: '#fff'
-                    textColor: '#fff'
-                    validator: RegExpValidator{regExp: /^[\-]?[0-9]+([\.]?[0-9]+)?$/}
-                }
-                TextInputCustom{
-                    id: xdiv
-                    Layout.columnSpan: 2
-                    Layout.fillWidth: true
-                    focusColor: Colors.mainColor2
-                    title: 'Intervalos'
-                    textHolder: 'Número de intervalos no eixo'
-                    defaultColor: '#fff'
-                    textColor: '#fff'
-                    validator: RegExpValidator{regExp: /^[0-9]+$/}
+                C.Button {
+                    width: height
+                    color: "#FFFFFF"
+                    iconColor: "#FFF"
+                    iconUrl: '../../images/icons/settings_white_24dp.svg'
+                    onlyText: true
+                    
+                    onClicked: dialog_eixoy.open()
                 }
 
-                TextInputCustom{
+                C.TextField {
                     id: eixoy
                     Layout.fillWidth: true
                     Layout.columnSpan: 5
-                    focusColor: Colors.mainColor2
+                    activeColor: Colors.mainColor2
                     title: 'Eixo Y'
-                    textHolder: 'Título do Eixo Y'
-                    defaultColor: '#fff'
-                    textColor: '#fff'
-                }
-                
-                CheckBoxCustom{
-                    id: log_eixoy
-                    Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-                    w: 20
-                    texto: 'Log Y'
-                    checked: false
+                    helperText: 'Título do Eixo Y'
                 }
 
-                TextInputCustom{
-                    id: ymin
-                    Layout.columnSpan: 2
-                    Layout.fillWidth: true
-                    focusColor: Colors.mainColor2
-                    title: 'Y Mínimo'
-                    textHolder: 'Menor valor de Y no gráfico'
-                    defaultColor: '#fff'
-                    textColor: '#fff'
-                    validator: RegExpValidator{regExp: /^[\-]?[0-9]+([\.]?[0-9]+)?$/}
-                }
-                TextInputCustom{
-                    id: ymax
-                    Layout.columnSpan: 2
-                    Layout.fillWidth: true
-                    focusColor: Colors.mainColor2
-                    title: 'Y Máximo'
-                    textHolder: 'Maior valor de Y no gráfico'
-                    defaultColor: '#fff'
-                    textColor: '#fff'
-                    validator: RegExpValidator{regExp: /^[\-]?[0-9]+([\.]?[0-9]+)?$/}
-                }
-                TextInputCustom{
-                    id: ydiv
-                    Layout.columnSpan: 2
-                    Layout.fillWidth: true
-                    focusColor: Colors.mainColor2
-                    title: 'Intervalos'
-                    textHolder: 'Número de intervalos no eixo'
-                    defaultColor: '#fff'
-                    textColor: '#fff'
-                    validator: RegExpValidator{regExp: /^[0-9]+$/}
+                C.Dialog {
+                    id: dialog_eixoy
+                    title: 'Configurações do eixo y'
+                    titleColor: "#FFF"
+                    color: Colors.color1
+                    width: 300
+                    height: 350
+
+                    actions: C.Button {
+                        label: "FECHAR"
+                        visible: !root.actions
+                        onlyText: true
+                        radius: 5
+                        width: 90
+                        textColor: "#FF5252"
+                        color: "#505050"
+
+                        onClicked: {
+                            dialog_eixoy.close()
+                        }
+                    }
+
+                    ColumnLayout {
+                        anchors.fill: parent
+                        spacing: 5
+
+                        C.TextField {
+                            id: ymin
+                            Layout.columnSpan: 2
+                            Layout.fillWidth: true
+                            activeColor: Colors.mainColor2
+                            title: 'Y Mínimo'
+                            helperText: 'Menor valor de Y no gráfico'
+                            validator: RegExpValidator{regExp: /^[\-]?[0-9]+([\.]?[0-9]+)?$/}
+                        }
+                        C.TextField {
+                            id: ymax
+                            Layout.columnSpan: 2
+                            Layout.fillWidth: true
+                            activeColor: Colors.mainColor2
+                            title: 'Y Máximo'
+                            helperText: 'Maior valor de Y no gráfico'
+                            validator: RegExpValidator{regExp: /^[\-]?[0-9]+([\.]?[0-9]+)?$/}
+                        }
+                        C.TextField {
+                            id: ydiv
+                            Layout.columnSpan: 2
+                            Layout.fillWidth: true
+                            activeColor: Colors.mainColor2
+                            title: 'Intervalos'
+                            helperText: 'Número de intervalos no eixo'
+                            validator: RegExpValidator{regExp: /^[0-9]+$/}
+                        }
+                        C.CheckBoxCustom {
+                            id: log_eixoy
+                            Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+                            w: 20
+                            texto: 'Escala log'
+                            checked: false
+                        }
+                    }
                 }
 
-                CheckBoxCustom{
+                C.TextField {
+                    id: resMin
+                    Layout.fillWidth: true
+                    Layout.columnSpan: 6
+                    activeColor: Colors.mainColor2
+                    title: 'Resíduos - Y Mínimo'
+                    helperText: 'Y Minimo do gráfico de resíduos'
+                    validator: RegExpValidator{regExp: /^[\-]?[0-9]+([\.]?[0-9]+)?$/}
+                }
+
+                C.TextField {
+                    id: resMax
+                    Layout.fillWidth: true
+                    Layout.columnSpan: 6
+                    activeColor: Colors.mainColor2
+                    title: 'Resíduos - Y Máximo'
+                    helperText: 'Y Máximo do gráfico de resíduos'
+                    validator: RegExpValidator{regExp: /^[\-]?[0-9]+([\.]?[0-9]+)?$/}
+                }
+
+                C.CheckBoxCustom{
                     id: switchResiduos
                     Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                     Layout.columnSpan: 2
@@ -183,7 +265,7 @@ Item {
                     checked: false
                 }
 
-                CheckBoxCustom{
+                C.CheckBoxCustom{
                     id: switchGrade
                     Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                     Layout.columnSpan: 2
@@ -192,37 +274,13 @@ Item {
                     checked: false
                 }
 
-                CheckBoxCustom{
+                C.CheckBoxCustom{
                     id: switchLegend
                     Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                     Layout.columnSpan: 2
                     w: 20
                     texto: 'Legenda'
                     checked: false
-                }
-
-                TextInputCustom{
-                    id: resMin
-                    Layout.fillWidth: true
-                    Layout.columnSpan: 3
-                    focusColor: Colors.mainColor2
-                    title: 'Resíduos - Y Mínimo'
-                    textHolder: 'Y Minimo do gráfico de resíduos'
-                    defaultColor: '#fff'
-                    textColor: '#fff'
-                    validator: RegExpValidator{regExp: /^[\-]?[0-9]+([\.]?[0-9]+)?$/}
-                }
-
-                TextInputCustom{
-                    id: resMax
-                    Layout.fillWidth: true
-                    Layout.columnSpan: 3
-                    focusColor: Colors.mainColor2
-                    title: 'Resíduos - Y Máximo'
-                    textHolder: 'Y Máximo do gráfico de resíduos'
-                    defaultColor: '#fff'
-                    textColor: '#fff'
-                    validator: RegExpValidator{regExp: /^[\-]?[0-9]+([\.]?[0-9]+)?$/}
                 }
                 
                 GroupBox {
@@ -269,7 +327,7 @@ Item {
                             Layout.fillWidth: true
                         }
 
-                        TextButton{
+                        C.TextButton{
                             id: btnColor
                             Layout.fillWidth: true
                             primaryColor: Colors.c_button
@@ -424,7 +482,7 @@ Item {
                             Layout.fillHeight: false
                         }
 
-                        TextButton{
+                        C.TextButton{
                             id: btnColor_curve
                             Layout.fillWidth: true
                             primaryColor: Colors.c_button
