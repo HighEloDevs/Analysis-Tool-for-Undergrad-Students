@@ -229,6 +229,7 @@ class SinglePlot(QObject):
                         y_ro = y_r[outliers]
                 else:
                     y_r = model.residuo_dummy
+                    y_ri, y_ro = np.copy(y_r), np.array([])
                 if residuals:
                     self.canvas.switch_axes(hide_axes2=False)
                     if sigma_x and sigma_y:  # Caso considerar as duas incertezas
