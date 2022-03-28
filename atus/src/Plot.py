@@ -286,6 +286,9 @@ class SinglePlot(QObject):
                         px, py = model.get_predict(self.canvas.axes1.figure, left,
                                                    right)
 
+                    self.canvas.axes2.axline((0., 0.), slope = 0., color = curve_color,
+                    alpha = 0.65, zorder = 0)
+
                     # Making Plots
                     (line_func, ) = self.canvas.axes1.plot(
                         px,
