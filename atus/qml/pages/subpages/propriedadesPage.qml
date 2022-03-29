@@ -121,19 +121,19 @@ Item {
                         spacing: 5
 
                         C.TextField {
-                            id: xmin
-                            Layout.fillWidth: true
-                            activeColor: Colors.mainColor2
-                            title: 'X Mínimo'
-                            helperText: 'Menor valor de X no gráfico'
-                            validator: RegExpValidator{regExp: /^[\-]?[0-9]+([\.]?[0-9]+)?$/}
-                        }
-                        C.TextField {
                             id: xmax
                             Layout.fillWidth: true
                             activeColor: Colors.mainColor2
                             title: 'X Máximo'
                             helperText: 'Maior valor de X no gráfico'
+                            validator: RegExpValidator{regExp: /^[\-]?[0-9]+([\.]?[0-9]+)?$/}
+                        }
+                        C.TextField {
+                            id: xmin
+                            Layout.fillWidth: true
+                            activeColor: Colors.mainColor2
+                            title: 'X Mínimo'
+                            helperText: 'Menor valor de X no gráfico'
                             validator: RegExpValidator{regExp: /^[\-]?[0-9]+([\.]?[0-9]+)?$/}
                         }
                         C.TextField {
@@ -200,21 +200,21 @@ Item {
                         spacing: 5
 
                         C.TextField {
-                            id: ymin
-                            Layout.columnSpan: 2
-                            Layout.fillWidth: true
-                            activeColor: Colors.mainColor2
-                            title: 'Y Mínimo'
-                            helperText: 'Menor valor de Y no gráfico'
-                            validator: RegExpValidator{regExp: /^[\-]?[0-9]+([\.]?[0-9]+)?$/}
-                        }
-                        C.TextField {
                             id: ymax
                             Layout.columnSpan: 2
                             Layout.fillWidth: true
                             activeColor: Colors.mainColor2
                             title: 'Y Máximo'
                             helperText: 'Maior valor de Y no gráfico'
+                            validator: RegExpValidator{regExp: /^[\-]?[0-9]+([\.]?[0-9]+)?$/}
+                        }
+                        C.TextField {
+                            id: ymin
+                            Layout.columnSpan: 2
+                            Layout.fillWidth: true
+                            activeColor: Colors.mainColor2
+                            title: 'Y Mínimo'
+                            helperText: 'Menor valor de Y no gráfico'
                             validator: RegExpValidator{regExp: /^[\-]?[0-9]+([\.]?[0-9]+)?$/}
                         }
                         C.TextField {
@@ -237,6 +237,15 @@ Item {
                 }
 
                 C.TextField {
+                    id: resMax
+                    Layout.fillWidth: true
+                    Layout.columnSpan: 6
+                    activeColor: Colors.mainColor2
+                    title: 'Resíduos - Y Máximo'
+                    helperText: 'Y Máximo do gráfico de resíduos'
+                    validator: RegExpValidator{regExp: /^[\-]?[0-9]+([\.]?[0-9]+)?$/}
+                }
+                C.TextField {
                     id: resMin
                     Layout.fillWidth: true
                     Layout.columnSpan: 6
@@ -246,15 +255,6 @@ Item {
                     validator: RegExpValidator{regExp: /^[\-]?[0-9]+([\.]?[0-9]+)?$/}
                 }
 
-                C.TextField {
-                    id: resMax
-                    Layout.fillWidth: true
-                    Layout.columnSpan: 6
-                    activeColor: Colors.mainColor2
-                    title: 'Resíduos - Y Máximo'
-                    helperText: 'Y Máximo do gráfico de resíduos'
-                    validator: RegExpValidator{regExp: /^[\-]?[0-9]+([\.]?[0-9]+)?$/}
-                }
 
                 C.CheckBoxCustom{
                     id: switchResiduos
