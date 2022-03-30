@@ -734,8 +734,6 @@ class Model(QObject):
         self._report_fit += self.params_print()
         self._report_fit += "\n"
         self._mat_cov = self._result.covar
-        self._report_fit += "\nMatriz de covariância:\n\n" + self.matprint(
-            self._result.covar) + "\n"
         lista = list(self._params.keys())
         matriz_corr = np.zeros(
             (len(self._result.covar), len(self._result.covar)))
@@ -746,7 +744,9 @@ class Model(QObject):
                     self._dict[lista[i]][1] * self._dict[lista[j]][1])
         self._mat_corr = matriz_corr.round(3)
         self._report_fit += "\nMatriz de correlação:\n\n" + self.matprint(
-            self._mat_corr, ".3f") + "\n\n"
+            self._mat_corr, ".3f") + "\n"
+        self._report_fit += "Matriz de covariância:\n\n" + self.matprint(
+            self._result.covar, fmt = ".3e") + "\n\n"
         self._isvalid = True
 
     def __set_report_lm_special(self, x):
@@ -763,8 +763,6 @@ class Model(QObject):
             self._mat_cov = self._result.covar * inc_considerada_q
             self._report_fit += self.params_print2(inc_considerada)
             self._report_fit += "\n"
-            self._report_fit += "\nMatriz de covariância:\n\n" + self.matprint(
-                self._mat_cov) + "\n"
             lista = list(self._params.keys())
             matriz_corr = np.zeros(
                 (len(self._result.covar), len(self._result.covar)))
@@ -775,7 +773,9 @@ class Model(QObject):
                         self._dict2[lista[i]][1] * self._dict2[lista[j]][1])
             self._mat_corr = matriz_corr.round(3)
             self._report_fit += "\nMatriz de correlação:\n\n" + self.matprint(
-                self._mat_corr, ".3f") + "\n\n"
+                self._mat_corr, ".3f") + "\n"
+            self._report_fit += "Matriz de covariância:\n\n" + self.matprint(
+                self._mat_cov, fmt = ".3e") + "\n"
             self._isvalid = True
         except TypeError:
             self._msg_handler.raise_error(
@@ -792,8 +792,6 @@ class Model(QObject):
         self._report_fit += self.params_print()
         self._report_fit += "\n"
         self._mat_cov = self._result.cov_beta
-        self._report_fit += "\nMatriz de covariância:\n\n" + self.matprint(
-            self._result.cov_beta) + "\n"
         lista = list(self._params.keys())
         matriz_corr = np.zeros(
             (len(self._result.cov_beta), len(self._result.cov_beta)),
@@ -809,7 +807,9 @@ class Model(QObject):
                         self._dict[lista[i]][1] * self._dict[lista[j]][1])
         self._mat_corr = matriz_corr.round(3)
         self._report_fit += "\nMatriz de correlação:\n\n" + self.matprint(
-            self._mat_corr, ".3f") + "\n\n"
+            self._mat_corr, ".3f") + "\n"
+        self._report_fit += "Matriz de covariância:\n\n" + self.matprint(
+            self._result.cov_beta, fmt = ".3e") + "\n"
         self._isvalid = True
 
     @property
