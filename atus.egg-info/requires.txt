@@ -8,3 +8,4 @@ lmfit
 matplotlib_backend_qtquick
 pyqt5
 requests
+pytexit

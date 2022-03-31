@@ -6,9 +6,6 @@ createInstaller.iss
 instruction_new_version.txt
 pyproject.toml
 setup.py
-setup_cxfreeze.py
-atus/__init__.py
-atus/__main__.py
 atus/icon.ico
 atus/main.py
 atus/version.txt
@@ -28,8 +25,8 @@ atus/src/Model.py
 atus/src/Model_multiplot.py
 atus/src/MultiPlot.py
 atus/src/Plot.py
+atus/src/PyLatex.py
 atus/src/UpdateChecker.py
-atus/src/__init__.py
 atus/images/icons/add_white-24px.svg
 atus/images/icons/attach_file_white_24dp.svg
 atus/images/icons/calculator-18px.svg
@@ -92,10 +89,13 @@ atus/images/symbols/Produto.png
 atus/images/symbols/Quadrado.png
 atus/images/symbols/Triângulo.png
 atus/qml/colors.js
-atus/qml/main_windows.qml
+atus/qml/main_window.qml
 atus/qml/controls/AddButton.qml
+atus/qml/controls/Button.qml
+atus/qml/controls/CanvasWindow.qml
 atus/qml/controls/CheckBoxCustom.qml
 atus/qml/controls/ComboBoxCustom.qml
+atus/qml/controls/Dialog.qml
 atus/qml/controls/HistogramTable.qml
 atus/qml/controls/IconButton.qml
 atus/qml/controls/IconTextButton.qml
@@ -115,6 +115,7 @@ atus/qml/controls/TableData.qml
 atus/qml/controls/TableMultiPlot.qml
 atus/qml/controls/Tabs.qml
 atus/qml/controls/TextButton.qml
+atus/qml/controls/TextField.qml
 atus/qml/controls/TextInputCustom.qml
 atus/qml/controls/ToggleButton.qml
 atus/qml/controls/TopBarButton.qml
@@ -138,5 +139,5 @@ atus/src/Model.py
 atus/src/Model_multiplot.py
 atus/src/MultiPlot.py
 atus/src/Plot.py
+atus/src/PyLatex.py
 atus/src/UpdateChecker.py
-atus/src/__init__.py

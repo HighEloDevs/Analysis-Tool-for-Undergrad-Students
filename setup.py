@@ -29,7 +29,7 @@ setup(
     package_dir={"src": "src"},
     packages=["atus", "atus/src"],
     include_package_data=True,
-    python_requires=">=3.7",
+    python_requires=">=3.7, <3.10",
     entry_points={
         'console_scripts': ['atus = atus:main.main'],
     },
@@ -44,4 +44,5 @@ setup(
         "matplotlib_backend_qtquick",
         "pyqt5",
         "requests",
+        "pytexit",
     ])
