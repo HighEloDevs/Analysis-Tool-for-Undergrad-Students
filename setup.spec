@@ -12,7 +12,11 @@ block_cipher = None
 
 a = Analysis([os.path.join(dir, "atus", "main.py")],
              pathex=[
-               'atus'],
+               os.path.join(dir, "venv"),
+               os.path.join(dir, "venv", "Lib", "site-packages"),
+               'atus',
+               'atus/src'
+             ],
              binaries=[],
              datas=[
                 (os.path.join(dir, "atus", "images"), 'images'),
@@ -20,7 +24,7 @@ a = Analysis([os.path.join(dir, "atus", "main.py")],
                 (os.path.join(dir, "atus", "icon.ico"), '.'),
                 (os.path.join(dir, "atus", "version.txt"), '.')
              ],
-             hiddenimports=[],
+             hiddenimports=["pytexit"],
              hookspath=[],
              hooksconfig={},
              runtime_hooks=[],
@@ -47,7 +51,7 @@ exe = EXE(pyz,
           target_arch=None,
           codesign_identity=None,
           entitlements_file=None,
-          icon='os.path.join(dir, "atus", "icon.ico")')
+          icon=os.path.join(dir, "atus", "icon.ico"))
 
 coll = COLLECT(exe,
                a.binaries,
