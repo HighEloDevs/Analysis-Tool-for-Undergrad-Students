@@ -953,7 +953,7 @@ class Model(QObject):
             return np.zeros(len(self._data["x"]), dtype=float)
         elif wsx == False and wsy and self._has_sy and self._has_sx == False:
             return np.zeros(len(self._data["x"]), dtype=float)
-        return self._data["sy"]
+        return self._data["sy"].to_numpy()
 
     def createDummyModel(self):
         try:
