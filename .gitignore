@@ -1,6 +1,8 @@
 # This file is used to ignore files which are generated
 # ----------------------------------------------------------------------------
-
+node_modules
+# atus.egg-info
+env
 *~
 *.autosave
 *.a
@@ -82,4 +84,4 @@ CELULA_SOLAR_POT.json
 Dados.txt
 testes
 instaladores
-
+venv

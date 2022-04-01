@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "Analysis Tool for Undergrad Students"
-#define MyAppVersion "0.2.3"
+#define MyAppVersion "1.0.5.3"
 #define MyAppPublisher "High Elo Devs"
 #define MyAppURL "https://github.com/HighEloDevs/Analysis-Tool-for-Undergrad-Students"
 #define MyAppExeName "main.exe"
@@ -24,15 +24,19 @@ AppUpdatesURL={#MyAppURL}
 DefaultDirName={autopf}\{#MyAppName}
 ChangesAssociations=yes
 DisableProgramGroupPage=yes
-LicenseFile=C:\Users\leoei\Documents\GitHub\Analysis-Tool-for-Undergrad-Students\LICENSE
+LicenseFile=LICENSE
 ; Uncomment the following line to run in non administrative install mode (install for current user only.)
 ;PrivilegesRequired=lowest
-OutputDir=C:\Users\leoei\Documents\GitHub\Analysis-Tool-for-Undergrad-Students\instaladores
+OutputDir=dist
 OutputBaseFilename=ATUS-{#MyAppVersion}
-SetupIconFile=C:\Users\leoei\Documents\GitHub\Analysis-Tool-for-Undergrad-Students\icon.ico
-Compression=lzma
-SolidCompression=yes
+SetupIconFile=atus\icon.ico
 WizardStyle=modern
+SolidCompression=yes
+Compression=lzma2/ultra64
+LZMAUseSeparateProcess=yes
+LZMADictionarySize=1048576
+LZMANumFastBytes=273
+LZMANumBlockThreads=6
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
@@ -42,8 +46,8 @@ Name: "brazilianportuguese"; MessagesFile: "compiler:Languages\BrazilianPortugue
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "C:\Users\leoei\Documents\GitHub\Analysis-Tool-for-Undergrad-Students\build\exe.win-amd64-3.9\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\leoei\Documents\GitHub\Analysis-Tool-for-Undergrad-Students\build\exe.win-amd64-3.9\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "dist\atus_{#MyAppVersion}\main.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "dist\atus_{#MyAppVersion}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Registry]
@@ -58,5 +62,4 @@ Name: "{autoprograms}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
 Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
 
 [Run]
-Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall
-
+Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait
