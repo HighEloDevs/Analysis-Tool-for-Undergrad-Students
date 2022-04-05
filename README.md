@@ -18,7 +18,7 @@
 <h2 align="center">Documentação</h2>
 
 <p align="center">
-    Instruções para instalação e tutoriais de uso do ATUS podem ser encontradas na nossa <a href="atusweb.xyz">página</a>
+    Instruções para instalação e tutoriais de uso do ATUS podem ser encontradas na nossa <a href="https://www.atusweb.xyz/">página</a>
    
 <h2 align="center">Feedback</h2>
    
