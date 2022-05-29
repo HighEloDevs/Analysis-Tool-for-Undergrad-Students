@@ -263,7 +263,8 @@ class SinglePlot(QObject):
                             ssy_o = ssy[outliers]
                         self.plot_in_out(x_i, y_i, x_o, y_o,
                          kargs_errorbar, y_ri = y_ri, y_ro = y_ro,
-                         ssy_i = ssy_i, ssy_o = ssy_o)
+                         ssy_i = ssy_i, ssy_o = ssy_o,
+                         sx_i = sx_i, sx_o = sx_o)
                     self.canvas.set_axes_props_with_axes_2(
                         xmin,
                         xmax,
@@ -342,7 +343,8 @@ class SinglePlot(QObject):
                     # Making Plots
                     if sigma_x and sigma_y:  # Caso considerar as duas incertezas
                         self.plot_in_out(x_i, y_i, x_o, y_o,
-                         kargs_errorbar, sy_i = sy_i, sy_o = sy_o)
+                         kargs_errorbar, sy_i = sy_i, sy_o = sy_o,
+                         sx_i = sx_i, sx_o = sx_o)
                     elif (sigma_x is False
                           and sigma_y is False):  # Caso desconsiderar as duas
                         self.plot_in_out(x_i, y_i, x_o, y_o,
