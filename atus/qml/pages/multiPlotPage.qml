@@ -378,7 +378,7 @@ Item {
                 enabled: multiPlotTable.hasData
                 onClicked:{
                     multiPlotData['rowsData'] = multiPlotTable.dataShaped
-                    multiPlot.getData(multiPlotData)
+                    multiPlot.get_data(multiPlotData)
                 }
             }
         }
