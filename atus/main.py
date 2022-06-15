@@ -27,7 +27,9 @@ import os
 import sys
 
 import matplotlib.pyplot as plt
-from matplotlib_backend_qtquick.backend_qtquickagg import FigureCanvasQtQuickAgg
+from matplotlib_backend_qtquick_2.backend_qtquickagg import (
+    FigureCanvasQtQuickAgg,
+)
 from PyQt5.QtCore import QCoreApplication, QObject, Qt, QUrl, QThread
 from PyQt5.QtGui import QGuiApplication, QIcon
 from PyQt5.QtQml import QQmlApplicationEngine, qmlRegisterType
@@ -133,7 +135,7 @@ def main(pip: bool = True):
         sys.exit(-1)
 
     # Starting program
-    sys.exit(app.exec_())
+    sys.exit(app.exec_())  # app.exec PyQt6
 
 
 if __name__ == "__main__":

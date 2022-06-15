@@ -294,9 +294,10 @@ class Model(QObject):
         self._indices = np.arange(len(self._data.index))
         if self.xmin != self.xmax:
             self._indices = np.where((self.xmin <= self._data["x"])
-                               & (self.xmax >= self._data["x"]))[0]
-        x, y, sy, sx = x.iloc[self._indices].to_numpy(), y.iloc[self._indices].to_numpy(
-        ), sy.iloc[self._indices].to_numpy(), sx.iloc[self._indices].to_numpy()
+                                     & (self.xmax >= self._data["x"]))[0]
+        x, y, sy, sx = x.iloc[self._indices].to_numpy(), y.iloc[
+            self._indices].to_numpy(), sy.iloc[
+                self._indices].to_numpy(), sx.iloc[self._indices].to_numpy()
         data = None
         if self._has_sy and self._has_sx:  # Caso com as duas incs
             if wsx == True and wsy == True:
@@ -728,7 +729,7 @@ class Model(QObject):
     def __set_report_lm(self, x):
         '''Constrói a string com os resultados.'''
         self._report_fit = ""
-        self._report_fit += "\nAjuste: y = %s\n" % self._exp_model
+        self._report_fit += f"\nAjuste: y = {self._exp_model}\n"
         self._report_fit += "\nNGL  = %d" % (len(x) - self._result.nvarys)
         self._report_fit += "\nChi² = %f\n\n" % self._result.chisqr
         self._report_fit += self.params_print()
@@ -746,7 +747,7 @@ class Model(QObject):
         self._report_fit += "\nMatriz de correlação:\n\n" + self.matprint(
             self._mat_corr, ".3f") + "\n"
         self._report_fit += "Matriz de covariância:\n\n" + self.matprint(
-            self._result.covar, fmt = ".3e") + "\n\n"
+            self._result.covar, fmt=".3e") + "\n\n"
         self._isvalid = True
 
     def __set_report_lm_special(self, x):
@@ -755,7 +756,7 @@ class Model(QObject):
         inc_considerada = np.sqrt(self._result.chisqr / ngl) if ngl > 0 else 0
         inc_considerada_q = inc_considerada**2
         self._report_fit = ""
-        self._report_fit += "\nAjuste: y = %s\n" % self._exp_model
+        self._report_fit += f"\nAjuste: y = {self._exp_model}\n"
         self._report_fit += "\nNGL  = %d" % (ngl)
         self._report_fit += "\nSomatória dos resíduos absolutos ao quadrado = %f\n" % self._result.chisqr
         self._report_fit += "Incerteza considerada = %f\n\n" % inc_considerada
@@ -775,7 +776,7 @@ class Model(QObject):
             self._report_fit += "\nMatriz de correlação:\n\n" + self.matprint(
                 self._mat_corr, ".3f") + "\n"
             self._report_fit += "Matriz de covariância:\n\n" + self.matprint(
-                self._mat_cov, fmt = ".3e") + "\n"
+                self._mat_cov, fmt=".3e") + "\n"
             self._isvalid = True
         except TypeError:
             self._msg_handler.raise_error(
@@ -786,8 +787,8 @@ class Model(QObject):
     def __set_report_ODR(self, x):
         '''Constrói a string com os resultados.'''
         self._report_fit = ""
-        self._report_fit += "\nAjuste: y = %s\n" % self._exp_model
-        self._report_fit += "\nNGL  = %d" % (len(x) - len(self._par_var))
+        self._report_fit += f"\nAjuste: y = {self._exp_model}\n"
+        self._report_fit += f"\nNGL  = {len(x) - len(self._par_var)}"
         self._report_fit += "\nChi² = %f\n\n" % self._result.sum_square
         self._report_fit += self.params_print()
         self._report_fit += "\n"
@@ -809,7 +810,7 @@ class Model(QObject):
         self._report_fit += "\nMatriz de correlação:\n\n" + self.matprint(
             self._mat_corr, ".3f") + "\n"
         self._report_fit += "Matriz de covariância:\n\n" + self.matprint(
-            self._result.cov_beta, fmt = ".3e") + "\n"
+            self._result.cov_beta, fmt=".3e") + "\n"
         self._isvalid = True
 
     @property
@@ -842,8 +843,9 @@ class Model(QObject):
     @property
     def residuo(self):
         '''Retorna os valores de y_i - f(x_i).'''
-        return self._data["y"].to_numpy() - eval(f"self._model.eval({self._indVar}=self._data['x'].to_numpy())",
-                                                 None, {"self" : self})
+        return self._data["y"].to_numpy() - eval(
+            f"self._model.eval({self._indVar}=self._data['x'].to_numpy())",
+            None, {"self": self})
 
     @property
     def residuo_dummy(self):
@@ -895,15 +897,39 @@ class Model(QObject):
     @property
     def outliers(self):
         '''Retorna os pontos não usados no ajuste.'''
-        return np.array(list(set(np.arange(len(self._data))) - set(self._indices)))
+        return np.array(
+            list(set(np.arange(len(self._data))) - set(self._indices)))
+
+    @property
+    def exp_model(self):
+        '''Retorna a expressão do modelo.'''
+        return self._exp_model
+
+    @exp_model.setter
+    def exp_model(self, expression: str):
+        self._exp_model = expression
+
+    @property
+    def isvalid(self):
+        '''Retorna se o ajuste é válido.'''
+        return self._isvalid
+
+    @isvalid.setter
+    def isvalid(self, state: bool):
+        self._isvalid = state
+
+    @property
+    def params(self):
+        '''Retorna os parâmetros do modelo.'''
+        return self._params
 
     def get_predict_log(self, fig, x_min=None, x_max=None):
         '''Retorna a previsão do modelo.'''
         x_plot = np.logspace(np.log10(x_min), np.log10(x_max),
                              int(fig.get_size_inches()[0] * fig.dpi * 2.1))
         return x_plot, eval(
-            "self._model.eval(%s = x_plot, params = self._params)" %
-            self._indVar, None, {
+            f"self._model.eval({self._indVar} = x_plot, params = self._params)",
+            None, {
                 "x_plot": x_plot,
                 "self": self
             })
@@ -916,14 +942,14 @@ class Model(QObject):
                     x + self._data["sx"].iloc[i], x - self._data["sx"].iloc[i]
                 ])
                 y_prd = eval(
-                    "self._model.eval(%s = x, params = self._params)" %
-                    self._indVar, None, {
+                    f"self._model.eval({self._indVar} = x, params = self._params)",
+                    None, {
                         "x": x,
                         "self": self
                     })
                 y_var = eval(
-                    "self._model.eval(%s = x_var, params = self._params)" %
-                    self._indVar, None, {
+                    f"self._model.eval({self._indVar} = x_var, params = self._params)",
+                    None, {
                         "x_var": x_var,
                         "self": self
                     })
@@ -937,14 +963,14 @@ class Model(QObject):
                     x + self._data["sx"].iloc[i], x - self._data["sx"].iloc[i]
                 ])
                 y_prd = eval(
-                    "self._model.eval(%s = x, params = self._params)" %
-                    self._indVar, None, {
+                    f"self._model.eval({self._indVar} = x, params = self._params)",
+                    None, {
                         "x": x,
                         "self": self
                     })
                 y_var = eval(
-                    "self._model.eval(%s = x_var, params = self._params)" %
-                    self._indVar, None, {
+                    f"self._model.eval({self._indVar} = x_var, params = self._params)",
+                    None, {
                         "x_var": x_var,
                         "self": self
                     })

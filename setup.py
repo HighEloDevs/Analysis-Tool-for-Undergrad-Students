@@ -4,7 +4,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 with open('atus/version.txt') as version:
-    __VERSION__  = version.read()
+    __VERSION__ = version.read()
 
 setup(
     name="atus",
@@ -36,12 +36,11 @@ setup(
     install_requires=[
         "setuptools>=42",
         "wheel",
-        "matplotlib==3.4.2",
+        "matplotlib==3.5.2",
         "pandas",
         "numpy",
         "scipy",
         "lmfit",
-        "matplotlib_backend_qtquick",
         "pyqt5",
         "requests",
         "pytexit",
