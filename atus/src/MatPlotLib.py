@@ -30,8 +30,8 @@ from matplotlib import gridspec
 from matplotlib_backend_qtquick_2.backend_qtquick import (
     NavigationToolbar2QtQuick,
 )
-from PyQt5.QtCore import QObject, QUrl, pyqtProperty, pyqtSignal, pyqtSlot
-from PyQt5.QtGui import QGuiApplication, QPixmap
+from PyQt6.QtCore import QObject, QUrl, pyqtProperty, pyqtSignal, pyqtSlot
+from PyQt6.QtGui import QGuiApplication, QPixmap
 from .MessageHandler import MessageHandler
 
 

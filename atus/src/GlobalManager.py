@@ -23,8 +23,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-from PyQt5.QtCore import QObject, pyqtSlot, QUrl
+from PyQt6.QtCore import QObject, pyqtSlot, QUrl
 import os
+
 
 class GlobalManager(QObject):
     def __init__(self) -> None:
@@ -42,7 +43,7 @@ class GlobalManager(QObject):
 
     @pyqtSlot(str)
     def setLastFolder(self, path):
-        '''Set last folder opened by user'''
+        """Set last folder opened by user"""
         path = QUrl(path).toLocalFile()
 
         if os.path.isfile(path):
@@ -52,10 +53,10 @@ class GlobalManager(QObject):
 
     @pyqtSlot(result=QUrl)
     def getLastFolder(self):
-        '''Get last folder opened by user'''
+        """Get last folder opened by user"""
         return QUrl.fromLocalFile(self.last_folder)
 
     @pyqtSlot(result=QUrl)
     def getAtusDir(self):
-        '''Get ATUS's directory'''
+        """Get ATUS's directory"""
         return QUrl.fromLocalFile(self.atus_dir)

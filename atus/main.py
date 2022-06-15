@@ -30,10 +30,10 @@ import matplotlib.pyplot as plt
 from matplotlib_backend_qtquick_2.backend_qtquickagg import (
     FigureCanvasQtQuickAgg,
 )
-from PyQt5.QtCore import QCoreApplication, QObject, Qt, QUrl, QThread
-from PyQt5.QtGui import QGuiApplication, QIcon
-from PyQt5.QtQml import QQmlApplicationEngine, qmlRegisterType
-from PyQt5.QtWidgets import QApplication
+from PyQt6.QtCore import QCoreApplication, QObject, Qt, QUrl, QThread
+from PyQt6.QtGui import QGuiApplication, QIcon
+from PyQt6.QtQml import QQmlApplicationEngine, qmlRegisterType
+from PyQt6.QtWidgets import QApplication
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from src.GlobalManager import GlobalManager
@@ -62,7 +62,8 @@ def main(pip: bool = True):
 
     # Matplotlib stuff
     qmlRegisterType(FigureCanvasQtQuickAgg, "Canvas", 1, 0, "FigureCanvas")
-    QCoreApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
+    # QCoreApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
+    # QCoreApplication.setAttribute()
 
     # Setting up app
     app = QApplication(sys.argv)
@@ -92,7 +93,8 @@ def main(pip: bool = True):
     pylatex = PyLatex()
 
     thread = QThread()
-    thread.start(5)
+    # thread.start(5)
+    thread.start()
     pylatex.moveToThread(thread)
 
     # Creating 'link' between front-end and back-end
@@ -135,7 +137,8 @@ def main(pip: bool = True):
         sys.exit(-1)
 
     # Starting program
-    sys.exit(app.exec_())  # app.exec PyQt6
+    # sys.exit(app.exec_())  # app.exec PyQt6
+    sys.exit(app.exec())  # app.exec PyQt6
 
 
 if __name__ == "__main__":

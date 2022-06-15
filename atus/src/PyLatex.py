@@ -24,7 +24,7 @@ SOFTWARE.
 """
 
 from pytexit import py2tex
-from PyQt5.QtCore import QObject, pyqtSlot
+from PyQt6.QtCore import QObject, pyqtSlot
 from io import BytesIO
 import matplotlib.pyplot as plt
 

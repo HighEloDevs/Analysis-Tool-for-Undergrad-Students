@@ -25,40 +25,57 @@ SOFTWARE.
 
 from __future__ import print_function
 import os.path
+
 # from matplotlib_backend_qtquick.qt_compat import QtCore
-from PyQt5.QtCore import QObject, pyqtProperty, QUrl, pyqtSignal, pyqtSlot, QJsonValue
+from PyQt6.QtCore import (
+    QObject,
+    pyqtProperty,
+    QUrl,
+    pyqtSignal,
+    pyqtSlot,
+    QJsonValue,
+)
+
 # from googleapiclient.discovery import build
 # from googleapiclient.http import MediaFileUpload
 # from google_auth_oauthlib.flow import InstalledAppFlow
 # from google.auth.transport.requests import Request
 # from google.oauth2.credentials import Credentials
 
+
 class GDrive(QObject):
-    '''Class that interact with google drive API'''
+    """Class that interact with google drive API"""
+
     # Signals
-    informationSignal = pyqtSignal(QJsonValue, arguments='ownersInfo')
+    informationSignal = pyqtSignal(QJsonValue, arguments="ownersInfo")
 
     def __init__(self, messageHandler):
         super().__init__()
 
         # Paths
-        self.credsPath = os.path.join(os.path.abspath(__file__), '../../credentials.json')
-        self.tokenPath = os.path.join(os.path.expanduser('~/Documents'), 'token.json')
+        self.credsPath = os.path.join(
+            os.path.abspath(__file__), "../../credentials.json"
+        )
+        self.tokenPath = os.path.join(
+            os.path.expanduser("~/Documents"), "token.json"
+        )
 
         # print(self.credsPath)
         # print(self.tokenPath)
         # print(os.path.exists(self.credsPath))
         # print(os.path.exists(self.tokenPath))
-        
+
         # Properties
         self.messageHandler = messageHandler
         self.creds = None
         self.service = None
 
         # If modifying these scopes, delete the file token.json.
-        self.SCOPES = ['https://www.googleapis.com/auth/drive.metadata.readonly',
-                       'https://www.googleapis.com/auth/drive.appdata',
-                       'https://www.googleapis.com/auth/userinfo.profile']
+        self.SCOPES = [
+            "https://www.googleapis.com/auth/drive.metadata.readonly",
+            "https://www.googleapis.com/auth/drive.appdata",
+            "https://www.googleapis.com/auth/userinfo.profile",
+        ]
 
     # @pyqtSlot()
     # def tryLogin(self):
@@ -93,11 +110,11 @@ class GDrive(QObject):
     #         # Save the credentials for the next run
     #         with open(self.tokenPath, 'w') as token:
     #             token.write(self.creds.to_json())
-            
+
     #         # Mounting drive
     #         about = self.getDrive()
     #         self.informationSignal.emit(QJsonValue.fromVariant(about))
-    
+
     # @pyqtSlot()
     # def logout(self):
     #     '''

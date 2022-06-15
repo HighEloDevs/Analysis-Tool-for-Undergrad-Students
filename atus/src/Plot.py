@@ -23,7 +23,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-from PyQt5.QtCore import QObject, QJsonValue, QUrl, pyqtSignal, pyqtSlot
+from PyQt6.QtCore import QObject, QJsonValue, QUrl, pyqtSignal, pyqtSlot
 from src.Calculators import interpreter_calculator, plot
 from matplotlib import colors
 
