@@ -158,7 +158,7 @@ class Canvas(QObject):
         ydiv = self.make_int(ydiv, divs_y)
 
         if grid:
-            self.axes1.grid(True, which="major")
+            self.axes1.grid(True, which="major", zorder=-4)
         if log_y:
             self.axes1.set_yscale("log")
         if log_x:
@@ -234,8 +234,8 @@ class Canvas(QObject):
                 self.axes1.set_ylim(bottom=ymin, top=ymax)
 
         if grid:
-            self.axes1.grid(True, which="major")
-            self.axes2.grid(True, which="major")
+            self.axes1.grid(True, which="major", zorder=-4)
+            self.axes2.grid(True, which="major", zorder=-4)
         if log_y:
             self.axes1.set_yscale("log")
         if log_x:
