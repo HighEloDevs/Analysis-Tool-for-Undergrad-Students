@@ -31,28 +31,31 @@ import datetime
 import os
 import time
 
+
 class UpdateChecker(QObject):
-    showUpdate = pyqtSignal(QJsonValue, arguments='infos')
-    updateProgress = pyqtSignal(float, arguments='infos')
+    showUpdate = pyqtSignal(QJsonValue, arguments="infos")
+    updateProgress = pyqtSignal(float, arguments="infos")
     updateOnWindows = pyqtSignal()
 
     class Updater(QObject):
-        updateProgress = pyqtSignal(float, arguments='infos')
+        updateProgress = pyqtSignal(float, arguments="infos")
 
         @pyqtSlot()
         def updateOnWindows(self):
             # Where to save the file
-            savePath = os.path.join(os.environ["HOMEPATH"], 'Downloads')
+            savePath = os.path.join(os.environ["HOMEPATH"], "Downloads")
 
             # Getting download URL
-            response = requests.get('https://api.github.com/repos/HighEloDevs/Analysis-Tool-for-Undergrad-Students/releases/latest')
+            response = requests.get(
+                "https://api.github.com/repos/HighEloDevs/Analysis-Tool-for-Undergrad-Students/releases/latest"
+            )
             infos = response.json()
-            exeUrl = infos['assets'][0]['browser_download_url']
-            
-            with open(os.path.join(savePath, 'atus.exe'), "wb") as f:
+            exeUrl = infos["assets"][0]["browser_download_url"]
+
+            with open(os.path.join(savePath, "atus.exe"), "wb") as f:
                 dl = 0
                 exe = requests.get(exeUrl, allow_redirects=True, stream=True)
-                total_length = exe.headers.get('content-length')
+                total_length = exe.headers.get("content-length")
                 total_length = int(total_length)
                 for i in exe.iter_content(chunk_size=1024 * 1024):
                     dl += len(i)
@@ -64,22 +67,24 @@ class UpdateChecker(QObject):
             # Running .exe
             # This runs in silent mode
             os.chdir(savePath)
-            os.system('atus.exe /verysilent')
+            os.system("atus.exe /verysilent")
             os.remove("atus.exe")
 
     def __init__(self, pip) -> None:
         super().__init__()
-        
+
         # URL to last release
-        self.gitHubApiUrl = 'https://api.github.com/repos/HighEloDevs/Analysis-Tool-for-Undergrad-Students/releases/latest'
+        self.gitHubApiUrl = "https://api.github.com/repos/HighEloDevs/Analysis-Tool-for-Undergrad-Students/releases/latest"
 
         # Current version
         try:
-            with open(os.path.join(os.path.dirname(__file__), "..", "version.txt")) as version:
-                self.__VERSION__  = version.read()
+            with open(
+                os.path.join(os.path.dirname(__file__), "..", "version.txt")
+            ) as version:
+                self.__VERSION__ = version.read()
         except:
             with open("./version.txt") as version:
-                self.__VERSION__  = version.read()
+                self.__VERSION__ = version.read()
 
         self.isUpdate = True
         self.pip = pip
@@ -90,23 +95,28 @@ class UpdateChecker(QObject):
         self.updater.moveToThread(self.updaterThread)
         self.updater.updateProgress.connect(self.updateProgress)
         self.updateOnWindows.connect(self.updater.updateOnWindows)
-        
+
     @pyqtSlot()
-    def checkUpdate(self):        
+    def checkUpdate(self):
         response = requests.get(self.gitHubApiUrl)
 
         if response.status_code == 200:
             infos = response.json()
             # Parsing publish date
-            infos["published_at"] = datetime.datetime.strptime(infos["published_at"], '%Y-%m-%dT%XZ').strftime('%d/%m/%Y')
-            
-            version = infos['tag_name']
+            infos["published_at"] = datetime.datetime.strptime(
+                infos["published_at"], "%Y-%m-%dT%XZ"
+            ).strftime("%d/%m/%Y")
+
+            version = infos["tag_name"]
             if version != self.__VERSION__:
+                self.__VERSION__ = (
+                    self.__VERSION__ + " Há uma nova versão disponível!"
+                )
                 self.showUpdate.emit(QJsonValue.fromVariant(infos))
 
     @pyqtSlot(result=str)
     def getVersion(self):
-        return 'v' + self.__VERSION__
+        return "v" + self.__VERSION__
 
     @pyqtSlot(result=str)
     def getOS(self):
