@@ -1,2 +1,3 @@
 graft atus/images
 graft atus/qml
+graft atus/matplotlib_backend_qtquick_2
