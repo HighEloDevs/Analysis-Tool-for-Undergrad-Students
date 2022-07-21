@@ -191,7 +191,7 @@ Item {
                     Layout.topMargin: 5
                     text: "Dados do Ajuste"
                     color: "#fff"
-                    font.pointSize: 9
+                    font.pointSize: 10
                     font.bold: true
                 }
                 ScrollView {
@@ -202,7 +202,7 @@ Item {
                         color: "#ffffff"
                         text: ""
                         anchors.fill: parent
-                        font.pointSize: 10
+                        font.pointSize: 12
                         readOnly: true
                         selectByMouse: true
                     }

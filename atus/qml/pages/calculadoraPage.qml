@@ -203,7 +203,7 @@ Item {
                                     color: "#ffffff"
                                     horizontalAlignment: Text.AlignHCenter
                                     verticalAlignment: Text.AlignVCenter
-                                    font.pointSize: 12
+                                    font.pointSize: 15
                                     selectByMouse: true
                                     readOnly: true
                                 }
