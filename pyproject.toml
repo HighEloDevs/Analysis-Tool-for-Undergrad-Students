@@ -7,9 +7,7 @@ requires = [
     "numpy",
     "scipy",
     "lmfit",
-    "matplotlib_backend_qtquick",
     "pyqt5",
     "requests",
-    "pytexit",
 ]
 build-backend = "setuptools.build_meta"
