@@ -42,6 +42,5 @@ setup(
         "lmfit",
         "pyqt5",
         "requests",
-        "pytexit",
     ],
 )

@@ -45,7 +45,7 @@ from src.Model import Model
 from src.MultiPlot import Multiplot
 from src.Plot import SinglePlot
 from src.UpdateChecker import UpdateChecker
-from src.PyLatex import PyLatex
+# from src.PyLatex import PyLatex
 
 plt.rcParams["ytick.minor.visible"] = False
 plt.rcParams["xtick.minor.visible"] = False
@@ -89,11 +89,11 @@ def main(pip: bool = True):
     histogram = Histogram(canvas, messageHandler)
     gdrive = GDrive(messageHandler)
     globalManager = GlobalManager()
-    pylatex = PyLatex()
+    # pylatex = PyLatex()
 
     thread = QThread()
     thread.start(5)
-    pylatex.moveToThread(thread)
+    # pylatex.moveToThread(thread)
 
     # Creating 'link' between front-end and back-end
     context = engine.rootContext()
@@ -106,7 +106,7 @@ def main(pip: bool = True):
     context.setContextProperty("hist", histogram)
     context.setContextProperty("gdrive", gdrive)
     context.setContextProperty("globalManager", globalManager)
-    context.setContextProperty("pylatex", pylatex)
+    # context.setContextProperty("pylatex", pylatex)
 
     # Loading canvas window
     engine.load(

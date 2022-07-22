@@ -41,29 +41,29 @@ Item {
             prefixText: 'f(x) ='
             validator: RegExpValidator{regExp: /^[0-9a-zA-Z.()>=<\-*^;_+/ ]+$/}
 
-            onTextEdited: {
-                let svg = pylatex.py2svg(expression.text)
-                if (svg !== "") expressionImage.source = "data:image/svg+xml;utf8," + svg
-            }
+            // onTextEdited: {
+            //     let svg = pylatex.py2svg(expression.text)
+            //     if (svg !== "") expressionImage.source = "data:image/svg+xml;utf8," + svg
+            // }
 
-            Popup {
-                id: expressionDisplay
-                visible: expression.activeFocus && expression.text
-                width: expressionImage.width
-                height: 48
+            // Popup {
+            //     id: expressionDisplay
+            //     visible: expression.activeFocus && expression.text
+            //     width: expressionImage.width
+            //     height: 48
 
-                x: expression.width + 10
+            //     x: expression.width + 10
 
-                background: Rectangle {
-                    color: Colors.color2
-                    radius: 3
-                }
+            //     background: Rectangle {
+            //         color: Colors.color2
+            //         radius: 3
+            //     }
 
-                Image {
-                    id: expressionImage
-                    anchors.centerIn: parent
-                }
-            }
+            //     Image {
+            //         id: expressionImage
+            //         anchors.centerIn: parent
+            //     }
+            // }
         }
 
         C.TextField {
