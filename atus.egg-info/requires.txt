@@ -1,0 +1,9 @@
+setuptools>=42
+wheel
+matplotlib==3.5.2
+pandas
+numpy
+scipy
+lmfit
+pyqt5
+requests
