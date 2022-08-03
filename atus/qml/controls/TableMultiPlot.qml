@@ -38,7 +38,9 @@ Item {
         func: true,
         label: '',
         markerColor: '#000',
-        curve: ''
+        curve: '',
+        marker_size: '',
+        curve_thickness: ''
     })
 
     function addRow(){
@@ -79,6 +81,8 @@ Item {
         dataShaped[options['row']]['curve'] = curveStyles[options['curve']]
         dataShaped[options['row']]['func'] = true
         dataShaped[options['row']]['marker'] = true
+        dataShaped[options['row']]['marker_size'] = options['marker_size']
+        dataShaped[options['row']]['curve_thickness'] = options['curve_thickness']
         root.check_data()
     }
 
@@ -101,6 +105,8 @@ Item {
         dataShaped[options['row']]['label'] = options['projectName']
         dataShaped[options['row']]['markerColor'] = options['symbolColor']
         dataShaped[options['row']]['curve'] = curveStyles[options['curve']]
+        dataShaped[options['row']]['marker_size'] = options['marker_size']
+        dataShaped[options['row']]['curve_thickness'] = options['curve_thickness']
     }
 
     function check_data(){

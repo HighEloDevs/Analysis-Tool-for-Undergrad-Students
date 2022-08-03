@@ -27,9 +27,12 @@ import os
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib import gridspec
-from matplotlib_backend_qtquick.backend_qtquick import NavigationToolbar2QtQuick
+from matplotlib_backend_qtquick_2.backend_qtquick import (
+    NavigationToolbar2QtQuick,
+)
 from PyQt5.QtCore import QObject, QUrl, pyqtProperty, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QGuiApplication, QPixmap
+from .MessageHandler import MessageHandler
 
 
 class Canvas(QObject):
@@ -38,7 +41,7 @@ class Canvas(QObject):
     # Some signals for the frontend
     coordinates_changed = pyqtSignal(str)
 
-    def __init__(self, message_handler):
+    def __init__(self, message_handler: MessageHandler):
         super().__init__()
 
         self.message_handler = message_handler
@@ -59,25 +62,25 @@ class Canvas(QObject):
         self.right = 0.95
         self.figmode = 0
         self.legend_loc_dict = {
-            "Automático" : 0,
-            "Direita-Superior" : 1,
-            "Esquerda-Superior" : 2,
-            "Esquerda-Inferior" : 3,
-            "Direita-Inferior" : 4,
-            "Esquerda-Centro" : 6,
-            "Direita-Centro" : 7,
-            "Centro-Inferior" : 8,
-            "Centro-Superior" : 9,
-            "Centro-Centro" : 10
+            "Automático": 0,
+            "Direita-Superior": 1,
+            "Esquerda-Superior": 2,
+            "Esquerda-Inferior": 3,
+            "Direita-Inferior": 4,
+            "Esquerda-Centro": 6,
+            "Direita-Centro": 7,
+            "Centro-Inferior": 8,
+            "Centro-Superior": 9,
+            "Centro-Centro": 10,
         }
         self.legend_loc = "best"
         self.dpi = 500
         self.font_sizes = {
-            "titulo" : 12,
-            "residuos" : 12,
-            "legenda" : 12,
-            "eixo_x" : 12,
-            "eixo_y" : 12,
+            "titulo": 12,
+            "residuos": 12,
+            "legenda": 12,
+            "eixo_x": 12,
+            "eixo_y": 12,
         }
         self.user_alpha_outliers = 0.25
         self.user_color_outliers = None
@@ -89,25 +92,23 @@ class Canvas(QObject):
         self.canvas = canvas
         self.figure = self.canvas.figure
         self.toolbar = NavigationToolbar2QtQuick(canvas=canvas)
-        self.gm = gridspec.GridSpec(2,
-                                    1,
-                                    figure=self.figure,
-                                    height_ratios=[3.0, 1.0])
-        self.gs = gridspec.GridSpec(1,
-                                    1,
-                                    figure=self.figure,
-                                    height_ratios=[1.0])
-        self.axes1 = self.figure.add_subplot(self.gm[0],
-                                             picker=True,
-                                             autoscale_on=True)
-        self.axes2 = self.figure.add_subplot(self.gm[1],
-                                             picker=True,
-                                             sharex=self.axes1,
-                                             autoscale_on=False)
+        self.gm = gridspec.GridSpec(
+            2, 1, figure=self.figure, height_ratios=[3.0, 1.0]
+        )
+        self.gs = gridspec.GridSpec(
+            1, 1, figure=self.figure, height_ratios=[1.0]
+        )
+        self.axes1 = self.figure.add_subplot(
+            self.gm[0], picker=True, autoscale_on=True
+        )
+        self.axes2 = self.figure.add_subplot(
+            self.gm[1], picker=True, sharex=self.axes1, autoscale_on=False
+        )
         self.set_tight_layout()
         self.axes2.set_visible(False)
-        self.axes1.set_position(self.gs[:, :].get_position(self.figure),
-                                which="original")
+        self.axes1.set_position(
+            self.gs[:, :].get_position(self.figure), which="original"
+        )
         self.axes1.grid(False)
         self.canvas.draw_idle()
 
@@ -128,19 +129,23 @@ class Canvas(QObject):
         """Função que oculta ou não o eixo secundário."""
         if hide_axes2:
             self.axes2.set_visible(False)
-            self.axes1.set_position(self.gs[0].get_position(self.figure),
-                                    which="both")
+            self.axes1.set_position(
+                self.gs[0].get_position(self.figure), which="both"
+            )
             self.figmode = 0
         else:
             self.axes2.set_visible(True)
-            self.axes1.set_position(self.gm[0].get_position(self.figure),
-                                    which="both")
-            self.axes2.set_position(self.gm[1].get_position(self.figure),
-                                    which="both")
+            self.axes1.set_position(
+                self.gm[0].get_position(self.figure), which="both"
+            )
+            self.axes2.set_position(
+                self.gm[1].get_position(self.figure), which="both"
+            )
             self.figmode = 1
 
-    def set_axes_props_without_axes_2(self, xmin, xmax, xdiv, ymin, ymax, ydiv,
-                                      grid, log_x, log_y):
+    def set_axes_props_without_axes_2(
+        self, xmin, xmax, xdiv, ymin, ymax, ydiv, grid, log_x, log_y
+    ):
         left, right = self.axes1.get_xlim()
         bottom, top = self.axes1.get_ylim()
         divs_x = len(self.axes1.get_xticks()) - 1
@@ -153,7 +158,7 @@ class Canvas(QObject):
         ydiv = self.make_int(ydiv, divs_y)
 
         if grid:
-            self.axes1.grid(True, which="major")
+            self.axes1.grid(True, which="major", zorder=-4)
         if log_y:
             self.axes1.set_yscale("log")
         if log_x:
@@ -175,8 +180,20 @@ class Canvas(QObject):
                 self.axes1.set_yticks(np.linspace(ymin, ymax, ydiv + 1))
                 self.axes1.set_ylim(bottom=ymin, top=ymax)
 
-    def set_axes_props_with_axes_2(self, xmin, xmax, xdiv, ymin, ymax, ydiv,
-                                   resmin, resmax, grid, log_x, log_y):
+    def set_axes_props_with_axes_2(
+        self,
+        xmin,
+        xmax,
+        xdiv,
+        ymin,
+        ymax,
+        ydiv,
+        resmin,
+        resmax,
+        grid,
+        log_x,
+        log_y,
+    ):
         left, right = self.axes1.get_xlim()
         bottom, top = self.axes1.get_ylim()
         botres, topres = self.axes2.get_ylim()
@@ -189,8 +206,10 @@ class Canvas(QObject):
         ymin = self.make_float(ymin, bottom)
         ymax = self.make_float(ymax, top)
         ydiv = self.make_int(ydiv, divs_y)
-        self.axes2.set_ylim(bottom=self.make_float(resmin, botres),
-                            top=self.make_float(resmax, topres))
+        self.axes2.set_ylim(
+            bottom=self.make_float(resmin, botres),
+            top=self.make_float(resmax, topres),
+        )
         if xdiv != divs_x:
             self.axes1.set_xticks(np.linspace(xmin, xmax, xdiv + 1))
             self.axes2.set_xticks(np.linspace(xmin, xmax, xdiv + 1))
@@ -215,24 +234,42 @@ class Canvas(QObject):
                 self.axes1.set_ylim(bottom=ymin, top=ymax)
 
         if grid:
-            self.axes1.grid(True, which="major")
-            self.axes2.grid(True, which="major")
+            self.axes1.grid(True, which="major", zorder=-4)
+            self.axes2.grid(True, which="major", zorder=-4)
         if log_y:
             self.axes1.set_yscale("log")
         if log_x:
             self.axes1.set_xscale("log")
         plt.setp(self.axes1.get_xticklabels(), visible=False)
 
-    def plot_error_bar(self, x, y, kargs_errorbar, alpha, sy= None, sx = None, y_r = None, ssy = None):
-        self.axes1.errorbar(x, y, yerr=sy, xerr=sx, alpha = alpha, **kargs_errorbar)
+    def plot_error_bar(
+        self, x, y, kargs_errorbar, alpha, sy=None, sx=None, y_r=None, ssy=None
+    ):
+        """Deprecada."""
+        self.axes1.errorbar(
+            x, y, yerr=sy, xerr=sx, alpha=alpha, **kargs_errorbar
+        )
         if y_r is not None:
-            self.axes2.errorbar(x, y_r, yerr=ssy, alpha = alpha, **kargs_errorbar)
+            self.axes2.errorbar(x, y_r, yerr=ssy, alpha=alpha, **kargs_errorbar)
+
+    def plot_error_bar_new(
+        self, x, y, sy, sx, kargs_errorbar, y_r=None, ssy=None
+    ):
+        """Faz o plot das barras de erro."""
+        self.axes1.errorbar(x, y, yerr=sy, xerr=sx, ms=0, **kargs_errorbar)
+        if y_r is not None:
+            self.axes2.errorbar(x, y_r, yerr=ssy, ms=0, **kargs_errorbar)
+
+    def plot_scatter(self, x, y, kargs_scatter, y_r=None):
+        """Faz o plot dos pontos."""
+        self.axes1.scatter(x, y, **kargs_scatter)
+        if y_r is not None:
+            self.axes2.scatter(x, y_r, **kargs_scatter)
 
     def set_tight_layout(self):
-        self.figure.subplots_adjust(left=self.left,
-                                    bottom=self.bottom,
-                                    right=self.right,
-                                    top=self.top)
+        self.figure.subplots_adjust(
+            left=self.left, bottom=self.bottom, right=self.right, top=self.top
+        )
 
     def make_float(self, var, valor):
         try:
@@ -265,15 +302,19 @@ class Canvas(QObject):
             self.message_handler.raise_error("Paddings invalidos.")
             return None
         if self.figmode:
-            self.figure.subplots_adjust(left=self.left,
-                                        bottom=self.bottom,
-                                        right=self.right,
-                                        top=self.top)
+            self.figure.subplots_adjust(
+                left=self.left,
+                bottom=self.bottom,
+                right=self.right,
+                top=self.top,
+            )
         else:
-            self.figure.subplots_adjust(left=self.left,
-                                        bottom=self.bottom,
-                                        right=self.right,
-                                        top=self.top)
+            self.figure.subplots_adjust(
+                left=self.left,
+                bottom=self.bottom,
+                right=self.right,
+                top=self.top,
+            )
             self.switch_axes()
         self.canvas.draw_idle()
 
@@ -291,10 +332,15 @@ class Canvas(QObject):
 
         if transparent and extension != "png":
             self.message_handler.raise_warn(
-                "O fundo transparente funciona apenas na extensão .png")
-            self.canvas.figure.savefig(path, dpi = self.dpi, transparent = transparent)
+                "O fundo transparente funciona apenas na extensão .png"
+            )
+            self.canvas.figure.savefig(
+                path, dpi=self.dpi, transparent=transparent
+            )
         else:
-            self.canvas.figure.savefig(path, dpi = self.dpi, transparent = transparent)
+            self.canvas.figure.savefig(
+                path, dpi=self.dpi, transparent=transparent
+            )
             self.message_handler.raise_success("Imagem salva com sucesso!")
 
     @pyqtSlot()
@@ -305,15 +351,15 @@ class Canvas(QObject):
 
         # Saving image to a path
         try:
-            path = os.path.join(os.path.expanduser(r"~\Documents"),
-                                "image.png")
+            path = os.path.join(os.path.expanduser(r"~\Documents"), "image.png")
             self.canvas.figure.savefig(path, dpi=150, transparent=False)
             pixmap = QPixmap()
             # Loading image as pixmap and saving to clipboard
             if pixmap.load(path):
                 clipboard.setImage(pixmap.toImage())
                 self.message_handler.raise_success(
-                    "Copiado com sucesso para a área de transferência!")
+                    "Copiado com sucesso para a área de transferência!"
+                )
             os.remove(path)
         except:
             self.message_handler.raise_error(
@@ -384,26 +430,42 @@ class Canvas(QObject):
     @pyqtSlot()
     def resize_canvas(self):
         """Resizes the figure to fit the canvas"""
-        self.canvas.geometryChanged(self.canvas.boundingRect(),
-                                    self.canvas.boundingRect())
+        self.canvas.geometryChanged(
+            self.canvas.boundingRect(), self.canvas.boundingRect()
+        )
 
     @pyqtSlot(int, int, int, int, int)
-    def set_font_sizes(self, title_size, x_size, y_size, residual_size,
-                       caption_size):
+    def set_font_sizes(
+        self, title_size, x_size, y_size, residual_size, caption_size
+    ):
         self.font_sizes["titulo"] = title_size
         self.font_sizes["eixo_x"] = x_size
         self.font_sizes["eixo_y"] = y_size
         self.font_sizes["residuos"] = residual_size
         self.font_sizes["legenda"] = caption_size
         if self.figmode:
-            self.axes1.set_title(self.axes1.get_title(), fontsize=self.font_sizes["titulo"])
-            self.axes1.set_ylabel(self.axes1.get_ylabel(), fontsize=self.font_sizes["eixo_y"])
-            self.axes2.set_xlabel(self.axes2.get_xlabel(), fontsize=self.font_sizes["eixo_x"])
-            self.axes2.set_ylabel(self.axes2.get_ylabel(), fontsize=self.font_sizes["residuos"])
+            self.axes1.set_title(
+                self.axes1.get_title(), fontsize=self.font_sizes["titulo"]
+            )
+            self.axes1.set_ylabel(
+                self.axes1.get_ylabel(), fontsize=self.font_sizes["eixo_y"]
+            )
+            self.axes2.set_xlabel(
+                self.axes2.get_xlabel(), fontsize=self.font_sizes["eixo_x"]
+            )
+            self.axes2.set_ylabel(
+                self.axes2.get_ylabel(), fontsize=self.font_sizes["residuos"]
+            )
         else:
-            self.axes1.set_title(self.axes1.get_title(), fontsize=self.font_sizes["titulo"])
-            self.axes1.set_xlabel(self.axes1.get_xlabel(), fontsize=self.font_sizes["eixo_x"])
-            self.axes1.set_ylabel(self.axes1.get_ylabel(), fontsize=self.font_sizes["eixo_y"])
+            self.axes1.set_title(
+                self.axes1.get_title(), fontsize=self.font_sizes["titulo"]
+            )
+            self.axes1.set_xlabel(
+                self.axes1.get_xlabel(), fontsize=self.font_sizes["eixo_x"]
+            )
+            self.axes1.set_ylabel(
+                self.axes1.get_ylabel(), fontsize=self.font_sizes["eixo_y"]
+            )
         self.canvas.draw_idle()
 
     @pyqtSlot(str)
@@ -411,15 +473,16 @@ class Canvas(QObject):
         self.legend_loc = self.legend_loc_dict[position]
         if self.axes1.get_legend():
             h, l = self.axes1.get_legend_handles_labels()
-            self.axes1.legend(h, l, loc=self.legend_loc,
-                 fontsize=self.font_sizes["legenda"])
+            self.axes1.legend(
+                h, l, loc=self.legend_loc, fontsize=self.font_sizes["legenda"]
+            )
 
     @pyqtSlot(int)
     def set_dpi(self, dpi):
         self.dpi = dpi
 
     @pyqtSlot(float)
-    def set_opacity_outliers(self, value:int):
+    def set_opacity_outliers(self, value: int):
         self.user_alpha_outliers = value
 
     def on_motion(self, event):
@@ -427,7 +490,6 @@ class Canvas(QObject):
         if event.inaxes in (self.axes1, self.axes2):
             self.coordinates = f"({event.xdata:.2f}, {event.ydata:.2f})"
 
-    coordinates = pyqtProperty(str,
-                               get_coordinates,
-                               set_coordinates,
-                               notify=coordinates_changed)
+    coordinates = pyqtProperty(
+        str, get_coordinates, set_coordinates, notify=coordinates_changed
+    )

@@ -27,7 +27,7 @@ T.TextField {
     leftPadding: 0 + (prefixText == "" ? 16:_prefix.width+5)
     rightPadding: 10 + (suffixText == "" ? 0:root.suffixText.length*_suffix.font.pointSize + _suffix.rightPadding) + (resetButton ? _resetButton.width+4:0)
 
-    font.pixelSize: 13
+    font.pixelSize: 14
     font.weight: Font.Light
     font.family: 'Roboto'
     font.letterSpacing: 1

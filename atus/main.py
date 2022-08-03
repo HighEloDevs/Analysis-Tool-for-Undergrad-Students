@@ -27,7 +27,9 @@ import os
 import sys
 
 import matplotlib.pyplot as plt
-from matplotlib_backend_qtquick.backend_qtquickagg import FigureCanvasQtQuickAgg
+from .matplotlib_backend_qtquick_2.backend_qtquickagg import (
+    FigureCanvasQtQuickAgg,
+)
 from PyQt5.QtCore import QCoreApplication, QObject, Qt, QUrl, QThread
 from PyQt5.QtGui import QGuiApplication, QIcon
 from PyQt5.QtQml import QQmlApplicationEngine, qmlRegisterType
@@ -43,7 +45,8 @@ from src.Model import Model
 from src.MultiPlot import Multiplot
 from src.Plot import SinglePlot
 from src.UpdateChecker import UpdateChecker
-from src.PyLatex import PyLatex
+
+# from src.PyLatex import PyLatex
 
 plt.rcParams["ytick.minor.visible"] = False
 plt.rcParams["xtick.minor.visible"] = False
@@ -87,11 +90,11 @@ def main(pip: bool = True):
     histogram = Histogram(canvas, messageHandler)
     gdrive = GDrive(messageHandler)
     globalManager = GlobalManager()
-    pylatex = PyLatex()
+    # pylatex = PyLatex()
 
     thread = QThread()
     thread.start(5)
-    pylatex.moveToThread(thread)
+    # pylatex.moveToThread(thread)
 
     # Creating 'link' between front-end and back-end
     context = engine.rootContext()
@@ -104,7 +107,7 @@ def main(pip: bool = True):
     context.setContextProperty("hist", histogram)
     context.setContextProperty("gdrive", gdrive)
     context.setContextProperty("globalManager", globalManager)
-    context.setContextProperty("pylatex", pylatex)
+    # context.setContextProperty("pylatex", pylatex)
 
     # Loading canvas window
     engine.load(
@@ -133,7 +136,7 @@ def main(pip: bool = True):
         sys.exit(-1)
 
     # Starting program
-    sys.exit(app.exec_())
+    sys.exit(app.exec_())  # app.exec PyQt6
 
 
 if __name__ == "__main__":
