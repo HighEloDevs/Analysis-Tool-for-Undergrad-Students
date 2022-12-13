@@ -179,6 +179,12 @@ class Model(QObject):
                         "Separação de colunas de arquivos csv são com vírgula (','). Rever dados de entrada."
                     )
                     return None
+                
+                except UnicodeDecodeError:
+                    self._msg_handler.raise_error(
+                        "O encoding do arquivo é inválido. Use o utf-8."
+                    )
+                    return None
             else:
                 try:
                     df = (

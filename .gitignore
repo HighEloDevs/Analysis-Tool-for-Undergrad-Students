@@ -3,6 +3,7 @@
 node_modules
 # atus.egg-info
 env
+.venv
 *~
 *.autosave
 *.a
