@@ -141,15 +141,29 @@ class Model(QObject):
         # Instantiating clipboard
         clipboard = QGuiApplication.clipboard()
         clipboardText = clipboard.mimeData().text()
-        # try:
         # Creating a dataframe from the string
-        df = (
-            pd.read_csv(
-                StringIO(clipboardText), sep="\t", header=None, dtype=str
+        try:
+            df = (
+                pd.read_csv(
+                    StringIO(clipboardText),
+                    sep="\t|\s",
+                    header=None,
+                    dtype=str,
+                    engine="python",
+                )
+                .dropna(how="all")
+                .replace(np.nan, "0")
             )
-            .dropna(how="all")
-            .replace(np.nan, "0")
-        )
+        except pd.errors.ParserError:
+            self._msg_handler.raise_error(
+                "Erro ao carregar tabela de dados. Verifique se a tabela possui formatação consistente."
+            )
+            return None
+        except pd.errors.EmptyDataError:
+            self._msg_handler.raise_error(
+                "Erro ao carregar tabela de dados. Verifique se a tabela possui formatação consistente."
+            )
+            return None
         # Replacing all commas for dots
         for i in df.columns:
             df[i] = [x.replace(",", ".") for x in df[i]]
@@ -179,7 +193,6 @@ class Model(QObject):
                         "Separação de colunas de arquivos csv são com vírgula (','). Rever dados de entrada."
                     )
                     return None
-                
                 except UnicodeDecodeError:
                     self._msg_handler.raise_error(
                         "O encoding do arquivo é inválido. Use o utf-8."

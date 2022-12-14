@@ -169,7 +169,7 @@ Item{
                     dataModel.get(i).sx = dataModel.get(i).sy;
                     dataModel.get(i).sy = temp;
                 }
-                for (let i = 0; i < dataShaped.length; i++) dataShaped[i].swapItems(3, 4)
+                for (let i = 0; i < dataShaped.length; i++) dataShaped[i].swapItems(2, 3)
             }else if(exch === "syy" || exch === "ysy"){
                 for (let i = 0; i < dataModel.count; i++) {
                     temp = dataModel.get(i).sy;

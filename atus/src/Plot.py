@@ -96,7 +96,7 @@ class SinglePlot(QObject):
     @pyqtSlot(QJsonValue)
     def get_plot_data(self, plot_data):
         self.model.reset()
-        plot_data = plot_data.toVariant()
+        plot_data: dict = plot_data.toVariant()
         canvas_props = plot_data["canvasProps"]
         dataProps = plot_data["dataProps"]
         fit_props = plot_data["fitProps"]
