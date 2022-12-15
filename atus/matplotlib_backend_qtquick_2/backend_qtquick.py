@@ -16,11 +16,12 @@ from matplotlib.backends.backend_qt import (
     _MODIFIER_KEYS as MODIFIER_KEYS,
     cursord,
 )
+from PyQt5 import QtCore, QtGui, QtWidgets, QtQuick
 from .qt_compat import (
-    QtCore,
-    QtGui,
-    QtQuick,
-    QtWidgets,
+    # QtCore,
+    # QtGui,
+    # QtQuick,
+    # QtWidgets,
     QT_API,
     QT_API_PYSIDE2,
     QT_API_PYSIDE6,

@@ -35,7 +35,7 @@ setup(
     install_requires=[
         "setuptools>=42",
         "wheel",
-        "matplotlib==3.5.2",
+        "matplotlib==3.6.2",
         "pandas",
         "numpy",
         "scipy",
