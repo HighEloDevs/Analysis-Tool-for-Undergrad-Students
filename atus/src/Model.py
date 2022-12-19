@@ -201,7 +201,13 @@ class Model(QObject):
             else:
                 try:
                     df = (
-                        pd.read_csv(data_path, sep="\t", header=None, dtype=str)
+                        pd.read_csv(
+                            data_path,
+                            sep="\t|\s",
+                            header=None,
+                            engine="python",
+                            dtype=str,
+                        )
                         .dropna(how="all")
                         .replace(np.nan, "0")
                     )
