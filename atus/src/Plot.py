@@ -122,9 +122,7 @@ class SinglePlot(QObject):
         # Setting expression
         if len(expIndVar) == 2:
             if self.model.exp_model != expIndVar[0]:
-                self.model.set_expression(
-                    expIndVar[0].strip(), expIndVar[1].strip()
-                )
+                self.model.set_expression(expIndVar[0].strip(), expIndVar[1].strip())
         elif len(expIndVar) == 1:
             if self.model.exp_model != expIndVar[0]:
                 self.model.set_expression(expIndVar[0])
@@ -194,9 +192,7 @@ class SinglePlot(QObject):
         self, x, y, sy, sx, kargs_errorbar, kargs_scatter, y_r=None, ssy=None
     ):
         """Macro para o plot dos dados."""
-        self.canvas.plot_error_bar_new(
-            x, y, sy, sx, kargs_errorbar, y_r=y_r, ssy=ssy
-        )
+        self.canvas.plot_error_bar_new(x, y, sy, sx, kargs_errorbar, y_r=y_r, ssy=ssy)
         self.canvas.plot_scatter(x, y, kargs_scatter, y_r)
 
     def plot(self, model: Model, canvas_props, fit_props, data_props):
@@ -287,9 +283,7 @@ class SinglePlot(QObject):
                     # y_ri, y_ro = np.copy(y_r), np.array([])
                 if residuals:
                     self.canvas.switch_axes(hide_axes2=False)
-                    if (
-                        sigma_x and sigma_y
-                    ):  # Caso considerar as duas incertezas
+                    if sigma_x and sigma_y:  # Caso considerar as duas incertezas
                         ssy = model.predictInc(not sigma_x)
                         self.plot_data(
                             x,
@@ -305,9 +299,7 @@ class SinglePlot(QObject):
                         sigma_x is False and sigma_y is False
                     ):  # Caso desconsiderar as duas
                         self.canvas.plot_scatter(x, y, kargs_scatter, y_r)
-                    elif (
-                        sigma_x is False and sigma_y is True
-                    ):  # Caso considerar só sy
+                    elif sigma_x is False and sigma_y is True:  # Caso considerar só sy
                         ssy = model.predictInc(not sigma_x)
                         sx = np.array([0] * len(x))
                         self.plot_data(
@@ -418,44 +410,30 @@ class SinglePlot(QObject):
                             self.canvas.axes1.figure.canvas.draw_idle()
 
                     self.canvas.axes1.remove_callback(self.canvas.oid)
-                    self.canvas.axes1.figure.canvas.mpl_disconnect(
-                        self.canvas.cid
-                    )
+                    self.canvas.axes1.figure.canvas.mpl_disconnect(self.canvas.cid)
                     self.canvas.oid = self.canvas.axes1.callbacks.connect(
                         "xlim_changed", update
                     )
-                    self.canvas.cid = (
-                        self.canvas.axes1.figure.canvas.mpl_connect(
-                            "resize_event", update
-                        )
+                    self.canvas.cid = self.canvas.axes1.figure.canvas.mpl_connect(
+                        "resize_event", update
                     )
                 else:
                     self.canvas.clear_axis()
                     self.canvas.switch_axes(hide_axes2=True)
 
                     # Making Plots
-                    if (
-                        sigma_x and sigma_y
-                    ):  # Caso considerar as duas incertezas
-                        self.plot_data(
-                            x, y, sy, sx, kargs_errorbar, kargs_scatter
-                        )
+                    if sigma_x and sigma_y:  # Caso considerar as duas incertezas
+                        self.plot_data(x, y, sy, sx, kargs_errorbar, kargs_scatter)
                     elif (
                         sigma_x is False and sigma_y is False
                     ):  # Caso desconsiderar as duas
                         self.canvas.plot_scatter(x, y, kargs_scatter)
-                    elif (
-                        sigma_x is False and sigma_y is True
-                    ):  # Caso considerar só sy
+                    elif sigma_x is False and sigma_y is True:  # Caso considerar só sy
                         sx = np.array([0] * len(x))
-                        self.plot_data(
-                            x, y, sy, sx, kargs_errorbar, kargs_scatter
-                        )
+                        self.plot_data(x, y, sy, sx, kargs_errorbar, kargs_scatter)
                     else:  # Caso considerar só sx
                         sy = np.array([0] * len(x))
-                        self.plot_data(
-                            x, y, sy, sx, kargs_errorbar, kargs_scatter
-                        )
+                        self.plot_data(x, y, sy, sx, kargs_errorbar, kargs_scatter)
 
                     self.canvas.set_axes_props_without_axes_2(
                         xmin, xmax, xdiv, ymin, ymax, ydiv, grid, log_x, log_y
@@ -521,9 +499,7 @@ class SinglePlot(QObject):
                             self.canvas.axes1.figure.canvas.draw_idle()
 
                     self.canvas.axes1.remove_callback(self.canvas.oid)
-                    self.canvas.axes1.figure.canvas.mpl_disconnect(
-                        self.canvas.cid
-                    )
+                    self.canvas.axes1.figure.canvas.mpl_disconnect(self.canvas.cid)
                     self.canvas.oid = self.canvas.axes1.callbacks.connect(
                         "xlim_changed", update
                     )
@@ -545,9 +521,7 @@ class SinglePlot(QObject):
                     sigma_x is False and sigma_y is False
                 ):  # Caso desconsiderar as duas
                     self.canvas.plot_scatter(x, y, kargs_scatter)
-                elif (
-                    sigma_x is False and sigma_y is True
-                ):  # Caso considerar só sy
+                elif sigma_x is False and sigma_y is True:  # Caso considerar só sy
                     sx = np.array([0] * len(x))
                     self.plot_data(x, y, sy, sx, kargs_errorbar, kargs_scatter)
                 else:  # Caso considerar só sx
@@ -632,9 +606,7 @@ class SinglePlot(QObject):
                 )
                 props = self.load_old_json(props)
             except:
-                self.msg.raise_error(
-                    "O arquivo carregado é incompatível com o ATUS."
-                )
+                self.msg.raise_error("O arquivo carregado é incompatível com o ATUS.")
                 return 0
             self.model.load_data(df=props["data"])
 

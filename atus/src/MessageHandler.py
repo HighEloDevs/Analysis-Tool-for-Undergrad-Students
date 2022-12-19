@@ -26,27 +26,28 @@ SOFTWARE.
 # from matplotlib_backend_qtquick.qt_compat import QtCore
 from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot
 
+
 class MessageHandler(QObject):
-    '''
-        Class that sends all messages (warning, errors, fatal errors) from the backend to frontend
-    '''
+    """
+    Class that sends all messages (warning, errors, fatal errors) from the backend to frontend
+    """
 
     # Signals to the frontend
     # show_message() shows a snackbar with the message and respective color to the type
     # Types -> warn, error or success
-    show_message = pyqtSignal(str, str, arguments=['message', 'type'])
+    show_message = pyqtSignal(str, str, arguments=["message", "type"])
 
     def __init__(self) -> None:
         super().__init__()
 
     @pyqtSlot(str)
-    def raise_warn(self, message=''):
-        self.show_message.emit(message, 'warn')
+    def raise_warn(self, message=""):
+        self.show_message.emit(message, "warn")
 
     @pyqtSlot(str)
-    def raise_error(self, message=''):
-        self.show_message.emit(message, 'error')
+    def raise_error(self, message=""):
+        self.show_message.emit(message, "error")
 
     @pyqtSlot(str)
-    def raise_success(self, message=''):
-        self.show_message.emit(message, 'success')
+    def raise_success(self, message=""):
+        self.show_message.emit(message, "success")

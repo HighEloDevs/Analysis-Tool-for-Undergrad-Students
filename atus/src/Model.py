@@ -106,9 +106,7 @@ class Model(QObject):
     @pyqtSlot(QJsonValue)
     def loadDataTable(self, data=None):
         """Getting data from table."""
-        df = pd.DataFrame.from_records(
-            data, columns=["x", "y", "sy", "sx", "bool"]
-        )
+        df = pd.DataFrame.from_records(data, columns=["x", "y", "sy", "sx", "bool"])
 
         # Removing not chosen rows
         df = df[df["bool"] == 1]
@@ -244,9 +242,7 @@ class Model(QObject):
         for i in df.columns:
             # Replacing comma for dots
             df[i] = [x.replace(",", ".") for x in df[i]]
-            self._data_json[i] = [
-                x.replace(",", ".") for x in self._data_json[i]
-            ]
+            self._data_json[i] = [x.replace(",", ".") for x in self._data_json[i]]
             if self.is_number(df[i].iloc[0]) is False:
                 df.drop(0, inplace=True)
                 self._data_json.drop(0, inplace=True)
@@ -426,9 +422,7 @@ class Model(QObject):
         params = self.get_params()
         keys = list(params.keys())
         for i in range(len(keys)):
-            self.fillParamsTable.emit(
-                keys[i], params[keys[i]][0], params[keys[i]][1]
-            )
+            self.fillParamsTable.emit(keys[i], params[keys[i]][0], params[keys[i]][1])
         self.writeInfos.emit(self._report_fit)
 
     def __make_parameters_lm(self):
@@ -470,10 +464,7 @@ class Model(QObject):
                             ]
                             coefs_2[var] = True
                     else:
-                        if (
-                            coefs_2[self._coef[i]] == False
-                            and self._coef[i] in coefs
-                        ):
+                        if coefs_2[self._coef[i]] == False and self._coef[i] in coefs:
                             lim_inf = (
                                 -np.inf
                                 if res["lim_inf"] is None
@@ -528,14 +519,10 @@ class Model(QObject):
                         valor = res["value"].replace("@", "")
                         var = res["parameter"]
                         lim_inf = (
-                            -np.inf
-                            if res["lim_inf"] is None
-                            else float(res["lim_inf"])
+                            -np.inf if res["lim_inf"] is None else float(res["lim_inf"])
                         )
                         lim_sup = (
-                            np.inf
-                            if res["lim_sup"] is None
-                            else float(res["lim_sup"])
+                            np.inf if res["lim_sup"] is None else float(res["lim_sup"])
                         )
                         if var in coefs:
                             coefs[var] = [
@@ -546,10 +533,7 @@ class Model(QObject):
                             ]
                             coefs_2[var] = True
                     else:
-                        if (
-                            coefs_2[self._coef[i]] == False
-                            and self._coef[i] in coefs
-                        ):
+                        if coefs_2[self._coef[i]] == False and self._coef[i] in coefs:
                             lim_inf = (
                                 -np.inf
                                 if res["lim_inf"] is None
@@ -671,14 +655,12 @@ class Model(QObject):
                 [x + self._data["sx"].iloc[i], x - self._data["sx"].iloc[i]]
             )
             y_prd = eval(
-                "self._model.eval(%s = x, params = self._params)"
-                % self._indVar,
+                "self._model.eval(%s = x, params = self._params)" % self._indVar,
                 None,
                 {"x": x, "self": self},
             )
             y_var = eval(
-                "self._model.eval(%s = x_var, params = self._params)"
-                % self._indVar,
+                "self._model.eval(%s = x_var, params = self._params)" % self._indVar,
                 None,
                 {"x_var": x_var, "self": self},
             )
@@ -859,9 +841,7 @@ class Model(QObject):
         self._report_fit += "\n"
         self._mat_cov = self._result.covar
         lista = list(self._params.keys())
-        matriz_corr = np.zeros(
-            (len(self._result.covar), len(self._result.covar))
-        )
+        matriz_corr = np.zeros((len(self._result.covar), len(self._result.covar)))
         z = range(len(matriz_corr))
         for i in z:
             for j in z:
@@ -870,9 +850,7 @@ class Model(QObject):
                 )
         self._mat_corr = matriz_corr.round(3)
         self._report_fit += (
-            "\nMatriz de correlação:\n\n"
-            + self.matprint(self._mat_corr, ".3f")
-            + "\n"
+            "\nMatriz de correlação:\n\n" + self.matprint(self._mat_corr, ".3f") + "\n"
         )
         self._report_fit += (
             "Matriz de covariância:\n\n"
@@ -899,9 +877,7 @@ class Model(QObject):
             self._report_fit += self.params_print2(inc_considerada)
             self._report_fit += "\n"
             lista = list(self._params.keys())
-            matriz_corr = np.zeros(
-                (len(self._result.covar), len(self._result.covar))
-            )
+            matriz_corr = np.zeros((len(self._result.covar), len(self._result.covar)))
             z = range(len(matriz_corr))
             for i in z:
                 for j in z:
@@ -951,9 +927,7 @@ class Model(QObject):
                     )
         self._mat_corr = matriz_corr.round(3)
         self._report_fit += (
-            "\nMatriz de correlação:\n\n"
-            + self.matprint(self._mat_corr, ".3f")
-            + "\n"
+            "\nMatriz de correlação:\n\n" + self.matprint(self._mat_corr, ".3f") + "\n"
         )
         self._report_fit += (
             "Matriz de covariância:\n\n"
@@ -1042,8 +1016,7 @@ class Model(QObject):
             x_min, x_max, int(fig.get_size_inches()[0] * fig.dpi * 1.75)
         )
         return x_plot, eval(
-            "self._model.eval(%s = x_plot, params = self._params)"
-            % self._indVar,
+            "self._model.eval(%s = x_plot, params = self._params)" % self._indVar,
             None,
             {"x_plot": x_plot, "self": self},
         )
@@ -1056,9 +1029,7 @@ class Model(QObject):
     @property
     def outliers(self):
         """Retorna os pontos não usados no ajuste."""
-        return np.array(
-            list(set(np.arange(len(self._data))) - set(self._indices))
-        )
+        return np.array(list(set(np.arange(len(self._data))) - set(self._indices)))
 
     @property
     def exp_model(self):
@@ -1116,12 +1087,7 @@ class Model(QObject):
                 sy[i] = np.abs(y_var - y_prd).mean()
                 sy[i] = np.sqrt(self._data["sy"].iloc[i] ** 2 + sy[i] ** 2)
             return sy
-        elif (
-            wsx == False
-            and wsy == False
-            and self._has_sy == False
-            and self._has_sx
-        ):
+        elif wsx == False and wsy == False and self._has_sy == False and self._has_sx:
             sy = np.zeros(len(self._data["x"]), dtype=float)
             for i, x in enumerate(self._data["x"]):
                 x_var = np.array(
@@ -1229,15 +1195,12 @@ class Model(QObject):
 
     def matprint(self, mat, fmt="f"):
         col_maxes = [
-            max([len(("{:" + fmt + "}").format(x)) for x in col])
-            for col in mat.T
+            max([len(("{:" + fmt + "}").format(x)) for x in col]) for col in mat.T
         ]
         matrix = ""
         for x in mat:
             for i, y in enumerate(x):
-                matrix += ("{:" + str(col_maxes[i]) + fmt + "}").format(
-                    y
-                ) + "  "
+                matrix += ("{:" + str(col_maxes[i]) + fmt + "}").format(y) + "  "
             matrix += "\n"
         return matrix
 
@@ -1259,9 +1222,7 @@ class Model(QObject):
         return str(df)
 
     def params_print3(self):
-        df = pd.DataFrame(
-            self._dict, columns=["Valor", "Incerteza"]
-        ).transpose()
+        df = pd.DataFrame(self._dict, columns=["Valor", "Incerteza"]).transpose()
         try:
             df.index = self._coef
         except:
@@ -1292,9 +1253,7 @@ class Model(QObject):
             else:
                 df = pd.DataFrame.from_dict(self._dict_param, orient="index")
                 df.columns = [""] * len(df.columns)
-                df.to_clipboard(
-                    sep=sep_columns[sep], decimal=sep_decimal[decimal]
-                )
+                df.to_clipboard(sep=sep_columns[sep], decimal=sep_decimal[decimal])
 
         except:
             self._msg_handler.raise_error(

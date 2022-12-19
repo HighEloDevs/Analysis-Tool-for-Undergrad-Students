@@ -120,13 +120,9 @@ class FigureCanvasQtQuick(QtQuick.QQuickPaintedItem, FigureCanvasBase):
         if rect is not None:
 
             def _draw_rect_callback(painter):
-                pen = QtGui.QPen(
-                    QtCore.Qt.black, 1 / self.dpi_ratio, QtCore.Qt.DotLine
-                )
+                pen = QtGui.QPen(QtCore.Qt.black, 1 / self.dpi_ratio, QtCore.Qt.DotLine)
                 painter.setPen(pen)
-                painter.drawRect(
-                    QtCore.QRectF(*(pt / self.dpi_ratio for pt in rect))
-                )
+                painter.drawRect(QtCore.QRectF(*(pt / self.dpi_ratio for pt in rect)))
 
         else:
 
@@ -156,8 +152,7 @@ class FigureCanvasQtQuick(QtQuick.QQuickPaintedItem, FigureCanvasBase):
         # accumulate multiple draw requests from event handling.
         # TODO: queued signal connection might be safer than singleShot
         if not (
-            getattr(self, "_draw_pending", False)
-            or getattr(self, "_is_drawing", False)
+            getattr(self, "_draw_pending", False) or getattr(self, "_is_drawing", False)
         ):
             self._draw_pending = True
             QtCore.QTimer.singleShot(0, self._draw_idle)
@@ -192,16 +187,12 @@ class FigureCanvasQtQuick(QtQuick.QQuickPaintedItem, FigureCanvasBase):
     # Overload for Qt 6
     def geometryChange(self, new_geometry, old_geometry):
         self.geometryChangeHelper(new_geometry, old_geometry)
-        QtQuick.QQuickPaintedItem.geometryChange(
-            self, new_geometry, old_geometry
-        )
+        QtQuick.QQuickPaintedItem.geometryChange(self, new_geometry, old_geometry)
 
     # Overload for Qt 5
     def geometryChanged(self, new_geometry, old_geometry):
         self.geometryChangeHelper(new_geometry, old_geometry)
-        QtQuick.QQuickPaintedItem.geometryChanged(
-            self, new_geometry, old_geometry
-        )
+        QtQuick.QQuickPaintedItem.geometryChanged(self, new_geometry, old_geometry)
 
     def sizeHint(self):
         w, h = self.get_width_height()
@@ -252,17 +243,13 @@ class FigureCanvasQtQuick(QtQuick.QQuickPaintedItem, FigureCanvasBase):
         x, y = self.mouseEventCoords(event.pos())
         button = self.buttond.get(event.button())
         if button is not None:
-            FigureCanvasBase.button_press_event(
-                self, x, y, button, guiEvent=event
-            )
+            FigureCanvasBase.button_press_event(self, x, y, button, guiEvent=event)
 
     def mouseReleaseEvent(self, event):
         x, y = self.mouseEventCoords(event.pos())
         button = self.buttond.get(event.button())
         if button is not None:
-            FigureCanvasBase.button_release_event(
-                self, x, y, button, guiEvent=event
-            )
+            FigureCanvasBase.button_release_event(self, x, y, button, guiEvent=event)
 
     def mouseDoubleClickEvent(self, event):
         x, y = self.mouseEventCoords(event.pos())
@@ -421,9 +408,7 @@ class NavigationToolbar2QtQuick(QtCore.QObject, NavigationToolbar2):
             self._message = msg
             self.messageChanged.emit(msg)
 
-    message = QtCore.Property(
-        str, getMessage, setMessage, notify=messageChanged
-    )
+    message = QtCore.Property(str, getMessage, setMessage, notify=messageChanged)
 
     def getLeft(self):
         return self.canvas.figure.subplotpars.left

@@ -109,9 +109,7 @@ class UpdateChecker(QObject):
 
             version = infos["tag_name"]
             if version != self.__VERSION__:
-                self.__VERSION__ = (
-                    self.__VERSION__ + " Há uma nova versão disponível!"
-                )
+                self.__VERSION__ = self.__VERSION__ + " Há uma nova versão disponível!"
                 self.showUpdate.emit(QJsonValue.fromVariant(infos))
 
     @pyqtSlot(result=str)

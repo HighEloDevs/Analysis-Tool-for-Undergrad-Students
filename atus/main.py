@@ -73,11 +73,7 @@ def main(pip: bool = True):
     )
     app.setApplicationName("Analysis Tool for Undergrad Students")
     app.setWindowIcon(
-        QIcon(
-            os.path.join(
-                os.path.dirname(__file__), "images/main_icon/ATUS_icon.png"
-            )
-        )
+        QIcon(os.path.join(os.path.dirname(__file__), "images/main_icon/ATUS_icon.png"))
     )
     engine = QQmlApplicationEngine()
 
@@ -112,9 +108,7 @@ def main(pip: bool = True):
     # Loading canvas window
     engine.load(
         QUrl.fromLocalFile(
-            os.path.join(
-                os.path.dirname(__file__), "qml/controls/CanvasWindow.qml"
-            )
+            os.path.join(os.path.dirname(__file__), "qml/controls/CanvasWindow.qml")
         )
     )
     context.setContextProperty("canvasWindow", engine.rootObjects()[0])
@@ -127,9 +121,7 @@ def main(pip: bool = True):
     )
 
     # Updating canvasPlot with the plot
-    canvas.update_with_canvas(
-        engine.rootObjects()[1].findChild(QObject, "canvasPlot")
-    )
+    canvas.update_with_canvas(engine.rootObjects()[1].findChild(QObject, "canvasPlot"))
 
     # Stopping program if PyQt fails loading the file
     if not engine.rootObjects():
