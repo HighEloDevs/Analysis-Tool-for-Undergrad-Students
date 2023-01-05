@@ -39,7 +39,7 @@ class GlobalManager(QObject):
                 os.mkdir(self.atus_dir)
             except FileExistsError:
                 print("Cannot create ATUS's directory")
-                self.atus_dir = os.path.expanduser("~\Desktop")
+                self.atus_dir = os.path.expanduser(r"~\Desktop")
 
     @pyqtSlot(str)
     def setLastFolder(self, path):

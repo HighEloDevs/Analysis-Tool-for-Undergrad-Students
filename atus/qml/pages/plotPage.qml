@@ -73,9 +73,13 @@ Item {
 
     Shortcut {
         sequences: ["Ctrl+B", "Ctrl+Space"]
+        // context: Qt.ApplicationShortcut
+        // Verifying which page is active
         onActivated: {
-            table.clear()
-            model.loadDataClipboard()
+            if (mainWindow.activeBtn === 1) {
+                table.clear()
+                model.loadDataClipboard()
+            } 
         }
     }
     Shortcut {

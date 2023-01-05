@@ -61,7 +61,10 @@ elif sys.modules.get("PySide2.QtCore"):
 # incompletely imported backend_qt5).
 elif isinstance(dict.__getitem__(mpl.rcParams, "backend"), str) and dict.__getitem__(
     mpl.rcParams, "backend"
-).lower() in ["qt5agg", "qt5cairo"]:
+).lower() in [
+    "qt5agg",
+    "qt5cairo",
+]:
     if QT_API_ENV in ["pyqt5", "pyside2"]:
         QT_API = _ETS[QT_API_ENV]
     else:
@@ -93,7 +96,14 @@ def _setup_pyqt5plus():
         QtCore.Property = QtCore.pyqtProperty
         _isdeleted = sip.isdeleted
     elif QT_API == QT_API_PYSIDE6:
-        from PySide6 import QtCore, QtGui, QtWidgets, QtQuick, QtQml, __version__
+        from PySide6 import (
+            QtCore,
+            QtGui,
+            QtWidgets,
+            QtQuick,
+            QtQml,
+            __version__,
+        )
         import shiboken6
 
         def _isdeleted(obj):
@@ -109,7 +119,14 @@ def _setup_pyqt5plus():
         QtCore.Property = QtCore.pyqtProperty
         _isdeleted = sip.isdeleted
     elif QT_API == QT_API_PYSIDE2:
-        from PySide2 import QtCore, QtGui, QtWidgets, QtQuick, QtQml, __version__
+        from PySide2 import (
+            QtCore,
+            QtGui,
+            QtWidgets,
+            QtQuick,
+            QtQml,
+            __version__,
+        )
         import shiboken2
 
         def _isdeleted(obj):
@@ -249,6 +266,7 @@ def _maybe_allow_interrupt(qapp):
         # forgiving about reading an empty socket.
         rsock.setblocking(False)
         # Clear the socket to re-arm the notifier.
+
         @sn.activated.connect
         def _may_clear_sock(*args):
             try:
