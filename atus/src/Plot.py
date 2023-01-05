@@ -34,6 +34,7 @@ import json
 import platform
 from .MatPlotLib import Canvas
 from .Model import Model
+from .DataHandler import DataHandler
 
 
 class SinglePlot(QObject):
@@ -44,10 +45,11 @@ class SinglePlot(QObject):
     fill_plot_page_signal = pyqtSignal(QJsonValue, arguments="props")
     plot_signal = pyqtSignal()
 
-    def __init__(self, canvas, model, messageHandler):
+    def __init__(self, canvas, model, datahandler, messageHandler):
         super().__init__()
         self.canvas: Canvas = canvas
         self.model: Model = model
+        self.datahandler: DataHandler = datahandler
         self.path = ""
         self.msg = messageHandler
 
@@ -102,7 +104,10 @@ class SinglePlot(QObject):
         fit_props = plot_data["fitProps"]
 
         # Loading data from the table
-        self.model.loadDataTable(plot_data["data"])
+        self.datahandler.loadDataTable(plot_data["data"])
+        self.model.data = self.datahandler.data
+        self.model._has_sx = self.datahandler.has_sx
+        self.model._has_sy = self.datahandler.has_sy
 
         # Getting function to fit
         # Anti-dummies system
@@ -236,7 +241,7 @@ class SinglePlot(QObject):
                 canvas_props["yaxis"].strip(),
                 partial_titles[1].strip(),
             ]
-        if model._has_data:
+        if self.datahandler._has_data: 
             # Fitting expression to data, if there"s any expression
             if fit_props["adjust"]:
                 if model.exp_model != "":
@@ -269,7 +274,7 @@ class SinglePlot(QObject):
                 # Clearing the current plot
                 self.canvas.clear_axis()
                 # Getting data
-                x, y, sy, sx = model.data
+                x, y, sy, sx = self.datahandler.separated_data 
                 inliers, outliers = model.inliers, model.outliers
                 c = np.array([list(colors.to_rgba(symbol_color))] * len(x))
                 c[outliers.astype(int), 3] = self.canvas.user_alpha_outliers
@@ -511,7 +516,7 @@ class SinglePlot(QObject):
                 self.canvas.clear_axis()
                 self.canvas.switch_axes(hide_axes2=True)
 
-                x, y, sy, sx = model.data
+                x, y, sy, sx = self.datahandler.separated_data 
                 kargs_errorbar["ecolor"] = symbol_color
                 kargs_scatter["c"] = symbol_color
                 # Making Plots
@@ -598,7 +603,11 @@ class SinglePlot(QObject):
                 )
                 return 0
             # Loading data from the project
-            self.model.load_data(df_array=props["data"])
+            self.datahandler.load_data(df_array=props["data"])
+            self.model.data = self.datahandler.data
+            self.model._has_sx = self.datahandler.has_sx
+            self.model._has_sy = self.datahandler.has_sy
+    
         else:
             try:
                 self.msg.raise_warn(
@@ -608,7 +617,10 @@ class SinglePlot(QObject):
             except:
                 self.msg.raise_error("O arquivo carregado é incompatível com o ATUS.")
                 return 0
-            self.model.load_data(df=props["data"])
+            self.datahandler.load_data(df=props["data"])
+            self.model.data = self.datahandler.data
+            self.model._has_sx = self.datahandler.has_sx
+            self.model._has_sy = self.datahandler.has_sy
 
         self.fill_plot_page(props)
 

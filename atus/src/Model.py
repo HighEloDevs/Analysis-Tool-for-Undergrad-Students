@@ -41,7 +41,7 @@ from .MessageHandler import MessageHandler
 from copy import deepcopy
 from io import StringIO
 import re
-
+from .DataHandler import DataHandler
 
 class Model(QObject):
     """
@@ -86,225 +86,15 @@ class Model(QObject):
         self._p0 = None
         self.xmin_adj = 0.0
         self.xmax_adj = 0.0
-        self._mode = 0
         self._has_data = False
         self._isvalid = False
         self._has_sx = True
         self._has_sy = True
         self._indices = []
+        self.Data = DataHandler()
 
     def __str__(self):
         return self._report_fit
-
-    def is_number(self, s):
-        try:
-            float(s)
-            return True
-        except ValueError:
-            return False
-
-    @pyqtSlot(QJsonValue)
-    def loadDataTable(self, data=None):
-        """Getting data from table."""
-        df = pd.DataFrame.from_records(data, columns=["x", "y", "sy", "sx", "bool"])
-
-        # Removing not chosen rows
-        df = df[df["bool"] == 1]
-        del df["bool"]
-        uniqueSi = df["sy"].unique().astype(float)
-        if 0.0 in uniqueSi:
-            if len(uniqueSi) > 1:
-                self._msg_handler.raise_warn(
-                    "Um valor nulo foi encontrado nas incertezas em y, removendo coluna de sy."
-                )
-            self._has_sy = False
-        uniqueSi = df["sx"].unique().astype(float)
-        if 0.0 in uniqueSi:
-            if len(uniqueSi) > 1:
-                self._msg_handler.raise_warn(
-                    "Um valor nulo foi encontrado nas incertezas em x, removendo coluna de sx."
-                )
-            self._has_sx = False
-
-        self._data_json = deepcopy(df)
-
-        # Turn everything into number (str -> number)
-        df = df.astype(float)
-        self._data = deepcopy(df)
-        self._has_data = True
-
-    @pyqtSlot()
-    def loadDataClipboard(self):
-        """Pega a tabela de dados do Clipboard."""
-        # Instantiating clipboard
-        clipboard = QGuiApplication.clipboard()
-        clipboardText = clipboard.mimeData().text()
-        # Creating a dataframe from the string
-        try:
-            df = (
-                pd.read_csv(
-                    StringIO(clipboardText),
-                    sep="\t|\s",
-                    header=None,
-                    dtype=str,
-                    engine="python",
-                )
-                .dropna(how="all")
-                .replace(np.nan, "0")
-            )
-        except pd.errors.ParserError:
-            self._msg_handler.raise_error(
-                "Erro ao carregar tabela de dados. Verifique se a tabela possui formatação consistente."
-            )
-            return None
-        except pd.errors.EmptyDataError:
-            self._msg_handler.raise_error(
-                "Erro ao carregar tabela de dados. Verifique se a tabela possui formatação consistente."
-            )
-            return None
-        # Replacing all commas for dots
-        for i in df.columns:
-            df[i] = [x.replace(",", ".") for x in df[i]]
-            df[i] = df[i].astype(str)
-        self.load_data(df=df)
-
-    @pyqtSlot(str)
-    def load_data(self, data_path="", df=None, df_array=None):
-        """Loads the data from a given path or from a given dataframe."""
-
-        # Name of the loaded file
-        fileName = "Dados Carregados do Projeto"
-
-        # If no dataframe passed, loading data from the given path
-        if len(data_path) > 0:
-            # Loading from .csv or (.txt and .tsv)
-            data_path = QUrl(data_path).toLocalFile()
-            if data_path[-3:] == "csv":
-                try:
-                    df = (
-                        pd.read_csv(data_path, sep=",", header=None, dtype=str)
-                        .dropna(how="all")
-                        .replace(np.nan, "0")
-                    )
-                except pd.errors.ParserError:
-                    self._msg_handler.raise_error(
-                        "Separação de colunas de arquivos csv são com vírgula (','). Rever dados de entrada."
-                    )
-                    return None
-                except UnicodeDecodeError:
-                    self._msg_handler.raise_error(
-                        "O encoding do arquivo é inválido. Use o utf-8."
-                    )
-                    return None
-            else:
-                try:
-                    df = (
-                        pd.read_csv(
-                            data_path,
-                            sep="\t|\s",
-                            header=None,
-                            engine="python",
-                            dtype=str,
-                        )
-                        .dropna(how="all")
-                        .replace(np.nan, "0")
-                    )
-                except pd.errors.ParserError:
-                    self._msg_handler.raise_error(
-                        "Separação de colunas de arquivos txt e tsv são com tab. Rever dados de entrada."
-                    )
-                    return None
-            # Getting file name
-            fileName = data_path.split("/")[-1]
-        elif df is None:
-            df = pd.DataFrame.from_records(
-                df_array, columns=["x", "y", "sy", "sx", "bool"]
-            )
-            del df["bool"]
-            uniqueSi = df["sy"].unique().astype(float)
-            if 0.0 in uniqueSi:
-                if len(uniqueSi) > 1:
-                    self._msg_handler.raise_warn(
-                        "Um valor nulo foi encontrado nas incertezas em y, removendo coluna de sy."
-                    )
-                self._has_sy = False
-            uniqueSi = df["sx"].unique().astype(float)
-            if 0.0 in uniqueSi:
-                if len(uniqueSi) > 1:
-                    self._msg_handler.raise_warn(
-                        "Um valor nulo foi encontrado nas incertezas em x, removendo coluna de sx."
-                    )
-                self._has_sx = False
-
-        # Saving the dataframe in the class
-        self._data_json = deepcopy(df)
-        # Applying some filters over the df
-        for i in df.columns:
-            # Replacing comma for dots
-            df[i] = [x.replace(",", ".") for x in df[i]]
-            self._data_json[i] = [x.replace(",", ".") for x in self._data_json[i]]
-            if self.is_number(df[i].iloc[0]) is False:
-                df.drop(0, inplace=True)
-                self._data_json.drop(0, inplace=True)
-                df.index = range(len(df))
-                self._data_json.index = range(len(self._data_json))
-            try:
-                df[i] = df[i].astype(float)
-            except ValueError:
-                self._msg_handler.raise_error(
-                    "A entrada de dados só permite entrada de números. Rever arquivo de entrada."
-                )
-                return None
-
-        self._has_sx = True
-        self._has_sy = True
-        self._mode = len(df.columns) - 2
-
-        # Naming columns
-        if self._mode == -1:
-            self._has_sy = not self._has_sy
-            self._has_sx = not self._has_sx
-            df["x"] = np.arange(len(df), dtype=float)
-            self._data_json = deepcopy(df.astype(str))
-            self._data_json.columns = ["y", "x"]
-            df["sy"] = 0.0
-            df["sx"] = 0.0
-        elif self._mode == 0:
-            self._has_sy = not self._has_sy
-            self._has_sx = not self._has_sx
-            self._data_json.columns = ["x", "y"]
-            df["sy"] = 0.0
-            df["sx"] = 0.0
-        elif self._mode == 1:
-            self._has_sx = not self._has_sx
-            self._data_json.columns = ["x", "y", "sy"]
-            df["sx"] = 0.0
-        else:
-            try:
-                self._data_json.columns = ["x", "y", "sy", "sx"]
-                uniqueSi = self._data_json["sy"].unique().astype(float)
-                if 0.0 in uniqueSi:
-                    if len(uniqueSi) > 1:
-                        self._msg_handler.raise_warn(
-                            "Um valor nulo foi encontrado nas incertezas em y, removendo coluna de sy."
-                        )
-                    self._has_sy = False
-                uniqueSi = self._data_json["sx"].unique().astype(float)
-                if 0.0 in uniqueSi:
-                    if len(uniqueSi) > 1:
-                        self._msg_handler.raise_warn(
-                            "Um valor nulo foi encontrado nas incertezas em x, removendo coluna de sx."
-                        )
-                    self._has_sx = False
-            except ValueError:
-                self._msg_handler.raise_error(
-                    "Há mais do que 4 colunas. Rever entrada de dados."
-                )
-                return None
-
-        self._data = deepcopy(df)
-        self._has_data = True
-        self.uploadData.emit(self._data_json.to_dict(orient="list"), fileName)
 
     def set_p0(self, p0):
         """Coloca os chutes iniciais."""
@@ -314,6 +104,21 @@ class Model(QObject):
         """Set new expression to model."""
         self._exp_model = exp
         self._indVar = varInd
+    
+    @property
+    def data(self):
+        """Retorna x, y, sx e sy."""
+        return (
+            self._data["x"],
+            self._data["y"],
+            self._data["sy"],
+            self._data["sx"],
+        )
+
+    @data.setter
+    def data(self, data):
+        self._data = data
+
 
     def fit(self, **kargs):
         """Interpretador de qual ajuste deve ser feito."""
@@ -958,16 +763,6 @@ class Model(QObject):
         self.xmax_adj = valor
 
     @property
-    def data(self, *args):
-        """Retorna x, y, sx e sy."""
-        return (
-            self._data["x"],
-            self._data["y"],
-            self._data["sy"],
-            self._data["sx"],
-        )
-
-    @property
     def residuo(self):
         """Retorna os valores de y_i - f(x_i)."""
         return self._data["y"].to_numpy() - eval(
@@ -1326,7 +1121,6 @@ class Model(QObject):
         self._p0 = None
         self.xmin_adj = 0.0
         self.xmax_adj = 0.0
-        self._mode = 0
         self._has_data = False
         self._isvalid = False
         self._has_sx = True

@@ -45,6 +45,8 @@ from src.Model import Model
 from src.MultiPlot import Multiplot
 from src.Plot import SinglePlot
 from src.UpdateChecker import UpdateChecker
+from src.DataHandler import DataHandler
+
 
 # from src.PyLatex import PyLatex
 
@@ -80,7 +82,8 @@ def main(pip: bool = True):
     messageHandler = MessageHandler()
     canvas = Canvas(messageHandler)
     model = Model(messageHandler)
-    singlePlot = SinglePlot(canvas, model, messageHandler)
+    datahandler = DataHandler()
+    singlePlot = SinglePlot(canvas, model, datahandler, messageHandler)
     multiPlot = Multiplot(canvas, messageHandler)
     updater = UpdateChecker(pip)
     histogram = Histogram(canvas, messageHandler)
@@ -103,6 +106,7 @@ def main(pip: bool = True):
     context.setContextProperty("hist", histogram)
     context.setContextProperty("gdrive", gdrive)
     context.setContextProperty("globalManager", globalManager)
+    context.setContextProperty("datahandler", datahandler)
     # context.setContextProperty("pylatex", pylatex)
 
     # Loading canvas window

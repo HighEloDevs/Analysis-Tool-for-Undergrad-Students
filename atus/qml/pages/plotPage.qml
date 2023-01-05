@@ -73,9 +73,10 @@ Item {
 
     Shortcut {
         sequences: ["Ctrl+B", "Ctrl+Space"]
+        context: Qt.WindowShortcut
         onActivated: {
             table.clear()
-            model.loadDataClipboard()
+            datahandler.loadDataClipboard()
         }
     }
     Shortcut {
@@ -251,7 +252,7 @@ Item {
                                 onAccepted:{
                                     table.clear()
                                     globalManager.setLastFolder(fileOpen.fileUrl)
-                                    model.load_data(fileOpen.fileUrl)
+                                    datahandler.load_data(fileOpen.fileUrl)
                                 }
                             }
 
@@ -297,7 +298,7 @@ Item {
     }
 
     Connections{
-        target: model
+        target: datahandler
 
         function onFillDataTable(x, y, sy, sx, isEditable, fileName){
             label_fileName.text = fileName

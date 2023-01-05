@@ -369,8 +369,8 @@ class Multiplot(QObject):
         x_plot = None
         if self.logx:
             x_plot = np.logspace(
-                np.np.log10(left),
-                np.np.log10(right),
+                np.log10(left),
+                np.log10(right),
                 int(
                     self.displayBridge.axes1.figure.get_size_inches()[0]
                     * self.displayBridge.axes1.figure.dpi
