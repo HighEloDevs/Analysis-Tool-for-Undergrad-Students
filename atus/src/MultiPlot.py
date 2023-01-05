@@ -104,8 +104,8 @@ class Multiplot(QObject):
         with open(self.path, encoding="utf-8") as file:
             try:
                 props = json.load(file)
-            except:
-                self.msg.raise_error("O arquivo carregado é incompatível.")
+            except Exception as error:
+                self.msg.raise_error(f"O arquivo carregado é incompatível.{error}")
 
         if "key" in props:
             # Loading data from the table
@@ -226,9 +226,9 @@ class Multiplot(QObject):
                     }
                 )
             )
-        except:
+        except Exception as error:
             self.msg.raise_error(
-                "Erro ao carregar arquivo. Verificar arquivo de entrada."
+                f"Erro ao carregar arquivo. Verificar arquivo de entrada.\n{error}"
             )
             self.removeRow.emit(row)
 
@@ -263,7 +263,7 @@ class Multiplot(QObject):
 
         # Plotting points
         for i in range(len(self.Multi_Model.models)):
-            if self.Multi_Model.arquivos[i]["marker"] == True:
+            if self.Multi_Model.arquivos[i]["marker"] is True:
                 self.plot_sx_sy(self.Multi_Model.dfs[i], self.Multi_Model.arquivos[i])
 
         # Setting canvas properties
@@ -295,7 +295,7 @@ class Multiplot(QObject):
         lines = list()
         for i in range(len(self.Multi_Model.models)):
             if (
-                self.Multi_Model.arquivos[i]["func"] == True
+                self.Multi_Model.arquivos[i]["func"] is True
                 and self.Multi_Model.models[i] != 0.0
             ):
                 self.Func_plot(

@@ -1,4 +1,5 @@
 [flake8]
-ignore = E266, E402, E501, W503
+ignore = E266, E402, E501, F811, W503
 max-line-length = 88
+exclude = .git, __pycache__, atus/src/GoogleDriveAPI.py, atus/src/Model.py, build, dist
 ; max-complexity = 18

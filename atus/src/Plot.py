@@ -274,8 +274,8 @@ class SinglePlot(QObject):
                 # Clearing the current plot
                 self.canvas.clear_axis()
                 # Getting data
-                x, y, sy, sx = self.datahandler.separated_data 
-                inliers, outliers = model.inliers, model.outliers
+                x, y, sy, sx = model.data
+                _, outliers = model.inliers, model.outliers
                 c = np.array([list(colors.to_rgba(symbol_color))] * len(x))
                 c[outliers.astype(int), 3] = self.canvas.user_alpha_outliers
                 kargs_errorbar["ecolor"] = c
@@ -614,8 +614,10 @@ class SinglePlot(QObject):
                     "O carregamento de arquivos antigos está limitado à uma versão anterior. Adaptação feita automaticamente."
                 )
                 props = self.load_old_json(props)
-            except:
-                self.msg.raise_error("O arquivo carregado é incompatível com o ATUS.")
+            except Exception as error:
+                self.msg.raise_error(
+                    f"O arquivo carregado é incompatível com o ATUS.\n{error}"
+                )
                 return 0
             self.datahandler.load_data(df=props["data"])
             self.model.data = self.datahandler.data
@@ -663,13 +665,13 @@ class SinglePlot(QObject):
     def make_float(self, var, value=0.0):
         try:
             return float(var)
-        except:
+        except ValueError:
             return value
 
     def make_int(self, var, value=0):
         try:
             return int(var)
-        except:
+        except ValueError:
             return value
 
     @pyqtSlot(QJsonValue, result=int)
@@ -736,17 +738,17 @@ class SinglePlot(QObject):
                     "Nível de confiança deve ser sempre maior que zero e menor que 1. Rever nível de confiança."
                 )
                 return None
-        except:
+        except ValueError:
             pass
         try:
             ngl = ngl.replace(",", ".")
             ngl = float(ngl)
-        except:
+        except ValueError:
             pass
         try:
             mean = mean.replace(",", ".")
             mean = float(mean)
-        except:
+        except ValueError:
             pass
         try:
             std = std.replace(",", ".")
@@ -756,7 +758,7 @@ class SinglePlot(QObject):
                     "Desvio padrão deve ser sempre maior que zero. Rever desvio padrão."
                 )
                 return None
-        except:
+        except ValueError:
             pass
 
         s, x, y, x_area, y_area, title, xlabel, ylabel = interpreter_calculator(

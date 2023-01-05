@@ -82,7 +82,7 @@ class UpdateChecker(QObject):
                 os.path.join(os.path.dirname(__file__), "..", "version.txt")
             ) as version:
                 self.__VERSION__ = version.read()
-        except:
+        except FileNotFoundError:
             with open("./version.txt") as version:
                 self.__VERSION__ = version.read()
 

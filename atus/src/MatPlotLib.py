@@ -258,13 +258,13 @@ class Canvas(QObject):
     def make_float(self, var, valor):
         try:
             return float(var)
-        except:
+        except ValueError:
             return valor
 
     def make_int(self, var, valor):
         try:
             return int(var)
-        except:
+        except ValueError:
             return valor
 
     def get_coordinates(self):
@@ -341,9 +341,9 @@ class Canvas(QObject):
                     "Copiado com sucesso para a área de transferência!"
                 )
             os.remove(path)
-        except:
+        except Exception as error:
             self.message_handler.raise_error(
-                "Erro copiar para a área de transferência, contatar os desenvolvedores."
+                f"Erro copiar para a área de transferência, contatar os desenvolvedores.\n{error}"
             )
 
     @pyqtSlot()
@@ -450,9 +450,12 @@ class Canvas(QObject):
     def set_legend_position(self, position):
         self.legend_loc = self.legend_loc_dict[position]
         if self.axes1.get_legend():
-            h, l = self.axes1.get_legend_handles_labels()
+            handles, lables = self.axes1.get_legend_handles_labels()
             self.axes1.legend(
-                h, l, loc=self.legend_loc, fontsize=self.font_sizes["legenda"]
+                handles,
+                lables,
+                loc=self.legend_loc,
+                fontsize=self.font_sizes["legenda"],
             )
 
     @pyqtSlot(int)

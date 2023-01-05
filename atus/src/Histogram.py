@@ -42,7 +42,11 @@ class Histogram(QObject):
         self.messageHandler = messageHandler
         self.canvas = canvas
         self.path = ""
-        self.histAlign = {"Centro": "mid", "Direita": "right", "Esquerda": "left"}
+        self.histAlign = {
+            "Centro": "mid",
+            "Direita": "right",
+            "Esquerda": "left",
+        }
         self.histOrient = {"Vertical": "vertical", "Horizontal": "horizontal"}
 
     @pyqtSlot(QJsonValue)
@@ -77,10 +81,12 @@ class Histogram(QObject):
             data["props"]["title"], fontsize=self.canvas.font_sizes["titulo"]
         )
         self.canvas.axes1.set_xlabel(
-            xlabel=data["props"]["xaxis"], fontsize=self.canvas.font_sizes["eixo_x"]
+            xlabel=data["props"]["xaxis"],
+            fontsize=self.canvas.font_sizes["eixo_x"],
         )
         self.canvas.axes1.set_ylabel(
-            ylabel=data["props"]["yaxis"], fontsize=self.canvas.font_sizes["eixo_y"]
+            ylabel=data["props"]["yaxis"],
+            fontsize=self.canvas.font_sizes["eixo_y"],
         )
         self.canvas.set_axes_props_without_axes_2(
             xmin,
@@ -109,7 +115,9 @@ class Histogram(QObject):
             )
             return -1
         bins = np.linspace(
-            left, right, self.make_int(arquivo["kargs"].pop("nbins", 10), 10) + 1
+            left,
+            right,
+            self.make_int(arquivo["kargs"].pop("nbins", 10), 10) + 1,
         )
         counts = None
         if arquivo["legend"] == "":
@@ -183,7 +191,9 @@ class Histogram(QObject):
             )
             return -1
         bins = np.linspace(
-            left, right, self.make_int(arquivo["kargs"].pop("nbins", 10), 10) + 1
+            left,
+            right,
+            self.make_int(arquivo["kargs"].pop("nbins", 10), 10) + 1,
         )
         counts = None
         if arquivo["legend"] == "":
@@ -259,7 +269,9 @@ class Histogram(QObject):
             )
             return -1
         bins = np.linspace(
-            left, right, self.make_int(arquivo["kargs"].pop("nbins", 10), 10) + 1
+            left,
+            right,
+            self.make_int(arquivo["kargs"].pop("nbins", 10), 10) + 1,
         )
         counts = None
         if arquivo["legend"] == "":
@@ -438,7 +450,7 @@ class Histogram(QObject):
             # Converting everything to float
             try:
                 df[i] = df[i].astype(float)
-            except:
+            except ValueError:
                 self.messageHandler.raise_error(
                     "A entrada de dados só permite entrada de números. Rever arquivo de entrada."
                 )
@@ -452,11 +464,11 @@ class Histogram(QObject):
     def make_float(self, var, value):
         try:
             return float(var)
-        except:
+        except ValueError:
             return value
 
     def make_int(self, var, value):
         try:
             return int(var)
-        except:
+        except ValueError:
             return value

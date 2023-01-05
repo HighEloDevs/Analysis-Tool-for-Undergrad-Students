@@ -31,7 +31,7 @@ from matplotlib_backend_qtquick_2.backend_qtquickagg import (
     FigureCanvasQtQuickAgg,
 )
 from PyQt5.QtCore import QCoreApplication, QObject, Qt, QUrl, QThread
-from PyQt5.QtGui import QGuiApplication, QIcon
+from PyQt5.QtGui import QIcon
 from PyQt5.QtQml import QQmlApplicationEngine, qmlRegisterType
 from PyQt5.QtWidgets import QApplication
 
