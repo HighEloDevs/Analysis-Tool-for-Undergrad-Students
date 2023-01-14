@@ -73,15 +73,30 @@ Item {
 
     Shortcut {
         sequences: ["Ctrl+B", "Ctrl+Space"]
-        // context: Qt.ApplicationShortcut
         // Verifying which page is active
         onActivated: {
             if (mainWindow.activeBtn === 1) {
                 table.clear()
-                model.loadDataClipboard()
+                datahandler.loadDataClipboard()
             } 
+            // else if (mainWindow.activeBtn === 4) {
+            //     table.clear()
+            //     datahandler.loadDataClipboard_Histogram()
+            // } 
         }
     }
+    Shortcut {
+        sequences: ["Ctrl+Shift+B"]
+        // Verifying which page is active
+        onActivated: {
+            if (mainWindow.activeBtn === 1) {
+                table.clear()
+                datahandler.loadDataClipboard_bottom()
+            } 
+
+        }
+    }
+
     Shortcut {
         sequences: ["Ctrl+1"]
         onActivated: {

@@ -43,6 +43,7 @@ from io import StringIO
 import re
 from .DataHandler import DataHandler
 
+
 class Model(QObject):
     """
     Class used for fit.
@@ -104,7 +105,7 @@ class Model(QObject):
         """Set new expression to model."""
         self._exp_model = exp
         self._indVar = varInd
-    
+
     @property
     def data(self):
         """Retorna x, y, sx e sy."""
@@ -118,7 +119,6 @@ class Model(QObject):
     @data.setter
     def data(self, data):
         self._data = data
-
 
     def fit(self, **kargs):
         """Interpretador de qual ajuste deve ser feito."""
@@ -1109,7 +1109,7 @@ class Model(QObject):
 
     def reset(self):
         self._data = None
-        self._data_json = None
+
         self._exp_model = ""
         self._model = None
         self._report_fit = ""

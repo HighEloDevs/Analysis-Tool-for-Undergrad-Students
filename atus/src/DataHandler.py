@@ -16,8 +16,10 @@ from io import StringIO
 
 # data_handler
 class DataHandler(QObject):
-    # Signals
+    # Signals plot
     uploadData = pyqtSignal(QVariant, str, arguments=["data", "fileName"])
+    # Signals hist
+    fillPage = pyqtSignal(QJsonValue)
 
     def __init__(self):
         super().__init__()
@@ -28,6 +30,13 @@ class DataHandler(QObject):
         self._has_sy = True
         self._has_data = False
         self._data = None
+
+    def reset(self):
+        self._data = None
+        self._data_json = None
+        self._has_data = False
+        self._has_sx = True
+        self._has_sy = True
 
     def _is_number(self, s):
         try:
@@ -90,28 +99,29 @@ class DataHandler(QObject):
                 )
             self._has_sx = False
 
-    def _df_filters(self):
-        self._data_json = deepcopy(self._df)
-        # Applying some filters over the df
-        for i in self._df.columns:
-            # Replacing comma for dots
-            self._df[i] = [x.replace(",", ".") for x in self._df[i]]
-            self._data_json[i] = [x.replace(",", ".") for x in self._data_json[i]]
+    def _treat_df(self, df):
+        for col in df.columns:
+            df[col] = [x.replace(",", ".") for x in df[col]]
+            df[col] = df[col].astype(str)
+        return df
+        # for col in df.columns:
+        #     try:
+        #         df[col] = df[col].astype(float)
+        #     except ValueError:
+        #         self._msg_handler.raise_error(
+        #             "A entrada de dados só permite entrada de números. Rever arquivo de entrada."
+        #         )
+        #         return None
+        # return df
 
-            if self._is_number(self._df[i].iloc[0]) is False:
-                self._df.drop(0, inplace=True)
-                self._data_json.drop(0, inplace=True)
-                self._df.index = range(len(self._df))
-                self._data_json.index = range(len(self._data_json))
-            try:
-                self._df[i] = self._df[i].astype(float)
-            except ValueError:
-                self._msg_handler.raise_error(
-                    "A entrada de dados só permite entrada de números. Rever arquivo de entrada."
-                )
-                return None
+    def _drop_header(self, df):
+        for col in df.columns:
+            if self._is_number(df[col].iloc[0]) is False:
+                df.drop(0, inplace=True)
+                df.index = range(len(df))
+        return df
 
-    def _to_name_columns(self):
+    def _to_check_columns(self):
         number_of_cols = len(self._df.columns)
         if number_of_cols == 1:
             self._has_sy = not self._has_sy
@@ -132,7 +142,7 @@ class DataHandler(QObject):
             self._data_json.columns = ["x", "y", "sy"]
             self._df["sx"] = 0.0
 
-        else:  # number of cols == 4
+        else:  # number of columns == 4
             try:
                 self._data_json.columns = ["x", "y", "sy", "sx"]
 
@@ -171,12 +181,26 @@ class DataHandler(QObject):
             data_path = QUrl(data_path).toLocalFile()
             self._load_by_data_path(data_path)
             fileName = data_path.split("/")[-1]
+            self._df = self._treat_df(self._df)
 
         elif df_array is not None:
             self._fill_df_with_array(df_array)
+            self._df = self._treat_df(self._df)
 
-        self._df_filters()
-        self._to_name_columns()
+        self._data_json = deepcopy(self._df)
+
+        # Data cleaning
+        self._df = self._drop_header(self._df)
+        self._data_json = self._drop_header(self._data_json)
+        self._to_check_columns()
+        self._data = deepcopy(self._df)
+        self._has_data = True
+        self.uploadData.emit(self._data_json.to_dict(orient="list"), fileName)
+
+    @pyqtSlot(str)
+    def _load_data_bottom(self):
+        fileName = "Dados Carregados do Projeto"
+        self._to_check_columns()
         self._data = deepcopy(self._df)
         self._has_data = True
         self.uploadData.emit(self._data_json.to_dict(orient="list"), fileName)
@@ -187,7 +211,6 @@ class DataHandler(QObject):
         self._df = pd.DataFrame.from_records(
             data, columns=["x", "y", "sy", "sx", "bool"]
         )
-
         # Removing not chosen rows
         self._df = self._df[self._df["bool"] == 1]
         del self._df["bool"]
@@ -226,15 +249,48 @@ class DataHandler(QObject):
             .dropna(how="all")
             .replace(np.nan, "0")
         )
+        # Only consider number of columns less than 4
+        df = df.rename({0: "x", 1: "y", 2: "sy", 3: "sx"}, axis=1)
+
         # Replacing all commas for dots
-        for i in df.columns:
-            df[i] = [x.replace(",", ".") for x in df[i]]
-            df[i] = df[i].astype(str)
-        self._df = df
+        self._df = self._treat_df(df)
         self.load_data()
 
+    @pyqtSlot()
+    def loadDataClipboard_bottom(self):
+        """Pega a tabela de dados do Clipboard."""
+        # Instantiating clipboard
+        clipboard = QGuiApplication.clipboard()
+        clipboardText = clipboard.mimeData().text()
+        # try:
+        # Creating a dataframe from the string
+        df = (
+            pd.read_csv(
+                StringIO(clipboardText),
+                sep="\t",
+                header=None,
+                dtype=str,
+            )
+            .dropna(how="all")
+            .replace(np.nan, "0")
+        )
+
+        # checking if the number of columns are compatible
+        if len(self._data_json.columns) == len(df.columns):
+            # Only consider number of columns less than 4 for the new data
+            df = df.rename({0: "x", 1: "y", 2: "sy", 3: "sx"}, axis=1)
+            df = self._treat_df(df)
+            self._data_json = pd.concat(
+                [self._data_json, df], axis=0, ignore_index=True
+            )
+            self._to_check_columns()
+            self._load_data_bottom()
+        # keep same data
+        else:
+            self.load_data()
+
     @property
-    def data(self): #só data
+    def data(self):
         return self._data
 
     @property
