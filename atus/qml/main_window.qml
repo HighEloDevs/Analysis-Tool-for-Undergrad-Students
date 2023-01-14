@@ -1,10 +1,11 @@
 import QtQuick 2.15
-import QtQuick.Window 2.15
 import QtQuick.Controls 2.15
-import QtGraphicalEffects 1.15
-import QtQuick.Dialogs 1.3
+import QtQuick.Window 2.15
 import QtQuick.Layouts 1.11
+import QtQuick.Dialogs 1.3
+import QtGraphicalEffects 1.15
 import Canvas 1.0
+// import Qt.labs.qmlmodels 1.0
 
 import "."
 import "controls"
@@ -19,7 +20,7 @@ Window {
     visible: true
     color: "#00000000"
 
-    // Shortcuts for debug
+    // Shortcuts
     Shortcut {
         sequences: ["CTRL+SHIFT+X"]
         onActivated: {
@@ -35,6 +36,15 @@ Window {
         onActivated: {
             console.log("debug :D")
         }
+    }
+
+    Shortcut {
+        sequences: ["CTRL+Q"]
+        onActivated:{
+            console.log(mainWindow.activeBtn)
+            // console.log("Ctrl+Q pressed")
+            Qt.quit()
+        }   
     }
 
     // Removing Title Bar

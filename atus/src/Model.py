@@ -25,11 +25,12 @@ SOFTWARE.
 
 import numpy as np
 import pandas as pd
-from PyQt5.QtGui import QGuiApplication
+
+# from PyQt5.QtGui import QGuiApplication
 from PyQt5.QtCore import (
     QObject,
-    QJsonValue,
-    QUrl,
+    # QJsonValue,
+    # QUrl,
     QVariant,
     pyqtSignal,
     pyqtSlot,
@@ -38,10 +39,12 @@ from scipy.odr import ODR, Model as SciPyModel, RealData
 from lmfit.models import ExpressionModel
 from lmfit import Parameters
 from .MessageHandler import MessageHandler
-from copy import deepcopy
-from io import StringIO
+
+# from copy import deepcopy
+# from io import StringIO
 import re
 from .DataHandler import DataHandler
+
 
 class Model(QObject):
     """
@@ -49,15 +52,15 @@ class Model(QObject):
     """
 
     # Signals
-    fillDataTable = pyqtSignal(
-        str,
-        str,
-        str,
-        str,
-        str,
-        str,
-        arguments=["x", "y", "sy", "sx", "filename"],
-    )
+    # fillDataTable = pyqtSignal(
+    #     str,
+    #     str,
+    #     str,
+    #     str,
+    #     str,
+    #     str,
+    #     arguments=["x", "y", "sy", "sx", "filename"],
+    # )
     fillParamsTable = pyqtSignal(
         str, float, float, arguments=["param", "value", "uncertainty"]
     )
@@ -104,7 +107,7 @@ class Model(QObject):
         """Set new expression to model."""
         self._exp_model = exp
         self._indVar = varInd
-    
+
     @property
     def data(self):
         """Retorna x, y, sx e sy."""
@@ -119,7 +122,6 @@ class Model(QObject):
     def data(self, data):
         self._data = data
 
-
     def fit(self, **kargs):
         """Interpretador de qual ajuste deve ser feito."""
         wsx = kargs.pop("wsx", True)
@@ -128,7 +130,7 @@ class Model(QObject):
         # Getting Model
         try:
             self._model = ExpressionModel(
-                self._exp_model + " + 0*%s" % self._indVar,
+                self._exp_model + r" + 0*{self._indVar}",
                 independent_vars=[self._indVar],
             )
         except ValueError:
@@ -158,23 +160,23 @@ class Model(QObject):
         )
         data = None
         if self._has_sy and self._has_sx:  # Caso com as duas incs
-            if wsx == True and wsy == True:
+            if (wsx is True) and (wsy is True):
                 self.__fit_lm_wy(x, y)
-                if (self._result is None) == False:
+                if (self._result is None) is False:
                     self.__set_param_values_lm_special(x)
                     self.__set_report_lm_special(x)
                 else:
                     return None
             elif wsx:
                 self.__fit_lm(x, y, sy)
-                if (self._result is None) == False:
+                if (self._result is None) is False:
                     self.__set_param_values_lm(x)
                     self.__set_report_lm(x)
                 else:
                     return None
             elif wsy:
                 self.__fit_ODR_special(x, y, sx)
-                if (self._result is None) == False:
+                if (self._result is None) is False:
                     self.__set_param_values_ODR(x)
                     self.__set_report_ODR(x)
                 else:
@@ -182,7 +184,7 @@ class Model(QObject):
             else:
                 data = RealData(x, y, sx=sx, sy=sy)
                 self.__fit_ODR(data)
-                if (self._result is None) == False:
+                if (self._result is None) is False:
                     self.__set_param_values_ODR(x)
                     self.__set_report_ODR(x)
                 else:
@@ -190,14 +192,14 @@ class Model(QObject):
         elif self._has_sy:  # Caso com a incerteza só em y
             if wsy:
                 self.__fit_lm_wy(x, y)
-                if (self._result is None) == False:
+                if (self._result is None) is False:
                     self.__set_param_values_lm_special(x)
                     self.__set_report_lm_special(x)
                 else:
                     return None
             else:
                 self.__fit_lm(x, y, sy)
-                if (self._result is None) == False:
+                if (self._result is None) is False:
                     self.__set_param_values_lm(x)
                     self.__set_report_lm(x)
                 else:
@@ -205,21 +207,21 @@ class Model(QObject):
         elif self._has_sx:  # Caso com a incerteza só em x
             if wsx:
                 self.__fit_lm_wy(x, y)
-                if (self._result is None) == False:
+                if (self._result is None) is False:
                     self.__set_param_values_lm_special(x)
                     self.__set_report_lm_special(x)
                 else:
                     return None
             else:
                 self.__fit_ODR_special(x, y, sx)
-                if (self._result is None) == False:
+                if (self._result is None) is False:
                     self.__set_param_values_ODR(x)
                     self.__set_report_ODR(x)
                 else:
                     return None
         else:  # Caso sem incertezas
             self.__fit_lm_wy(x, y)
-            if (self._result is None) == False:
+            if (self._result is None) is False:
                 self.__set_param_values_lm_special(x)
                 self.__set_report_lm_special(x)
             else:
@@ -263,13 +265,13 @@ class Model(QObject):
                             )
                             coefs[var] = [
                                 float(valor),
-                                not "@" in res["value"],
+                                "@" not in res["value"],
                                 lim_inf,
                                 lim_sup,
                             ]
                             coefs_2[var] = True
                     else:
-                        if coefs_2[self._coef[i]] == False and self._coef[i] in coefs:
+                        if coefs_2[self._coef[i]] is False and self._coef[i] in coefs:
                             lim_inf = (
                                 -np.inf
                                 if res["lim_inf"] is None
@@ -282,13 +284,13 @@ class Model(QObject):
                             )
                             coefs[self._coef[i]] = [
                                 float(res["value"].replace("@", "")),
-                                not "@" in res["value"],
+                                "@" not in res["value"],
                                 lim_inf,
                                 lim_sup,
                             ]
                             coefs_2[self._coef[i]] = True
-                except:
-                    if coefs_2[self._coef[i]] == False:
+                except Exception:
+                    if coefs_2[self._coef[i]] is False:
                         coefs[self._coef[i]] = [1, True, -np.inf, np.inf]
                         coefs_2[self._coef[i]] = True
             for nome in coefs.keys():
@@ -332,13 +334,13 @@ class Model(QObject):
                         if var in coefs:
                             coefs[var] = [
                                 float(valor),
-                                not "@" in res["value"],
+                                "@" not in res["value"],
                                 lim_inf,
                                 lim_sup,
                             ]
                             coefs_2[var] = True
                     else:
-                        if coefs_2[self._coef[i]] == False and self._coef[i] in coefs:
+                        if coefs_2[self._coef[i]] is False and self._coef[i] in coefs:
                             lim_inf = (
                                 -np.inf
                                 if res["lim_inf"] is None
@@ -351,13 +353,13 @@ class Model(QObject):
                             )
                             coefs[self._coef[i]] = [
                                 float(res["value"].replace("@", "")),
-                                not "@" in res["value"],
+                                "@" not in res["value"],
                                 lim_inf,
                                 lim_sup,
                             ]
                             coefs_2[self._coef[i]] = True
-                except:
-                    if coefs_2[self._coef[i]] == False:
+                except Exception:
+                    if coefs_2[self._coef[i]] is False:
                         coefs[self._coef[i]] = [1, True, -np.inf, np.inf]
                         coefs_2[self._coef[i]] = True
             for i, nome in enumerate(self._coef):
@@ -581,7 +583,8 @@ class Model(QObject):
             )
 
     def __set_param_values_lm_special(self, x):
-        """Constrói o dicionário e o Parameters dos valores do ajuste, quando não há incertezas."""
+        """Constrói o dicionário e o Parameters dos valores do ajuste,
+        quando não há incertezas."""
         self._dict.clear()
         self._dict2.clear()
         self._dict_param.clear()
@@ -784,7 +787,7 @@ class Model(QObject):
         #     for i in range(len(self._model.param_names)):
         #         try:
         #             pi[i] = float(self._p0[i])
-        #         except:
+        #         except Exception:
         #             pi[i] = 1.0
         # paramss = Parameters()
         # for i in range(len(self._coef)):
@@ -863,7 +866,7 @@ class Model(QObject):
         )
 
     def predictInc(self, wsx, wsy: bool = False):
-        if wsx == False and wsy == False and self._has_sx and self._has_sy:
+        if wsx is False and wsy is False and self._has_sx and self._has_sy:
             sy = np.zeros(len(self._data["x"]), dtype=float)
             for i, x in enumerate(self._data["x"]):
                 x_var = np.array(
@@ -882,7 +885,7 @@ class Model(QObject):
                 sy[i] = np.abs(y_var - y_prd).mean()
                 sy[i] = np.sqrt(self._data["sy"].iloc[i] ** 2 + sy[i] ** 2)
             return sy
-        elif wsx == False and wsy == False and self._has_sy == False and self._has_sx:
+        elif wsx is False and wsy is False and self._has_sy is False and self._has_sx:
             sy = np.zeros(len(self._data["x"]), dtype=float)
             for i, x in enumerate(self._data["x"]):
                 x_var = np.array(
@@ -900,13 +903,13 @@ class Model(QObject):
                 )
                 sy[i] = np.abs(y_var - y_prd).mean()
         elif (
-            wsx == False
-            and wsy == False
-            and self._has_sy == False
-            and self._has_sx == False
+            wsx is False
+            and wsy is False
+            and self._has_sy is False
+            and self._has_sx is False
         ):
             return np.zeros(len(self._data["x"]), dtype=float)
-        elif wsx == False and wsy and self._has_sy and self._has_sx == False:
+        elif wsx is False and wsy and self._has_sy and self._has_sx is False:
             return np.zeros(len(self._data["x"]), dtype=float)
         return self._data["sy"].to_numpy()
 
@@ -944,11 +947,11 @@ class Model(QObject):
         #                         coefs[var]   = [float(valor), not "@" in res.groups()[1]]
         #                         coefs_2[var] = True
         #             else:
-        #                 if coefs_2[self._coef[i]] == False and self._coef[i] in coefs:
+        #                 if coefs_2[self._coef[i]] is False and self._coef[i] in coefs:
         #                     coefs[self._coef[i]]   = [float(res.groups()[2].replace("@", "")), not "@" in res.groups()[2]]
         #                     coefs_2[self._coef[i]] = True
-        #         except:
-        #             if coefs_2[self._coef[i]] == False:
+        #         except Exception:
+        #             if coefs_2[self._coef[i]] is False:
         #                 coefs[self._coef[i]]   = [1, True]
         #                 coefs_2[self._coef[i]] = True
         #     for nome in coefs.keys():
@@ -972,15 +975,15 @@ class Model(QObject):
         #                     coefs_2[var] = True
         #         else:
         #             if "@" in self._p0[i]:
-        #                 if coefs_2[self._coef[i]] == False:
+        #                 if coefs_2[self._coef[i]] is False:
         #                     coefs[self._coef[i]]   = [float(self._p0[i].replace("@", "")), False]
         #                     coefs_2[self._coef[i]] = True
         #             else:
-        #                 if self._coef[i] in coefs and coefs_2[self._coef[i]] == False:
+        #                 if self._coef[i] in coefs and coefs_2[self._coef[i]] is False:
         #                     coefs[self._coef[i]]   = [float(self._p0[i]), True]
         #                     coefs_2[self._coef[i]] = True
-        #     except:
-        #         if coefs_2[self._coef[i]] == False:
+        #     except Exception:
+        #         if coefs_2[self._coef[i]] is False:
         #             coefs[self._coef[i]]   = [1, True]
         #             coefs_2[self._coef[i]] = True
         # for nome in coefs.keys():
@@ -1005,7 +1008,7 @@ class Model(QObject):
         df.columns = ["Valor", "|    Incerteza"]
         try:
             df.index = self._coef
-        except:
+        except Exception:
             df.index = self._par_var
         return str(df)
 
@@ -1020,7 +1023,7 @@ class Model(QObject):
         df = pd.DataFrame(self._dict, columns=["Valor", "Incerteza"]).transpose()
         try:
             df.index = self._coef
-        except:
+        except Exception:
             df.index = self._par_var
         return df
 
@@ -1050,7 +1053,7 @@ class Model(QObject):
                 df.columns = [""] * len(df.columns)
                 df.to_clipboard(sep=sep_columns[sep], decimal=sep_decimal[decimal])
 
-        except:
+        except Exception:
             self._msg_handler.raise_error(
                 "Não foi possível copiar para a área de transferência."
             )
@@ -1076,7 +1079,7 @@ class Model(QObject):
                 index=False,
                 header=False,
             )
-        except:
+        except Exception:
             self._msg_handler.raise_error(
                 "Não foi possível copiar para a área de transferência."
             )
@@ -1102,7 +1105,7 @@ class Model(QObject):
                 index=False,
                 header=False,
             )
-        except:
+        except Exception:
             self._msg_handler.raise_error(
                 "Não foi possível copiar para a área de transferência."
             )
