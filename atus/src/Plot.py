@@ -98,6 +98,7 @@ class SinglePlot(QObject):
     @pyqtSlot(QJsonValue)
     def get_plot_data(self, plot_data):
         self.model.reset()
+        self.datahandler.reset()
         plot_data: dict = plot_data.toVariant()
         canvas_props = plot_data["canvasProps"]
         dataProps = plot_data["dataProps"]
@@ -241,7 +242,7 @@ class SinglePlot(QObject):
                 canvas_props["yaxis"].strip(),
                 partial_titles[1].strip(),
             ]
-        if self.datahandler._has_data: 
+        if self.datahandler._has_data:
             # Fitting expression to data, if there"s any expression
             if fit_props["adjust"]:
                 if model.exp_model != "":
@@ -516,7 +517,7 @@ class SinglePlot(QObject):
                 self.canvas.clear_axis()
                 self.canvas.switch_axes(hide_axes2=True)
 
-                x, y, sy, sx = self.datahandler.separated_data 
+                x, y, sy, sx = self.datahandler.separated_data
                 kargs_errorbar["ecolor"] = symbol_color
                 kargs_scatter["c"] = symbol_color
                 # Making Plots
@@ -565,6 +566,7 @@ class SinglePlot(QObject):
     def new(self):
         # Reseting canvas and model
         self.model.reset()
+        self.datahandler.reset()
         # self.canvas.reset()
         self.canvas.clear_axis()
         self.canvas.switch_axes(True)
@@ -607,7 +609,7 @@ class SinglePlot(QObject):
             self.model.data = self.datahandler.data
             self.model._has_sx = self.datahandler.has_sx
             self.model._has_sy = self.datahandler.has_sy
-    
+
         else:
             try:
                 self.msg.raise_warn(
@@ -619,7 +621,7 @@ class SinglePlot(QObject):
                     f"O arquivo carregado é incompatível com o ATUS.\n{error}"
                 )
                 return 0
-            self.datahandler.load_data(df=props["data"])
+            self.datahandler.load_data(df_array=props["data"])
             self.model.data = self.datahandler.data
             self.model._has_sx = self.datahandler.has_sx
             self.model._has_sy = self.datahandler.has_sy

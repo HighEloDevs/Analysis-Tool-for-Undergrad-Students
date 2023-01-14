@@ -1112,7 +1112,7 @@ class Model(QObject):
 
     def reset(self):
         self._data = None
-        self._data_json = None
+
         self._exp_model = ""
         self._model = None
         self._report_fit = ""
