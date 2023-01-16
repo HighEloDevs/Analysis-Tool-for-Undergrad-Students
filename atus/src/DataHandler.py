@@ -1,3 +1,4 @@
+from typing import Union
 import numpy as np
 import pandas as pd
 from PyQt5.QtCore import (
@@ -19,33 +20,33 @@ class DataHandler(QObject):
     # Signals plot
     uploadData = pyqtSignal(QVariant, str, arguments=["data", "fileName"])
     # Signals hist
-    fillPage = pyqtSignal(QJsonValue)
+    # fillPage = pyqtSignal(QJsonValue)
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
         self._msg_handler: MessageHandler = MessageHandler()
-        self._df = None
+        self._df: pd.DataFrame = None
+        self._data_json: pd.DataFrame = None
+        self._has_sx: bool = True
+        self._has_sy: bool = True
+        self._has_data: bool = False
+        self._data: pd.DataFrame = None
+
+    def reset(self) -> None:
+        self._data = None
         self._data_json = None
+        self._has_data = False
         self._has_sx = True
         self._has_sy = True
-        self._has_data = False
-        self._data = None
 
-    def reset(self):
-        self._data = None
-        self._data_json = None
-        self._has_data = False
-        self._has_sx = True
-        self._has_sy = True
-
-    def _is_number(self, s):
+    def _is_number(self, s: any) -> bool:
         try:
             float(s)
             return True
         except ValueError:
             return False
 
-    def _read_csv(self, data_path):
+    def _read_csv(self, data_path: str) -> None:
         try:
             self._df = (
                 pd.read_csv(data_path, sep=",", header=None, dtype=str)
@@ -65,7 +66,7 @@ class DataHandler(QObject):
             )
             return None
 
-    def _read_tsv_txt(self, data_path):
+    def _read_tsv_txt(self, data_path: str) -> None:
         try:
             self._df = (
                 pd.read_csv(data_path, sep="\t|s", header=None, dtype=str)
@@ -79,7 +80,7 @@ class DataHandler(QObject):
             )
             return None
 
-    def _fill_df_with_array(self, df_array):
+    def _fill_df_with_array(self, df_array: list[list[str, str, str, str, bool]] | None) -> None:
         self._df = pd.DataFrame.from_records(
             df_array, columns=["x", "y", "sy", "sx", "bool"]
         )
@@ -99,7 +100,7 @@ class DataHandler(QObject):
                 )
             self._has_sx = False
 
-    def _treat_df(self, df):
+    def _treat_df(self, df: pd.DataFrame) -> pd.DataFrame:
         for col in df.columns:
             df[col] = [x.replace(",", ".") for x in df[col]]
             df[col] = df[col].astype(str)
@@ -114,14 +115,14 @@ class DataHandler(QObject):
         #         return None
         # return df
 
-    def _drop_header(self, df):
+    def _drop_header(self, df: pd.DataFrame) -> pd.DataFrame:
         for col in df.columns:
             if self._is_number(df[col].iloc[0]) is False:
                 df.drop(0, inplace=True)
                 df.index = range(len(df))
         return df
 
-    def _to_check_columns(self):
+    def _to_check_columns(self) -> None:
         number_of_cols = len(self._df.columns)
         if number_of_cols == 1:
             self._has_sy = not self._has_sy
@@ -167,14 +168,14 @@ class DataHandler(QObject):
                 )
                 return None
 
-    def _load_by_data_path(self, data_path):
+    def _load_by_data_path(self, data_path: str) -> None:
         if data_path[-3:] == "csv":
             self._read_csv(data_path)
         else:
             self._read_tsv_txt(data_path)
 
     @pyqtSlot(str)
-    def load_data(self, data_path="", df_array=None):
+    def load_data(self, data_path: str = "", df_array: pd.DataFrame = None) -> None:
         fileName = "Dados Carregados do Projeto"
         if len(data_path) > 0:
             # Loading from .csv or (.txt and .tsv)
@@ -198,7 +199,7 @@ class DataHandler(QObject):
         self.uploadData.emit(self._data_json.to_dict(orient="list"), fileName)
 
     @pyqtSlot(str)
-    def _load_data_bottom(self):
+    def _load_data_bottom(self) -> None:
         fileName = "Dados Carregados do Projeto"
         self._to_check_columns()
         self._data = deepcopy(self._df)
@@ -206,7 +207,7 @@ class DataHandler(QObject):
         self.uploadData.emit(self._data_json.to_dict(orient="list"), fileName)
 
     @pyqtSlot(QJsonValue)
-    def loadDataTable(self, data=None):
+    def loadDataTable(self, data: list[list[str,str,str,str,bool]] | None = None) -> None:
         """Getting data from table."""
         self._df = pd.DataFrame.from_records(
             data, columns=["x", "y", "sy", "sx", "bool"]
@@ -237,7 +238,7 @@ class DataHandler(QObject):
         self._has_data = True
 
     @pyqtSlot()
-    def loadDataClipboard(self):
+    def loadDataClipboard(self) -> None:
         """Pega a tabela de dados do Clipboard."""
         # Instantiating clipboard
         clipboard = QGuiApplication.clipboard()
@@ -257,7 +258,7 @@ class DataHandler(QObject):
         self.load_data()
 
     @pyqtSlot()
-    def loadDataClipboard_bottom(self):
+    def loadDataClipboard_bottom(self) -> None:
         """Pega a tabela de dados do Clipboard."""
         # Instantiating clipboard
         clipboard = QGuiApplication.clipboard()
@@ -290,11 +291,11 @@ class DataHandler(QObject):
             self.load_data()
 
     @property
-    def data(self):
+    def data(self) -> pd.DataFrame:
         return self._data
 
     @property
-    def separated_data(self):
+    def separated_data(self) -> tuple[pd.Series, pd.Series,pd.Series, pd.Series]:
         """Retorna x, y, sx e sy."""
         return (
             self._data["x"],
@@ -304,9 +305,9 @@ class DataHandler(QObject):
         )
 
     @property
-    def has_sx(self):
+    def has_sx(self) -> bool:
         return self._has_sx
 
     @property
-    def has_sy(self):
+    def has_sy(self) -> bool:
         return self._has_sy

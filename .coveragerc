@@ -1,0 +1,5 @@
+[run]
+source = ./auts/src
+
+[html]
+directory = coverage_relatorio_html
