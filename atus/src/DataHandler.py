@@ -80,7 +80,9 @@ class DataHandler(QObject):
             )
             return None
 
-    def _fill_df_with_array(self, df_array: list[list[str, str, str, str, bool]] | None) -> None:
+    def _fill_df_with_array(
+        self, df_array: list[list[str, str, str, str, bool]] | None
+    ) -> None:
         self._df = pd.DataFrame.from_records(
             df_array, columns=["x", "y", "sy", "sx", "bool"]
         )
@@ -146,7 +148,6 @@ class DataHandler(QObject):
         else:  # number of columns == 4
             try:
                 self._data_json.columns = ["x", "y", "sy", "sx"]
-
                 unique_sy = self._data_json["sy"].unique().astype(float)
                 if 0.0 in unique_sy:
                     if len(unique_sy) > 1:
@@ -183,7 +184,6 @@ class DataHandler(QObject):
             self._load_by_data_path(data_path)
             fileName = data_path.split("/")[-1]
             self._df = self._treat_df(self._df)
-
         elif df_array is not None:
             self._fill_df_with_array(df_array)
             self._df = self._treat_df(self._df)
@@ -207,7 +207,9 @@ class DataHandler(QObject):
         self.uploadData.emit(self._data_json.to_dict(orient="list"), fileName)
 
     @pyqtSlot(QJsonValue)
-    def loadDataTable(self, data: list[list[str,str,str,str,bool]] | None = None) -> None:
+    def loadDataTable(
+        self, data: list[list[str, str, str, str, bool]] | None = None
+    ) -> None:
         """Getting data from table."""
         self._df = pd.DataFrame.from_records(
             data, columns=["x", "y", "sy", "sx", "bool"]
@@ -229,7 +231,6 @@ class DataHandler(QObject):
                     "Um valor nulo foi encontrado nas incertezas em x, removendo coluna de sx."
                 )
             self._has_sx = False
-
         self._data_json = deepcopy(self._df)
 
         # Turn everything into number (str -> number)
@@ -295,7 +296,7 @@ class DataHandler(QObject):
         return self._data
 
     @property
-    def separated_data(self) -> tuple[pd.Series, pd.Series,pd.Series, pd.Series]:
+    def separated_data(self) -> tuple[pd.Series, pd.Series, pd.Series, pd.Series]:
         """Retorna x, y, sx e sy."""
         return (
             self._data["x"],
