@@ -128,9 +128,10 @@ class DataHandler(QObject):
         if number_of_cols == 1:
             self._has_sy = not self._has_sy
             self._has_sx = not self._has_sx
+            self._df["y"] = self._df["x"]
             self._df["x"] = np.arange(len(self._df), dtype=float)
             self._data_json = deepcopy(self._df.astype(str))
-            self._data_json.columns = ["y", "x"]
+            self._data_json.columns = ["x", "y"]
             self._df["sy"] = 0.0
             self._df["sx"] = 0.0
         elif number_of_cols == 2:
