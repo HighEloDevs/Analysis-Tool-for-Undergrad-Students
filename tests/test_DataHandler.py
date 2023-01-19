@@ -1,33 +1,24 @@
-# import os
-# import sys
-# import inspect
-# getting parent directory
-# currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
-# parentdir = os.path.dirname(currentdir)
-# This will insert the path of the parent directory at the 0th position in the search path
-# This allows the current file to import modules from the parent directory.
-# sys.path.insert(0, currentdir)
 from atus.src.DataHandler import DataHandler
 import pytest
 from unittest.mock import patch, MagicMock
 import pandas as pd
-
+from pandas.testing import assert_frame_equal
 
 from pytest import fixture
 
 
 @pytest.mark.data_handler
 class TestDataHandler:
-    # @fixture
+    # @pytest.fixture
     # def data_handler():
     #     return DataHandler()
 
-    def test_is_number(self):
+    @pytest.mark.parametrize(
+        "test_input, expected", [(1, True), (1.0, True), ("1", True), ("a", False)]
+    )
+    def test_is_number(self, test_input, expected):
         data_handler = DataHandler()
-        assert data_handler._is_number(1) == True
-        assert data_handler._is_number(1.0) == True
-        assert data_handler._is_number("1") == True
-        assert data_handler._is_number("a") == False
+        assert data_handler._is_number(test_input) == expected
 
     def test_fill_df_with_array(self):
         data_handler = DataHandler()
@@ -35,11 +26,52 @@ class TestDataHandler:
         data_handler._fill_df_with_array(df_array)
         assert isinstance(data_handler._df, pd.DataFrame)
 
-    # def test_load_by_data_path(self, data_handler):
-    #     data_handler._load_by_data_path(
-    #         r"C:\Users\abelh\OneDrive\Área de Trabalho\txts-atus\teste1"
-    #     )
-    #     assert isinstance(data_handler._df, pd.DataFrame)
+    def test_treat_df(self):
+        data_handler = DataHandler()
+        test_df = pd.DataFrame(
+            {
+                "x": ["1,1", "2,2", "3,3"],
+                "y": ["4,4", "5,5", "6,6"],
+                "sy": ["7,7", "8,8", "9,9"],
+                "sx": ["10,10", "11,11", "12,12"],
+            }
+        )
+        expected = pd.DataFrame(
+            {
+                "x": ["1.1", "2.2", "3.3"],
+                "y": ["4.4", "5.5", "6.6"],
+                "sy": ["7.7", "8.8", "9.9"],
+                "sx": ["10.10", "11.11", "12.12"],
+            }
+        )
+        result = data_handler._treat_df(test_df)
+        pd.testing.assert_frame_equal(result, expected)
+
+    def test_drop_header(self):
+        data_handler = DataHandler()
+        test = pd.DataFrame(
+            {
+                "x":  ["a", "1.1", "2.2", "3.3"],
+                "y":  ["a", "4.4", "5.5", "6.6"],
+                "sy": ["1", "7.7", "8.8", "9.9"],
+                "sx": ["a", "10.10", "11.11", "12.12"],
+            }
+        )
+        expected = pd.DataFrame(
+            
+            {
+                "x": ["1.1", "2.2", "3.3"],
+                "y": ["4.4", "5.5", "6.6"],
+                "sy": ["7.7", "8.8", "9.9"],
+                "sx": ["10.10", "11.11", "12.12"],
+            }
+            
+        )
+        result = data_handler._drop_header(test)
+        pd.testing.assert_frame_equal(result, expected)
+
+    def _test_to_check_columns(self):
+        pass
 
     @patch("atus.src.DataHandler.DataHandler._read_csv")
     @patch("atus.src.DataHandler.DataHandler._read_tsv_txt")
@@ -53,3 +85,5 @@ class TestDataHandler:
         dh._load_by_data_path(test_string)
         mock_tsv.assert_called_once()
         mock_csv.assert_called_once()
+
+
