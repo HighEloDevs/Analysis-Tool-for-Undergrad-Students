@@ -1,5 +1,5 @@
 [run]
-source = ./auts/src
+omit = tests/*
 
 [html]
 directory = coverage_relatorio_html

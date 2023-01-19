@@ -318,10 +318,10 @@ Item {
     Connections{
         target: datahandler
 
-        function onFillDataTable(x, y, sy, sx, isEditable, fileName){
-            label_fileName.text = fileName
-            table.addRow(x, y, sy, sx, Boolean(Number(isEditable)))
-        }
+        // function onFillDataTable(x, y, sy, sx, isEditable, fileName){
+        //     label_fileName.text = fileName
+        //     table.addRow(x, y, sy, sx, Boolean(Number(isEditable)))
+        // }
 
         function onUploadData(data, fileName){
             label_fileName.text = fileName

@@ -1,4 +1,3 @@
-from typing import Union
 import numpy as np
 import pandas as pd
 from PyQt5.QtCore import (
@@ -69,7 +68,7 @@ class DataHandler(QObject):
     def _read_tsv_txt(self, data_path: str) -> None:
         try:
             self._df = (
-                pd.read_csv(data_path, sep="\t|s", header=None, dtype=str)
+                pd.read_csv(data_path, sep=r"\t|s", header=None, dtype=str)
                 .dropna(how="all")
                 .replace(np.nan, "0")
             )
@@ -296,7 +295,9 @@ class DataHandler(QObject):
         return self._data
 
     @property
-    def separated_data(self) -> tuple[pd.Series, pd.Series, pd.Series, pd.Series]:
+    def separated_data(
+        self,
+    ) -> tuple[pd.Series, pd.Series, pd.Series, pd.Series]:
         """Retorna x, y, sx e sy."""
         return (
             self._data["x"],

@@ -399,7 +399,7 @@ class Histogram(QObject):
         self.fillPage.emit(QJsonValue.fromVariant(props))
 
     @pyqtSlot(str, result=QJsonValue)
-    def check_data(self, filePath):
+    def check_data(self, filePath: str):
         """
         Check if data is valid
         Returns: True + Data if valid data, False otherwise
@@ -414,8 +414,7 @@ class Histogram(QObject):
                 )
             except pd.errors.ParserError:
                 self.messageHandler.raise_error(
-                    "Separação de colunas de arquivos csv são com vírgula (",
-                    "). Rever dados de entrada.",
+                    "Separação de colunas de arquivos csv são com vírgula. Rever dados de entrada.",
                 )
                 # Separação de colunas de arquivos csv são com vírgula (","). Rever dados de entrada.
                 return QJsonValue.fromVariant(package)
