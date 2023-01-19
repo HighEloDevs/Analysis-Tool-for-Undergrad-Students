@@ -51,21 +51,19 @@ class TestDataHandler:
         data_handler = DataHandler()
         test = pd.DataFrame(
             {
-                "x":  ["a", "1.1", "2.2", "3.3"],
-                "y":  ["a", "4.4", "5.5", "6.6"],
+                "x": ["a", "1.1", "2.2", "3.3"],
+                "y": ["a", "4.4", "5.5", "6.6"],
                 "sy": ["1", "7.7", "8.8", "9.9"],
                 "sx": ["a", "10.10", "11.11", "12.12"],
             }
         )
         expected = pd.DataFrame(
-            
             {
                 "x": ["1.1", "2.2", "3.3"],
                 "y": ["4.4", "5.5", "6.6"],
                 "sy": ["7.7", "8.8", "9.9"],
                 "sx": ["10.10", "11.11", "12.12"],
             }
-            
         )
         result = data_handler._drop_header(test)
         pd.testing.assert_frame_equal(result, expected)
@@ -85,5 +83,3 @@ class TestDataHandler:
         dh._load_by_data_path(test_string)
         mock_tsv.assert_called_once()
         mock_csv.assert_called_once()
-
-
