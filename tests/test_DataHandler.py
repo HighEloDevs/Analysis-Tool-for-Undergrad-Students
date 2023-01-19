@@ -1,19 +1,7 @@
-# import os
-# import sys
-# import inspect
-# getting parent directory
-# currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
-# parentdir = os.path.dirname(currentdir)
-# This will insert the path of the parent directory at the 0th position in the search path
-# This allows the current file to import modules from the parent directory.
-# sys.path.insert(0, currentdir)
 from atus.src.DataHandler import DataHandler
 import pytest
 from unittest.mock import patch, MagicMock
 import pandas as pd
-
-
-from pytest import fixture
 
 
 @pytest.mark.data_handler
