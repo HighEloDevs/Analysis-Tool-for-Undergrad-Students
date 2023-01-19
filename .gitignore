@@ -79,6 +79,7 @@ atus_qt6
 .idea
 .pytest_cache
 .vscode
+.mypy_cache
 
 build
 dist
