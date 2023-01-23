@@ -3,6 +3,8 @@ import pytest
 from unittest.mock import patch, MagicMock
 import pandas as pd
 from pandas.testing import assert_frame_equal
+from copy import deepcopy
+
 
 @pytest.mark.data_handler
 class TestDataHandler:
@@ -65,18 +67,47 @@ class TestDataHandler:
         result = data_handler._drop_header(test)
         pd.testing.assert_frame_equal(result, expected)
 
-    def _test_to_check_columns(self):
-        pass
+
+    @pytest.fixture
+    def four_columns_df(self):
+        data = [[1, 2, 3, 4], [5, 6, 7, 8]]
+        columns = ["x", "y", "sy", "sx"]
+        return pd.DataFrame(data, columns=columns)
+
+    @pytest.mark.parametrize(
+        "input_columns,other_columns,has_sy,has_sx",
+        [   
+            (["x"], {'x':[0.0, 1.0],'y': [1, 5],'sy': 0.0, 'sx': 0.0}, False, False),
+            (["x", "y"], {'sy': 0.0, 'sx': 0.0}, False, False),
+            (["x", "y", "sy"], {'sx': 0.0}, True, False),
+            (["x", "y", "sy", "sx"], {}, True, True),
+        ],
+    )
+    def test_to_check_columns(self, four_columns_df, input_columns, other_columns, has_sx, has_sy):
+        data_handler = DataHandler()
+        data_handler._df = four_columns_df[input_columns]
+        data_handler._data_json = deepcopy(data_handler._df)
+        data_handler._to_check_columns()
+        expected_df = deepcopy(four_columns_df)
+        
+        for col in other_columns.keys():
+            expected_df[col] = other_columns[col]
+
+        result_df = data_handler._df
+
+        pd.testing.assert_frame_equal(result_df, expected_df)
+        assert data_handler._has_sx == has_sx
+        assert data_handler._has_sy == has_sy
 
     @patch("atus.src.DataHandler.DataHandler._read_csv")
     @patch("atus.src.DataHandler.DataHandler._read_tsv_txt")
     def test_load_by_data_path(self, mock_tsv: MagicMock, mock_csv: MagicMock):
-        dh = DataHandler()
+        data_handler = DataHandler()
         test_string = "arquivo.csv"
-        dh._load_by_data_path(test_string)
+        data_handler._load_by_data_path(test_string)
         mock_csv.assert_called_once()
         mock_tsv.assert_not_called()
         test_string = "arquivo.tsv"
-        dh._load_by_data_path(test_string)
+        data_handler._load_by_data_path(test_string)
         mock_tsv.assert_called_once()
         mock_csv.assert_called_once()
