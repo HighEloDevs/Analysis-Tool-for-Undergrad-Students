@@ -28,22 +28,12 @@ class TestDataHandler:
 
     def test_treat_df(self):
         data_handler = DataHandler()
-        test_df = pd.DataFrame(
-            {
-                "x": ["1,1", "2,2", "3,3"],
-                "y": ["4,4", "5,5", "6,6"],
-                "sy": ["7,7", "8,8", "9,9"],
-                "sx": ["10,10", "11,11", "12,12"],
-            }
-        )
-        expected = pd.DataFrame(
-            {
-                "x": [1.1, 2.2, 3.3],
-                "y": [4.4, 5.5, 6.6],
-                "sy": [7.7, 8.8, 9.9],
-                "sx": [10.10, 11.11, 12.12],
-            }
-        )
+        columns = ["x", "y", "sy", "sx"]
+        test_data = [["1,1", "2,2", "3,3", "4,4"], ["5,5", "6,6", "7,7", "8,8"]]
+        expected_data = [[1.1, 2.2, 3.3, 4.4], [5.5, 6.6, 7.7, 8.8]]
+        test_df = pd.DataFrame(test_data, columns = columns)
+        expected = pd.DataFrame(expected_data, columns=columns)
+        
         result = data_handler._treat_df(test_df)
         pd.testing.assert_frame_equal(result, expected)
 
@@ -68,7 +58,6 @@ class TestDataHandler:
         result = data_handler._drop_header(test)
         pd.testing.assert_frame_equal(result, expected)
 
-
     @pytest.fixture
     def four_columns_df(self):
         data = [[1, 2, 3, 4], [5, 6, 7, 8]]
@@ -77,20 +66,22 @@ class TestDataHandler:
 
     @pytest.mark.parametrize(
         "input_columns,other_columns,has_sy,has_sx",
-        [   
-            (["x"], {'x':[0.0, 1.0],'y': [1, 5],'sy': 0.0, 'sx': 0.0}, False, False),
-            (["x", "y"], {'sy': 0.0, 'sx': 0.0}, False, False),
-            (["x", "y", "sy"], {'sx': 0.0}, True, False),
+        [
+            (["x"], {"x": [0.0, 1.0], "y": [1, 5], "sy": 0.0, "sx": 0.0}, False, False),
+            (["x", "y"], {"sy": 0.0, "sx": 0.0}, False, False),
+            (["x", "y", "sy"], {"sx": 0.0}, True, False),
             (["x", "y", "sy", "sx"], {}, True, True),
         ],
     )
-    def test_to_check_columns(self, four_columns_df, input_columns, other_columns, has_sx, has_sy):
+    def test_to_check_columns(
+        self, four_columns_df, input_columns, other_columns, has_sx, has_sy
+    ):
         data_handler = DataHandler()
         data_handler._df = four_columns_df[input_columns]
         data_handler._data_json = deepcopy(data_handler._df)
         data_handler._to_check_columns()
         expected_df = deepcopy(four_columns_df)
-        
+
         for col in other_columns.keys():
             expected_df[col] = other_columns[col]
 
@@ -113,10 +104,3 @@ class TestDataHandler:
         mock_tsv.assert_called_once()
         mock_csv.assert_called_once()
 
-    # @patch('atus.src.DataHandler.DataHandler.loadDataClipboard')
-    # def test_loadDataClipboard(self, mock_read_data):
-    #     data_handler = DataHandler()
-    #     test_data = "x,y,sy,sx\n1,2,3,4\n5,6,7,8\n"
-    #     mock_read_data.return_value = test_data
-    #     data_handler.loadDataClipboard()
-    #     assert data_handler._df.equals(pd.read_csv(StringIO(test_data)))
