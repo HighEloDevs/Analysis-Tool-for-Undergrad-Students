@@ -4,6 +4,7 @@ from unittest.mock import patch, MagicMock
 import pandas as pd
 from pandas.testing import assert_frame_equal
 from copy import deepcopy
+from io import StringIO
 
 
 @pytest.mark.data_handler
@@ -37,10 +38,10 @@ class TestDataHandler:
         )
         expected = pd.DataFrame(
             {
-                "x": ["1.1", "2.2", "3.3"],
-                "y": ["4.4", "5.5", "6.6"],
-                "sy": ["7.7", "8.8", "9.9"],
-                "sx": ["10.10", "11.11", "12.12"],
+                "x": [1.1, 2.2, 3.3],
+                "y": [4.4, 5.5, 6.6],
+                "sy": [7.7, 8.8, 9.9],
+                "sx": [10.10, 11.11, 12.12],
             }
         )
         result = data_handler._treat_df(test_df)
@@ -111,3 +112,11 @@ class TestDataHandler:
         data_handler._load_by_data_path(test_string)
         mock_tsv.assert_called_once()
         mock_csv.assert_called_once()
+
+    # @patch('atus.src.DataHandler.DataHandler.loadDataClipboard')
+    # def test_loadDataClipboard(self, mock_read_data):
+    #     data_handler = DataHandler()
+    #     test_data = "x,y,sy,sx\n1,2,3,4\n5,6,7,8\n"
+    #     mock_read_data.return_value = test_data
+    #     data_handler.loadDataClipboard()
+    #     assert data_handler._df.equals(pd.read_csv(StringIO(test_data)))
