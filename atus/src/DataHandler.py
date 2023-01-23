@@ -107,16 +107,14 @@ class DataHandler(QObject):
         for col in df.columns:
             df[col] = [x.replace(",", ".") for x in df[col]]
             df[col] = df[col].astype(str)
+            try:
+                df[col] = df[col].astype(float)
+            except ValueError:
+                self._msg_handler.raise_error(
+                    "A entrada de dados só permite entrada de números. Rever arquivo de entrada."
+                )
+                return None
         return df
-        # for col in df.columns:
-        #     try:
-        #         df[col] = df[col].astype(float)
-        #     except ValueError:
-        #         self._msg_handler.raise_error(
-        #             "A entrada de dados só permite entrada de números. Rever arquivo de entrada."
-        #         )
-        #         return None
-        # return df
 
     def _drop_header(self, df: pd.DataFrame) -> pd.DataFrame:
         for col in df.columns:
@@ -283,6 +281,9 @@ class DataHandler(QObject):
             # Only consider number of columns less than 4 for the new data
             df = df.rename({0: "x", 1: "y", 2: "sy", 3: "sx"}, axis=1)
             df = self._treat_df(df)
+            self._df = pd.concat(
+                [self._df, df], axis=0, ignore_index=True
+            )
             self._data_json = pd.concat(
                 [self._data_json, df], axis=0, ignore_index=True
             )
