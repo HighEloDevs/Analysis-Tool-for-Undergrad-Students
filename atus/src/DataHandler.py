@@ -52,6 +52,7 @@ class DataHandler(QObject):
                 .dropna(how="all")
                 .replace(np.nan, "0")
             )
+            self._df = self._df.rename({0: "x", 1: "y", 2: "sy", 3: "sx"}, axis=1)
 
         except pd.errors.ParserError:
             self._msg_handler.raise_error(
@@ -72,6 +73,7 @@ class DataHandler(QObject):
                 .dropna(how="all")
                 .replace(np.nan, "0")
             )
+            self._df = self._df.rename({0: "x", 1: "y", 2: "sy", 3: "sx"}, axis=1)
         except pd.errors.ParserError:
 
             self._msg_handler.raise_error(
@@ -187,9 +189,8 @@ class DataHandler(QObject):
         elif df_array is not None:
             self._fill_df_with_array(df_array)
             self._df = self._treat_df(self._df)
-
+  
         self._data_json = deepcopy(self._df)
-
         # Data cleaning
         self._df = self._drop_header(self._df)
         self._data_json = self._drop_header(self._data_json)
