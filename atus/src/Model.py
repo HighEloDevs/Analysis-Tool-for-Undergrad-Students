@@ -130,7 +130,7 @@ class Model(QObject):
         # Getting Model
         try:
             self._model = ExpressionModel(
-                self._exp_model + r" + 0*{self._indVar}",
+                self._exp_model + f" + 0*{self._indVar}",
                 independent_vars=[self._indVar],
             )
         except ValueError:
@@ -388,7 +388,7 @@ class Model(QObject):
                     max=lim_sup[i],
                 )
             return eval(
-                "self._model.eval(%s=x, params=param)" % self._indVar,
+                f"self._model.eval({self._indVar}=x, params=param)",
                 {"x": x, "param": param, "self": self},
             )
 
@@ -417,7 +417,7 @@ class Model(QObject):
                     max=lim_sup[i],
                 )
             return eval(
-                "self._model.eval(%s=x, params=param)" % self._indVar,
+                f"self._model.eval({self._indVar}=x, params=param)",
                 {"x": x, "param": param, "self": self},
             )
 
@@ -462,12 +462,12 @@ class Model(QObject):
                 [x + self._data["sx"].iloc[i], x - self._data["sx"].iloc[i]]
             )
             y_prd = eval(
-                "self._model.eval(%s = x, params = self._params)" % self._indVar,
+                f"self._model.eval({self._indVar} = x, params = self._params)",
                 None,
                 {"x": x, "self": self},
             )
             y_var = eval(
-                "self._model.eval(%s = x_var, params = self._params)" % self._indVar,
+                f"self._model.eval({self._indVar} = x_var, params = self._params)",
                 None,
                 {"x_var": x_var, "self": self},
             )
@@ -477,8 +477,7 @@ class Model(QObject):
             (
                 (
                     eval(
-                        "self._model.eval(%s = x_var, params = self._params)"
-                        % self._indVar,
+                        f"self._model.eval({self._indVar} = x_var, params = self._params)",
                         None,
                         {"x_var": x_var.to_numpy(), "self": self},
                     )
@@ -494,8 +493,7 @@ class Model(QObject):
         self.__make_parameters_lm()
         try:
             self._result = eval(
-                "self._model.fit(data = y, %s = x, weights = 1/sy, params = params, scale_covar=False, max_nfev = 250)"
-                % self._indVar,
+                f"self._model.fit(data = y, {self._indVar} = x, weights = 1/sy, params = params, scale_covar=False, max_nfev = 250)",
                 None,
                 {
                     "y": y,
@@ -527,8 +525,7 @@ class Model(QObject):
         self.__make_parameters_lm()
         try:
             self._result = eval(
-                "self._model.fit(data = y, %s = x, params = self._params, scale_covar=False, max_nfev = 250)"
-                % self._indVar,
+                f"self._model.fit(data = y, {self._indVar} = x, params = self._params, scale_covar=False, max_nfev = 250)",
                 None,
                 {"y": y, "x": x, "self": self},
             )

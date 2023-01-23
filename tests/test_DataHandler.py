@@ -31,9 +31,9 @@ class TestDataHandler:
         columns = ["x", "y", "sy", "sx"]
         test_data = [["1,1", "2,2", "3,3", "4,4"], ["5,5", "6,6", "7,7", "8,8"]]
         expected_data = [[1.1, 2.2, 3.3, 4.4], [5.5, 6.6, 7.7, 8.8]]
-        test_df = pd.DataFrame(test_data, columns = columns)
+        test_df = pd.DataFrame(test_data, columns=columns)
         expected = pd.DataFrame(expected_data, columns=columns)
-        
+
         result = data_handler._treat_df(test_df)
         pd.testing.assert_frame_equal(result, expected)
 
@@ -103,4 +103,3 @@ class TestDataHandler:
         data_handler._load_by_data_path(test_string)
         mock_tsv.assert_called_once()
         mock_csv.assert_called_once()
-
