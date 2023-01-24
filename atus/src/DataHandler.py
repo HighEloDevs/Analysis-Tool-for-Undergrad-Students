@@ -1,28 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-MIT License
-
-Copyright (c) 2021 Leonardo Eiji Tamayose, Guilherme Ferrari Fortino
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-"""
-
 import numpy as np
 import pandas as pd
 from PyQt5.QtCore import (
@@ -201,7 +176,9 @@ class DataHandler(QObject):
             self._read_tsv_txt(data_path)
 
     @pyqtSlot(str)
-    def load_data(self, data_path: str = "", df_array: pd.DataFrame = None) -> None:
+    def load_data(
+        self, data_path: str = "", df_array: pd.DataFrame = None, clipboardText=""
+    ) -> None:
         fileName = "Dados Carregados do Projeto"
         if len(data_path) > 0:
             # Loading from .csv or (.txt and .tsv)
@@ -212,6 +189,18 @@ class DataHandler(QObject):
         elif df_array is not None:
             self._fill_df_with_array(df_array)
             self._df = self._treat_df(self._df)
+        elif clipboardText != "":
+            # try:
+            # Creating a dataframe from the string
+            df = (
+                pd.read_csv(StringIO(clipboardText), sep="\t", header=None, dtype=str)
+                .dropna(how="all")
+                .replace(np.nan, "0")
+            )
+            # Only consider number of columns less than 4
+            df = df.rename({0: "x", 1: "y", 2: "sy", 3: "sx"}, axis=1)
+            # Replacing all commas for dots
+            self._df = self._treat_df(df)
 
         self._data_json = deepcopy(self._df)
         # Data cleaning
@@ -223,12 +212,35 @@ class DataHandler(QObject):
         self.uploadData.emit(self._data_json.to_dict(orient="list"), fileName)
 
     @pyqtSlot(str)
-    def _load_data_bottom(self) -> None:
-        fileName = "Dados Carregados do Projeto"
-        self._to_check_columns()
-        self._data = deepcopy(self._df)
-        self._has_data = True
-        self.uploadData.emit(self._data_json.to_dict(orient="list"), fileName)
+    def _load_data_bottom(self, clipboardText_bottom) -> None:
+        df = (
+            pd.read_csv(
+                StringIO(clipboardText_bottom),
+                sep="\t",
+                header=None,
+                dtype=str,
+            )
+            .dropna(how="all")
+            .replace(np.nan, "0")
+        )
+
+        # checking if the number of columns are compatible
+        if len(self._data_json.columns) == len(df.columns):
+            # Only consider columns 0, 1, 2, and 3
+            df = df.rename({0: "x", 1: "y", 2: "sy", 3: "sx"}, axis=1)
+            df = self._treat_df(df)
+            self._df = pd.concat([self._df, df], axis=0, ignore_index=True)
+            self._data_json = pd.concat(
+                [self._data_json, df], axis=0, ignore_index=True
+            )
+
+            fileName = "Dados Carregados do Projeto"
+            self._to_check_columns()
+            self._data = deepcopy(self._df)
+            self._has_data = True
+            self.uploadData.emit(self._data_json.to_dict(orient="list"), fileName)
+        else:
+            self.load_data()
 
     @pyqtSlot(QJsonValue)
     def loadDataTable(
@@ -268,53 +280,15 @@ class DataHandler(QObject):
         # Instantiating clipboard
         clipboard = QGuiApplication.clipboard()
         clipboardText = clipboard.mimeData().text()
-        # try:
-        # Creating a dataframe from the string
-        df = (
-            pd.read_csv(StringIO(clipboardText), sep="\t", header=None, dtype=str)
-            .dropna(how="all")
-            .replace(np.nan, "0")
-        )
-        # Only consider number of columns less than 4
-        df = df.rename({0: "x", 1: "y", 2: "sy", 3: "sx"}, axis=1)
-
-        # Replacing all commas for dots
-        self._df = self._treat_df(df)
-        self.load_data()
+        self.load_data(clipboardText=clipboardText)
 
     @pyqtSlot()
     def loadDataClipboard_bottom(self) -> None:
         """Pega a tabela de dados do Clipboard."""
         # Instantiating clipboard
         clipboard = QGuiApplication.clipboard()
-        clipboardText = clipboard.mimeData().text()
-        # try:
-        # Creating a dataframe from the string
-        df = (
-            pd.read_csv(
-                StringIO(clipboardText),
-                sep="\t",
-                header=None,
-                dtype=str,
-            )
-            .dropna(how="all")
-            .replace(np.nan, "0")
-        )
-
-        # checking if the number of columns are compatible
-        if len(self._data_json.columns) == len(df.columns):
-            # Only consider number of columns less than 4 for the new data
-            df = df.rename({0: "x", 1: "y", 2: "sy", 3: "sx"}, axis=1)
-            df = self._treat_df(df)
-            self._df = pd.concat([self._df, df], axis=0, ignore_index=True)
-            self._data_json = pd.concat(
-                [self._data_json, df], axis=0, ignore_index=True
-            )
-            self._to_check_columns()
-            self._load_data_bottom()
-        # keep same data
-        else:
-            self.load_data()
+        clipboardText_bottom = clipboard.mimeData().text()
+        self._load_data_bottom(clipboardText_bottom)
 
     @property
     def data(self) -> pd.DataFrame:
