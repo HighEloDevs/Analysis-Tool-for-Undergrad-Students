@@ -114,6 +114,7 @@ class DataHandler(QObject):
                     "A entrada de dados só permite entrada de números. Rever arquivo de entrada."
                 )
                 return None
+        df = self._drop_header(df)
         return df
 
     def _drop_header(self, df: pd.DataFrame) -> pd.DataFrame:
@@ -175,7 +176,7 @@ class DataHandler(QObject):
         else:
             self._read_tsv_txt(data_path)
 
-    def _fill_df_with_StringIO(self, clipboardText):
+    def _fill_df_with_clipboardText(self, clipboardText):
          # try:
         # Creating a dataframe from the string
         
@@ -187,7 +188,7 @@ class DataHandler(QObject):
         # Only consider number of columns less than 4
         df = df.rename({0: "x", 1: "y", 2: "sy", 3: "sx"}, axis=1)
         # Replacing all commas for dots
-        self._df = self._treat_df(df)
+        self._df = df
 
     
     @pyqtSlot(str)
@@ -200,16 +201,13 @@ class DataHandler(QObject):
             data_path = QUrl(data_path).toLocalFile()
             self._load_by_data_path(data_path)
             fileName = data_path.split("/")[-1]
-            self._df = self._treat_df(self._df)
         elif df_array is not None:
             self._fill_df_with_array(df_array)
-            self._df = self._treat_df(self._df)
         elif clipboardText != "":
-            self._fill_df_with_StringIO(clipboardText)
-           
+            self._fill_df_with_clipboardText(clipboardText)
+        
+        self._df = self._treat_df(self._df)   
         self._data_json = deepcopy(self._df)
-        # Data cleaning
-        self._df = self._drop_header(self._df)
         self._data_json = self._drop_header(self._data_json)
         self._to_check_columns()
         self._data = deepcopy(self._df)
