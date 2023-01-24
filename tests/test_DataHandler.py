@@ -5,6 +5,7 @@ import pandas as pd
 from pandas.testing import assert_frame_equal
 from copy import deepcopy
 from io import StringIO
+from PyQt5.QtCore import (QUrl)
 
 
 @pytest.mark.data_handler
@@ -33,7 +34,6 @@ class TestDataHandler:
         expected_data = [[1.1, 2.2, 3.3, 4.4], [5.5, 6.6, 7.7, 8.8]]
         test_df = pd.DataFrame(test_data, columns=columns)
         expected = pd.DataFrame(expected_data, columns=columns)
-
         result = data_handler._treat_df(test_df)
         pd.testing.assert_frame_equal(result, expected)
 
@@ -103,3 +103,25 @@ class TestDataHandler:
         data_handler._load_by_data_path(test_string)
         mock_tsv.assert_called_once()
         mock_csv.assert_called_once()
+    
+
+
+    def test_load_data(self):
+        data_handler = DataHandler()
+        data_handler._treat_df =  MagicMock()
+        
+        clipboardText='1\t2\t3\t4\n5\t6\t7\t8'
+        data_handler._fill_df_with_clipboardText = MagicMock()
+        data_handler.load_data(clipboardText=clipboardText)
+        data_handler._fill_df_with_clipboardText.assert_called_once_with(clipboardText)
+        
+        data_path = r'file:///C:/User'
+        data_handler._load_by_data_path = MagicMock()
+        data_handler.load_data(data_path=data_path)
+        data_handler._load_by_data_path.assert_called_once_with(QUrl(data_path).toLocalFile())
+
+        df_array = [["1", "2", "3", "4", True], ["5", "6", "7", "8", True]]
+        data_handler._fill_df_with_array = MagicMock()
+        data_handler.load_data(df_array=df_array)
+        data_handler._fill_df_with_array.assert_called_once_with(df_array)
+
