@@ -177,9 +177,9 @@ class DataHandler(QObject):
             self._read_tsv_txt(data_path)
 
     def _fill_df_with_clipboardText(self, clipboardText):
-         # try:
+        # try:
         # Creating a dataframe from the string
-        
+
         df = (
             pd.read_csv(StringIO(clipboardText), sep="\t", header=None, dtype=str)
             .dropna(how="all")
@@ -190,7 +190,6 @@ class DataHandler(QObject):
         # Replacing all commas for dots
         self._df = df
 
-    
     @pyqtSlot(str)
     def load_data(
         self, data_path: str = "", df_array: pd.DataFrame = None, clipboardText=""
@@ -205,8 +204,8 @@ class DataHandler(QObject):
             self._fill_df_with_array(df_array)
         elif clipboardText != "":
             self._fill_df_with_clipboardText(clipboardText)
-        
-        self._df = self._treat_df(self._df)   
+
+        self._df = self._treat_df(self._df)
         self._data_json = deepcopy(self._df)
         self._data_json = self._drop_header(self._data_json)
         self._to_check_columns()
