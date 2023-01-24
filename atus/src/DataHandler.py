@@ -175,6 +175,21 @@ class DataHandler(QObject):
         else:
             self._read_tsv_txt(data_path)
 
+    def _fill_df_with_StringIO(self, clipboardText):
+         # try:
+        # Creating a dataframe from the string
+        
+        df = (
+            pd.read_csv(StringIO(clipboardText), sep="\t", header=None, dtype=str)
+            .dropna(how="all")
+            .replace(np.nan, "0")
+        )
+        # Only consider number of columns less than 4
+        df = df.rename({0: "x", 1: "y", 2: "sy", 3: "sx"}, axis=1)
+        # Replacing all commas for dots
+        self._df = self._treat_df(df)
+
+    
     @pyqtSlot(str)
     def load_data(
         self, data_path: str = "", df_array: pd.DataFrame = None, clipboardText=""
@@ -190,18 +205,8 @@ class DataHandler(QObject):
             self._fill_df_with_array(df_array)
             self._df = self._treat_df(self._df)
         elif clipboardText != "":
-            # try:
-            # Creating a dataframe from the string
-            df = (
-                pd.read_csv(StringIO(clipboardText), sep="\t", header=None, dtype=str)
-                .dropna(how="all")
-                .replace(np.nan, "0")
-            )
-            # Only consider number of columns less than 4
-            df = df.rename({0: "x", 1: "y", 2: "sy", 3: "sx"}, axis=1)
-            # Replacing all commas for dots
-            self._df = self._treat_df(df)
-
+            self._fill_df_with_StringIO(clipboardText)
+           
         self._data_json = deepcopy(self._df)
         # Data cleaning
         self._df = self._drop_header(self._df)
