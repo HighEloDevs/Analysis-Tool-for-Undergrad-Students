@@ -5,14 +5,28 @@ import pandas as pd
 from pandas.testing import assert_frame_equal
 from copy import deepcopy
 from io import StringIO
-from PyQt5.QtCore import (QUrl)
+from PyQt5.QtCore import QUrl
+import os
+import tempfile
+
+# import codecs
 
 
 @pytest.mark.data_handler
 class TestDataHandler:
-    # @pytest.fixture
-    # def data_handler():
-    #     return DataHandler()
+    def test_reset(self):
+        data_handler = DataHandler()
+        data_handler._data = pd.DataFrame([1])
+        data_handler._data_json = pd.DataFrame(["1"])
+        data_handler._has_data = True
+        data_handler._has_sx = False
+        data_handler._has_sy = False
+        data_handler.reset()
+        assert data_handler._data == None
+        assert data_handler._data_json == None
+        assert data_handler._has_data == False
+        assert data_handler._has_sx == True
+        assert data_handler._has_sy == True
 
     @pytest.mark.parametrize(
         "test_input, expected", [(1, True), (1.0, True), ("1", True), ("a", False)]
@@ -21,11 +35,83 @@ class TestDataHandler:
         data_handler = DataHandler()
         assert data_handler._is_number(test_input) == expected
 
+    def test_read_csv(self):
+        data_handler = DataHandler()
+        with tempfile.TemporaryDirectory() as tmpdir:
+            data_path = os.path.join(tmpdir, "test.csv")
+            with open(data_path, "w") as f:
+                f.write("1,2,3,4\n5,6,7,8\n9,10,11,12")
+            data_handler._read_csv(data_path)
+        df = pd.DataFrame(
+            [["1", "2", "3", "4"], ["5", "6", "7", "8"], ["9", "10", "11", "12"]],
+            columns=["x", "y", "sy", "sx"],
+        )
+        pd.testing.assert_frame_equal(data_handler._df, df)
+
+        data_handler._msg_handler.raise_error = MagicMock()
+        with tempfile.TemporaryDirectory() as tmpdir:
+            data_path = os.path.join(tmpdir, "test.csv")
+            test_data = "1,2,3\n4,5,6,7\n8,9,1"
+            message = "Separação de colunas de arquivos csv são com vírgula (','). Rever dados de entrada."
+            with open(data_path, "w") as f:
+                f.write(test_data)
+            data_handler._read_csv(data_path)
+        data_handler._msg_handler.raise_error.assert_called_once_with(message)
+
+        # with tempfile.TemporaryDirectory() as tmpdir:
+        #     data_path = os.path.join(tmpdir, "test.csv")
+        #     test_data = test_data.encode("utf-8").decode("ISO-8859-1", "ignore")
+        #     message = "O encoding do arquivo é inválido. Use o utf-8."
+        #     with open(data_path, "w") as f:
+        #         f.write(test_data)
+        #     data_handler._read_csv(data_path)
+        # data_handler._msg_handler.raise_error.assert_called_with(message)
+
+    def test_read_tsv(self):
+        data_handler = DataHandler()
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            data_path = os.path.join(tmpdir, "test.tsv")
+            with open(data_path, "w") as f:
+                f.write("1\t2\t3\t4\n5\t6\t7\t8\n9\t10\t11\t12")
+            data_handler._read_tsv_txt(data_path)
+        df = pd.DataFrame(
+            [["1", "2", "3", "4"], ["5", "6", "7", "8"], ["9", "10", "11", "12"]],
+            columns=["x", "y", "sy", "sx"],
+        )
+        pd.testing.assert_frame_equal(data_handler._df, df)
+
+        data_handler._msg_handler.raise_error = MagicMock()
+        with tempfile.TemporaryDirectory() as tmpdir:
+            data_path = os.path.join(tmpdir, "test.csv")
+            test_data = "1\t2\t3\n4\t5\t6\t7\n8\t9\t1"
+            message = "Separação de colunas de arquivos txt e tsv são com tab. Rever dados de entrada."
+            with open(data_path, "w") as f:
+                f.write(test_data)
+            data_handler._read_tsv_txt(data_path)
+        data_handler._msg_handler.raise_error.assert_called_once_with(message)
+
     def test_fill_df_with_array(self):
         data_handler = DataHandler()
         df_array = [["1", "2", "3", "4", True], ["5", "6", "7", "8", True]]
+        columns = ["x", "y", "sy", "sx"]
+        expected_data = [["1", "2", "3", "4"], ["5", "6", "7", "8"]]
+        df = pd.DataFrame(expected_data, columns=columns)
         data_handler._fill_df_with_array(df_array)
-        assert isinstance(data_handler._df, pd.DataFrame)
+        pd.testing.assert_frame_equal(data_handler._df, df)
+
+    # @pytest.mark.parametrize(
+    #     "data,message",
+    #     [
+    #         ([["1", "2", 0, "0", True], ["5", "6", "7", "8", True]],"Um valor nulo foi encontrado nas incertezas em y, removendo coluna de sy."),
+
+    #     ],
+    # )
+    # def test_fill_df_with_array_sig_zero(self,data,message):
+    #     data_handler = DataHandler()
+    #     data_handler._msg_handler.raise_error = MagicMock()
+    #     data_handler._fill_df_with_array(data)
+    #     data_handler._msg_handler.raise_error.assert_called_once_with(message)
 
     def test_treat_df(self):
         data_handler = DataHandler()
@@ -103,25 +189,24 @@ class TestDataHandler:
         data_handler._load_by_data_path(test_string)
         mock_tsv.assert_called_once()
         mock_csv.assert_called_once()
-    
-
 
     def test_load_data(self):
         data_handler = DataHandler()
-        data_handler._treat_df =  MagicMock()
-        
-        clipboardText='1\t2\t3\t4\n5\t6\t7\t8'
+        data_handler._treat_df = MagicMock()
+
+        clipboardText = "1\t2\t3\t4\n5\t6\t7\t8"
         data_handler._fill_df_with_clipboardText = MagicMock()
         data_handler.load_data(clipboardText=clipboardText)
         data_handler._fill_df_with_clipboardText.assert_called_once_with(clipboardText)
-        
-        data_path = r'file:///C:/User'
+
+        data_path = r"file:///C:/User"
         data_handler._load_by_data_path = MagicMock()
         data_handler.load_data(data_path=data_path)
-        data_handler._load_by_data_path.assert_called_once_with(QUrl(data_path).toLocalFile())
+        data_handler._load_by_data_path.assert_called_once_with(
+            QUrl(data_path).toLocalFile()
+        )
 
         df_array = [["1", "2", "3", "4", True], ["5", "6", "7", "8", True]]
         data_handler._fill_df_with_array = MagicMock()
         data_handler.load_data(df_array=df_array)
         data_handler._fill_df_with_array.assert_called_once_with(df_array)
-
