@@ -53,7 +53,7 @@ class DataHandler(QObject):
                 .replace(np.nan, "0")
             )
             self._df = self._df.rename({0: "x", 1: "y", 2: "sy", 3: "sx"}, axis=1)
-            return True
+            return None
         except pd.errors.ParserError:
             self._msg_handler.raise_error(
                 "Separação de colunas de arquivos csv são com vírgula (','). Rever dados de entrada."
@@ -204,10 +204,10 @@ class DataHandler(QObject):
             self._fill_df_with_array(df_array)
         elif clipboardText != "":
             self._fill_df_with_clipboardText(clipboardText)
-        
+
         if self._df == None:
             return None
-            
+
         self._df = self._treat_df(self._df)
         self._data_json = deepcopy(self._df)
         self._data_json = self._drop_header(self._data_json)
