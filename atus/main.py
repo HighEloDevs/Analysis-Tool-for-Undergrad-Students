@@ -82,7 +82,7 @@ def main(pip: bool = True):
     messageHandler = MessageHandler()
     canvas = Canvas(messageHandler)
     model = Model(messageHandler)
-    datahandler = DataHandler()
+    datahandler = DataHandler(messageHandler=messageHandler)
     singlePlot = SinglePlot(canvas, model, datahandler, messageHandler)
     multiPlot = Multiplot(canvas, messageHandler)
     updater = UpdateChecker(pip)
