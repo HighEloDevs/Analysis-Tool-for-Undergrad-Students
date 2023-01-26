@@ -188,7 +188,7 @@ class TestDataHandler:
     @patch("atus.src.DataHandler.DataHandler._read_csv")
     @patch("atus.src.DataHandler.DataHandler._read_tsv_txt")
     def test_load_by_data_path(
-        self, mock_tsv: MagicMock, mock_csv: MagicMock, data_handler: DataHandlergit
+        self, mock_tsv: MagicMock, mock_csv: MagicMock, data_handler: DataHandler
     ):
 
         test_string = "arquivo.csv"

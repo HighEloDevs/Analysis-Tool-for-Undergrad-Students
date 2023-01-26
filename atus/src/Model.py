@@ -43,7 +43,6 @@ from .MessageHandler import MessageHandler
 # from copy import deepcopy
 # from io import StringIO
 import re
-from .DataHandler import DataHandler
 
 
 class Model(QObject):
@@ -71,22 +70,22 @@ class Model(QObject):
         super().__init__()
         pd.set_option("display.expand_frame_repr", False)
         self._msg_handler: MessageHandler = messageHandler
-        self._data = None
-        self._data_json = None
-        self._exp_model = ""
-        self._indVar = "x"
+        self._data: pd.DataFrame = None
+        self._data_json: pd.DataFrame = None
+        self._exp_model: str = ""
+        self._ind_var: str = "x"
         self._model = None
         self._report_fit = ""
         self._mat_corr = ""
         self._mat_cov = ""
         self._dict_param = {}
         self._result = None
-        self._coef = []
+        self._coef: list[str] = []
         self._par_var = []
         self._params = Parameters()
         self._dict = {}
         self._dict2 = {}
-        self._p0 = None
+        self._p0: list[str] = None
         self.xmin_adj = 0.0
         self.xmax_adj = 0.0
         self._has_data = False
@@ -94,19 +93,18 @@ class Model(QObject):
         self._has_sx = True
         self._has_sy = True
         self._indices = []
-        self.Data = DataHandler()
 
     def __str__(self):
         return self._report_fit
 
-    def set_p0(self, p0):
+    def set_p0(self, p0: str):
         """Coloca os chutes iniciais."""
         self._p0 = p0.replace(" ", "").split(",")
 
-    def set_expression(self, exp="", varInd="x"):
+    def set_expression(self, exp="", ind_var="x"):
         """Set new expression to model."""
         self._exp_model = exp
-        self._indVar = varInd
+        self._ind_var = ind_var
 
     @property
     def data(self):
@@ -122,26 +120,30 @@ class Model(QObject):
     def data(self, data):
         self._data = data
 
+    def _create_model(self) -> bool:
+        """Cria o modelo de ajuste."""
+        try:
+            self._model = ExpressionModel(
+                self._exp_model + f" + 0*{self._ind_var}",
+                independent_vars=[self._ind_var],
+            )
+            return True
+        except ValueError:
+            self._msg_handler.raise_error(
+                "Função de ajuste escrita de forma errada. Rever função de ajuste."
+            )
+            return False
+        except SyntaxError:
+            self._msg_handler.raise_error("Erro de sintaxe. Rever função de ajuste.")
+            return False
+
     def fit(self, **kargs):
         """Interpretador de qual ajuste deve ser feito."""
         wsx = kargs.pop("wsx", True)
         wsy = kargs.pop("wsy", True)
 
         # Getting Model
-        try:
-            self._model = ExpressionModel(
-                self._exp_model + f" + 0*{self._indVar}",
-                independent_vars=[self._indVar],
-            )
-        except ValueError:
-            self._msg_handler.raise_error(
-                "Expressão de ajuste escrita de forma errada. Rever função de ajuste."
-            )
-            return None
-        except SyntaxError:
-            self._msg_handler.raise_error(
-                "Expressão de ajuste escrita de forma errada. Rever função de ajuste."
-            )
+        if not self._create_model():
             return None
         # Getting coefficients
         self._coef = [i for i in self._model.param_names]
@@ -302,12 +304,16 @@ class Model(QObject):
                     max=coefs[nome][3],
                 )
 
-    def __make_parameters_odr(self):
+    def __make_parameters_odr(
+        self,
+    ) -> tuple[list[float], list[bool], list[float], list[float]]:
         """Constrói os parâmetros para ajuste com o ODR."""
-        pi = [1.0] * len(self._coef)
-        fixed = [1] * len(self._coef)
-        arr_lim_inf = [-np.inf] * len(self._coef)
-        arr_lim_sup = [np.inf] * len(self._coef)
+        pi: list[float] = [1.0] * len(self._coef)
+        fixed: list[bool] = [1] * len(
+            self._coef
+        )  # TODO: confirmar mudança para boolean
+        arr_lim_inf: list[float] = [-np.inf] * len(self._coef)
+        arr_lim_sup: list[float] = [np.inf] * len(self._coef)
         aux = {c: i for i, c in enumerate(self._coef)}
         if self._p0 is None:
             pass
@@ -388,7 +394,7 @@ class Model(QObject):
                     max=lim_sup[i],
                 )
             return eval(
-                f"self._model.eval({self._indVar}=x, params=param)",
+                f"self._model.eval({self._ind_var}=x, params=param)",
                 {"x": x, "param": param, "self": self},
             )
 
@@ -417,7 +423,7 @@ class Model(QObject):
                     max=lim_sup[i],
                 )
             return eval(
-                f"self._model.eval({self._indVar}=x, params=param)",
+                f"self._model.eval({self._ind_var}=x, params=param)",
                 {"x": x, "param": param, "self": self},
             )
 
@@ -436,9 +442,9 @@ class Model(QObject):
         # sy = np.zeros(len(self._data["x"]), dtype = float)
         # for i, x in enumerate(self._data["x"]):
         #     x_var = np.array([x + self._data["sx"].iloc[i], x - self._data["sx"].iloc[i]])
-        #     y_prd = eval("self._model.eval(%s = x, params = self._params)"%self._indVar, None,
+        #     y_prd = eval("self._model.eval(%s = x, params = self._params)"%self._ind_var, None,
         # {"x": x, "self": self})
-        #     y_var = eval("self._model.eval(%s = x_var, params = self._params)"%self._indVar, None,
+        #     y_var = eval("self._model.eval(%s = x_var, params = self._params)"%self._ind_var, None,
         # {"x_var": x_var, "self": self})
         #     sy[i] = np.abs(y_var - y_prd).mean()
         # sy = sy.astype(float)/1000
@@ -462,12 +468,12 @@ class Model(QObject):
                 [x + self._data["sx"].iloc[i], x - self._data["sx"].iloc[i]]
             )
             y_prd = eval(
-                f"self._model.eval({self._indVar} = x, params = self._params)",
+                f"self._model.eval({self._ind_var} = x, params = self._params)",
                 None,
                 {"x": x, "self": self},
             )
             y_var = eval(
-                f"self._model.eval({self._indVar} = x_var, params = self._params)",
+                f"self._model.eval({self._ind_var} = x_var, params = self._params)",
                 None,
                 {"x_var": x_var, "self": self},
             )
@@ -477,7 +483,7 @@ class Model(QObject):
             (
                 (
                     eval(
-                        f"self._model.eval({self._indVar} = x_var, params = self._params)",
+                        f"self._model.eval({self._ind_var} = x_var, params = self._params)",
                         None,
                         {"x_var": x_var.to_numpy(), "self": self},
                     )
@@ -493,7 +499,7 @@ class Model(QObject):
         self.__make_parameters_lm()
         try:
             self._result = eval(
-                f"self._model.fit(data = y, {self._indVar} = x, weights = 1/sy, params = params, scale_covar=False, max_nfev = 250)",
+                f"self._model.fit(data = y, {self._ind_var} = x, weights = 1/sy, params = params, scale_covar=False, max_nfev = 250)",
                 None,
                 {
                     "y": y,
@@ -525,7 +531,7 @@ class Model(QObject):
         self.__make_parameters_lm()
         try:
             self._result = eval(
-                f"self._model.fit(data = y, {self._indVar} = x, params = self._params, scale_covar=False, max_nfev = 250)",
+                f"self._model.fit(data = y, {self._ind_var} = x, params = self._params, scale_covar=False, max_nfev = 250)",
                 None,
                 {"y": y, "x": x, "self": self},
             )
@@ -766,7 +772,7 @@ class Model(QObject):
     def residuo(self):
         """Retorna os valores de y_i - f(x_i)."""
         return self._data["y"].to_numpy() - eval(
-            f"self._model.eval({self._indVar}=self._data['x'].to_numpy())",
+            f"self._model.eval({self._ind_var}=self._data['x'].to_numpy())",
             None,
             {"self": self},
         )
@@ -790,18 +796,18 @@ class Model(QObject):
         # for i in range(len(self._coef)):
         #     paramss.add(self._coef[i], pi[i])
         # print("rfs")
-        # print("self._model.eval(%s = self._data['x'], params = self._params)"%self._indVar)
+        # print("self._model.eval(%s = self._data['x'], params = self._params)"%self._ind_var)
         # print(self._data["x"])
         # print(self._params)
         # print(self._model.eval(x = self._data['x'].to_numpy(), params = self._params))
         y = eval(
             "self._model.eval(%s = self._data['x'].to_numpy(), params = self._params)"
-            % self._indVar,
+            % self._ind_var,
             None,
             {"self": self},
         )
         # print(y)
-        # return self._data["y"].to_numpy() - eval("self._model.eval(%s = self._data['x'], params = self._params)"%self._indVar, None,
+        # return self._data["y"].to_numpy() - eval("self._model.eval(%s = self._data['x'], params = self._params)"%self._ind_var, None,
         # {"self": self})
         return self._data["y"].to_numpy() - y
 
@@ -811,7 +817,7 @@ class Model(QObject):
             x_min, x_max, int(fig.get_size_inches()[0] * fig.dpi * 1.75)
         )
         return x_plot, eval(
-            "self._model.eval(%s = x_plot, params = self._params)" % self._indVar,
+            "self._model.eval(%s = x_plot, params = self._params)" % self._ind_var,
             None,
             {"x_plot": x_plot, "self": self},
         )
@@ -857,7 +863,7 @@ class Model(QObject):
             int(fig.get_size_inches()[0] * fig.dpi * 2.1),
         )
         return x_plot, eval(
-            f"self._model.eval({self._indVar} = x_plot, params = self._params)",
+            f"self._model.eval({self._ind_var} = x_plot, params = self._params)",
             None,
             {"x_plot": x_plot, "self": self},
         )
@@ -870,12 +876,12 @@ class Model(QObject):
                     [x + self._data["sx"].iloc[i], x - self._data["sx"].iloc[i]]
                 )
                 y_prd = eval(
-                    f"self._model.eval({self._indVar} = x, params = self._params)",
+                    f"self._model.eval({self._ind_var} = x, params = self._params)",
                     None,
                     {"x": x, "self": self},
                 )
                 y_var = eval(
-                    f"self._model.eval({self._indVar} = x_var, params = self._params)",
+                    f"self._model.eval({self._ind_var} = x_var, params = self._params)",
                     None,
                     {"x_var": x_var, "self": self},
                 )
@@ -889,12 +895,12 @@ class Model(QObject):
                     [x + self._data["sx"].iloc[i], x - self._data["sx"].iloc[i]]
                 )
                 y_prd = eval(
-                    f"self._model.eval({self._indVar} = x, params = self._params)",
+                    f"self._model.eval({self._ind_var} = x, params = self._params)",
                     None,
                     {"x": x, "self": self},
                 )
                 y_var = eval(
-                    f"self._model.eval({self._indVar} = x_var, params = self._params)",
+                    f"self._model.eval({self._ind_var} = x_var, params = self._params)",
                     None,
                     {"x_var": x_var, "self": self},
                 )
@@ -913,8 +919,8 @@ class Model(QObject):
     def createDummyModel(self):
         try:
             self._model = ExpressionModel(
-                self._exp_model + " + 0*%s" % self._indVar,
-                independent_vars=[self._indVar],
+                self._exp_model + " + 0*%s" % self._ind_var,
+                independent_vars=[self._ind_var],
             )
         except ValueError:
             self._msg_handler.raise_error(
