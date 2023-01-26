@@ -21,9 +21,9 @@ class DataHandler(QObject):
     # Signals hist
     # fillPage = pyqtSignal(QJsonValue)
 
-    def __init__(self) -> None:
+    def __init__(self, messageHandler) -> None:
         super().__init__()
-        self._msg_handler: MessageHandler = MessageHandler()
+        self._msg_handler: MessageHandler = messageHandler
         self._df: pd.DataFrame = None
         self._data_json: pd.DataFrame = None
         self._has_sx: bool = True
@@ -205,7 +205,7 @@ class DataHandler(QObject):
         elif clipboardText != "":
             self._fill_df_with_clipboardText(clipboardText)
 
-        if self._df == None:
+        if type(self._df) != pd.DataFrame:
             return None
 
         self._df = self._treat_df(self._df)
