@@ -146,29 +146,27 @@ class DataHandler(QObject):
             self._data_json.columns = ["x", "y", "sy"]
             self._df["sx"] = 0.0
 
-        else:  # number of columns == 4
-            try:
-                self._data_json.columns = ["x", "y", "sy", "sx"]
-                unique_sy = self._data_json["sy"].unique().astype(float)
-                if 0.0 in unique_sy:
-                    if len(unique_sy) > 1:
-                        self._msg_handler.raise_warn(
-                            "Um valor nulo foi encontrado nas incertezas em y, removendo coluna de sy."
-                        )
-                    self._has_sy = False
-                unique_sx = self._data_json["sx"].unique().astype(float)
-                if 0.0 in unique_sx:
-                    if len(unique_sx) > 1:
-                        self._msg_handler.raise_warn(
-                            "Um valor nulo foi encontrado nas incertezas em x, removendo coluna de sx."
-                        )
-                    self._has_sx = False
-
-            except ValueError:
-                self._msg_handler.raise_error(
-                    "Há mais do que 4 colunas. Rever entrada de dados."
-                )
-                return None
+        elif number_of_cols == 4:
+            self._data_json.columns = ["x", "y", "sy", "sx"]
+            unique_sy = self._data_json["sy"].unique().astype(float)
+            if 0.0 in unique_sy:
+                if len(unique_sy) > 1:
+                    self._msg_handler.raise_warn(
+                        "Um valor nulo foi encontrado nas incertezas em y, removendo coluna de sy."
+                    )
+                self._has_sy = False
+            unique_sx = self._data_json["sx"].unique().astype(float)
+            if 0.0 in unique_sx:
+                if len(unique_sx) > 1:
+                    self._msg_handler.raise_warn(
+                        "Um valor nulo foi encontrado nas incertezas em x, removendo coluna de sx."
+                    )
+                self._has_sx = False
+        else:
+            self._msg_handler.raise_error(
+                "Há mais do que 4 colunas. Rever entrada de dados."
+            )
+            return None
 
     def _load_by_data_path(self, data_path: str) -> None:
         if data_path[-3:] == "csv":
