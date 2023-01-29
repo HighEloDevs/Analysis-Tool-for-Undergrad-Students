@@ -203,16 +203,14 @@ class DataHandler(QObject):
         elif clipboardText != "":
             self._fill_df_with_clipboardText(clipboardText)
 
-        if type(self._df) != pd.DataFrame:
-            return None
-
-        self._df = self._treat_df(self._df)
-        self._data_json = deepcopy(self._df)
-        self._data_json = self._drop_header(self._data_json)
-        self._to_check_columns()
-        self._data = deepcopy(self._df)
-        self._has_data = True
-        self.uploadData.emit(self._data_json.to_dict(orient="list"), fileName)
+        if type(self._df) == pd.DataFrame:     
+            self._df = self._treat_df(self._df)
+            self._data_json = deepcopy(self._df)
+            self._data_json = self._drop_header(self._data_json)
+            self._to_check_columns()
+            self._data = deepcopy(self._df)
+            self._has_data = True
+            self.uploadData.emit(self._data_json.to_dict(orient="list"), fileName)
 
     @pyqtSlot(str)
     def _load_data_bottom(self, clipboardText_bottom) -> None:
