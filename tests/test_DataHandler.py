@@ -9,7 +9,8 @@ from PyQt5.QtCore import QUrl
 import os
 import tempfile
 from atus.src.MessageHandler import MessageHandler
-
+from PyQt5.QtGui import QClipboard
+from PyQt5.QtGui import QGuiApplication
 # import codecs
 
 
@@ -40,7 +41,6 @@ class TestDataHandler:
         assert data_handler._is_number(test_input) == expected
 
     def test_read_csv(self, data_handler: DataHandler):
-
         with tempfile.TemporaryDirectory() as tmpdir:
             data_path = os.path.join(tmpdir, "test.csv")
             with open(data_path, "w") as f:
@@ -94,13 +94,32 @@ class TestDataHandler:
         data_handler._msg_handler.raise_error.assert_called_once_with(message)
 
     def test_fill_df_with_array(self, data_handler: DataHandler):
-
         df_array = [["1", "2", "3", "4", True], ["5", "6", "7", "8", True]]
         columns = ["x", "y", "sy", "sx"]
         expected_data = [["1", "2", "3", "4"], ["5", "6", "7", "8"]]
         df = pd.DataFrame(expected_data, columns=columns)
         data_handler._fill_df_with_array(df_array)
         pd.testing.assert_frame_equal(data_handler._df, df)
+
+    @pytest.mark.parametrize(
+        "df_array,message",
+        [
+            (
+                [["1", "2", "0", "4", True], ["5", "6", "7", "8", True]],
+                "Um valor nulo foi encontrado nas incertezas em y, removendo coluna de sy.",
+            ),
+            (
+                [["1", "2", "3", "4", True], ["5", "6", "7", "0", True]],
+                "Um valor nulo foi encontrado nas incertezas em x, removendo coluna de sx.",
+            ),
+        ],
+    )
+    def test_fill_df_with_array_warns(
+        self, data_handler: DataHandler, df_array, message
+    ):
+        data_handler._msg_handler.raise_warn = MagicMock()
+        data_handler._fill_df_with_array(df_array)
+        data_handler._msg_handler.raise_warn.assert_called_once_with(message)
 
     # @pytest.mark.parametrize(
     #     "data,message",
@@ -116,7 +135,6 @@ class TestDataHandler:
     #     data_handler._msg_handler.raise_error.assert_called_once_with(message)
 
     def test_treat_df(self, data_handler: DataHandler):
-
         columns = ["x", "y", "sy", "sx"]
         test_data = [["1,1", "2,2", "3,3", "4,4"], ["5,5", "6,6", "7,7", "8,8"]]
         expected_data = [[1.1, 2.2, 3.3, 4.4], [5.5, 6.6, 7.7, 8.8]]
@@ -185,6 +203,51 @@ class TestDataHandler:
         assert data_handler._has_sx == has_sx
         assert data_handler._has_sy == has_sy
 
+    @pytest.mark.parametrize(
+        "data,columns,message",
+        [
+            (
+                [["1", "2", "0", "4"], ["5", "6", "7", "8"]],
+                ["x", "y", "sy", "sx"],
+                "Um valor nulo foi encontrado nas incertezas em y, removendo coluna de sy.",
+            ),
+            (
+                [["1", "2", "3", "4"], ["5", "6", "7", "0"]],
+                ["x", "y", "sy", "sx"],
+                "Um valor nulo foi encontrado nas incertezas em x, removendo coluna de sx.",
+            ),
+        ],
+    )
+    def test_to_check_columns_warns(
+        self, data_handler: DataHandler, data, columns, message
+    ):
+        df = pd.DataFrame(data, columns=columns)
+        data_handler._df = df
+        data_handler._data_json = deepcopy(data_handler._df)
+        data_handler._msg_handler.raise_warn = MagicMock()
+        data_handler._to_check_columns()
+        data_handler._msg_handler.raise_warn.assert_called_once_with(message)
+
+    @pytest.mark.parametrize(
+        "data,columns,message",
+        [
+            (
+                [["1", "2", "3", "4", "4"], ["5", "6", "7", "8", "9"]],
+                ["x", "y", "sy", "sx", "extra"],
+                "Há mais do que 4 colunas. Rever entrada de dados.",
+            ),
+        ],
+    )
+    def test_to_check_columns_error(
+        self, data_handler: DataHandler, data, columns, message
+    ):
+        df = pd.DataFrame(data, columns=columns)
+        data_handler._df = df
+        data_handler._data_json = deepcopy(data_handler._df)
+        data_handler._msg_handler.raise_error = MagicMock()
+        data_handler._to_check_columns()
+        data_handler._msg_handler.raise_error.assert_called_once_with(message)
+
     @patch("atus.src.DataHandler.DataHandler._read_csv")
     @patch("atus.src.DataHandler.DataHandler._read_tsv_txt")
     def test_load_by_data_path(
@@ -200,8 +263,7 @@ class TestDataHandler:
         mock_tsv.assert_called_once()
         mock_csv.assert_called_once()
 
-    def test_load_data(self, data_handler: DataHandler):
-
+    def test_load_data_use_right_method(self, data_handler: DataHandler):
         data_handler._treat_df = MagicMock()
 
         clipboardText = "1\t2\t3\t4\n5\t6\t7\t8"
@@ -220,3 +282,9 @@ class TestDataHandler:
         data_handler._fill_df_with_array = MagicMock()
         data_handler.load_data(df_array=df_array)
         data_handler._fill_df_with_array.assert_called_once_with(df_array)
+
+    def test_load_data(self, data_handler: DataHandler):
+        df_array = [["1", "2", "3", "4", True], ["5", "6", "7", "8", True]]
+        data_handler.load_data(df_array=df_array)
+        assert data_handler._has_data == True
+
