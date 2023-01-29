@@ -190,7 +190,7 @@ class DataHandler(QObject):
 
     @pyqtSlot(str)
     def load_data(
-        self, data_path: str = "", df_array: pd.DataFrame = None, clipboardText=""
+        self, data_path: str = "", df_array: list[list[str, str, str, str, bool]] = None, clipboardText=""
     ) -> None:
         fileName = "Dados Carregados do Projeto"
         if len(data_path) > 0:
