@@ -28,8 +28,8 @@ class TestDataHandler:
         assert data_handler._data == None
         assert data_handler._data_json == None
         assert data_handler._has_data == False
-        assert data_handler._has_sx == True
-        assert data_handler._has_sy == True
+        assert data_handler.has_sx == True
+        assert data_handler.has_sy == True
 
     @pytest.mark.parametrize(
         "test_input, expected", [(1, True), (1.0, True), ("1", True), ("a", False)]
@@ -127,6 +127,16 @@ class TestDataHandler:
         result = data_handler._treat_df(test_df)
         pd.testing.assert_frame_equal(result, expected)
 
+    def test_treat_df_error(self, data_handler: DataHandler):
+        columns = ["x"]
+        test_data = [["NEYMAR"]]
+        test_df = pd.DataFrame(test_data, columns=columns)
+        data_handler._msg_handler.raise_error = MagicMock()
+        data_handler._treat_df(test_df)
+        message = "A entrada de dados só permite entrada de números. Rever arquivo de entrada."
+        data_handler._msg_handler.raise_error.assert_called_once_with(message)
+        
+
     def test_drop_header(self, data_handler: DataHandler):
 
         test = pd.DataFrame(
@@ -186,8 +196,8 @@ class TestDataHandler:
         result_df = data_handler._df
 
         pd.testing.assert_frame_equal(result_df, expected_df)
-        assert data_handler._has_sx == has_sx
-        assert data_handler._has_sy == has_sy
+        assert data_handler.has_sx == has_sx
+        assert data_handler.has_sy == has_sy
 
     @pytest.mark.parametrize(
         "data,columns,message",
@@ -195,6 +205,11 @@ class TestDataHandler:
             (
                 [["1", "2", "0", "4"], ["5", "6", "7", "8"]],
                 ["x", "y", "sy", "sx"],
+                "Um valor nulo foi encontrado nas incertezas em y, removendo coluna de sy.",
+            ),
+            (
+                [["1", "2", "0"], ["5", "6", "7"]],
+                ["x", "y", "sy"],
                 "Um valor nulo foi encontrado nas incertezas em y, removendo coluna de sy.",
             ),
             (
@@ -339,8 +354,8 @@ class TestDataHandler:
     ):
         data_handler.load_data(df_array=data_top)
         data_handler._load_data_bottom(clipboardText_bottom)
-        assert has_sx == data_handler._has_sx
-        assert has_sy == data_handler._has_sy
+        assert has_sx == data_handler.has_sx
+        assert has_sy == data_handler.has_sy
 
     def test_load_data_bottom_warn(self, data_handler: DataHandler):
         data_top = [["1", "2", "3", "4", True], ["5", "6", "7", "8", True]]
@@ -376,5 +391,16 @@ class TestDataHandler:
         data_handler._msg_handler.raise_warn = MagicMock()
         data_handler.loadDataTable(data)
         data_handler._msg_handler.raise_warn.assert_called_once_with(message)
-        assert has_sx == data_handler._has_sx
-        assert has_sy == data_handler._has_sy
+        assert has_sx == data_handler.has_sx
+        assert has_sy == data_handler.has_sy
+
+    def test_data(self, data_handler: DataHandler):
+        data = [[1, 2, 3, 4], [5, 6, 7, 8]]
+        df = pd.DataFrame(data, columns=['x','y','sy','sx'])
+        data_handler._data = df
+        x,y,sy,sx = data_handler.separated_data
+        pd.testing.assert_series_equal(x, df['x'])
+        pd.testing.assert_series_equal(y, df['y'])
+        pd.testing.assert_series_equal(sy, df['sy'])
+        pd.testing.assert_series_equal(sx, df['sx'])
+        pd.testing.assert_frame_equal(df, data_handler.data)
