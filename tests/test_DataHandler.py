@@ -9,10 +9,6 @@ from PyQt5.QtCore import QUrl
 import os
 import tempfile
 from atus.src.MessageHandler import MessageHandler
-from PyQt5.QtGui import QClipboard
-from PyQt5.QtGui import QGuiApplication
-
-# import codecs
 
 
 @pytest.mark.data_handler
@@ -179,7 +175,9 @@ class TestDataHandler:
 
         data_handler._df = four_columns_df[input_columns]
         data_handler._data_json = deepcopy(data_handler._df)
-        data_handler._df, data_handler._data_json = data_handler._to_check_columns(data_handler._df, data_handler._data_json)
+        data_handler._df, data_handler._data_json = data_handler._to_check_columns(
+            data_handler._df, data_handler._data_json
+        )
         expected_df = deepcopy(four_columns_df)
 
         for col in other_columns.keys():
@@ -304,16 +302,79 @@ class TestDataHandler:
         data_handler._load_data_bottom(clipboardText_bottom_bot)
         data_expected = [[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12], [13, 14, 15, 16]]
         columns = ["x", "y", "sy", "sx"]
-        df_expected = pd.DataFrame(data=data_expected, columns=columns,dtype=float)
+        df_expected = pd.DataFrame(data=data_expected, columns=columns, dtype=float)
         pd.testing.assert_frame_equal(df_expected, data_handler._df)
 
-    # def test_load_data_bottom2(self, data_handler: DataHandler):
-    #     data_top = [["1", "2", "3", "4", True], ["5", "6", "7", "8", True]]
-    #     data_handler.load_data(df_array=data_top)
+    @pytest.mark.parametrize(
+        "data_top, clipboardText_bottom, has_sy, has_sx",
+        [
+            (
+                [["1", "2", "3", "4", True], ["5", "6", "7", "8", True]],
+                "9\t10\t11\t12\n13\t14\t15\t16",
+                True,
+                True,
+            ),
+            (
+                [["1", "2", "3", "0.0", True], ["5", "6", "7", "8", True]],
+                "9\t10\t11\t12\n13\t14\t15\t16",
+                True,
+                False,
+            ),
+            (
+                [["1", "2", "3", "4", True], ["5", "6", "7", "8", True]],
+                "9\t10\t11\t12\n13\t14\t0.0\t16",
+                False,
+                True,
+            ),
+            (
+                [["1", "2", "3", "4", True], ["5", "6", "7", "8", True]],
+                "9\t10\t11\t12\n13\t14\t0.0\t0.0",
+                False,
+                False,
+            ),
+        ],
+    )
+    def test_load_data_bottom_uncertainty_with_zeros(
+        self, data_top, clipboardText_bottom, has_sy, has_sx, data_handler: DataHandler
+    ):
+        data_handler.load_data(df_array=data_top)
+        data_handler._load_data_bottom(clipboardText_bottom)
+        assert has_sx == data_handler._has_sx
+        assert has_sy == data_handler._has_sy
 
-    #     clipboardText_bottom_bot = "9\t10\t11\n13\t14\t15"
-    #     data_handler._load_data_bottom(clipboardText_bottom_bot)
-    #     data_expected = [[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11], [13, 14, 15]]
-    #     columns = ["x", "y", "sy", "sx"]
-    #     df_expected = pd.DataFrame(data=data_expected, columns=columns,dtype=float)
-    #     pd.testing.assert_frame_equal(df_expected, data_handler._df)
+    def test_load_data_bottom_warn(self, data_handler: DataHandler):
+        data_top = [["1", "2", "3", "4", True], ["5", "6", "7", "8", True]]
+        data_handler.load_data(df_array=data_top)
+        clipboardText_bottom = "9\n10\n11\n12"
+        data_handler._msg_handler.raise_warn = MagicMock()
+        data_handler._load_data_bottom(clipboardText_bottom)
+        message = (
+            "Para inserir novos dados, o número de colunas tem que ser maior do que 1."
+        )
+        data_handler._msg_handler.raise_warn.assert_called_once_with(message)
+
+    @pytest.mark.parametrize(
+        "data, has_sy, has_sx, message",
+        [
+            (
+                [["1", "2", "3", "0.0", True], ["5", "6", "7", "8", True]],
+                True,
+                False,
+                "Um valor nulo foi encontrado nas incertezas em x, removendo coluna de sx.",
+            ),
+            (
+                [["1", "2", "0.0", "4", True], ["5", "6", "7", "8", True]],
+                False,
+                True,
+                "Um valor nulo foi encontrado nas incertezas em y, removendo coluna de sy.",
+            ),
+        ],
+    )
+    def test_loadDataTable_warns(
+        self, data_handler: DataHandler, data, has_sy, has_sx, message
+    ):
+        data_handler._msg_handler.raise_warn = MagicMock()
+        data_handler.loadDataTable(data)
+        data_handler._msg_handler.raise_warn.assert_called_once_with(message)
+        assert has_sx == data_handler._has_sx
+        assert has_sy == data_handler._has_sy
