@@ -213,8 +213,8 @@ class DataHandler(QObject):
         elif clipboardText != "":
             self._fill_df_with_clipboardText(clipboardText)
 
-        if type(self._df) == pd.DataFrame:
-            self._df = self._treat_df(self._df)
+        self._df = self._treat_df(self._df)
+        if isinstance(self._df, pd.DataFrame):
             self._df = self._drop_header(self._df)
             self._data_json = deepcopy(self._df)
             self._df, self._data_json = self._to_check_columns(
@@ -236,26 +236,29 @@ class DataHandler(QObject):
             .dropna(how="all")
             .replace(np.nan, "0")
         )
-        if df.columns > 1:
-            df = df.rename({0: "x", 1: "y", 2: "sy", 3: "sx"}, axis=1)
-            df = self._treat_df(df)
-            df_json = df.copy()
-            self._df = pd.concat([self._df, df], axis=0, ignore_index=True).fillna(0.0)
-            self._data_json = pd.concat(
-                [self._data_json, df_json], axis=0, ignore_index=True
-            ).fillna(0.0)
-            self._df, self._data_json = self._to_check_columns(
-                self._df, self._data_json
-            )
-        else:
-            self._msg_handler.raise_warn(
-                "Para inserir novos dados, o número de colunas tem que ser maior do que 1."
-            )
+        df = self._treat_df(df)
+        if isinstance(df, pd.DataFrame):
+            if len(df.columns) > 1:
+                df = df.rename({0: "x", 1: "y", 2: "sy", 3: "sx"}, axis=1)
+                df_json = df.copy()
+                self._df = pd.concat([self._df, df], axis=0, ignore_index=True).fillna(
+                    0.0
+                )
+                self._data_json = pd.concat(
+                    [self._data_json, df_json], axis=0, ignore_index=True
+                ).fillna(0.0)
+                self._df, self._data_json = self._to_check_columns(
+                    self._df, self._data_json
+                )
+            else:
+                self._msg_handler.raise_warn(
+                    "Para inserir novos dados, o número de colunas tem que ser maior do que 1."
+                )
 
-        fileName = "Dados Carregados do Projeto"
-        self._data = deepcopy(self._df)
-        self._has_data = True
-        self.uploadData.emit(self._data_json.to_dict(orient="list"), fileName)
+            fileName = "Dados Carregados do Projeto"
+            self._data = deepcopy(self._df)
+            self._has_data = True
+            self.uploadData.emit(self._data_json.to_dict(orient="list"), fileName)
 
     @pyqtSlot(QJsonValue)
     def loadDataTable(
