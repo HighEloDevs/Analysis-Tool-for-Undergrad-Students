@@ -11,6 +11,7 @@ import tempfile
 from atus.src.MessageHandler import MessageHandler
 from PyQt5.QtGui import QClipboard
 from PyQt5.QtGui import QGuiApplication
+
 # import codecs
 
 
@@ -120,19 +121,6 @@ class TestDataHandler:
         data_handler._msg_handler.raise_warn = MagicMock()
         data_handler._fill_df_with_array(df_array)
         data_handler._msg_handler.raise_warn.assert_called_once_with(message)
-
-    # @pytest.mark.parametrize(
-    #     "data,message",
-    #     [
-    #         ([["1", "2", 0, "0", True], ["5", "6", "7", "8", True]],"Um valor nulo foi encontrado nas incertezas em y, removendo coluna de sy."),
-
-    #     ],
-    # )
-    # def test_fill_df_with_array_sig_zero(self,data_handler: DataHandler,data,message):
-    #
-    #     data_handler._msg_handler.raise_error = MagicMock()
-    #     data_handler._fill_df_with_array(data)
-    #     data_handler._msg_handler.raise_error.assert_called_once_with(message)
 
     def test_treat_df(self, data_handler: DataHandler):
         columns = ["x", "y", "sy", "sx"]
@@ -262,6 +250,14 @@ class TestDataHandler:
         data_handler._load_by_data_path(test_string)
         mock_tsv.assert_called_once()
         mock_csv.assert_called_once()
+    
+    def  test_fill_df_with_clipboardText(self, data_handler: DataHandler):
+        clipboardText = "1\t2\t3\t4\n5\t6\t7\t8"
+        df = pd.read_csv(StringIO(clipboardText), sep="\t", header=None, dtype=str) 
+        df = df.rename(columns={0:'x',1:'y',2: 'sy',3:'sx'})
+        data_handler._fill_df_with_clipboardText(clipboardText)
+        pd.testing.assert_frame_equal(df, data_handler._df)
+        
 
     def test_load_data_use_right_method(self, data_handler: DataHandler):
         data_handler._treat_df = MagicMock()
@@ -287,4 +283,18 @@ class TestDataHandler:
         df_array = [["1", "2", "3", "4", True], ["5", "6", "7", "8", True]]
         data_handler.load_data(df_array=df_array)
         assert data_handler._has_data == True
+
+    # @pytest.mark.parametrize(
+    #     "clipboardText_bottom",
+    #     [
+    #         (
+    #             "1\t2\t3\t4\n5\t6\t7\t8\t9",
+    #             "1\t2\t3\t4\t4\n5\t6\t7\t8\t9",
+    #         ),
+    #     ],
+    # )
+    # def  test_load_data_bottom(self, data_handler: DataHandler, clipboardText_bottom):
+    #     clipboardText_bottom
+    #     data_handler.loadDataClipboard()
+        
 
