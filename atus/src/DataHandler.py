@@ -124,50 +124,56 @@ class DataHandler(QObject):
                 df.index = range(len(df))
         return df
 
-    def _to_check_columns(self) -> None:
-        number_of_cols = len(self._df.columns)
+    def _to_check_columns(
+        self, df: pd.DataFrame, df_json: pd.DataFrame
+    ) -> tuple[pd.DataFrame, pd.DataFrame] | None:
+        number_of_cols = len(df.columns)
         if number_of_cols == 1:
             self._has_sy = not self._has_sy
             self._has_sx = not self._has_sx
-            self._df["y"] = self._df["x"]
-            self._df["x"] = np.arange(len(self._df), dtype=float)
-            self._data_json = deepcopy(self._df.astype(str))
-            self._data_json.columns = ["x", "y"]
-            self._df["sy"] = 0.0
-            self._df["sx"] = 0.0
+            df["y"] = df["x"]
+            df["x"] = np.arange(len(df), dtype=float)
+            df_json = deepcopy(df.astype(str))
+            df_json.columns = ["x", "y"]
+            df["sy"] = 0.0
+            df["sx"] = 0.0
+            return df, df_json
         elif number_of_cols == 2:
             self._has_sy = not self._has_sy
             self._has_sx = not self._has_sx
-            self._data_json.columns = ["x", "y"]
-            self._df["sy"] = 0.0
-            self._df["sx"] = 0.0
+            df_json.columns = ["x", "y"]
+            df["sy"] = 0.0
+            df["sx"] = 0.0
+            return df, df_json
         elif number_of_cols == 3:
             self._has_sx = not self._has_sx
-            self._data_json.columns = ["x", "y", "sy"]
-            self._df["sx"] = 0.0
-            unique_sy = self._data_json["sy"].unique().astype(float)
+            df_json.columns = ["x", "y", "sy"]
+            df["sx"] = 0.0
+            unique_sy = df_json["sy"].unique().astype(float)
             if 0.0 in unique_sy:
                 if len(unique_sy) > 1:
                     self._msg_handler.raise_warn(
                         "Um valor nulo foi encontrado nas incertezas em y, removendo coluna de sy."
                     )
                 self._has_sy = False
+            return df, df_json
         elif number_of_cols == 4:
-            self._data_json.columns = ["x", "y", "sy", "sx"]
-            unique_sy = self._data_json["sy"].unique().astype(float)
+            df_json.columns = ["x", "y", "sy", "sx"]
+            unique_sy = df_json["sy"].unique().astype(float)
             if 0.0 in unique_sy:
                 if len(unique_sy) > 1:
                     self._msg_handler.raise_warn(
                         "Um valor nulo foi encontrado nas incertezas em y, removendo coluna de sy."
                     )
                 self._has_sy = False
-            unique_sx = self._data_json["sx"].unique().astype(float)
+            unique_sx = df_json["sx"].unique().astype(float)
             if 0.0 in unique_sx:
                 if len(unique_sx) > 1:
                     self._msg_handler.raise_warn(
                         "Um valor nulo foi encontrado nas incertezas em x, removendo coluna de sx."
                     )
                 self._has_sx = False
+            return df, df_json
         else:
             self._msg_handler.raise_error(
                 "Há mais do que 4 colunas. Rever entrada de dados."
@@ -214,9 +220,11 @@ class DataHandler(QObject):
 
         if type(self._df) == pd.DataFrame:
             self._df = self._treat_df(self._df)
+            self._df = self._drop_header(self._df)
             self._data_json = deepcopy(self._df)
-            self._data_json = self._drop_header(self._data_json)
-            self._to_check_columns()
+            self._df, self._data_json = self._to_check_columns(
+                self._df, self._data_json
+            )
             self._data = deepcopy(self._df)
             self._has_data = True
             self.uploadData.emit(self._data_json.to_dict(orient="list"), fileName)
@@ -233,24 +241,19 @@ class DataHandler(QObject):
             .dropna(how="all")
             .replace(np.nan, "0")
         )
+        df = df.rename({0: "x", 1: "y", 2: "sy", 3: "sx"}, axis=1)
+        df = self._treat_df(df)
+        df_json = df.copy()
+        self._df = pd.concat([self._df, df], axis=0, ignore_index=True).fillna(0.0)
+        self._data_json = pd.concat(
+            [self._data_json, df_json], axis=0, ignore_index=True
+        ).fillna(0.0)
+        self._df, self._data_json = self._to_check_columns(self._df, self._data_json)
 
-        # checking if the number of columns are compatible
-        if len(self._data_json.columns) == len(df.columns):
-            # Only consider columns 0, 1, 2, and 3
-            df = df.rename({0: "x", 1: "y", 2: "sy", 3: "sx"}, axis=1)
-            df = self._treat_df(df)
-            self._df = pd.concat([self._df, df], axis=0, ignore_index=True)
-            self._data_json = pd.concat(
-                [self._data_json, df], axis=0, ignore_index=True
-            )
-
-            fileName = "Dados Carregados do Projeto"
-            self._to_check_columns()
-            self._data = deepcopy(self._df)
-            self._has_data = True
-            self.uploadData.emit(self._data_json.to_dict(orient="list"), fileName)
-        else:
-            self.load_data()
+        fileName = "Dados Carregados do Projeto"
+        self._data = deepcopy(self._df)
+        self._has_data = True
+        self.uploadData.emit(self._data_json.to_dict(orient="list"), fileName)
 
     @pyqtSlot(QJsonValue)
     def loadDataTable(
