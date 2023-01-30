@@ -145,7 +145,13 @@ class DataHandler(QObject):
             self._has_sx = not self._has_sx
             self._data_json.columns = ["x", "y", "sy"]
             self._df["sx"] = 0.0
-
+            unique_sy = self._data_json["sy"].unique().astype(float)
+            if 0.0 in unique_sy:
+                if len(unique_sy) > 1:
+                    self._msg_handler.raise_warn(
+                        "Um valor nulo foi encontrado nas incertezas em y, removendo coluna de sy."
+                    )
+                self._has_sy = False
         elif number_of_cols == 4:
             self._data_json.columns = ["x", "y", "sy", "sx"]
             unique_sy = self._data_json["sy"].unique().astype(float)
@@ -190,7 +196,10 @@ class DataHandler(QObject):
 
     @pyqtSlot(str)
     def load_data(
-        self, data_path: str = "", df_array: list[list[str, str, str, str, bool]] = None, clipboardText=""
+        self,
+        data_path: str = "",
+        df_array: list[list[str, str, str, str, bool]] = None,
+        clipboardText="",
     ) -> None:
         fileName = "Dados Carregados do Projeto"
         if len(data_path) > 0:
@@ -203,7 +212,7 @@ class DataHandler(QObject):
         elif clipboardText != "":
             self._fill_df_with_clipboardText(clipboardText)
 
-        if type(self._df) == pd.DataFrame:     
+        if type(self._df) == pd.DataFrame:
             self._df = self._treat_df(self._df)
             self._data_json = deepcopy(self._df)
             self._data_json = self._drop_header(self._data_json)
