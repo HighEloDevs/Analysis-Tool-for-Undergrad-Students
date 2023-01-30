@@ -179,7 +179,7 @@ class TestDataHandler:
 
         data_handler._df = four_columns_df[input_columns]
         data_handler._data_json = deepcopy(data_handler._df)
-        data_handler._to_check_columns()
+        data_handler._df, data_handler._data_json = data_handler._to_check_columns(data_handler._df, data_handler._data_json)
         expected_df = deepcopy(four_columns_df)
 
         for col in other_columns.keys():
@@ -213,7 +213,7 @@ class TestDataHandler:
         data_handler._df = df
         data_handler._data_json = deepcopy(data_handler._df)
         data_handler._msg_handler.raise_warn = MagicMock()
-        data_handler._to_check_columns()
+        data_handler._to_check_columns(data_handler._df, data_handler._data_json)
         data_handler._msg_handler.raise_warn.assert_called_once_with(message)
 
     @pytest.mark.parametrize(
@@ -233,7 +233,7 @@ class TestDataHandler:
         data_handler._df = df
         data_handler._data_json = deepcopy(data_handler._df)
         data_handler._msg_handler.raise_error = MagicMock()
-        data_handler._to_check_columns()
+        data_handler._to_check_columns(data_handler._df, data_handler._data_json)
         data_handler._msg_handler.raise_error.assert_called_once_with(message)
 
     @patch("atus.src.DataHandler.DataHandler._read_csv")
@@ -250,14 +250,13 @@ class TestDataHandler:
         data_handler._load_by_data_path(test_string)
         mock_tsv.assert_called_once()
         mock_csv.assert_called_once()
-    
-    def  test_fill_df_with_clipboardText(self, data_handler: DataHandler):
+
+    def test_fill_df_with_clipboardText(self, data_handler: DataHandler):
         clipboardText = "1\t2\t3\t4\n5\t6\t7\t8"
-        df = pd.read_csv(StringIO(clipboardText), sep="\t", header=None, dtype=str) 
-        df = df.rename(columns={0:'x',1:'y',2: 'sy',3:'sx'})
+        df = pd.read_csv(StringIO(clipboardText), sep="\t", header=None, dtype=str)
+        df = df.rename(columns={0: "x", 1: "y", 2: "sy", 3: "sx"})
         data_handler._fill_df_with_clipboardText(clipboardText)
         pd.testing.assert_frame_equal(df, data_handler._df)
-        
 
     def test_load_data_use_right_method(self, data_handler: DataHandler):
         data_handler._treat_df = MagicMock()
@@ -296,5 +295,25 @@ class TestDataHandler:
     # def  test_load_data_bottom(self, data_handler: DataHandler, clipboardText_bottom):
     #     clipboardText_bottom
     #     data_handler.loadDataClipboard()
-        
 
+    def test_load_data_bottom(self, data_handler: DataHandler):
+        data_top = [["1", "2", "3", "4", True], ["5", "6", "7", "8", True]]
+        data_handler.load_data(df_array=data_top)
+
+        clipboardText_bottom_bot = "9\t10\t11\t12\n13\t14\t15\t16"
+        data_handler._load_data_bottom(clipboardText_bottom_bot)
+        data_expected = [[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12], [13, 14, 15, 16]]
+        columns = ["x", "y", "sy", "sx"]
+        df_expected = pd.DataFrame(data=data_expected, columns=columns,dtype=float)
+        pd.testing.assert_frame_equal(df_expected, data_handler._df)
+
+    # def test_load_data_bottom2(self, data_handler: DataHandler):
+    #     data_top = [["1", "2", "3", "4", True], ["5", "6", "7", "8", True]]
+    #     data_handler.load_data(df_array=data_top)
+
+    #     clipboardText_bottom_bot = "9\t10\t11\n13\t14\t15"
+    #     data_handler._load_data_bottom(clipboardText_bottom_bot)
+    #     data_expected = [[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11], [13, 14, 15]]
+    #     columns = ["x", "y", "sy", "sx"]
+    #     df_expected = pd.DataFrame(data=data_expected, columns=columns,dtype=float)
+    #     pd.testing.assert_frame_equal(df_expected, data_handler._df)
