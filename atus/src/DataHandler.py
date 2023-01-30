@@ -18,8 +18,6 @@ from io import StringIO
 class DataHandler(QObject):
     # Signals plot
     uploadData = pyqtSignal(QVariant, str, arguments=["data", "fileName"])
-    # Signals hist
-    # fillPage = pyqtSignal(QJsonValue)
 
     def __init__(self, messageHandler) -> None:
         super().__init__()
@@ -187,9 +185,6 @@ class DataHandler(QObject):
             self._read_tsv_txt(data_path)
 
     def _fill_df_with_clipboardText(self, clipboardText):
-        # try:
-        # Creating a dataframe from the string
-
         df = (
             pd.read_csv(StringIO(clipboardText), sep="\t", header=None, dtype=str)
             .dropna(how="all")
@@ -241,14 +236,21 @@ class DataHandler(QObject):
             .dropna(how="all")
             .replace(np.nan, "0")
         )
-        df = df.rename({0: "x", 1: "y", 2: "sy", 3: "sx"}, axis=1)
-        df = self._treat_df(df)
-        df_json = df.copy()
-        self._df = pd.concat([self._df, df], axis=0, ignore_index=True).fillna(0.0)
-        self._data_json = pd.concat(
-            [self._data_json, df_json], axis=0, ignore_index=True
-        ).fillna(0.0)
-        self._df, self._data_json = self._to_check_columns(self._df, self._data_json)
+        if df.columns > 1:
+            df = df.rename({0: "x", 1: "y", 2: "sy", 3: "sx"}, axis=1)
+            df = self._treat_df(df)
+            df_json = df.copy()
+            self._df = pd.concat([self._df, df], axis=0, ignore_index=True).fillna(0.0)
+            self._data_json = pd.concat(
+                [self._data_json, df_json], axis=0, ignore_index=True
+            ).fillna(0.0)
+            self._df, self._data_json = self._to_check_columns(
+                self._df, self._data_json
+            )
+        else:
+            self._msg_handler.raise_warn(
+                "Para inserir novos dados, o número de colunas tem que ser maior do que 1."
+            )
 
         fileName = "Dados Carregados do Projeto"
         self._data = deepcopy(self._df)
