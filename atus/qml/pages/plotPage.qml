@@ -71,20 +71,26 @@ Item {
                                 data : table.dataShaped
                             })
 
-    Shortcut {
-        sequences: ["Ctrl+B", "Ctrl+Space"]
-        // Verifying which page is active
-        onActivated: {
-            if (mainWindow.activeBtn === 1) {
-                table.clear()
-                datahandler.loadDataClipboard()
-            } 
-            // else if (mainWindow.activeBtn === 4) {
-            //     table.clear()
-            //     datahandler.loadDataClipboard_Histogram()
-            // } 
-        }
+    function pasteData() {
+        table.clear()
+        datahandler.loadDataClipboard()
     }
+
+    // Shortcut {
+    //     sequences: ["Ctrl+B", "Ctrl+Space"]
+    //     // Verifying which page is active
+    //     onActivated: {
+    //         if (mainWindow.activeBtn === 1) {
+    //             table.clear()
+    //             datahandler.loadDataClipboard()
+    //         } 
+    //         // else if (mainWindow.activeBtn === 4) {
+    //         //     table.clear()
+    //         //     datahandler.loadDataClipboard_Histogram()
+    //         // } 
+    //     }
+    // }
+
     Shortcut {
         sequences: ["Ctrl+Shift+B"]
         // Verifying which page is active
@@ -92,7 +98,11 @@ Item {
             if (mainWindow.activeBtn === 1) {
                 table.clear()
                 datahandler.loadDataClipboard_bottom()
-            } 
+            }
+            // else if (mainWindow.activeBtn === 4) {
+            //     table.clear()
+            //     datahandler.loadDataClipboard_Histogram_bottom()
+            // }
 
         }
     }

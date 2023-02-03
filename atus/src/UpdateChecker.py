@@ -99,7 +99,6 @@ class UpdateChecker(QObject):
     @pyqtSlot()
     def checkUpdate(self):
         response = requests.get(self.gitHubApiUrl)
-
         if response.status_code == 200:
             infos = response.json()
             # Parsing publish date

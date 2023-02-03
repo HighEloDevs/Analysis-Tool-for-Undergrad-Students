@@ -10,6 +10,7 @@ import Canvas 1.0
 import "."
 import "controls"
 import "colors.js" as Colors
+import "pages"
 
 Window {
     id: mainWindow
@@ -21,6 +22,13 @@ Window {
     color: "#00000000"
 
     // Shortcuts
+
+    Loader 
+    {
+        id: func_plot_page
+        source: "pages/plotPage.qml"
+    }
+
     Shortcut {
         sequences: ["CTRL+SHIFT+X"]
         onActivated: {
@@ -35,6 +43,20 @@ Window {
         sequences: ["CTRL+SHIFT+D"]
         onActivated: {
             console.log("debug :D")
+        }
+    }
+
+    Shortcut {
+        sequences: ["Ctrl+B", "Ctrl+Space"]
+        // Verifying which page is active
+        onActivated: {
+            if (mainWindow.activeBtn === 1) {
+                func_plot_page.item.pasteData()
+            }
+            // else if (mainWindow.activeBtn === 4) {
+            //     table.clear()
+            //     datahandler.loadDataClipboard_Histogram()
+            // } 
         }
     }
 
@@ -1027,8 +1049,7 @@ Window {
     Connections{
         target: updater
         function onShowUpdate(infos){
-
-            updatePopup.infos = infos
+            updatePopup.infos = infos 
             updatePopup.updateLog = infos['body']
             updatePopup.version = infos['tag_name']
             updatePopup.exeLink = infos['assets'][0]['browser_download_url']

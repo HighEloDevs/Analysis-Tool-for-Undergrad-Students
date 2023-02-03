@@ -16,7 +16,7 @@ Popup {
         topInset: 0
         margins: 5
 
-        property variant infos: {}
+        property variant infos: ({published_at: ""})
         property string updateLog: ''
         property string version: ''
         property string exeLink: ''

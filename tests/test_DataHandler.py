@@ -135,7 +135,6 @@ class TestDataHandler:
         data_handler._treat_df(test_df)
         message = "A entrada de dados só permite entrada de números. Rever arquivo de entrada."
         data_handler._msg_handler.raise_error.assert_called_once_with(message)
-        
 
     def test_drop_header(self, data_handler: DataHandler):
 
@@ -396,11 +395,11 @@ class TestDataHandler:
 
     def test_data(self, data_handler: DataHandler):
         data = [[1, 2, 3, 4], [5, 6, 7, 8]]
-        df = pd.DataFrame(data, columns=['x','y','sy','sx'])
+        df = pd.DataFrame(data, columns=["x", "y", "sy", "sx"])
         data_handler._data = df
-        x,y,sy,sx = data_handler.separated_data
-        pd.testing.assert_series_equal(x, df['x'])
-        pd.testing.assert_series_equal(y, df['y'])
-        pd.testing.assert_series_equal(sy, df['sy'])
-        pd.testing.assert_series_equal(sx, df['sx'])
+        x, y, sy, sx = data_handler.separated_data
+        pd.testing.assert_series_equal(x, df["x"])
+        pd.testing.assert_series_equal(y, df["y"])
+        pd.testing.assert_series_equal(sy, df["sy"])
+        pd.testing.assert_series_equal(sx, df["sx"])
         pd.testing.assert_frame_equal(df, data_handler.data)
