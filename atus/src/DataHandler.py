@@ -240,13 +240,10 @@ class DataHandler(QObject):
         if isinstance(df, pd.DataFrame):
             if len(df.columns) > 1:
                 df = df.rename({0: "x", 1: "y", 2: "sy", 3: "sx"}, axis=1)
-                df_json = df.copy()
                 self._df = pd.concat([self._df, df], axis=0, ignore_index=True).fillna(
                     0.0
                 )
-                self._data_json = pd.concat(
-                    [self._data_json, df_json], axis=0, ignore_index=True
-                ).fillna(0.0)
+                self._data_json = self._df.copy()
                 self._df, self._data_json = self._to_check_columns(
                     self._df, self._data_json
                 )
