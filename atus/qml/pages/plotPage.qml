@@ -71,25 +71,40 @@ Item {
                                 data : table.dataShaped
                             })
 
-    function pasteData() {
-        table.clear()
-        datahandler.loadDataClipboard()
-    }
-
-    // Shortcut {
-    //     sequences: ["Ctrl+B", "Ctrl+Space"]
-    //     // Verifying which page is active
-    //     onActivated: {
-    //         if (mainWindow.activeBtn === 1) {
-    //             table.clear()
-    //             datahandler.loadDataClipboard()
-    //         } 
-    //         // else if (mainWindow.activeBtn === 4) {
-    //         //     table.clear()
-    //         //     datahandler.loadDataClipboard_Histogram()
-    //         // } 
-    //     }
+    // Loader 
+    // {
+    //     id: func_table
+    //     source: "../controls/Table.qml"
     // }
+
+    // function pasteData() {
+    //     console.log("pasteData")
+    //     // Limpando a tabela
+    //     func_table.item.clear()
+    //     datahandler.loadDataClipboard()
+    // }
+
+    // function pasteData_bottom() {
+    //     console.log("pasteData_bottom")
+    //     func_table.item.clear()
+    //     datahandler.loadDataClipboard_bottom()
+    // }
+
+
+    Shortcut {
+        sequences: ["Ctrl+B", "Ctrl+Space"]
+        // Verifying which page is active
+        onActivated: {
+            if (mainWindow.activeBtn === 1) {
+                table.clear()
+                datahandler.loadDataClipboard()
+            } 
+            // else if (mainWindow.activeBtn === 4) {
+            //     table.clear()
+            //     datahandler.loadDataClipboard_Histogram()
+            // } 
+        }
+    }
 
     Shortcut {
         sequences: ["Ctrl+Shift+B"]

@@ -23,11 +23,11 @@ Window {
 
     // Shortcuts
 
-    Loader 
-    {
-        id: func_plot_page
-        source: "pages/plotPage.qml"
-    }
+    // Loader 
+    // {
+    //     id: func_plot_page
+    //     source: "pages/plotPage.qml"
+    // }
 
     Shortcut {
         sequences: ["CTRL+SHIFT+X"]
@@ -46,19 +46,55 @@ Window {
         }
     }
 
-    Shortcut {
-        sequences: ["Ctrl+B", "Ctrl+Space"]
-        // Verifying which page is active
-        onActivated: {
-            if (mainWindow.activeBtn === 1) {
-                func_plot_page.item.pasteData()
-            }
-            // else if (mainWindow.activeBtn === 4) {
-            //     table.clear()
-            //     datahandler.loadDataClipboard_Histogram()
-            // } 
-        }
-    }
+    // Shortcut {
+    //     sequences: ["Ctrl+B", "Ctrl+Space"]
+    //     // Verifying which page is active
+    //     onActivated: {
+    //         if (mainWindow.activeBtn === 1) {
+    //             func_plot_page.item.pasteData()
+    //         }
+    //         // else if (mainWindow.activeBtn === 4) {
+    //         //     table.clear()
+    //         //     datahandler.loadDataClipboard_Histogram()
+    //         // } 
+    //     }
+    // }
+
+    
+    // Shortcut {
+    //     sequences: ["Ctrl+Shift+B"]
+    //     // Verifying which page is active
+    //     onActivated: {
+    //         if (mainWindow.activeBtn === 1) {
+    //             func_plot_page.item.pasteData_bottom()
+    //         }
+    //         // else if (mainWindow.activeBtn === 4) {
+    //         //     table.clear()
+    //         //     datahandler.loadDataClipboard_Histogram_bottom()
+    //         // }
+
+    //     }
+    // }
+
+    
+    // Shortcut {
+    //     sequences: ["Ctrl+1"]
+    //     onActivated: {
+    //         canvas.shortcut_grid()
+    //     }
+    // }
+    // Shortcut {
+    //     sequences: ["Ctrl+2"]
+    //     onActivated: {
+    //         canvas.shortcut_axis_1()
+    //     }
+    // }
+    // Shortcut {
+    //     sequences: ["Ctrl+3"]
+    //     onActivated: {
+    //         canvas.shortcut_axis_2()
+    //     }
+    // }
 
     Shortcut {
         sequences: ["CTRL+Q"]
