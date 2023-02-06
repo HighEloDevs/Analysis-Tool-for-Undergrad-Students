@@ -37,6 +37,8 @@ class DataHandler(QObject):
         self._has_sy = True
 
     def _is_number(self, s: any) -> bool:
+        if isinstance(s, str):
+            s = s.replace(",", ".")
         try:
             float(s)
             return True
@@ -101,10 +103,15 @@ class DataHandler(QObject):
                 )
             self._has_sx = False
 
-    def _treat_df(self, df: pd.DataFrame) -> pd.DataFrame:
+    def _drop_header(self, df: pd.DataFrame) -> pd.DataFrame:
         for col in df.columns:
-            df[col] = [x.replace(",", ".") for x in df[col]]
-            df[col] = df[col].astype(str)
+            if self._is_number(df[col].iloc[0]) is False:
+                df.drop(0, inplace=True)
+                df.index = range(len(df))
+        return df
+
+    def _to_float(self, df: pd.DataFrame):
+        for col in df.columns:
             try:
                 df[col] = df[col].astype(float)
             except ValueError:
@@ -112,14 +119,21 @@ class DataHandler(QObject):
                     "A entrada de dados só permite entrada de números. Rever arquivo de entrada."
                 )
                 return None
-        df = self._drop_header(df)
         return df
 
-    def _drop_header(self, df: pd.DataFrame) -> pd.DataFrame:
+    def _comma_to_dot(self, df: pd.DataFrame) -> pd.DataFrame:
+        df = self._drop_header(df)
         for col in df.columns:
-            if self._is_number(df[col].iloc[0]) is False:
-                df.drop(0, inplace=True)
-                df.index = range(len(df))
+            df[col] = [x.replace(",", ".") for x in df[col]]
+            df[col] = df[col].astype(str)
+                # try:
+            #     df[col] = df[col].astype(float)
+            # except ValueError:
+            #     self._msg_handler.raise_error(
+            #         "A entrada de dados só permite entrada de números. Rever arquivo de entrada."
+            #     )
+            #     return None
+
         return df
 
     def _to_check_columns(
@@ -139,12 +153,14 @@ class DataHandler(QObject):
         elif number_of_cols == 2:
             self._has_sy = not self._has_sy
             self._has_sx = not self._has_sx
+            df_json = deepcopy(df.astype(str))
             df_json.columns = ["x", "y"]
             df["sy"] = 0.0
             df["sx"] = 0.0
             return df, df_json
         elif number_of_cols == 3:
             self._has_sx = not self._has_sx
+            df_json = deepcopy(df.astype(str))
             df_json.columns = ["x", "y", "sy"]
             df["sx"] = 0.0
             unique_sy = df_json["sy"].unique().astype(float)
@@ -156,6 +172,7 @@ class DataHandler(QObject):
                 self._has_sy = False
             return df, df_json
         elif number_of_cols == 4:
+            df_json = deepcopy(df.astype(str))
             df_json.columns = ["x", "y", "sy", "sx"]
             unique_sy = df_json["sy"].unique().astype(float)
             if 0.0 in unique_sy:
@@ -212,14 +229,11 @@ class DataHandler(QObject):
             self._fill_df_with_array(df_array)
         elif clipboardText != "":
             self._fill_df_with_clipboardText(clipboardText)
-
-        self._df = self._treat_df(self._df)
-        if isinstance(self._df, pd.DataFrame):
-            self._df = self._drop_header(self._df)
-            self._data_json = deepcopy(self._df)
-            self._df, self._data_json = self._to_check_columns(
-                self._df, self._data_json
-            )
+   
+        if isinstance(self._df, pd.DataFrame) and self._df.empty is False:
+            self._df = self._comma_to_dot(self._df)
+            self._df, self._data_json = self._to_check_columns(self._df, self._data_json)
+            self._df = self._to_float(self._df)
             self._data = deepcopy(self._df)
             self._has_data = True
             self.uploadData.emit(self._data_json.to_dict(orient="list"), fileName)
@@ -236,17 +250,18 @@ class DataHandler(QObject):
             .dropna(how="all")
             .replace(np.nan, "0")
         )
-        df = self._treat_df(df)
+        
         if isinstance(df, pd.DataFrame):
+            df = self._comma_to_dot(df)
             if len(df.columns) > 1:
                 df = df.rename({0: "x", 1: "y", 2: "sy", 3: "sx"}, axis=1)
-                self._df = pd.concat([self._df, df], axis=0, ignore_index=True).fillna(
-                    0.0
-                )
-                self._data_json = self._df.copy()
+                self._df = pd.concat(
+                    [self._data_json, df], axis=0, ignore_index=True
+                ).fillna(0.0)
                 self._df, self._data_json = self._to_check_columns(
                     self._df, self._data_json
                 )
+                self._df = self._to_float(self._df)
             else:
                 self._msg_handler.raise_warn(
                     "Para inserir novos dados, o número de colunas tem que ser maior do que 1."

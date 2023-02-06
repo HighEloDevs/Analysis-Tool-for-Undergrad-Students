@@ -32,7 +32,8 @@ class TestDataHandler:
         assert data_handler.has_sy == True
 
     @pytest.mark.parametrize(
-        "test_input, expected", [(1, True), (1.0, True), ("1", True), ("a", False)]
+        "test_input, expected",
+        [(1, True), (1.0, True), ("1", True), ("1,1", True), ("a", False)],
     )
     def test_is_number(self, test_input, expected, data_handler: DataHandler):
         assert data_handler._is_number(test_input) == expected
@@ -118,21 +119,30 @@ class TestDataHandler:
         data_handler._fill_df_with_array(df_array)
         data_handler._msg_handler.raise_warn.assert_called_once_with(message)
 
-    def test_treat_df(self, data_handler: DataHandler):
+    def test_comma_to_dot(self, data_handler: DataHandler):
         columns = ["x", "y", "sy", "sx"]
         test_data = [["1,1", "2,2", "3,3", "4,4"], ["5,5", "6,6", "7,7", "8,8"]]
+        expected_data = [["1.1", "2.2", "3.3", "4.4"], ["5.5", "6.6", "7.7", "8.8"]]
+        test_df = pd.DataFrame(test_data, columns=columns)
+        expected = pd.DataFrame(expected_data, columns=columns)
+        result = data_handler._comma_to_dot(test_df)
+        pd.testing.assert_frame_equal(result, expected)
+        
+    def test_to_float(self, data_handler: DataHandler):
+        columns = ["x", "y", "sy", "sx"]
+        test_data = [["1.1", "2.2", "3.3", "4.4"], ["5.5", "6.6", "7.7", "8.8"]]
         expected_data = [[1.1, 2.2, 3.3, 4.4], [5.5, 6.6, 7.7, 8.8]]
         test_df = pd.DataFrame(test_data, columns=columns)
         expected = pd.DataFrame(expected_data, columns=columns)
-        result = data_handler._treat_df(test_df)
+        result = data_handler._to_float(test_df)
         pd.testing.assert_frame_equal(result, expected)
 
-    def test_treat_df_error(self, data_handler: DataHandler):
+    def test_to_float_error(self, data_handler: DataHandler):
         columns = ["x"]
-        test_data = [["NEYMAR"]]
+        test_data = [["NEYMAR"], ["NEYMAR"]]
         test_df = pd.DataFrame(test_data, columns=columns)
         data_handler._msg_handler.raise_error = MagicMock()
-        data_handler._treat_df(test_df)
+        data_handler._to_float(test_df)
         message = "A entrada de dados só permite entrada de números. Rever arquivo de entrada."
         data_handler._msg_handler.raise_error.assert_called_once_with(message)
 
@@ -166,9 +176,14 @@ class TestDataHandler:
     @pytest.mark.parametrize(
         "input_columns,other_columns,has_sy,has_sx",
         [
-            (["x"], {"x": [0.0, 1.0], "y": [1, 5], "sy": 0.0, "sx": 0.0}, False, False),
-            (["x", "y"], {"sy": 0.0, "sx": 0.0}, False, False),
-            (["x", "y", "sy"], {"sx": 0.0}, True, False),
+            (
+                ["x"],
+                {"x": [0.0, 1.0], "y": [1, 5], "sy": [0.0, 0.0], "sx": [0.0, 0.0]},
+                False,
+                False,
+            ),
+            (["x", "y"], {"sy": [0.0, 0.0], "sx": [0.0, 0.0]}, False, False),
+            (["x", "y", "sy"], {"sx": [0.0, 0.0]}, True, False),
             (["x", "y", "sy", "sx"], {}, True, True),
         ],
     )
@@ -270,8 +285,8 @@ class TestDataHandler:
         data_handler._fill_df_with_clipboardText(clipboardText)
         pd.testing.assert_frame_equal(df, data_handler._df)
 
-    def test_load_data_use_right_method(self, data_handler: DataHandler):
-        data_handler._treat_df = MagicMock()
+    def test_check_if_load_data_use_right_method(self, data_handler: DataHandler):
+        data_handler._to_float = MagicMock()
 
         clipboardText = "1\t2\t3\t4\n5\t6\t7\t8"
         data_handler._fill_df_with_clipboardText = MagicMock()
@@ -290,10 +305,20 @@ class TestDataHandler:
         data_handler.load_data(df_array=df_array)
         data_handler._fill_df_with_array.assert_called_once_with(df_array)
 
-    def test_load_data(self, data_handler: DataHandler):
-        df_array = [["1", "2", "3", "4", True], ["5", "6", "7", "8", True]]
-        data_handler.load_data(df_array=df_array)
-        assert data_handler._has_data == True
+    @pytest.mark.parametrize(
+        "data_test, data_expected",
+        [
+            ([["a", "b", "c", "d"], ["5", "6", "7", "8"]], [[5.0, 6.0, 7.0, 8.0]]),
+        ],
+    )
+    def test_load_data(self, data_handler: DataHandler, data_test, data_expected):
+        df_test = pd.DataFrame(data_test)
+        df_test = df_test.rename(columns={0: "x", 1: "y", 2: "sy", 3: "sx"})
+        data_handler._df = df_test
+        df_expected = pd.DataFrame(data_expected)
+        df_expected = df_expected.rename(columns={0: "x", 1: "y", 2: "sy", 3: "sx"})
+        data_handler.load_data()
+        pd.testing.assert_frame_equal(data_handler._df, df_expected)
 
     # @pytest.mark.parametrize(
     #     "clipboardText_bottom",
