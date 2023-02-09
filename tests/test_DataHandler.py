@@ -102,18 +102,19 @@ class TestDataHandler:
             [["1", "2", "3", "4"], ["5", "6", "7", "8"], ["9", "10", "11", "12"]],
             columns=["x", "y", "sy", "sx"],
         )
-        #pd.testing.assert_frame_equal(data_handler._df, df)
-        assert data_handler._df == df
+        pd.testing.assert_frame_equal(data_handler._df, df)
 
-        # data_handler._msg_handler.raise_error = MagicMock()
-        # with tempfile.TemporaryDirectory() as tmpdir:
-        #     data_path = os.path.join(tmpdir, "test.csv")
-        #     test_data = "1 2 3\n4 5 6 7\n8 9 1"
-        #     message = "Separação de colunas de arquivos txt e tsv são com tab. Rever dados de entrada."
-        #     with open(data_path, "w") as f:
-        #         f.write(test_data)
-        #     data_handler._read_tsv_txt(data_path)
-        # data_handler._msg_handler.raise_error.assert_called_once_with(message)
+        data_handler._msg_handler.raise_error = MagicMock()
+        with tempfile.TemporaryDirectory() as tmpdir:
+            data_path = os.path.join(tmpdir, "test.csv")
+            #Temos que mudar a mensagem deste erro
+            #O Atus deveria mesmo da erro nessa situação?
+            test_data = "1 2 3\n4 5 6 7\n8 9 1"
+            message = "Separação de colunas de arquivos txt e tsv são com tab. Rever dados de entrada."
+            with open(data_path, "w") as f:
+                f.write(test_data)
+            data_handler._read_tsv_txt(data_path)
+        data_handler._msg_handler.raise_error.assert_called_once_with(message)
 
     def test_fill_df_with_array(self, data_handler: DataHandler):
         df_array = [["1", "2", "3", "4", True], ["5", "6", "7", "8", True]]
