@@ -88,14 +88,14 @@ class DataHandler(QObject):
             df_array, columns=["x", "y", "sy", "sx", "bool"]
         )
         del self._df["bool"]
-        uniqueSi = self._df["sy"].unique().astype(float)
+        uniqueSi = self._df["sy"].astype(float).unique()
         if 0.0 in uniqueSi:
             if len(uniqueSi) > 1:
                 self._msg_handler.raise_warn(
                     "Um valor nulo foi encontrado nas incertezas em y, removendo coluna de sy."
                 )
             self._has_sy = False
-        uniqueSi = self._df["sx"].unique().astype(float)
+        uniqueSi = self._df["sx"].astype(float).unique()
         if 0.0 in uniqueSi:
             if len(uniqueSi) > 1:
                 self._msg_handler.raise_warn(
@@ -163,7 +163,7 @@ class DataHandler(QObject):
             df_json = deepcopy(df.astype(str))
             df_json.columns = ["x", "y", "sy"]
             df["sx"] = 0.0
-            unique_sy = df_json["sy"].unique().astype(float)
+            unique_sy = df_json["sy"].astype(float).unique()
             if 0.0 in unique_sy:
                 if len(unique_sy) > 1:
                     self._msg_handler.raise_warn(
@@ -174,14 +174,14 @@ class DataHandler(QObject):
         elif number_of_cols == 4:
             df_json = deepcopy(df.astype(str))
             df_json.columns = ["x", "y", "sy", "sx"]
-            unique_sy = df_json["sy"].unique().astype(float)
+            unique_sy = df_json["sy"].astype(float).unique()
             if 0.0 in unique_sy:
                 if len(unique_sy) > 1:
                     self._msg_handler.raise_warn(
                         "Um valor nulo foi encontrado nas incertezas em y, removendo coluna de sy."
                     )
                 self._has_sy = False
-            unique_sx = df_json["sx"].unique().astype(float)
+            unique_sx = df_json["sx"].astype(float).unique()
             if 0.0 in unique_sx:
                 if len(unique_sx) > 1:
                     self._msg_handler.raise_warn(
@@ -285,14 +285,14 @@ class DataHandler(QObject):
         # Removing not chosen rows
         self._df = self._df[self._df["bool"] == 1]
         del self._df["bool"]
-        uniqueSi = self._df["sy"].unique().astype(float)
+        uniqueSi = self._df["sy"].astype(float).unique()
         if 0.0 in uniqueSi:
             if len(uniqueSi) > 1:
                 self._msg_handler.raise_warn(
                     "Um valor nulo foi encontrado nas incertezas em y, removendo coluna de sy."
                 )
             self._has_sy = False
-        uniqueSi = self._df["sx"].unique().astype(float)
+        uniqueSi = self._df["sx"].astype(float).unique()  # TODO: Verificar check
         if 0.0 in uniqueSi:
             if len(uniqueSi) > 1:
                 self._msg_handler.raise_warn(
