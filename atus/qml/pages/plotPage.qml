@@ -14,6 +14,7 @@ Item {
     id: root
     property alias pageProp: middleTabs.pageProp
     property alias pageFunc: middleTabs.pageFunc
+    property alias single_plot_table: table
     property var markers: ({
                                'Círculo':'o',
                                'Triângulo':'^',
@@ -73,8 +74,8 @@ Item {
 
     // Loader 
     // {
-    //     id: func_table
-    //     source: "../controls/Table.qml"
+    //     id: hist_table
+    //     source: "../controls/HistogramTable.qml"
     // }
 
     // function pasteData() {
@@ -91,55 +92,56 @@ Item {
     // }
 
 
-    Shortcut {
-        sequences: ["Ctrl+B", "Ctrl+Space"]
-        // Verifying which page is active
-        onActivated: {
-            if (mainWindow.activeBtn === 1) {
-                table.clear()
-                datahandler.loadDataClipboard()
-            } 
-            // else if (mainWindow.activeBtn === 4) {
-            //     table.clear()
-            //     datahandler.loadDataClipboard_Histogram()
-            // } 
-        }
-    }
+    // Shortcut {
+    //     sequences: ["Ctrl+B", "Ctrl+Space"]
+    //     // Verifying which page is active
+    //     onActivated: {
+    //         if (mainWindow.activeBtn === 1) {
+    //             table.clear()
+    //             datahandler.loadDataClipboard()
+    //         } 
+    //         else if (mainWindow.activeBtn === 4) {
+    //             console.log("clipboard histogram")
+    //             hist_table.item.addDefaultRow(hist_table.item.defaultDataRow)
+    //             // hist_table.item.addRow(hist_table.item.defaultDataRow)
+    //         } 
+    //     }
+    // }
 
-    Shortcut {
-        sequences: ["Ctrl+Shift+B"]
-        // Verifying which page is active
-        onActivated: {
-            if (mainWindow.activeBtn === 1) {
-                table.clear()
-                datahandler.loadDataClipboard_bottom()
-            }
-            // else if (mainWindow.activeBtn === 4) {
-            //     table.clear()
-            //     datahandler.loadDataClipboard_Histogram_bottom()
-            // }
+    // Shortcut {
+    //     sequences: ["Ctrl+Shift+B", "Ctrl+Shift+Space"]
+    //     // Verifying which page is active
+    //     onActivated: {
+    //         if (mainWindow.activeBtn === 1) {
+    //             table.clear()
+    //             datahandler.loadDataClipboard_bottom()
+    //         }
+    //         // else if (mainWindow.activeBtn === 4) {
+    //         //     table.clear()
+    //         //     datahandler.loadDataClipboard_Histogram_bottom()
+    //         // }
 
-        }
-    }
+    //     }
+    // }
 
-    Shortcut {
-        sequences: ["Ctrl+1"]
-        onActivated: {
-            canvas.shortcut_grid()
-        }
-    }
-    Shortcut {
-        sequences: ["Ctrl+2"]
-        onActivated: {
-            canvas.shortcut_axis_1()
-        }
-    }
-    Shortcut {
-        sequences: ["Ctrl+3"]
-        onActivated: {
-            canvas.shortcut_axis_2()
-        }
-    }
+    // Shortcut {
+    //     sequences: ["Ctrl+1"]
+    //     onActivated: {
+    //         canvas.shortcut_grid()
+    //     }
+    // }
+    // Shortcut {
+    //     sequences: ["Ctrl+2"]
+    //     onActivated: {
+    //         canvas.shortcut_axis_1()
+    //     }
+    // }
+    // Shortcut {
+    //     sequences: ["Ctrl+3"]
+    //     onActivated: {
+    //         canvas.shortcut_axis_2()
+    //     }
+    // }
 
     Rectangle {
         id: bg

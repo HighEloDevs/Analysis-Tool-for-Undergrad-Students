@@ -68,10 +68,23 @@ Item{
     function addRow(dataRow){
         dataDisplay.insert(dataDisplay.count, dataRow)
     }
+    // Add clipboard
+    function addDefaultRow(dataRow){
+        var res = hist.load_data_clipboard_hist()
+        if (res["isValid"] === false){
+            return
+        }
+        var index2 = dataDisplay.count
+        dataDisplay.insert(index2, dataRow)
+        dataDisplay.setProperty(index2, "fileName", "clipboard_file_" + index2.toString())
+        dataDisplay.setProperty(index2, "__btn", false)
+        dataDisplay.setProperty(index2, "data", res["data"])
+        // messageHandler.raise_success("Dados carregados do clipboard com sucesso.")
+    }
 
     ColumnLayout{
-        anchors.fill: parent     
-        spacing: 0   
+        anchors.fill: parent
+        spacing: 0
 
         // Header
         Rectangle{

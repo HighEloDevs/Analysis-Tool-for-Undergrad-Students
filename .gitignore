@@ -76,6 +76,9 @@ atus_qt6
 *.dll
 *.exe
 
+# Pytest and coverage
+.coverage
+
 .idea
 .pytest_cache
 .vscode

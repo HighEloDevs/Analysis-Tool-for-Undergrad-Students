@@ -24,11 +24,13 @@ SOFTWARE.
 """
 
 from PyQt5.QtCore import QObject, QJsonValue, QUrl, pyqtSignal, pyqtSlot
+from PyQt5.QtGui import QGuiApplication
 from matplotlib.ticker import MaxNLocator
 import pandas as pd
 import numpy as np
 import platform
 import json
+from io import StringIO
 
 
 class Histogram(QObject):
@@ -435,6 +437,46 @@ class Histogram(QObject):
             )
             return QJsonValue.fromVariant(package)
 
+        if len(df.columns) == 1:
+            df.columns = ["x"]
+        else:
+            self.messageHandler.raise_error(
+                "A tabela de histogramas deve conter no máximo 1 coluna."
+            )
+            return QJsonValue.fromVariant(package)
+
+        for i in df.columns:
+            # Replacing comma for dots
+            df[i] = [x.replace(",", ".") for x in df[i]]
+            # Converting everything to float
+            try:
+                df[i] = df[i].astype(float)
+            except ValueError:
+                self.messageHandler.raise_error(
+                    "A entrada de dados só permite entrada de números. Rever arquivo de entrada."
+                )
+                # Há células não numéricas. A entrada de dados só permite entrada de números. Rever arquivo de entrada.
+                return QJsonValue.fromVariant(package)
+
+        package["data"] = df.to_json()
+        package["isValid"] = True
+        return package
+
+    @pyqtSlot(result=QJsonValue)
+    def load_data_clipboard_hist(self) -> None:
+        clipboard = QGuiApplication.clipboard()
+        clipboardText = clipboard.mimeData().text()
+        package = {"isValid": False, "data": None}
+        try:
+            df = pd.read_csv(
+                StringIO(clipboardText), sep="\t", header=None, dtype=str
+            ).replace(np.nan, "0")
+        except pd.errors.ParserError:
+            self.messageHandler.raise_error(
+                "Separação de colunas de arquivos txt e tsv são com tab. Rever dados de entrada."
+            )
+            # Separação de colunas de arquivos txt e tsv são com tab. Rever dados de entrada.
+            return QJsonValue.fromVariant(package)
         if len(df.columns) == 1:
             df.columns = ["x"]
         else:

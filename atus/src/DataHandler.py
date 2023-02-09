@@ -126,7 +126,7 @@ class DataHandler(QObject):
         for col in df.columns:
             df[col] = [x.replace(",", ".") for x in df[col]]
             df[col] = df[col].astype(str)
-                # try:
+            # try:
             #     df[col] = df[col].astype(float)
             # except ValueError:
             #     self._msg_handler.raise_error(
@@ -229,10 +229,12 @@ class DataHandler(QObject):
             self._fill_df_with_array(df_array)
         elif clipboardText != "":
             self._fill_df_with_clipboardText(clipboardText)
-   
+
         if isinstance(self._df, pd.DataFrame) and self._df.empty is False:
             self._df = self._comma_to_dot(self._df)
-            self._df, self._data_json = self._to_check_columns(self._df, self._data_json)
+            self._df, self._data_json = self._to_check_columns(
+                self._df, self._data_json
+            )
             self._df = self._to_float(self._df)
             self._data = deepcopy(self._df)
             self._has_data = True
@@ -250,7 +252,7 @@ class DataHandler(QObject):
             .dropna(how="all")
             .replace(np.nan, "0")
         )
-        
+
         if isinstance(df, pd.DataFrame):
             df = self._comma_to_dot(df)
             if len(df.columns) > 1:

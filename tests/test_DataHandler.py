@@ -127,7 +127,7 @@ class TestDataHandler:
         expected = pd.DataFrame(expected_data, columns=columns)
         result = data_handler._comma_to_dot(test_df)
         pd.testing.assert_frame_equal(result, expected)
-        
+
     def test_to_float(self, data_handler: DataHandler):
         columns = ["x", "y", "sy", "sx"]
         test_data = [["1.1", "2.2", "3.3", "4.4"], ["5.5", "6.6", "7.7", "8.8"]]
