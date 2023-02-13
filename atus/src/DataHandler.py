@@ -203,7 +203,13 @@ class DataHandler(QObject):
 
     def _fill_df_with_clipboardText(self, clipboardText):
         df = (
-            pd.read_csv(StringIO(clipboardText), sep="\t", header=None, dtype=str)
+            pd.read_csv(
+                StringIO(clipboardText),
+                sep=r"\t|\s",
+                header=None,
+                engine="python",
+                dtype=str,
+            )
             .dropna(how="all")
             .replace(np.nan, "0")
         )
@@ -245,7 +251,8 @@ class DataHandler(QObject):
         df = (
             pd.read_csv(
                 StringIO(clipboardText_bottom),
-                sep="\t",
+                sep=r"\t|\s",
+                engine="python",
                 header=None,
                 dtype=str,
             )
