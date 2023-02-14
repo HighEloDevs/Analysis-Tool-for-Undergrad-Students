@@ -214,7 +214,7 @@ class DataHandler(QObject):
         cond = [
             pd.to_numeric(df[column], errors="coerce").notnull()
             for column in df.columns
-        ]            
+        ]
         cond = np.all(cond, axis=0)
         if False in cond:
             self._msg_handler.raise_warn("Linhas com valores não numéricos removidas.")
@@ -280,7 +280,7 @@ class DataHandler(QObject):
                 df = self._filter_string_rows(df)
                 self._df = pd.concat(
                     [self._data_json, df], axis=0, ignore_index=True
-                ).fillna(0.0)
+                ).fillna("0")
                 self._df, self._data_json = self._to_check_columns(
                     self._df, self._data_json
                 )
