@@ -161,35 +161,14 @@ class TestDataHandler:
         result = data_handler._to_float(test_df)
         pd.testing.assert_frame_equal(result, expected)
 
-    def test_to_float_error(self, data_handler: DataHandler):
-        columns = ["x"]
-        test_data = [["NEYMAR"], ["NEYMAR"]]
-        test_df = pd.DataFrame(test_data, columns=columns)
-        data_handler._msg_handler.raise_error = MagicMock()
-        data_handler._to_float(test_df)
-        message = "A entrada de dados só permite entrada de números. Rever arquivo de entrada."
-        data_handler._msg_handler.raise_error.assert_called_once_with(message)
-
-    def test_drop_header(self, data_handler: DataHandler):
-
-        test = pd.DataFrame(
-            {
-                "x": ["a", "1.1", "2.2", "3.3"],
-                "y": ["a", "4.4", "5.5", "6.6"],
-                "sy": ["1", "7.7", "8.8", "9.9"],
-                "sx": ["a", "10.10", "11.11", "12.12"],
-            }
-        )
-        expected = pd.DataFrame(
-            {
-                "x": ["1.1", "2.2", "3.3"],
-                "y": ["4.4", "5.5", "6.6"],
-                "sy": ["7.7", "8.8", "9.9"],
-                "sx": ["10.10", "11.11", "12.12"],
-            }
-        )
-        result = data_handler._drop_header(test)
-        pd.testing.assert_frame_equal(result, expected)
+    # def test_to_float_error(self, data_handler: DataHandler):
+    #     columns = ["x"]
+    #     test_data = [["NEYMAR"], ["NEYMAR"]]
+    #     test_df = pd.DataFrame(test_data, columns=columns)
+    #     data_handler._msg_handler.raise_error = MagicMock()
+    #     data_handler._to_float(test_df)
+    #     message = "A entrada de dados só permite entrada de números. Rever arquivo de entrada."
+    #     data_handler._msg_handler.raise_error.assert_called_once_with(message)
 
     @pytest.fixture
     def four_columns_df(self, data_handler: DataHandler):
@@ -332,7 +311,19 @@ class TestDataHandler:
     @pytest.mark.parametrize(
         "data_test, data_expected",
         [
-            ([["a", "b", "c", "d"], ["5", "6", "7", "8"]], [[5.0, 6.0, 7.0, 8.0]]),
+            ([["a", "b", "c", "d"], ["1", "2", "3", "4"]], [[1.0, 2.0, 3.0, 4.0]]),
+            (
+                [["a", "b", "c", "d"], ["5", "6", "7", "8"], ["5", "6", "7", "d"]],
+                [[5.0, 6.0, 7.0, 8.0]],
+            ),
+            (
+                [["a", "b", "c", "d"], ["5", "6", "7", "8"], ["a", "b", "c", "d"]],
+                [[5.0, 6.0, 7.0, 8.0]],
+            ),
+            (
+                [["a", "b", "c", "d"], ["", "", "", ""], ["5", "6", "7", "8"]],
+                [[5.0, 6.0, 7.0, 8.0]],
+            ),
         ],
     )
     def test_load_data(self, data_handler: DataHandler, data_test, data_expected):
@@ -344,6 +335,32 @@ class TestDataHandler:
         data_handler.load_data()
         pd.testing.assert_frame_equal(data_handler._df, df_expected)
 
+    @pytest.mark.parametrize(
+        "data_test",
+        [
+            ([["1", "2", "3", "4", "5"]]),
+        ],
+    )
+    def test_load_data_when_df_is_none(self, data_handler: DataHandler, data_test):
+        df_test = pd.DataFrame(data_test)
+        df_test = df_test.rename(columns={0: "x", 1: "y", 2: "sy", 3: "sx"})
+        data_handler._df = df_test
+        data_handler.load_data()
+        assert data_handler._df == None
+
+    @pytest.mark.parametrize(
+        "data_test",
+        [
+            ([["Neymar"]]),
+        ],
+    )
+    def test_load_data_when_df_is_empty(self, data_handler: DataHandler, data_test):
+        df_test = pd.DataFrame(data_test)
+        df_test = df_test.rename(columns={0: "x", 1: "y", 2: "sy", 3: "sx"})
+        data_handler._df = df_test
+        data_handler.load_data()
+        assert data_handler._df.empty == True
+
     # @pytest.mark.parametrize(
     #     "clipboardText_bottom",
     #     [
@@ -353,20 +370,45 @@ class TestDataHandler:
     #         ),
     #     ],
     # )
-    # def  test_load_data_bottom(self, data_handler: DataHandler, clipboardText_bottom):
-    #     clipboardText_bottom
-    #     data_handler.loadDataClipboard()
 
-    def test_load_data_bottom(self, data_handler: DataHandler):
-        data_top = [["1", "2", "3", "4", True], ["5", "6", "7", "8", True]]
-        data_handler.load_data(df_array=data_top)
+    @pytest.mark.parametrize(
+        "clipboardText_bottom, data_expected",
+        [
+            ("a\tb\tc\td\n5\t6\t7\t8", [["1", "2", "3", "4"], ["5", "6", "7", "8"]]),
+            ("1\tb\tc\t1\n5\t6\t7\t8", [["1", "2", "3", "4"], ["5", "6", "7", "8"]]),
+            ("1\tb\tc\t1\n5\t6\t7\t8", [["1", "2", "3", "4"], ["5", "6", "7", "8"]]),
+            ("1\tb\tc\t1\n5\t6\t7", [["1", "2", "3", "4"], ["5", "6", "7", "0"]]),
+            ("Neymar", [["1", "2", "3", "4"]]),
+        ],
+    )
+    def test_load_data_bottom_data_json(
+        self, data_handler: DataHandler, clipboardText_bottom, data_expected
+    ):
+        df_top = pd.DataFrame([["1", "2", "3", "4"]])
+        df_top = df_top.rename(columns={0: "x", 1: "y", 2: "sy", 3: "sx"})
+        data_handler._data_json = df_top
+        data_handler.load_data()
+        data_handler._load_data_bottom(clipboardText_bottom)
 
-        clipboardText_bottom_bot = "9\t10\t11\t12\n13\t14\t15\t16"
-        data_handler._load_data_bottom(clipboardText_bottom_bot)
-        data_expected = [[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12], [13, 14, 15, 16]]
-        columns = ["x", "y", "sy", "sx"]
-        df_expected = pd.DataFrame(data=data_expected, columns=columns, dtype=float)
-        pd.testing.assert_frame_equal(df_expected, data_handler._df)
+        df_expected = pd.DataFrame(data_expected)
+        df_expected = df_expected.rename(columns={0: "x", 1: "y", 2: "sy", 3: "sx"})
+        pd.testing.assert_frame_equal(data_handler._data_json, df_expected)
+
+    @pytest.mark.parametrize(
+        "clipboardText_bottom",
+        [
+            ("1\t2\t3\t4\t5"),
+        ],
+    )
+    def test_load_data_bottom_when_df_is_none(
+        self, data_handler: DataHandler, clipboardText_bottom
+    ):
+        df_top = pd.DataFrame([["1", "2", "3", "4"]])
+        df_top = df_top.rename(columns={0: "x", 1: "y", 2: "sy", 3: "sx"})
+        data_handler._df = df_top
+        data_handler.load_data()
+        data_handler._load_data_bottom(clipboardText_bottom)
+        assert data_handler._df == None
 
     @pytest.mark.parametrize(
         "data_top, clipboardText_bottom, has_sy, has_sx",
