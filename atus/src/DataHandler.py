@@ -212,7 +212,7 @@ class DataHandler(QObject):
             self._msg_handler.raise_warn("Linhas com valores não numéricos removidas.")
         cond = np.all(cond, axis=0)
         df = df[cond]
-        df.reset_index(inplace=True)
+        df.reset_index(drop=True, inplace=True)
         return df
 
     @pyqtSlot(str)
