@@ -263,8 +263,11 @@ class TestDataHandler:
         data_handler._df = df
         data_handler._data_json = deepcopy(data_handler._df)
         data_handler._msg_handler.raise_error = MagicMock()
-        data_handler._to_check_columns(data_handler._df, data_handler._data_json)
+        df2, data_json = data_handler._to_check_columns(
+            data_handler._df, data_handler._data_json
+        )
         data_handler._msg_handler.raise_error.assert_called_once_with(message)
+        assert (df2, data_json) == (None, None)
 
     @patch("atus.src.DataHandler.DataHandler._read_csv")
     @patch("atus.src.DataHandler.DataHandler._read_tsv_txt")
