@@ -103,15 +103,16 @@ class DataHandler(QObject):
                 )
             self._has_sx = False
 
-    def _to_float(self, df: pd.DataFrame):
+    def _to_float(self, df: pd.DataFrame) -> tuple[pd.DataFrame, None]:
         for col in df.columns:
-            try:
-                df[col] = df[col].astype(float)
-            except ValueError:
-                self._msg_handler.raise_error(
-                    "A entrada de dados só permite entrada de números. Rever arquivo de entrada."
-                )
-                return None
+            df[col] = df[col].astype(float)
+            # try:
+            #     df[col] = df[col].astype(float)
+            # except ValueError:
+            #     self._msg_handler.raise_error(
+            #         "A entrada de dados só permite entrada de números. Rever arquivo de entrada."
+            #     )
+            #     return None
         return df
 
     def _comma_to_dot(self, df: pd.DataFrame) -> pd.DataFrame:
@@ -207,10 +208,10 @@ class DataHandler(QObject):
         cond = [
             pd.to_numeric(df[column], errors="coerce").notnull()
             for column in df.columns
-        ]
-        if np.any(cond):
-            self._msg_handler.raise_warn("Linhas com valores não numéricos removidas.")
+        ]            
         cond = np.all(cond, axis=0)
+        if False in cond:
+            self._msg_handler.raise_warn("Linhas com valores não numéricos removidas.")
         df = df[cond]
         df.reset_index(drop=True, inplace=True)
         return df
@@ -264,6 +265,7 @@ class DataHandler(QObject):
             df = self._comma_to_dot(df)
             if len(df.columns) > 1:
                 df = df.rename({0: "x", 1: "y", 2: "sy", 3: "sx"}, axis=1)
+                df = self._filter_string_rows(df)
                 self._df = pd.concat(
                     [self._data_json, df], axis=0, ignore_index=True
                 ).fillna(0.0)
