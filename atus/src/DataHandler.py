@@ -123,7 +123,7 @@ class DataHandler(QObject):
 
     def _to_check_columns(
         self, df: pd.DataFrame, df_json: pd.DataFrame
-    ) -> tuple[pd.DataFrame, pd.DataFrame] | None:
+    ) -> tuple[pd.DataFrame, pd.DataFrame] | tuple[None, None]:
         number_of_cols = len(df.columns)
         if number_of_cols == 1:
             self._has_sy = not self._has_sy
@@ -178,7 +178,7 @@ class DataHandler(QObject):
             self._msg_handler.raise_error(
                 "Há mais do que 4 colunas. Rever entrada de dados."
             )
-            return None
+            return None, None
 
     def _load_by_data_path(self, data_path: str) -> None:
         if data_path[-3:] == "csv":
@@ -239,6 +239,8 @@ class DataHandler(QObject):
             self._df, self._data_json = self._to_check_columns(
                 self._df, self._data_json
             )
+            if self._df is None:
+                return None
             self._df = self._to_float(self._df)
             self._data = deepcopy(self._df)
             self._has_data = True
@@ -268,6 +270,8 @@ class DataHandler(QObject):
                 self._df, self._data_json = self._to_check_columns(
                     self._df, self._data_json
                 )
+                if self._df is None:
+                    return None
                 self._df = self._to_float(self._df)
             else:
                 self._msg_handler.raise_warn(
