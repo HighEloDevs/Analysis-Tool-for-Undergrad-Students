@@ -333,8 +333,7 @@ class TestDataHandler:
         df_expected = pd.DataFrame(data_expected)
         df_expected = df_expected.rename(columns={0: "x", 1: "y", 2: "sy", 3: "sx"})
         data_handler.load_data()
-        # pd.testing.assert_frame_equal(data_handler._df, df_expected)
-        assert data_handler._df == df_expected
+        pd.testing.assert_frame_equal(data_handler._df, df_expected)
 
     @pytest.mark.parametrize(
         "data_test",
