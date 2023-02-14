@@ -278,7 +278,10 @@ class SinglePlot(QObject):
                 x, y, sy, sx = model.data
                 _, outliers = model.inliers, model.outliers
                 c = np.array([list(colors.to_rgba(symbol_color))] * len(x))
-                c[outliers.astype(int), 3] = self.canvas.user_alpha_outliers
+                try:
+                    c[outliers.astype(int), 3] = self.canvas.user_alpha_outliers
+                except IndexError:
+                    pass
                 kargs_errorbar["ecolor"] = c
                 kargs_scatter["c"] = c
                 y_r = None
