@@ -103,13 +103,6 @@ class DataHandler(QObject):
                 )
             self._has_sx = False
 
-    def _drop_header(self, df: pd.DataFrame) -> pd.DataFrame:
-        for col in df.columns:
-            if self._is_number(df[col].iloc[0]) is False:
-                df.drop(0, inplace=True)
-                df.index = range(len(df))
-        return df
-
     def _to_float(self, df: pd.DataFrame):
         for col in df.columns:
             try:
@@ -122,18 +115,10 @@ class DataHandler(QObject):
         return df
 
     def _comma_to_dot(self, df: pd.DataFrame) -> pd.DataFrame:
-        df = self._drop_header(df)
+        # df = self._drop_header(df)
         for col in df.columns:
             df[col] = [x.replace(",", ".") for x in df[col]]
             df[col] = df[col].astype(str)
-            # try:
-            #     df[col] = df[col].astype(float)
-            # except ValueError:
-            #     self._msg_handler.raise_error(
-            #         "A entrada de dados só permite entrada de números. Rever arquivo de entrada."
-            #     )
-            #     return None
-
         return df
 
     def _to_check_columns(
@@ -218,11 +203,13 @@ class DataHandler(QObject):
         # Replacing all commas for dots
         self._df = df
 
-    def filter_string_rows(self, df: pd.DataFrame) -> pd.DataFrame:
+    def _filter_string_rows(self, df: pd.DataFrame) -> pd.DataFrame:
         cond = [
             pd.to_numeric(df[column], errors="coerce").notnull()
             for column in df.columns
         ]
+        if np.any(cond):
+            self._msg_handler.raise_warn("Linhas com valores não numéricos removidas.")
         cond = np.all(cond, axis=0)
         return df[cond]
 
@@ -246,7 +233,7 @@ class DataHandler(QObject):
 
         if isinstance(self._df, pd.DataFrame) and self._df.empty is False:
             self._df = self._comma_to_dot(self._df)
-            self._df = self.filter_string_rows(self._df)
+            self._df = self._filter_string_rows(self._df)
             self._df, self._data_json = self._to_check_columns(
                 self._df, self._data_json
             )
