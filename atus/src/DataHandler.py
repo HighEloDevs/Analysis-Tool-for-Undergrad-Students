@@ -213,7 +213,7 @@ class DataHandler(QObject):
         cond = np.all(cond, axis=0)
         df = df[cond]
         df.reset_index(inplace=True)
-        return
+        return df
 
     @pyqtSlot(str)
     def load_data(
