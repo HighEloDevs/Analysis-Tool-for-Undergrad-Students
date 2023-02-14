@@ -188,17 +188,23 @@ class DataHandler(QObject):
             self._read_tsv_txt(data_path)
 
     def _fill_df_with_clipboardText(self, clipboardText):
-        df = (
-            pd.read_csv(
-                StringIO(clipboardText),
-                sep=r"\t|\s",
-                header=None,
-                engine="python",
-                dtype=str,
+        try:
+            df = (
+                pd.read_csv(
+                    StringIO(clipboardText),
+                    sep=r"\t|\s",
+                    header=None,
+                    engine="python",
+                    dtype=str,
+                )
+                .dropna(how="all")
+                .replace(np.nan, "0")
             )
-            .dropna(how="all")
-            .replace(np.nan, "0")
-        )
+        except pd.errors.ParserError:
+            self._msg_handler.raise_error(
+                "Separação de colunas de arquivos txt e tsv são com tab. Rever dados de entrada."
+            )
+            return None
         # Only consider number of columns less than 4
         df = df.rename({0: "x", 1: "y", 2: "sy", 3: "sx"}, axis=1)
         # Replacing all commas for dots
@@ -249,17 +255,23 @@ class DataHandler(QObject):
 
     @pyqtSlot(str)
     def _load_data_bottom(self, clipboardText_bottom) -> None:
-        df = (
-            pd.read_csv(
-                StringIO(clipboardText_bottom),
-                sep=r"\t|\s",
-                engine="python",
-                header=None,
-                dtype=str,
+        try:
+            df = (
+                pd.read_csv(
+                    StringIO(clipboardText_bottom),
+                    sep=r"\t|\s",
+                    engine="python",
+                    header=None,
+                    dtype=str,
+                )
+                .dropna(how="all")
+                .replace(np.nan, "0")
             )
-            .dropna(how="all")
-            .replace(np.nan, "0")
-        )
+        except pd.errors.ParserError:
+            self._msg_handler.raise_error(
+                "Separação de colunas de arquivos txt e tsv são com tab. Rever dados de entrada."
+            )
+            return None
 
         if isinstance(df, pd.DataFrame):
             df = self._comma_to_dot(df)
