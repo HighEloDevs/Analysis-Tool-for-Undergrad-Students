@@ -333,7 +333,8 @@ class TestDataHandler:
         df_expected = pd.DataFrame(data_expected)
         df_expected = df_expected.rename(columns={0: "x", 1: "y", 2: "sy", 3: "sx"})
         data_handler.load_data()
-        pd.testing.assert_frame_equal(data_handler._df, df_expected)
+        # pd.testing.assert_frame_equal(data_handler._df, df_expected)
+        assert data_handler._df == df_expected
 
     @pytest.mark.parametrize(
         "data_test",
@@ -393,6 +394,41 @@ class TestDataHandler:
         df_expected = pd.DataFrame(data_expected)
         df_expected = df_expected.rename(columns={0: "x", 1: "y", 2: "sy", 3: "sx"})
         pd.testing.assert_frame_equal(data_handler._data_json, df_expected)
+
+    @pytest.mark.parametrize(
+        "clipboardText_bottom, data_expected",
+        [
+            (
+                "a\tb\tc\td\n5,1\t6,1\t7,1\t8,1",
+                [[1.0, 2.0, 3.0, 4.0], [5.1, 6.1, 7.1, 8.1]],
+            ),
+            (
+                "1\tb\tc\t1\n5,1\t6,1\t7,1\t8,1",
+                [[1.0, 2.0, 3.0, 4.0], [5.1, 6.1, 7.1, 8.1]],
+            ),
+            (
+                "1\tb\tc\t1\n\n5,1\t6,1\t7,1\t8,1",
+                [[1.0, 2.0, 3.0, 4.0], [5.1, 6.1, 7.1, 8.1]],
+            ),
+            (
+                "1\tb\tc\t1\n\n5,1\t6,1\t7,1",
+                [[1.0, 2.0, 3.0, 4.0], [5.1, 6.1, 7.1, 0.0]],
+            ),
+            ("Neymar", [[1.0, 2.0, 3.0, 4.0]]),
+        ],
+    )
+    def test_load_data_bottom_data_json(
+        self, data_handler: DataHandler, clipboardText_bottom, data_expected
+    ):
+        df_top = pd.DataFrame([["1", "2", "3", "4"]])
+        df_top = df_top.rename(columns={0: "x", 1: "y", 2: "sy", 3: "sx"})
+        data_handler._df = df_top
+        data_handler.load_data()
+        data_handler._load_data_bottom(clipboardText_bottom)
+
+        df_expected = pd.DataFrame(data_expected)
+        df_expected = df_expected.rename(columns={0: "x", 1: "y", 2: "sy", 3: "sx"})
+        pd.testing.assert_frame_equal(data_handler._df, df_expected)
 
     @pytest.mark.parametrize(
         "clipboardText_bottom",
