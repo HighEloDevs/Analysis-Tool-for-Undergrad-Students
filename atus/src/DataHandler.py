@@ -69,7 +69,9 @@ class DataHandler(QObject):
     def _read_tsv_txt(self, data_path: str) -> None:
         try:
             self._df = (
-                pd.read_csv(data_path, sep=r"\t|\s", header=None, dtype=str)
+                pd.read_csv(
+                    data_path, sep=r"\t|\s", header=None, dtype=str, engine="python"
+                )
                 .dropna(how="all")
                 .replace(np.nan, "0")
             )
