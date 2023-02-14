@@ -218,6 +218,14 @@ class DataHandler(QObject):
         # Replacing all commas for dots
         self._df = df
 
+    def filter_string_rows(self, df: pd.DataFrame) -> pd.DataFrame:
+        cond = [
+            pd.to_numeric(df[column], errors="coerce").notnull()
+            for column in df.columns
+        ]
+        cond = np.all(cond, axis=0)
+        return df[cond]
+
     @pyqtSlot(str)
     def load_data(
         self,
@@ -238,6 +246,7 @@ class DataHandler(QObject):
 
         if isinstance(self._df, pd.DataFrame) and self._df.empty is False:
             self._df = self._comma_to_dot(self._df)
+            self._df = self.filter_string_rows(self._df)
             self._df, self._data_json = self._to_check_columns(
                 self._df, self._data_json
             )
