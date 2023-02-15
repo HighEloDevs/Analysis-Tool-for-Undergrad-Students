@@ -135,22 +135,22 @@ class DataHandler(QObject):
             df["x"] = np.arange(len(df), dtype=float)
             df_json = deepcopy(df.astype(str))
             df_json.columns = ["x", "y"]
-            df["sy"] = 0.0
-            df["sx"] = 0.0
+            df.insert(2, "sy", 0.0)
+            df.insert(3, "sx", 0.0)
             return df, df_json
         elif number_of_cols == 2:
             self._has_sy = not self._has_sy
             self._has_sx = not self._has_sx
             df_json = deepcopy(df.astype(str))
             df_json.columns = ["x", "y"]
-            df["sy"] = 0.0
-            df["sx"] = 0.0
+            df.insert(2, "sy", 0.0)
+            df.insert(3, "sx", 0.0)
             return df, df_json
         elif number_of_cols == 3:
             self._has_sx = not self._has_sx
             df_json = deepcopy(df.astype(str))
             df_json.columns = ["x", "y", "sy"]
-            df["sx"] = 0.0
+            df.insert(3, "sx", 0.0)
             unique_sy = df_json["sy"].astype(float).unique()
             if 0.0 in unique_sy:
                 if len(unique_sy) > 1:
