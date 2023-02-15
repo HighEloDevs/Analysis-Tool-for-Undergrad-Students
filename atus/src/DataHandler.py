@@ -309,7 +309,7 @@ class DataHandler(QObject):
         """Getting data from table."""
         self._df = pd.DataFrame.from_records(
             data, columns=["x", "y", "sy", "sx", "bool"]
-        )
+        ).replace("", "0")
         # Removing not chosen rows
         self._df = self._df[self._df["bool"] == 1]
         del self._df["bool"]
