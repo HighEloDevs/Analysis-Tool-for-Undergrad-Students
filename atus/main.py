@@ -27,7 +27,9 @@ import os
 import sys
 
 import matplotlib.pyplot as plt
-from .matplotlib_backend_qtquick_2.backend_qtquickagg import (
+
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+from matplotlib_backend_qtquick_2.backend_qtquickagg import (
     FigureCanvasQtQuickAgg,
 )
 from PyQt5.QtCore import QCoreApplication, QObject, Qt, QUrl, QThread
@@ -35,7 +37,6 @@ from PyQt5.QtGui import QIcon
 from PyQt5.QtQml import QQmlApplicationEngine, qmlRegisterType
 from PyQt5.QtWidgets import QApplication
 
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from src.GlobalManager import GlobalManager
 from src.GoogleDriveAPI import GDrive
 from src.Histogram import Histogram
