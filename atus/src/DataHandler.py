@@ -42,7 +42,7 @@ class DataHandler(QObject):
         try:
             float(s)
             return True
-        except ValueError:
+        except Exception:
             return False
 
     def _read_csv(self, data_path: str) -> None:
@@ -70,14 +70,17 @@ class DataHandler(QObject):
         try:
             self._df = (
                 pd.read_csv(
-                    data_path, sep=r"\t|\s", header=None, dtype=str, engine="python"
+                    data_path,
+                    sep=r"\t|\s",
+                    header=None,
+                    dtype=str,
+                    engine="python",
                 )
                 .dropna(how="all")
                 .replace(np.nan, "0")
             )
             self._df = self._df.rename({0: "x", 1: "y", 2: "sy", 3: "sx"}, axis=1)
         except pd.errors.ParserError:
-
             self._msg_handler.raise_error(
                 "Separação de colunas de arquivos txt e tsv são com tab. Rever dados de entrada."
             )

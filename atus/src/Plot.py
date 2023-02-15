@@ -670,13 +670,13 @@ class SinglePlot(QObject):
     def make_float(self, var, value=0.0):
         try:
             return float(var)
-        except ValueError:
+        except Exception:
             return value
 
     def make_int(self, var, value=0):
         try:
             return int(var)
-        except ValueError:
+        except Exception:
             return value
 
     @pyqtSlot(QJsonValue, result=int)

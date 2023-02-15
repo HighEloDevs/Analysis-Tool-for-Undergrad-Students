@@ -95,7 +95,7 @@ Item {
                         textHolder: 'Ex.: 0.95, 0.90'
                         defaultColor: '#fff'
                         textColor: '#fff'
-                        validator: RegExpValidator{regExp: /^[0]+([\.]?[0-9]+)?$/}
+                        validator: RegExpValidator{regExp: /^[0]{1}([\.][0-9]+)?$/}
                     }
 
                     TextInputCustom{

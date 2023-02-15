@@ -258,13 +258,13 @@ class Canvas(QObject):
     def make_float(self, var, valor):
         try:
             return float(var)
-        except ValueError:
+        except Exception:
             return valor
 
     def make_int(self, var, valor):
         try:
             return int(var)
-        except ValueError:
+        except Exception:
             return valor
 
     def get_coordinates(self):

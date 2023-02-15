@@ -505,11 +505,11 @@ class Histogram(QObject):
     def make_float(self, var, value):
         try:
             return float(var)
-        except ValueError:
+        except Exception:
             return value
 
     def make_int(self, var, value):
         try:
             return int(var)
-        except ValueError:
+        except Exception:
             return value
