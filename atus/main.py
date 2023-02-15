@@ -27,7 +27,7 @@ import os
 import sys
 
 import matplotlib.pyplot as plt
-from matplotlib_backend_qtquick_2.backend_qtquickagg import (
+from .matplotlib_backend_qtquick_2.backend_qtquickagg import (
     FigureCanvasQtQuickAgg,
 )
 from PyQt5.QtCore import QCoreApplication, QObject, Qt, QUrl, QThread
