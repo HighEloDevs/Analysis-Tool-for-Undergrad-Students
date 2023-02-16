@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: atus
-Version: 1.2.0
+Version: 1.2.1
 Home-page: https://github.com/HighEloDevs/Analysis-Tool-for-Undergrad-Students
 Author: High Elo Devs
 Author-email: atusdevs@gmail.com
@@ -8,7 +8,7 @@ Project-URL: Bug Tracker, https://github.com/HighEloDevs/Analysis-Tool-for-Under
 Classifier: Programming Language :: Python :: 3
 Classifier: License :: OSI Approved :: MIT License
 Classifier: Operating System :: OS Independent
-Requires-Python: >=3.7, <3.11
+Requires-Python: >=3.8, <3.12
 Description-Content-Type: text/markdown
 License-File: LICENSE
 

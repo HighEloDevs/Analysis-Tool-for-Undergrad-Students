@@ -412,10 +412,11 @@ Item{
                                     enabled: edit
                                     checked: check
                                     onCheckedChanged: {
+                                        let index2 = index+Math.max(dataShaped.length-150,0)
                                         if(checkBox.checkState === 2)
-                                            dataShaped[index][4] = checkBox.checkState - 1
+                                            dataShaped[index2][4] = checkBox.checkState - 1
                                         else
-                                            dataShaped[index][4] = checkBox.checkState
+                                            dataShaped[index2][4] = checkBox.checkState
                                     }
                                 }
 
@@ -424,7 +425,7 @@ Item{
                                     enabled: edit
                                     onClicked: {
                                         dataShaped.splice(row, 1)
-                                        dataSet.remove(row)     
+                                        dataSet.remove(row)
                                     }
                                 }
                             }

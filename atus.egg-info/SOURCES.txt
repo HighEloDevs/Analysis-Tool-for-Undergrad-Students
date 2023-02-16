@@ -13,6 +13,7 @@ atus.egg-info/entry_points.txt
 atus.egg-info/requires.txt
 atus.egg-info/top_level.txt
 atus/src/Calculators.py
+atus/src/DataHandler.py
 atus/src/GlobalManager.py
 atus/src/GoogleDriveAPI.py
 atus/src/Histogram.py
@@ -90,13 +91,13 @@ atus/matplotlib_backend_qtquick_2/backend_qtquick.py
 atus/matplotlib_backend_qtquick_2/backend_qtquickagg.py
 atus/matplotlib_backend_qtquick_2/qt_compat.py
 atus/matplotlib_backend_qtquick_2/__pycache__/__init__.cpython-310.pyc
-atus/matplotlib_backend_qtquick_2/__pycache__/__init__.cpython-39.pyc
+atus/matplotlib_backend_qtquick_2/__pycache__/__init__.cpython-311.pyc
 atus/matplotlib_backend_qtquick_2/__pycache__/backend_qtquick.cpython-310.pyc
-atus/matplotlib_backend_qtquick_2/__pycache__/backend_qtquick.cpython-39.pyc
+atus/matplotlib_backend_qtquick_2/__pycache__/backend_qtquick.cpython-311.pyc
 atus/matplotlib_backend_qtquick_2/__pycache__/backend_qtquickagg.cpython-310.pyc
-atus/matplotlib_backend_qtquick_2/__pycache__/backend_qtquickagg.cpython-39.pyc
+atus/matplotlib_backend_qtquick_2/__pycache__/backend_qtquickagg.cpython-311.pyc
 atus/matplotlib_backend_qtquick_2/__pycache__/qt_compat.cpython-310.pyc
-atus/matplotlib_backend_qtquick_2/__pycache__/qt_compat.cpython-39.pyc
+atus/matplotlib_backend_qtquick_2/__pycache__/qt_compat.cpython-311.pyc
 atus/qml/colors.js
 atus/qml/main_window.qml
 atus/qml/controls/AddButton.qml
@@ -139,6 +140,7 @@ atus/qml/pages/plotPage.qml
 atus/qml/pages/subpages/funcaoAjustePage.qml
 atus/qml/pages/subpages/propriedadesPage.qml
 atus/src/Calculators.py
+atus/src/DataHandler.py
 atus/src/GlobalManager.py
 atus/src/GoogleDriveAPI.py
 atus/src/Histogram.py
@@ -150,3 +152,5 @@ atus/src/MultiPlot.py
 atus/src/Plot.py
 atus/src/PyLatex.py
 atus/src/UpdateChecker.py
+tests/test_DataHandler.py
+tests/test_model.py
