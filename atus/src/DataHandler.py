@@ -82,7 +82,7 @@ class DataHandler(QObject):
             self._df = self._df.rename({0: "x", 1: "y", 2: "sy", 3: "sx"}, axis=1)
         except pd.errors.ParserError:
             self._msg_handler.raise_error(
-                "Separação de colunas de arquivos txt e tsv são com tab. Rever dados de entrada."
+                "Separação de colunas de arquivos txt e tsv são com tab ou espaço. Rever dados de entrada."
             )
             return None
 
@@ -207,7 +207,7 @@ class DataHandler(QObject):
             )
         except pd.errors.ParserError:
             self._msg_handler.raise_error(
-                "Separação de colunas de arquivos txt e tsv são com tab. Rever dados de entrada."
+                "Separação de colunas de arquivos txt e tsv são com tab ou espaço. Rever dados de entrada."
             )
             return None
         # Only consider number of columns less than 4
@@ -274,7 +274,7 @@ class DataHandler(QObject):
             )
         except pd.errors.ParserError:
             self._msg_handler.raise_error(
-                "Separação de colunas de arquivos txt e tsv são com tab. Rever dados de entrada."
+                "Separação de colunas de arquivos txt e tsv são com tab ou espaço. Rever dados de entrada."
             )
             return None
 
