@@ -107,7 +107,9 @@ class UpdateChecker(QObject):
             ).strftime("%d/%m/%Y")
 
             version = infos["tag_name"]
-            if  tuple(map(int, (version.split(".")))) >  tuple(map(int, (self.__VERSION__.split(".")))):
+            if tuple(map(int, (version.split(".")))) > tuple(
+                map(int, (self.__VERSION__.split(".")))
+            ):
                 self.__VERSION__ = self.__VERSION__ + " Há uma nova versão disponível!"
                 self.showUpdate.emit(QJsonValue.fromVariant(infos))
 
