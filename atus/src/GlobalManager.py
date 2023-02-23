@@ -37,7 +37,7 @@ class GlobalManager(QObject):
         if not os.path.exists(self.atus_dir):
             try:
                 os.mkdir(self.atus_dir)
-            except FileExistsError:
+            except Exception:
                 print("Cannot create ATUS's directory")
                 self.atus_dir = os.path.expanduser(r"~\Desktop")
 

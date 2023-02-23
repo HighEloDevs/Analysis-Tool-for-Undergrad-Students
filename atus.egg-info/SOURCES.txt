@@ -92,12 +92,16 @@ atus/matplotlib_backend_qtquick_2/backend_qtquickagg.py
 atus/matplotlib_backend_qtquick_2/qt_compat.py
 atus/matplotlib_backend_qtquick_2/__pycache__/__init__.cpython-310.pyc
 atus/matplotlib_backend_qtquick_2/__pycache__/__init__.cpython-311.pyc
+atus/matplotlib_backend_qtquick_2/__pycache__/__init__.cpython-39.pyc
 atus/matplotlib_backend_qtquick_2/__pycache__/backend_qtquick.cpython-310.pyc
 atus/matplotlib_backend_qtquick_2/__pycache__/backend_qtquick.cpython-311.pyc
+atus/matplotlib_backend_qtquick_2/__pycache__/backend_qtquick.cpython-39.pyc
 atus/matplotlib_backend_qtquick_2/__pycache__/backend_qtquickagg.cpython-310.pyc
 atus/matplotlib_backend_qtquick_2/__pycache__/backend_qtquickagg.cpython-311.pyc
+atus/matplotlib_backend_qtquick_2/__pycache__/backend_qtquickagg.cpython-39.pyc
 atus/matplotlib_backend_qtquick_2/__pycache__/qt_compat.cpython-310.pyc
 atus/matplotlib_backend_qtquick_2/__pycache__/qt_compat.cpython-311.pyc
+atus/matplotlib_backend_qtquick_2/__pycache__/qt_compat.cpython-39.pyc
 atus/qml/colors.js
 atus/qml/main_window.qml
 atus/qml/controls/AddButton.qml
