@@ -1,10 +1,16 @@
 from setuptools import setup
+import os
 
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 with open("atus/version.txt") as version:
     __VERSION__ = version.read()
+
+PATH = os.path.dirname(os.path.abspath(__file__))
+PATH = os.path.join(PATH, "requirements.txt")
+with open(PATH, mode="r", encoding="utf-16") as f:
+    list_req = f.read().splitlines()
 
 setup(
     name="atus",
@@ -32,15 +38,17 @@ setup(
     entry_points={
         "console_scripts": ["atus = atus:main.main"],
     },
-    install_requires=[
-        "setuptools>=42",
-        "wheel",
-        "matplotlib==3.6.2",
-        "pandas",
-        "numpy",
-        "scipy",
-        "lmfit",
-        "pyqt5",
-        "requests",
-    ],
+    install_requires=list_req,
+    # install_requires=[
+    #     "setuptools>=42",
+    #     "wheel",
+    #     "matplotlib==3.6.2",
+    #     "pandas",
+    #     "numpy",
+    #     "scipy",
+    #     "lmfit",
+    #     "pyqt5",
+    #     "pytexit",
+    #     "requests",
+    # ],
 )

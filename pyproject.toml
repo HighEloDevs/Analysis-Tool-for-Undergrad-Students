@@ -3,11 +3,13 @@ requires = [
     "setuptools",
     "wheel",
     "matplotlib==3.6.2",
+    "IPython",
     "pandas",
     "numpy",
     "scipy",
     "lmfit",
     "pyqt5",
+    "pytexit",
     "requests",
 ]
 build-backend = "setuptools.build_meta"
