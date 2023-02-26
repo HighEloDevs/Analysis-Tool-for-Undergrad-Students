@@ -1,6 +1,7 @@
 # -*- mode: python ; coding: utf-8 -*-
 
 import os
+import pytexit
 
 dir = os.path.abspath("./")
 
@@ -24,6 +25,7 @@ a = Analysis(
         (os.path.join(dir, "atus", "qml"), "qml"),
         (os.path.join(dir, "atus", "icon.ico"), "."),
         (os.path.join(dir, "atus", "version.txt"), "."),
+        (os.path.dirname(pytexit.__file__), "pytexit"),
     ],
     hiddenimports=[],
     hookspath=[],

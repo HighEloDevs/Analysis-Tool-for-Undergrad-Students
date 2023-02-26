@@ -39,16 +39,4 @@ setup(
         "console_scripts": ["atus = atus:main.main"],
     },
     install_requires=list_req,
-    # install_requires=[
-    #     "setuptools>=42",
-    #     "wheel",
-    #     "matplotlib==3.6.2",
-    #     "pandas",
-    #     "numpy",
-    #     "scipy",
-    #     "lmfit",
-    #     "pyqt5",
-    #     "pytexit",
-    #     "requests",
-    # ],
 )
