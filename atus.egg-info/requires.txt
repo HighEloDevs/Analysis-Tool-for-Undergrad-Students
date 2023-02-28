@@ -1,9 +1,10 @@
 setuptools>=42
-wheel
+lmfit==1.1.0
 matplotlib==3.6.2
-pandas
-numpy
-scipy
-lmfit
-pyqt5
-requests
+IPython==8.10.0
+numpy==1.23.5
+pandas==1.5.2
+PyQt5==5.15.6
+requests==2.28.1
+scipy==1.9.3
+pytexit==0.4.0

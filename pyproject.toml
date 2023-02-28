@@ -17,6 +17,9 @@ build-backend = "setuptools.build_meta"
 [tool.black]
 line-length = 88
 
+[tools.setuptools]
+packages = ["atus"]
+
 # [tool.flake8]
 # ignore = ["E266", "E402", "E501", "W503"]
 # max-line-length = 88
