@@ -92,15 +92,9 @@ class Canvas(QObject):
         self.canvas = canvas
         self.figure = self.canvas.figure
         self.toolbar = NavigationToolbar2QtQuick(canvas=canvas)
-        self.gm = gridspec.GridSpec(
-            2, 1, figure=self.figure, height_ratios=[3.0, 1.0]
-        )
-        self.gs = gridspec.GridSpec(
-            1, 1, figure=self.figure, height_ratios=[1.0]
-        )
-        self.axes1 = self.figure.add_subplot(
-            self.gm[0], picker=True, autoscale_on=True
-        )
+        self.gm = gridspec.GridSpec(2, 1, figure=self.figure, height_ratios=[3.0, 1.0])
+        self.gs = gridspec.GridSpec(1, 1, figure=self.figure, height_ratios=[1.0])
+        self.axes1 = self.figure.add_subplot(self.gm[0], picker=True, autoscale_on=True)
         self.axes2 = self.figure.add_subplot(
             self.gm[1], picker=True, sharex=self.axes1, autoscale_on=False
         )
@@ -129,18 +123,12 @@ class Canvas(QObject):
         """Função que oculta ou não o eixo secundário."""
         if hide_axes2:
             self.axes2.set_visible(False)
-            self.axes1.set_position(
-                self.gs[0].get_position(self.figure), which="both"
-            )
+            self.axes1.set_position(self.gs[0].get_position(self.figure), which="both")
             self.figmode = 0
         else:
             self.axes2.set_visible(True)
-            self.axes1.set_position(
-                self.gm[0].get_position(self.figure), which="both"
-            )
-            self.axes2.set_position(
-                self.gm[1].get_position(self.figure), which="both"
-            )
+            self.axes1.set_position(self.gm[0].get_position(self.figure), which="both")
+            self.axes2.set_position(self.gm[1].get_position(self.figure), which="both")
             self.figmode = 1
 
     def set_axes_props_without_axes_2(
@@ -246,15 +234,11 @@ class Canvas(QObject):
         self, x, y, kargs_errorbar, alpha, sy=None, sx=None, y_r=None, ssy=None
     ):
         """Deprecada."""
-        self.axes1.errorbar(
-            x, y, yerr=sy, xerr=sx, alpha=alpha, **kargs_errorbar
-        )
+        self.axes1.errorbar(x, y, yerr=sy, xerr=sx, alpha=alpha, **kargs_errorbar)
         if y_r is not None:
             self.axes2.errorbar(x, y_r, yerr=ssy, alpha=alpha, **kargs_errorbar)
 
-    def plot_error_bar_new(
-        self, x, y, sy, sx, kargs_errorbar, y_r=None, ssy=None
-    ):
+    def plot_error_bar_new(self, x, y, sy, sx, kargs_errorbar, y_r=None, ssy=None):
         """Faz o plot das barras de erro."""
         self.axes1.errorbar(x, y, yerr=sy, xerr=sx, ms=0, **kargs_errorbar)
         if y_r is not None:
@@ -274,13 +258,13 @@ class Canvas(QObject):
     def make_float(self, var, valor):
         try:
             return float(var)
-        except:
+        except Exception:
             return valor
 
     def make_int(self, var, valor):
         try:
             return int(var)
-        except:
+        except Exception:
             return valor
 
     def get_coordinates(self):
@@ -334,13 +318,9 @@ class Canvas(QObject):
             self.message_handler.raise_warn(
                 "O fundo transparente funciona apenas na extensão .png"
             )
-            self.canvas.figure.savefig(
-                path, dpi=self.dpi, transparent=transparent
-            )
+            self.canvas.figure.savefig(path, dpi=self.dpi, transparent=transparent)
         else:
-            self.canvas.figure.savefig(
-                path, dpi=self.dpi, transparent=transparent
-            )
+            self.canvas.figure.savefig(path, dpi=self.dpi, transparent=transparent)
             self.message_handler.raise_success("Imagem salva com sucesso!")
 
     @pyqtSlot()
@@ -361,9 +341,9 @@ class Canvas(QObject):
                     "Copiado com sucesso para a área de transferência!"
                 )
             os.remove(path)
-        except:
+        except Exception as error:
             self.message_handler.raise_error(
-                "Erro copiar para a área de transferência, contatar os desenvolvedores."
+                f"Erro copiar para a área de transferência, contatar os desenvolvedores.\n{error}"
             )
 
     @pyqtSlot()
@@ -435,9 +415,7 @@ class Canvas(QObject):
         )
 
     @pyqtSlot(int, int, int, int, int)
-    def set_font_sizes(
-        self, title_size, x_size, y_size, residual_size, caption_size
-    ):
+    def set_font_sizes(self, title_size, x_size, y_size, residual_size, caption_size):
         self.font_sizes["titulo"] = title_size
         self.font_sizes["eixo_x"] = x_size
         self.font_sizes["eixo_y"] = y_size
@@ -472,9 +450,12 @@ class Canvas(QObject):
     def set_legend_position(self, position):
         self.legend_loc = self.legend_loc_dict[position]
         if self.axes1.get_legend():
-            h, l = self.axes1.get_legend_handles_labels()
+            handles, lables = self.axes1.get_legend_handles_labels()
             self.axes1.legend(
-                h, l, loc=self.legend_loc, fontsize=self.font_sizes["legenda"]
+                handles,
+                lables,
+                loc=self.legend_loc,
+                fontsize=self.font_sizes["legenda"],
             )
 
     @pyqtSlot(int)

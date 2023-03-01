@@ -1,14 +1,16 @@
 import QtQuick 2.15
-import QtQuick.Window 2.15
 import QtQuick.Controls 2.15
-import QtGraphicalEffects 1.15
-import QtQuick.Dialogs 1.3
+import QtQuick.Window 2.15
 import QtQuick.Layouts 1.11
+import QtQuick.Dialogs 1.3
+import QtGraphicalEffects 1.15
 import Canvas 1.0
+// import Qt.labs.qmlmodels 1.0
 
 import "."
 import "controls"
 import "colors.js" as Colors
+import "pages"
 
 Window {
     id: mainWindow
@@ -19,7 +21,14 @@ Window {
     visible: true
     color: "#00000000"
 
-    // Shortcuts for debug
+    // Shortcuts
+
+    // Loader 
+    // {
+    //     id: func_plot_page
+    //     source: "pages/plotPage.qml"
+    // }
+
     Shortcut {
         sequences: ["CTRL+SHIFT+X"]
         onActivated: {
@@ -35,6 +44,61 @@ Window {
         onActivated: {
             console.log("debug :D")
         }
+    }
+
+    Shortcut {
+        sequences: ["Ctrl+B", "Ctrl+Space"]
+        // Verifying which page is active
+        onActivated: {
+            if (mainWindow.activeBtn === 1) {
+                pagePlot.item.single_plot_table.clear()
+                datahandler.loadDataClipboard()
+            } 
+            else if (mainWindow.activeBtn === 4) {
+                pageHistograma.item.hist_plot_table.addDefaultRow(pageHistograma.item.hist_plot_table.defaultDataRow)
+            } 
+        }
+    }
+
+
+    Shortcut {
+        sequences: ["Ctrl+Shift+B", "Ctrl+Shift+Space"]
+        // Verifying which page is active
+        onActivated: {
+            if (mainWindow.activeBtn === 1) {
+                pagePlot.item.single_plot_table.clear()
+                datahandler.loadDataClipboard_bottom()
+            }
+        }
+    }
+
+    
+    Shortcut {
+        sequences: ["Ctrl+1"]
+        onActivated: {
+            canvas.shortcut_grid()
+        }
+    }
+    Shortcut {
+        sequences: ["Ctrl+2"]
+        onActivated: {
+            canvas.shortcut_axis_1()
+        }
+    }
+    Shortcut {
+        sequences: ["Ctrl+3"]
+        onActivated: {
+            canvas.shortcut_axis_2()
+        }
+    }
+
+    Shortcut {
+        sequences: ["CTRL+Q"]
+        onActivated:{
+            console.log(mainWindow.activeBtn)
+            // console.log("Ctrl+Q pressed")
+            Qt.quit()
+        }   
     }
 
     // Removing Title Bar
@@ -1017,8 +1081,7 @@ Window {
     Connections{
         target: updater
         function onShowUpdate(infos){
-
-            updatePopup.infos = infos
+            updatePopup.infos = infos 
             updatePopup.updateLog = infos['body']
             updatePopup.version = infos['tag_name']
             updatePopup.exeLink = infos['assets'][0]['browser_download_url']

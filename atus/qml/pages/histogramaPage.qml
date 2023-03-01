@@ -8,6 +8,7 @@ import "../controls"
 
 Rectangle {
     id: root
+    property alias hist_plot_table : dataTable
     anchors.fill: parent
     color: Colors.color3
 

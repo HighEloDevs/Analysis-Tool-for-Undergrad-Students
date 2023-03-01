@@ -23,7 +23,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-import numpy as np
+# import numpy as np
 import pandas as pd
 
 # from matplotlib_backend_qtquick.qt_compat import QtCore
@@ -31,33 +31,44 @@ from PyQt5.QtCore import QObject
 from lmfit.models import ExpressionModel
 from lmfit import Parameters
 
+
 class MultiModel(QObject):
     def __init__(self, options: dict, arquivos: list):
         super().__init__()
-        self.options    = options
-        self.arquivos   = arquivos
-        self.dfs        = [pd.DataFrame.from_records(arquivo['df'], columns = ['x', 'y', 'sy', 'sx', 'bool']).astype(float) for arquivo in self.arquivos]
+        self.options = options
+        self.arquivos = arquivos
+        self.dfs = [
+            pd.DataFrame.from_records(
+                arquivo["df"], columns=["x", "y", "sy", "sx", "bool"]
+            ).astype(float)
+            for arquivo in self.arquivos
+        ]
         for i in range(len(self.dfs)):
-            self.dfs[i]         = self.dfs[i][self.dfs[i]['bool'] == 1]
+            self.dfs[i] = self.dfs[i][self.dfs[i]["bool"] == 1]
             del self.dfs[i]["bool"]
-        self.num_cols   = [len(df.columns) for df in self.dfs]
-        self.models     = []
+        self.num_cols = [len(df.columns) for df in self.dfs]
+        self.models = []
         self.parameters = []
-        self.indVars    = []
+        self.indVars = []
         for arquivo in arquivos:
-            if arquivo['expr'] != '' and len(arquivo['params']) > 0:
-                expIndVar = arquivo['expr'].split(";")
+            if arquivo["expr"] != "" and len(arquivo["params"]) > 0:
+                expIndVar = arquivo["expr"].split(";")
                 if len(expIndVar) == 1:
-                    self.models.append(ExpressionModel(arquivo['expr'] + " + 0*x"))
+                    self.models.append(ExpressionModel(arquivo["expr"] + " + 0*x"))
                     self.indVars.append("x")
                 elif len(expIndVar) == 2:
-                    self.models.append(ExpressionModel(expIndVar[0] + " + 0*%s"%expIndVar[1].strip(), independent_vars=[expIndVar[1].strip()]))
+                    self.models.append(
+                        ExpressionModel(
+                            expIndVar[0] + " + 0*%s" % expIndVar[1].strip(),
+                            independent_vars=[expIndVar[1].strip()],
+                        )
+                    )
                     self.indVars.append(expIndVar[1].strip())
                 else:
                     continue
                 parametros = Parameters()
-                for parametro in arquivo['params'].keys():
-                    parametros.add(parametro, value = arquivo['params'][parametro])
+                for parametro in arquivo["params"].keys():
+                    parametros.add(parametro, value=arquivo["params"][parametro])
                 self.parameters.append(parametros)
             else:
                 self.models.append(0)

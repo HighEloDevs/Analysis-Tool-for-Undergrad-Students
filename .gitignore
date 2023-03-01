@@ -3,6 +3,8 @@
 node_modules
 # atus.egg-info
 env
+env2
+.venv
 *~
 *.autosave
 *.a
@@ -74,9 +76,13 @@ atus_qt6
 *.dll
 *.exe
 
+# Pytest and coverage
+.coverage
+
 .idea
 .pytest_cache
 .vscode
+.mypy_cache
 
 build
 dist
@@ -86,3 +92,4 @@ Dados.txt
 testes
 instaladores
 venv
+teste.ipynb

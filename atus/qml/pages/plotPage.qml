@@ -14,6 +14,7 @@ Item {
     id: root
     property alias pageProp: middleTabs.pageProp
     property alias pageFunc: middleTabs.pageFunc
+    property alias single_plot_table: table
     property var markers: ({
                                'Círculo':'o',
                                'Triângulo':'^',
@@ -71,31 +72,76 @@ Item {
                                 data : table.dataShaped
                             })
 
-    Shortcut {
-        sequences: ["Ctrl+B", "Ctrl+Space"]
-        onActivated: {
-            table.clear()
-            model.loadDataClipboard()
-        }
-    }
-    Shortcut {
-        sequences: ["Ctrl+1"]
-        onActivated: {
-            canvas.shortcut_grid()
-        }
-    }
-    Shortcut {
-        sequences: ["Ctrl+2"]
-        onActivated: {
-            canvas.shortcut_axis_1()
-        }
-    }
-    Shortcut {
-        sequences: ["Ctrl+3"]
-        onActivated: {
-            canvas.shortcut_axis_2()
-        }
-    }
+    // Loader 
+    // {
+    //     id: hist_table
+    //     source: "../controls/HistogramTable.qml"
+    // }
+
+    // function pasteData() {
+    //     console.log("pasteData")
+    //     // Limpando a tabela
+    //     func_table.item.clear()
+    //     datahandler.loadDataClipboard()
+    // }
+
+    // function pasteData_bottom() {
+    //     console.log("pasteData_bottom")
+    //     func_table.item.clear()
+    //     datahandler.loadDataClipboard_bottom()
+    // }
+
+
+    // Shortcut {
+    //     sequences: ["Ctrl+B", "Ctrl+Space"]
+    //     // Verifying which page is active
+    //     onActivated: {
+    //         if (mainWindow.activeBtn === 1) {
+    //             table.clear()
+    //             datahandler.loadDataClipboard()
+    //         } 
+    //         else if (mainWindow.activeBtn === 4) {
+    //             console.log("clipboard histogram")
+    //             hist_table.item.addDefaultRow(hist_table.item.defaultDataRow)
+    //             // hist_table.item.addRow(hist_table.item.defaultDataRow)
+    //         } 
+    //     }
+    // }
+
+    // Shortcut {
+    //     sequences: ["Ctrl+Shift+B", "Ctrl+Shift+Space"]
+    //     // Verifying which page is active
+    //     onActivated: {
+    //         if (mainWindow.activeBtn === 1) {
+    //             table.clear()
+    //             datahandler.loadDataClipboard_bottom()
+    //         }
+    //         // else if (mainWindow.activeBtn === 4) {
+    //         //     table.clear()
+    //         //     datahandler.loadDataClipboard_Histogram_bottom()
+    //         // }
+
+    //     }
+    // }
+
+    // Shortcut {
+    //     sequences: ["Ctrl+1"]
+    //     onActivated: {
+    //         canvas.shortcut_grid()
+    //     }
+    // }
+    // Shortcut {
+    //     sequences: ["Ctrl+2"]
+    //     onActivated: {
+    //         canvas.shortcut_axis_1()
+    //     }
+    // }
+    // Shortcut {
+    //     sequences: ["Ctrl+3"]
+    //     onActivated: {
+    //         canvas.shortcut_axis_2()
+    //     }
+    // }
 
     Rectangle {
         id: bg
@@ -251,7 +297,7 @@ Item {
                                 onAccepted:{
                                     table.clear()
                                     globalManager.setLastFolder(fileOpen.fileUrl)
-                                    model.load_data(fileOpen.fileUrl)
+                                    datahandler.load_data(fileOpen.fileUrl)
                                 }
                             }
 
@@ -297,17 +343,17 @@ Item {
     }
 
     Connections{
-        target: model
+        target: datahandler
 
-        function onFillDataTable(x, y, sy, sx, isEditable, fileName){
-            label_fileName.text = fileName
-            table.addRow(x, y, sy, sx, Boolean(Number(isEditable)))
-        }
+        // function onFillDataTable(x, y, sy, sx, isEditable, fileName){
+        //     label_fileName.text = fileName
+        //     table.addRow(x, y, sy, sx, Boolean(Number(isEditable)))
+        // }
 
         function onUploadData(data, fileName){
             label_fileName.text = fileName
             let dataLength = data['x'].length
-            if (dataLength > 150) messageHandler.raise_warn(`Seus ${dataLength} dados são poderesos demais, apenas as 150 primeiras linhas serão mostradas na tabela.`)
+            if (dataLength > 150) messageHandler.raise_warn(`Seus ${dataLength} dados são poderosos demais, apenas as 150 primeiras linhas serão mostradas na tabela.`)
             for (let i = 0; i < dataLength; i++){
                 if (i < 150)
                     table.addRow(data['x'][i], data['y'][i], (data['sy'] === undefined ? '0':data['sy'][i]), (data['sx'] === undefined ? '0':data['sx'][i]), true)

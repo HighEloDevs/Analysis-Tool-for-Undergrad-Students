@@ -2,12 +2,25 @@
 requires = [
     "setuptools",
     "wheel",
-    "matplotlib==3.5.2",
+    "matplotlib==3.6.2",
+    "IPython",
     "pandas",
     "numpy",
     "scipy",
     "lmfit",
     "pyqt5",
+    "pytexit",
     "requests",
 ]
 build-backend = "setuptools.build_meta"
+
+[tool.black]
+line-length = 88
+
+[tools.setuptools]
+packages = ["atus"]
+
+# [tool.flake8]
+# ignore = ["E266", "E402", "E501", "W503"]
+# max-line-length = 88
+# max-complexity = 18

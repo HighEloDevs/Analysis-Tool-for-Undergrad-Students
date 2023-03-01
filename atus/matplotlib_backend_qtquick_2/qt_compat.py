@@ -39,9 +39,11 @@ if QT_API_ENV is not None:
 # Mapping of QT_API_ENV to requested binding.  ETS does not support PyQt4v1.
 # (https://github.com/enthought/pyface/blob/master/pyface/qt/__init__.py)
 _ETS = {
-    "pyqt6": QT_API_PYQT6, "pyside6": QT_API_PYSIDE6,
-    "pyqt5": QT_API_PYQT5, "pyside2": QT_API_PYSIDE2,
-    None: None
+    "pyqt6": QT_API_PYQT6,
+    "pyside6": QT_API_PYSIDE6,
+    "pyqt5": QT_API_PYQT5,
+    "pyside2": QT_API_PYSIDE2,
+    None: None,
 }
 # First, check if anything is already imported.
 if sys.modules.get("PyQt6.QtCore"):
@@ -57,12 +59,12 @@ elif sys.modules.get("PySide2.QtCore"):
 # requested backend actually matches).  Use dict.__getitem__ to avoid
 # triggering backend resolution (which can result in a partially but
 # incompletely imported backend_qt5).
-elif (
-        isinstance(dict.__getitem__(mpl.rcParams, "backend"), str) and
-        dict.__getitem__(mpl.rcParams, "backend").lower() in [
-            "qt5agg", "qt5cairo"
-        ]
-):
+elif isinstance(dict.__getitem__(mpl.rcParams, "backend"), str) and dict.__getitem__(
+    mpl.rcParams, "backend"
+).lower() in [
+    "qt5agg",
+    "qt5cairo",
+]:
     if QT_API_ENV in ["pyqt5", "pyside2"]:
         QT_API = _ETS[QT_API_ENV]
     else:
@@ -87,28 +89,49 @@ def _setup_pyqt5plus():
 
     if QT_API == QT_API_PYQT6:
         from PyQt6 import QtCore, QtGui, QtWidgets, QtQuick, QtQml, sip
+
         __version__ = QtCore.PYQT_VERSION_STR
         QtCore.Signal = QtCore.pyqtSignal
         QtCore.Slot = QtCore.pyqtSlot
         QtCore.Property = QtCore.pyqtProperty
         _isdeleted = sip.isdeleted
     elif QT_API == QT_API_PYSIDE6:
-        from PySide6 import QtCore, QtGui, QtWidgets, QtQuick, QtQml, __version__
+        from PySide6 import (
+            QtCore,
+            QtGui,
+            QtWidgets,
+            QtQuick,
+            QtQml,
+            __version__,
+        )
         import shiboken6
-        def _isdeleted(obj): return not shiboken6.isValid(obj)
+
+        def _isdeleted(obj):
+            return not shiboken6.isValid(obj)
+
     elif QT_API == QT_API_PYQT5:
         from PyQt5 import QtCore, QtGui, QtWidgets, QtQuick, QtQml
         import sip
+
         __version__ = QtCore.PYQT_VERSION_STR
         QtCore.Signal = QtCore.pyqtSignal
         QtCore.Slot = QtCore.pyqtSlot
         QtCore.Property = QtCore.pyqtProperty
         _isdeleted = sip.isdeleted
     elif QT_API == QT_API_PYSIDE2:
-        from PySide2 import QtCore, QtGui, QtWidgets, QtQuick, QtQml, __version__
+        from PySide2 import (
+            QtCore,
+            QtGui,
+            QtWidgets,
+            QtQuick,
+            QtQml,
+            __version__,
+        )
         import shiboken2
+
         def _isdeleted(obj):
             return not shiboken2.isValid(obj)
+
     else:
         raise AssertionError(f"Unexpected QT_API: {QT_API}")
     _getSaveFileName = QtWidgets.QFileDialog.getSaveFileName
@@ -138,9 +161,11 @@ else:  # We should not get there.
 
 # Fixes issues with Big Sur
 # https://bugreports.qt.io/browse/QTBUG-87014, fixed in qt 5.15.2
-if (sys.platform == 'darwin' and
-        parse_version(platform.mac_ver()[0]) >= parse_version("10.16") and
-        QtCore.QLibraryInfo.version().segments() <= [5, 15, 2]):
+if (
+    sys.platform == "darwin"
+    and parse_version(platform.mac_ver()[0]) >= parse_version("10.16")
+    and QtCore.QLibraryInfo.version().segments() <= [5, 15, 2]
+):
     os.environ.setdefault("QT_MAC_WANTS_LAYER", "1")
 
 
@@ -153,9 +178,9 @@ _to_int = operator.attrgetter("value") if QT_API == "PyQt6" else int
 @functools.lru_cache(None)
 def _enum(name):
     # foo.bar.Enum.Entry (PyQt6) <=> foo.bar.Entry (non-PyQt6).
-    return operator.attrgetter(
-        name if QT_API == 'PyQt6' else name.rpartition(".")[0]
-    )(sys.modules[QtCore.__package__])
+    return operator.attrgetter(name if QT_API == "PyQt6" else name.rpartition(".")[0])(
+        sys.modules[QtCore.__package__]
+    )
 
 
 # Backports.
@@ -191,7 +216,7 @@ def _setDevicePixelRatio(obj, val):
 
     This can be replaced by the direct call when we require Qt>=5.6.
     """
-    if hasattr(obj, 'setDevicePixelRatio'):
+    if hasattr(obj, "setDevicePixelRatio"):
         # Not available on Qt4 or some older Qt5.
         obj.setDevicePixelRatio(val)
 
@@ -230,7 +255,7 @@ def _maybe_allow_interrupt(qapp):
         wsock.setblocking(False)
         old_wakeup_fd = signal.set_wakeup_fd(wsock.fileno())
         sn = QtCore.QSocketNotifier(
-            rsock.fileno(), _enum('QtCore.QSocketNotifier.Type').Read
+            rsock.fileno(), _enum("QtCore.QSocketNotifier.Type").Read
         )
 
         # We do not actually care about this value other than running some
@@ -241,6 +266,7 @@ def _maybe_allow_interrupt(qapp):
         # forgiving about reading an empty socket.
         rsock.setblocking(False)
         # Clear the socket to re-arm the notifier.
+
         @sn.activated.connect
         def _may_clear_sock(*args):
             try:
@@ -269,7 +295,11 @@ def _maybe_allow_interrupt(qapp):
 
 @_api.caching_module_getattr
 class __getattr__:
-    ETS = _api.deprecated("3.5")(property(lambda self: dict(
-        pyqt5=(QT_API_PYQT5, 5), pyside2=(QT_API_PYSIDE2, 5))))
-    QT_RC_MAJOR_VERSION = _api.deprecated("3.5")(property(
-        lambda self: int(QtCore.qVersion().split(".")[0])))
+    ETS = _api.deprecated("3.5")(
+        property(
+            lambda self: dict(pyqt5=(QT_API_PYQT5, 5), pyside2=(QT_API_PYSIDE2, 5))
+        )
+    )
+    QT_RC_MAJOR_VERSION = _api.deprecated("3.5")(
+        property(lambda self: int(QtCore.qVersion().split(".")[0]))
+    )

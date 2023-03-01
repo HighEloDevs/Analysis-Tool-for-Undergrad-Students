@@ -169,7 +169,7 @@ Item{
                     dataModel.get(i).sx = dataModel.get(i).sy;
                     dataModel.get(i).sy = temp;
                 }
-                for (let i = 0; i < dataShaped.length; i++) dataShaped[i].swapItems(3, 4)
+                for (let i = 0; i < dataShaped.length; i++) dataShaped[i].swapItems(2, 3)
             }else if(exch === "syy" || exch === "ysy"){
                 for (let i = 0; i < dataModel.count; i++) {
                     temp = dataModel.get(i).sy;
@@ -412,10 +412,11 @@ Item{
                                     enabled: edit
                                     checked: check
                                     onCheckedChanged: {
+                                        let index2 = index+Math.max(dataShaped.length-150,0)
                                         if(checkBox.checkState === 2)
-                                            dataShaped[index][4] = checkBox.checkState - 1
+                                            dataShaped[index2][4] = checkBox.checkState - 1
                                         else
-                                            dataShaped[index][4] = checkBox.checkState
+                                            dataShaped[index2][4] = checkBox.checkState
                                     }
                                 }
 
@@ -424,7 +425,7 @@ Item{
                                     enabled: edit
                                     onClicked: {
                                         dataShaped.splice(row, 1)
-                                        dataSet.remove(row)     
+                                        dataSet.remove(row)
                                     }
                                 }
                             }

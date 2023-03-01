@@ -454,7 +454,7 @@ Item {
                 iconColor: '#fff'
                 iconUrl: '../../images/icons/add_white-24px.svg'
                 texto: "Adicionar dados"
-                textSize: 9
+                textSize: 11
                 r: 0
                 
                 onClicked: addRow()

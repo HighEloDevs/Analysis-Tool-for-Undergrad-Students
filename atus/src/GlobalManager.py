@@ -26,6 +26,7 @@ SOFTWARE.
 from PyQt5.QtCore import QObject, pyqtSlot, QUrl
 import os
 
+
 class GlobalManager(QObject):
     def __init__(self) -> None:
         super().__init__()
@@ -36,13 +37,13 @@ class GlobalManager(QObject):
         if not os.path.exists(self.atus_dir):
             try:
                 os.mkdir(self.atus_dir)
-            except:
+            except Exception:
                 print("Cannot create ATUS's directory")
-                self.atus_dir = os.path.expanduser("~\Desktop")
+                self.atus_dir = os.path.expanduser(r"~\Desktop")
 
     @pyqtSlot(str)
     def setLastFolder(self, path):
-        '''Set last folder opened by user'''
+        """Set last folder opened by user"""
         path = QUrl(path).toLocalFile()
 
         if os.path.isfile(path):
@@ -52,10 +53,10 @@ class GlobalManager(QObject):
 
     @pyqtSlot(result=QUrl)
     def getLastFolder(self):
-        '''Get last folder opened by user'''
+        """Get last folder opened by user"""
         return QUrl.fromLocalFile(self.last_folder)
 
     @pyqtSlot(result=QUrl)
     def getAtusDir(self):
-        '''Get ATUS's directory'''
+        """Get ATUS's directory"""
         return QUrl.fromLocalFile(self.atus_dir)

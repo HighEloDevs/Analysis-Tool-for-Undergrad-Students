@@ -82,7 +82,7 @@ class UpdateChecker(QObject):
                 os.path.join(os.path.dirname(__file__), "..", "version.txt")
             ) as version:
                 self.__VERSION__ = version.read()
-        except:
+        except FileNotFoundError:
             with open("./version.txt") as version:
                 self.__VERSION__ = version.read()
 
@@ -99,7 +99,6 @@ class UpdateChecker(QObject):
     @pyqtSlot()
     def checkUpdate(self):
         response = requests.get(self.gitHubApiUrl)
-
         if response.status_code == 200:
             infos = response.json()
             # Parsing publish date
@@ -108,10 +107,10 @@ class UpdateChecker(QObject):
             ).strftime("%d/%m/%Y")
 
             version = infos["tag_name"]
-            if version != self.__VERSION__:
-                self.__VERSION__ = (
-                    self.__VERSION__ + " Há uma nova versão disponível!"
-                )
+            if tuple(map(int, (version.split(".")))) > tuple(
+                map(int, (self.__VERSION__.split(".")))
+            ):
+                self.__VERSION__ = self.__VERSION__ + " Há uma nova versão disponível!"
                 self.showUpdate.emit(QJsonValue.fromVariant(infos))
 
     @pyqtSlot(result=str)

@@ -27,15 +27,16 @@ import os
 import sys
 
 import matplotlib.pyplot as plt
-from .matplotlib_backend_qtquick_2.backend_qtquickagg import (
+
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+from matplotlib_backend_qtquick_2.backend_qtquickagg import (
     FigureCanvasQtQuickAgg,
 )
 from PyQt5.QtCore import QCoreApplication, QObject, Qt, QUrl, QThread
-from PyQt5.QtGui import QGuiApplication, QIcon
+from PyQt5.QtGui import QIcon
 from PyQt5.QtQml import QQmlApplicationEngine, qmlRegisterType
 from PyQt5.QtWidgets import QApplication
 
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from src.GlobalManager import GlobalManager
 from src.GoogleDriveAPI import GDrive
 from src.Histogram import Histogram
@@ -45,8 +46,9 @@ from src.Model import Model
 from src.MultiPlot import Multiplot
 from src.Plot import SinglePlot
 from src.UpdateChecker import UpdateChecker
+from src.DataHandler import DataHandler
+from src.PyLatex import PyLatex
 
-# from src.PyLatex import PyLatex
 
 plt.rcParams["ytick.minor.visible"] = False
 plt.rcParams["xtick.minor.visible"] = False
@@ -73,24 +75,21 @@ def main(pip: bool = True):
     )
     app.setApplicationName("Analysis Tool for Undergrad Students")
     app.setWindowIcon(
-        QIcon(
-            os.path.join(
-                os.path.dirname(__file__), "images/main_icon/ATUS_icon.png"
-            )
-        )
+        QIcon(os.path.join(os.path.dirname(__file__), "images/main_icon/ATUS_icon.png"))
     )
     engine = QQmlApplicationEngine()
 
     messageHandler = MessageHandler()
     canvas = Canvas(messageHandler)
     model = Model(messageHandler)
-    singlePlot = SinglePlot(canvas, model, messageHandler)
+    datahandler = DataHandler(messageHandler=messageHandler)
+    singlePlot = SinglePlot(canvas, model, datahandler, messageHandler)
     multiPlot = Multiplot(canvas, messageHandler)
     updater = UpdateChecker(pip)
     histogram = Histogram(canvas, messageHandler)
     gdrive = GDrive(messageHandler)
     globalManager = GlobalManager()
-    # pylatex = PyLatex()
+    pylatex = PyLatex()
 
     thread = QThread()
     thread.start(5)
@@ -107,14 +106,13 @@ def main(pip: bool = True):
     context.setContextProperty("hist", histogram)
     context.setContextProperty("gdrive", gdrive)
     context.setContextProperty("globalManager", globalManager)
-    # context.setContextProperty("pylatex", pylatex)
+    context.setContextProperty("datahandler", datahandler)
+    context.setContextProperty("pylatex", pylatex)
 
     # Loading canvas window
     engine.load(
         QUrl.fromLocalFile(
-            os.path.join(
-                os.path.dirname(__file__), "qml/controls/CanvasWindow.qml"
-            )
+            os.path.join(os.path.dirname(__file__), "qml/controls/CanvasWindow.qml")
         )
     )
     context.setContextProperty("canvasWindow", engine.rootObjects()[0])
@@ -127,9 +125,7 @@ def main(pip: bool = True):
     )
 
     # Updating canvasPlot with the plot
-    canvas.update_with_canvas(
-        engine.rootObjects()[1].findChild(QObject, "canvasPlot")
-    )
+    canvas.update_with_canvas(engine.rootObjects()[1].findChild(QObject, "canvasPlot"))
 
     # Stopping program if PyQt fails loading the file
     if not engine.rootObjects():

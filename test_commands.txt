@@ -1,0 +1,3 @@
+pytest --cov=atus\src\ --cov-report term-missing
+pytest --cov=atus\src\ --cov-report html
+pre-commit run --all-files
