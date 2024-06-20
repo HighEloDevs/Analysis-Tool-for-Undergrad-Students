@@ -8,7 +8,7 @@
     <img src="https://img.shields.io/github/v/release/HighEloDevs/Analysis-Tool-for-Undergrad-Students" />
     <img src="https://img.shields.io/codacy/grade/f47977a1c98547699611f8b4a40614a4" />
     <img src="https://img.shields.io/github/downloads/HighEloDevs/Analysis-Tool-for-Undergrad-Students/total" alt="downloads">
-    <img src="https://img.shields.io/apm/l/atomic-design-ui.svg?" alt="license">
+    <img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="license">
 </p>
 
 <p align="center">
@@ -18,12 +18,12 @@
 <h2 align="center">Documentação</h2>
 
 <p align="center">
-    Instruções para instalação e tutoriais de uso do ATUS podem ser encontradas na nossa <a href="https://www.atusweb.xyz/">página</a>
+    Instruções para instalação e tutoriais de uso do ATUS podem ser encontradas na nossa <a href="https://github.com/HighEloDevs/Analysis-Tool-for-Undergrad-Students/wiki">wiki</a>
    
 <h2 align="center">Feedback</h2>
    
 <p align="center">
-    Para qualquer crítica construtiva, sugestões, reportes de bugs etc, por favor, nos envie um e-mail - atusdevs@gmail.com
+    Para qualquer crítica construtiva, sugestões, reportes de bugs etc, por favor, nos envie um e-mail - atusdevs@gmail.com ou adicione uma <a href="https://github.com/HighEloDevs/Analysis-Tool-for-Undergrad-Students/issues">issue</a>
 </p>
 
 <h2 align="center">Autores</h2>
