@@ -502,7 +502,7 @@ Window {
                                 clickColor: Colors.c_button_active
                                 hoverColor: Colors.c_button_hover
 
-                                onClicked: Qt.openUrlExternally("https://highelodevs.github.io/Analysis-Tool-for-Undergrad-Students/")
+                                onClicked: Qt.openUrlExternally("https://github.com/HighEloDevs/Analysis-Tool-for-Undergrad-Students/wiki")
                             }
 
                             IconButton{
