@@ -123,8 +123,9 @@ class DataHandler(QObject):
     def _comma_to_dot(self, df: pd.DataFrame) -> pd.DataFrame:
         # df = self._drop_header(df)
         for col in df.columns:
-            df[col] = [x.replace(",", ".") for x in df[col]]
-            df[col] = df[col].astype(str)
+            if df[col].dtype != np.float64:
+                df[col] = [x.replace(",", ".") for x in df[col]]
+                df[col] = df[col].astype(str)
         return df
 
     def _to_check_columns(
@@ -134,7 +135,7 @@ class DataHandler(QObject):
         if number_of_cols == 1:
             self._has_sy = not self._has_sy
             self._has_sx = not self._has_sx
-            df["y"] = df["x"]
+            df["y"] = df["x"].copy()
             df["x"] = np.arange(len(df), dtype=float)
             df_json = deepcopy(df.astype(str))
             df_json.columns = ["x", "y"]
@@ -245,7 +246,7 @@ class DataHandler(QObject):
         elif clipboardText != "":
             self._fill_df_with_clipboardText(clipboardText)
 
-        if isinstance(self._df, pd.DataFrame) and self._df.empty is False:
+        if isinstance(self._df, pd.DataFrame) and (self._df.empty is False):
             self._df = self._comma_to_dot(self._df)
             self._df = self._filter_string_rows(self._df)
             self._df, self._data_json = self._to_check_columns(
