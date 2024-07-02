@@ -85,7 +85,7 @@ class TestDataHandler:
         with tempfile.TemporaryDirectory() as tmpdir:
             data_path = os.path.join(tmpdir, "test.csv")
             test_data = "1\t2\t3\n4\t5\t6\t7\n8\t9\t1"
-            message = "Separação de colunas de arquivos txt e tsv são com tab. Rever dados de entrada."
+            message = "Separação de colunas de arquivos txt e tsv são com tab ou espaço. Rever dados de entrada."
             with open(data_path, "w") as f:
                 f.write(test_data)
             data_handler._read_tsv_txt(data_path)
@@ -109,7 +109,7 @@ class TestDataHandler:
             # Temos que mudar a mensagem deste erro
             # O Atus deveria mesmo da erro nessa situação?
             test_data = "1 2 3\n4 5 6 7\n8 9 1"
-            message = "Separação de colunas de arquivos txt e tsv são com tab. Rever dados de entrada."
+            message = "Separação de colunas de arquivos txt e tsv são com tab ou espaço. Rever dados de entrada."
             with open(data_path, "w") as f:
                 f.write(test_data)
             data_handler._read_tsv_txt(data_path)
