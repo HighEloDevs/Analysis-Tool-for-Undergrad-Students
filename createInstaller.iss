@@ -42,6 +42,10 @@ LZMANumBlockThreads=6
 Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "brazilianportuguese"; MessagesFile: "compiler:Languages\BrazilianPortuguese.isl"
 
+[CustomMessages]
+english.VCRedistMissing=The Microsoft Visual C++ Redistributable (x64) was not detected on your computer.%n%nIt is required to render plots and run ATUS without errors (such as missing DLLs).%n%nWould you like to open the official Microsoft download page now?
+brazilianportuguese.VCRedistMissing=O Microsoft Visual C++ Redistributable (x64) não foi detectado no seu computador.%n%nEle é necessário para a geração dos gráficos e execução do ATUS sem erros (como falta de DLLs).%n%nDeseja abrir a página oficial de download da Microsoft agora?
+
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
@@ -63,3 +67,33 @@ Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: de
 
 [Run]
 Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait
+
+[Code]
+function VCRedistInstalled: Boolean;
+var
+  Installed: Cardinal;
+begin
+  Result := False;
+  // Checks if Microsoft Visual C++ 2015-2022 Redistributable (x64) is installed
+  if RegQueryDWordValue(HKLM64, 'SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\X64', 'Installed', Installed) then
+    Result := (Installed = 1)
+  else if RegQueryDWordValue(HKLM32, 'SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\X64', 'Installed', Installed) then
+    Result := (Installed = 1);
+end;
+
+function NextButtonClick(CurPageID: Integer): Boolean;
+var
+  ErrorCode: Integer;
+begin
+  Result := True;
+  if CurPageID = wpReady then
+  begin
+    if not VCRedistInstalled then
+    begin
+      if MsgBox(ExpandConstant('{cm:VCRedistMissing}'), mbConfirmation, MB_YESNO) = IDYES then
+      begin
+        ShellExec('open', 'https://aka.ms/vs/17/release/vc_redist.x64.exe', '', '', SW_SHOWNORMAL, ewNoWait, ErrorCode);
+      end;
+    end;
+  end;
+end;
