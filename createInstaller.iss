@@ -43,8 +43,17 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "brazilianportuguese"; MessagesFile: "compiler:Languages\BrazilianPortuguese.isl"
 
 [CustomMessages]
-english.VCRedistMissing=The Microsoft Visual C++ Redistributable (x64) was not detected on your computer.%n%nIt is required to render plots and run ATUS without errors (such as missing DLLs).%n%nWould you like to open the official Microsoft download page now?
-brazilianportuguese.VCRedistMissing=O Microsoft Visual C++ Redistributable (x64) não foi detectado no seu computador.%n%nEle é necessário para a geração dos gráficos e execução do ATUS sem erros (como falta de DLLs).%n%nDeseja abrir a página oficial de download da Microsoft agora?
+english.VCRedistMissing=The Microsoft Visual C++ Redistributable (x64) is required to run ATUS and render plots without missing DLL errors.%n%nWould you like setup to download and install it now?
+english.VCRedistRequired=The installation cannot continue without Microsoft Visual C++ Redistributable (x64).
+english.DownloadTitle=Downloading Dependencies
+english.DownloadPrompt=Please wait while setup downloads Microsoft Visual C++ Redistributable...
+english.InstallingVCRedist=Installing Microsoft Visual C++ Redistributable...
+
+brazilianportuguese.VCRedistMissing=O Microsoft Visual C++ Redistributable (x64) é necessário para executar o ATUS e gerar gráficos sem erros de DLLs.%n%nDeseja que o instalador baixe e instale esse componente agora?
+brazilianportuguese.VCRedistRequired=A instalação não pode continuar sem o Microsoft Visual C++ Redistributable (x64).
+brazilianportuguese.DownloadTitle=Baixando Dependências
+brazilianportuguese.DownloadPrompt=Por favor, aguarde enquanto o instalador baixa o Microsoft Visual C++ Redistributable...
+brazilianportuguese.InstallingVCRedist=Instalando o Microsoft Visual C++ Redistributable...
 
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
@@ -69,6 +78,9 @@ Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: de
 Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait
 
 [Code]
+var
+  DownloadPage: TDownloadWizardPage;
+
 function VCRedistInstalled: Boolean;
 var
   Installed: Cardinal;
@@ -81,9 +93,14 @@ begin
     Result := (Installed = 1);
 end;
 
+procedure InitializeWizard;
+begin
+  DownloadPage := CreateDownloadPage(ExpandConstant('{cm:DownloadTitle}'), ExpandConstant('{cm:DownloadPrompt}'), nil);
+end;
+
 function NextButtonClick(CurPageID: Integer): Boolean;
 var
-  ErrorCode: Integer;
+  ResultCode: Integer;
 begin
   Result := True;
   if CurPageID = wpReady then
@@ -92,7 +109,45 @@ begin
     begin
       if MsgBox(ExpandConstant('{cm:VCRedistMissing}'), mbConfirmation, MB_YESNO) = IDYES then
       begin
-        ShellExec('open', 'https://aka.ms/vs/17/release/vc_redist.x64.exe', '', '', SW_SHOWNORMAL, ewNoWait, ErrorCode);
+        DownloadPage.Clear;
+        DownloadPage.Add('https://aka.ms/vs/17/release/vc_redist.x64.exe', 'vc_redist.x64.exe', '');
+        DownloadPage.Show;
+        try
+          try
+            DownloadPage.Download;
+          except
+            SuppressibleMsgBox(GetExceptionMessage, mbCriticalError, MB_OK, IDOK);
+            Result := False;
+            Exit;
+          end;
+        finally
+          DownloadPage.Hide;
+        end;
+
+        // Run the downloaded installer and wait for it to complete
+        WizardForm.StatusLabel.Caption := ExpandConstant('{cm:InstallingVCRedist}');
+        if Exec(ExpandConstant('{tmp}\vc_redist.x64.exe'), '/install /passive /norestart', '', SW_SHOW, ewWaitUntilTerminated, ResultCode) then
+        begin
+          if not VCRedistInstalled then
+          begin
+            MsgBox(ExpandConstant('{cm:VCRedistRequired}'), mbError, MB_OK);
+            Result := False;
+            Exit;
+          end;
+        end
+        else
+        begin
+          MsgBox(ExpandConstant('{cm:VCRedistRequired}'), mbError, MB_OK);
+          Result := False;
+          Exit;
+        end;
+      end
+      else
+      begin
+        // If the user chooses not to install the dependency, do not allow setup to proceed
+        MsgBox(ExpandConstant('{cm:VCRedistRequired}'), mbError, MB_OK);
+        Result := False;
+        Exit;
       end;
     end;
   end;
