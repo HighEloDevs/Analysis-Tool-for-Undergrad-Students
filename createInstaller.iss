@@ -42,6 +42,19 @@ LZMANumBlockThreads=6
 Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "brazilianportuguese"; MessagesFile: "compiler:Languages\BrazilianPortuguese.isl"
 
+[CustomMessages]
+english.VCRedistMissing=The Microsoft Visual C++ Redistributable (x64) is required to run ATUS and render plots without missing DLL errors.%n%nWould you like setup to download and install it now?
+english.VCRedistRequired=The installation cannot continue without Microsoft Visual C++ Redistributable (x64).
+english.DownloadTitle=Downloading Dependencies
+english.DownloadPrompt=Please wait while setup downloads Microsoft Visual C++ Redistributable...
+english.InstallingVCRedist=Installing Microsoft Visual C++ Redistributable...
+
+brazilianportuguese.VCRedistMissing=O Microsoft Visual C++ Redistributable (x64) é necessário para executar o ATUS e gerar gráficos sem erros de DLLs.%n%nDeseja que o instalador baixe e instale esse componente agora?
+brazilianportuguese.VCRedistRequired=A instalação não pode continuar sem o Microsoft Visual C++ Redistributable (x64).
+brazilianportuguese.DownloadTitle=Baixando Dependências
+brazilianportuguese.DownloadPrompt=Por favor, aguarde enquanto o instalador baixa o Microsoft Visual C++ Redistributable...
+brazilianportuguese.InstallingVCRedist=Instalando o Microsoft Visual C++ Redistributable...
+
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
@@ -63,3 +76,79 @@ Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: de
 
 [Run]
 Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait
+
+[Code]
+var
+  DownloadPage: TDownloadWizardPage;
+
+function VCRedistInstalled: Boolean;
+var
+  Installed: Cardinal;
+begin
+  Result := False;
+  // Checks if Microsoft Visual C++ 2015-2022 Redistributable (x64) is installed
+  if RegQueryDWordValue(HKLM64, 'SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\X64', 'Installed', Installed) then
+    Result := (Installed = 1)
+  else if RegQueryDWordValue(HKLM32, 'SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\X64', 'Installed', Installed) then
+    Result := (Installed = 1);
+end;
+
+procedure InitializeWizard;
+begin
+  DownloadPage := CreateDownloadPage(ExpandConstant('{cm:DownloadTitle}'), ExpandConstant('{cm:DownloadPrompt}'), nil);
+end;
+
+function NextButtonClick(CurPageID: Integer): Boolean;
+var
+  ResultCode: Integer;
+begin
+  Result := True;
+  if CurPageID = wpReady then
+  begin
+    if not VCRedistInstalled then
+    begin
+      if MsgBox(ExpandConstant('{cm:VCRedistMissing}'), mbConfirmation, MB_YESNO) = IDYES then
+      begin
+        DownloadPage.Clear;
+        DownloadPage.Add('https://aka.ms/vs/17/release/vc_redist.x64.exe', 'vc_redist.x64.exe', '');
+        DownloadPage.Show;
+        try
+          try
+            DownloadPage.Download;
+          except
+            SuppressibleMsgBox(GetExceptionMessage, mbCriticalError, MB_OK, IDOK);
+            Result := False;
+            Exit;
+          end;
+        finally
+          DownloadPage.Hide;
+        end;
+
+        // Run the downloaded installer and wait for it to complete
+        WizardForm.StatusLabel.Caption := ExpandConstant('{cm:InstallingVCRedist}');
+        if Exec(ExpandConstant('{tmp}\vc_redist.x64.exe'), '/install /passive /norestart', '', SW_SHOW, ewWaitUntilTerminated, ResultCode) then
+        begin
+          if not VCRedistInstalled then
+          begin
+            MsgBox(ExpandConstant('{cm:VCRedistRequired}'), mbError, MB_OK);
+            Result := False;
+            Exit;
+          end;
+        end
+        else
+        begin
+          MsgBox(ExpandConstant('{cm:VCRedistRequired}'), mbError, MB_OK);
+          Result := False;
+          Exit;
+        end;
+      end
+      else
+      begin
+        // If the user chooses not to install the dependency, do not allow setup to proceed
+        MsgBox(ExpandConstant('{cm:VCRedistRequired}'), mbError, MB_OK);
+        Result := False;
+        Exit;
+      end;
+    end;
+  end;
+end;
