@@ -36,12 +36,17 @@ class GlobalManager(QObject):
         self.atus_dir = os.path.join(docs_dir, "ATUS")
         self.last_folder = self.atus_dir
 
+        # legacy
+        #self.atus_dir = os.path.join(os.path.expanduser("~/Documents"), "ATUS")
+        #self.last_folder = self.atus_dir
+
         # Checking if the ATUS's directory exists
         if not os.path.exists(self.atus_dir):
             try:
                 os.makedirs(self.atus_dir, exist_ok=True)
             except Exception:
                 print("Cannot create ATUS's directory")
+                #self.atus_dir = os.path.expanduser(r"~\Desktop")
                 self.atus_dir = QStandardPaths.writableLocation(QStandardPaths.DesktopLocation) or os.path.expanduser("~")
 
     @pyqtSlot(str)

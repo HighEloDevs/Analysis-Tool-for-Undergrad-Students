@@ -331,6 +331,7 @@ class Canvas(QObject):
 
         # Saving image to a path
         try:
+            #path = os.path.join(os.path.expanduser(r"~\Documents"), "image.png")
             import tempfile
             path = os.path.join(tempfile.gettempdir(), "atus_clipboard.png")
             self.canvas.figure.savefig(path, dpi=150, transparent=False)
