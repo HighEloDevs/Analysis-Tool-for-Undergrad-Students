@@ -30,8 +30,15 @@ import os
 class GlobalManager(QObject):
     def __init__(self) -> None:
         super().__init__()
-        self.atus_dir = os.path.join(os.path.expanduser("~/Documents"), "ATUS")
+
+        # get corretct path for '~/Documents' in any OS and language
+        docs_dir = QStandardPaths.writableLocation(QStandardPaths.DocumentsLocation) or os.path.expanduser("~")
+        self.atus_dir = os.path.join(docs_dir, "ATUS")
         self.last_folder = self.atus_dir
+
+        # legacy
+        #self.atus_dir = os.path.join(os.path.expanduser("~/Documents"), "ATUS")
+        #self.last_folder = self.atus_dir
 
         # Checking if the ATUS's directory exists
         if not os.path.exists(self.atus_dir):
