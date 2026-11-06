@@ -26,6 +26,12 @@ SOFTWARE.
 import os
 import sys
 
+# Para linux:
+# Garantindo suporte a Wayland com fallback para X11 
+# Resolve o problema da dependecia do QT5 com o plugin xcb 
+if sys.platform.startswith("linux") and "QT_QPA_PLATFORM" not in os.environ:
+    os.environ["QT_QPA_PLATFORM"] = "wayland;xcb"
+
 import matplotlib.pyplot as plt
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))

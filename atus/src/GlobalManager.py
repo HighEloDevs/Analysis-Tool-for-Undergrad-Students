@@ -23,23 +23,31 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-from PyQt5.QtCore import QObject, pyqtSlot, QUrl
+from PyQt5.QtCore import QObject, pyqtSlot, QUrl, QStandardPaths
 import os
 
 
 class GlobalManager(QObject):
     def __init__(self) -> None:
         super().__init__()
-        self.atus_dir = os.path.join(os.path.expanduser("~/Documents"), "ATUS")
+
+        # Get correct path for '~/Documents' in any OS and language
+        docs_dir = QStandardPaths.writableLocation(QStandardPaths.DocumentsLocation) or os.path.expanduser("~")
+        self.atus_dir = os.path.join(docs_dir, "ATUS")
         self.last_folder = self.atus_dir
+
+        # legacy
+        #self.atus_dir = os.path.join(os.path.expanduser("~/Documents"), "ATUS")
+        #self.last_folder = self.atus_dir
 
         # Checking if the ATUS's directory exists
         if not os.path.exists(self.atus_dir):
             try:
-                os.mkdir(self.atus_dir)
+                os.makedirs(self.atus_dir, exist_ok=True)
             except Exception:
                 print("Cannot create ATUS's directory")
-                self.atus_dir = os.path.expanduser(r"~\Desktop")
+                #self.atus_dir = os.path.expanduser(r"~\Desktop")
+                self.atus_dir = QStandardPaths.writableLocation(QStandardPaths.DesktopLocation) or os.path.expanduser("~")
 
     @pyqtSlot(str)
     def setLastFolder(self, path):

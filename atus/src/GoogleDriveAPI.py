@@ -27,7 +27,15 @@ from __future__ import print_function
 import os.path
 
 # from matplotlib_backend_qtquick.qt_compat import QtCore
-from PyQt5.QtCore import QObject, pyqtProperty, QUrl, pyqtSignal, pyqtSlot, QJsonValue
+from PyQt5.QtCore import (
+    QObject,
+    pyqtProperty,
+    QUrl,
+    pyqtSignal,
+    pyqtSlot,
+    QJsonValue,
+    QStandardPaths,
+)
 
 # from googleapiclient.discovery import build
 # from googleapiclient.http import MediaFileUpload
@@ -49,7 +57,8 @@ class GDrive(QObject):
         self.credsPath = os.path.join(
             os.path.abspath(__file__), "../../credentials.json"
         )
-        self.tokenPath = os.path.join(os.path.expanduser("~/Documents"), "token.json")
+        docs_dir = QStandardPaths.writableLocation(QStandardPaths.DocumentsLocation) or os.path.expanduser("~")
+        self.tokenPath = os.path.join(docs_dir, "token.json")
 
         # print(self.credsPath)
         # print(self.tokenPath)
